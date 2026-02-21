@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - CurvaFit</title>
+
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="thankyou.css">
+</head>
+<body>
+
+<header class="thankyou-header">
+    <div class="logo">
+        <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo">
+        <h1>Order Confirmation</h1>
+    </div>
+</header>
+
+<main class="thankyou-main">
+
+    <div id="loading">
+        <h2>Verifying your payment...</h2>
+        <p>Please wait.</p>
+    </div>
+
+    <div id="success" style="display:none;">
+        <h2>Payment Successful ✅</h2>
+        <p>Order ID: <strong id="order-id"></strong></p>
+        <p>Thank you for your purchase!</p>
+        <a href="index.html" class="cta">Return to Shop</a>
+    </div>
+
+    <div id="error" style="display:none;">
+        <h2>Payment Verification Failed ❌</h2>
+        <p>Please contact support.</p>
+        <a href="checkout.html" class="cta">Return to Checkout</a>
+    </div>
+
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+    const orderId = params.get("token");
+
+    let paymentMethod = null;
+
+    if (sessionId) paymentMethod = "stripe";
+    if (orderId) paymentMethod = "paypal";
+
+    if (!paymentMethod) {
+        showError();
+        return;
+    }
+
+    try {
+
+        const response = await fetch("/.netlify/functions/verify-payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                sessionId,
+                orderId,
+                paymentMethod
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("success").style.display = "block";
+            document.getElementById("order-id").textContent = data.orderId;
+
+            // Clean cart
+            localStorage.removeItem("cart");
+            localStorage.removeItem("pendingOrder");
+
+        } else {
+            showError();
+        }
+
+    } catch (err) {
+        showError();
+    }
+
+    function showError() {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("error").style.display = "block";
+    }
+
+});
+</script>
+
+</body>
+</html>

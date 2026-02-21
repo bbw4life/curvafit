@@ -1,0 +1,45 @@
+/* thankyou.css - Specific CSS for thankyou.html (or reuse if global) */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.thankyou-header {
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo img {
+    height: 50px;
+}
+
+.logo h1 {
+    margin: 10px 0;
+}
+
+.thankyou-main {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.order-summary {
+    margin: 20px 0;
+}
+
+.cta {
+    display: inline-block;
+    padding: 15px 30px;
+    background-color: #e91e63;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
