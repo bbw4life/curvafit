@@ -427,34 +427,54 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render Cart
     function renderCart() {
         cartItemsContainer.innerHTML = '';
-        cart.forEach(item => {
-            const cartItem = document.createElement('div');
-            cartItem.classList.add('cart-item');
-            cartItem.dataset.id = item.id;
-            cartItem.innerHTML = `
-                <img src="${item.image}" alt="${item.title}">
-                <h4>${item.title}</h4>
-                <p>$${parseFloat(item.price).toFixed(2)}</p>
-                <div class="quantity">
-                    <button class="qty-minus">-</button>
-                    <span>${item.quantity}</span>
-                    <button class="qty-plus">+</button>
-                </div>
-                <button class="remove-item">Remove</button>
-            `;
-            cartItemsContainer.appendChild(cartItem);
-        });
+        const emptyCart = document.querySelector('.empty-cart');
+        const reviewsCarousel = document.querySelector('.reviews-carousel');
+        const cartMarquee = document.querySelector('.cart-marquee');
+        const paymentIcons = document.querySelector('.payment-icons');
+        const cartFooter = document.querySelector('.cart-footer');
 
-        // Add event listeners for quantity and remove
-        cartItemsContainer.querySelectorAll('.qty-plus').forEach(btn => {
-            btn.addEventListener('click', handleQuantityChange);
-        });
-        cartItemsContainer.querySelectorAll('.qty-minus').forEach(btn => {
-            btn.addEventListener('click', handleQuantityChange);
-        });
-        cartItemsContainer.querySelectorAll('.remove-item').forEach(btn => {
-            btn.addEventListener('click', removeFromCart);
-        });
+        if (cart.length === 0) {
+            emptyCart.style.display = 'block';
+            reviewsCarousel.style.display = 'none';
+            cartMarquee.style.display = 'none';
+            paymentIcons.style.display = 'none';
+            cartFooter.style.display = 'none';
+        } else {
+            emptyCart.style.display = 'none';
+            reviewsCarousel.style.display = 'block';
+            cartMarquee.style.display = 'block';
+            paymentIcons.style.display = 'flex';
+            cartFooter.style.display = 'block';
+
+            cart.forEach(item => {
+                const cartItem = document.createElement('div');
+                cartItem.classList.add('cart-item');
+                cartItem.dataset.id = item.id;
+                cartItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.title}">
+                    <h4>${item.title}</h4>
+                    <p>$${parseFloat(item.price).toFixed(2)}</p>
+                    <div class="quantity">
+                        <button class="qty-minus">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="qty-plus">+</button>
+                    </div>
+                    <button class="remove-item"><i class="fi fi-sr-trash"></i></button>
+                `;
+                cartItemsContainer.appendChild(cartItem);
+            });
+
+            // Add event listeners for quantity and remove
+            cartItemsContainer.querySelectorAll('.qty-plus').forEach(btn => {
+                btn.addEventListener('click', handleQuantityChange);
+            });
+            cartItemsContainer.querySelectorAll('.qty-minus').forEach(btn => {
+                btn.addEventListener('click', handleQuantityChange);
+            });
+            cartItemsContainer.querySelectorAll('.remove-item').forEach(btn => {
+                btn.addEventListener('click', removeFromCart);
+            });
+        }
 
         updateSubtotal();
     }
@@ -478,6 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saveCart();
             updateSubtotal();
             updateBadges();
+            renderCart(); // Re-render pour mise à jour auto
         }
     }
 
@@ -486,10 +507,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const itemElement = e.target.closest('.cart-item');
         const id = itemElement.dataset.id;
         cart = cart.filter(i => i.id !== id);
-        itemElement.remove();
         saveCart();
         updateSubtotal();
         updateBadges();
+        renderCart(); // Re-render pour afficher empty si dernier
     }
 
     // Update Subtotal
@@ -517,6 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateBadges();
         cartIcon.classList.add('added');
         setTimeout(() => cartIcon.classList.remove('added'), 500);
+        openCartDrawer();
     }
 
     // Render Wishlist
@@ -594,6 +616,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveCart();
         updateBadges();
         closeWishlistModal();
+        openCartDrawer();
     }
 
     // Open/Close Cart Drawer
@@ -620,14 +643,6 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.classList.remove('active');
     }
 
-    // Clear Cart
-    function clearCart() {
-        cart = [];
-        saveCart();
-        renderCart();
-        updateBadges();
-    }
-
     // Checkout
     function checkout() {
         localStorage.setItem('checkoutCart', JSON.stringify(cart));
@@ -651,15 +666,31 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.addEventListener('click', toggleWishlist);
     });
 
-    cartIcon.addEventListener('click', openCartDrawer);
-    wishlistIcon.addEventListener('click', openWishlistModal);
+    const cartWrapper = document.querySelector('.icon-wrapper:has(.cart-icon)');
+    cartWrapper.addEventListener('click', openCartDrawer);
+
+    const wishlistWrapper = document.querySelector('.icon-wrapper:has(.wishlist-icon)');
+    wishlistWrapper.addEventListener('click', openWishlistModal);
+
     overlay.addEventListener('click', () => {
         closeCartDrawer();
         closeWishlistModal();
     });
     document.querySelector('.close-drawer').addEventListener('click', closeCartDrawer);
     document.querySelector('.close-modal').addEventListener('click', closeWishlistModal);
-    document.querySelector('.clear-cart').addEventListener('click', clearCart);
     document.querySelector('.checkout').addEventListener('click', checkout);
     document.querySelector('.add-all-to-cart').addEventListener('click', addAllToCart);
+
+    // Reviews Carousel in Cart Drawer
+    const reviewsCarousel = document.querySelector('.reviews-carousel');
+    if (reviewsCarousel) {
+        const reviewItems = reviewsCarousel.querySelectorAll('.review-item');
+        let currentReview = 0;
+        reviewItems[currentReview].classList.add('active');
+        setInterval(() => {
+            reviewItems[currentReview].classList.remove('active');
+            currentReview = (currentReview + 1) % reviewItems.length;
+            reviewItems[currentReview].classList.add('active');
+        }, 5000);
+    }
 });
