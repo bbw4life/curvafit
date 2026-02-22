@@ -164,59 +164,48 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-        // Drag Functionality
-    if (audioPlayer) {
-        let isDragging = false;
-        let offsetX, offsetY;
 
-        // Function to start drag
-        const startDrag = (e) => {
-            isDragging = true;
-            if (e.type === 'touchstart') {
-                offsetX = e.touches[0].clientX - audioPlayer.getBoundingClientRect().left;
-                offsetY = e.touches[0].clientY - audioPlayer.getBoundingClientRect().top;
-            } else {
-                offsetX = e.clientX - audioPlayer.getBoundingClientRect().left;
-                offsetY = e.clientY - audioPlayer.getBoundingClientRect().top;
-            }
-            audioPlayer.style.cursor = 'grabbing';
-            e.preventDefault(); // Prevent scrolling on touch
-        };
 
-        // Function to drag
-        const drag = (e) => {
-            if (isDragging) {
-                let clientX, clientY;
-                if (e.type === 'touchmove') {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
-                } else {
-                    clientX = e.clientX;
-                    clientY = e.clientY;
-                }
-                audioPlayer.style.left = `${clientX - offsetX}px`;
-                audioPlayer.style.bottom = 'auto'; // Permet le déplacement libre
-                audioPlayer.style.top = `${clientY - offsetY}px`;
-                e.preventDefault(); // Prevent scrolling on touch
-            }
-        };
+     // Drag Functionality
+if (audioPlayer) {
+    let isDragging = false;
+    let offsetX, offsetY;
 
-        // Function to end drag
-        const endDrag = () => {
-            isDragging = false;
-            audioPlayer.style.cursor = 'move';
-        };
+    const startDrag = (e) => {
+        isDragging = true;
+        const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+        offsetX = clientX - audioPlayer.getBoundingClientRect().left;
+        offsetY = clientY - audioPlayer.getBoundingClientRect().top;
+        audioPlayer.style.cursor = 'grabbing';
+    };
 
-        // Mouse events
-        audioPlayer.addEventListener('mousedown', startDrag);
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', endDrag);
+    const moveDrag = (e) => {
+        if (isDragging) {
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            audioPlayer.style.left = `${clientX - offsetX}px`;
+            audioPlayer.style.bottom = 'auto'; // Permet le déplacement libre
+            audioPlayer.style.top = `${clientY - offsetY}px`;
+        }
+    };
 
-        // Touch events
-        audioPlayer.addEventListener('touchstart', startDrag, { passive: false });
-        document.addEventListener('touchmove', drag, { passive: false });
-        document.addEventListener('touchend', endDrag);
-    }
+    const endDrag = () => {
+        isDragging = false;
+        audioPlayer.style.cursor = 'move';
+    };
+
+    // Mouse events
+    audioPlayer.addEventListener('mousedown', startDrag);
+    document.addEventListener('mousemove', moveDrag);
+    document.addEventListener('mouseup', endDrag);
+
+    // Touch events
+    audioPlayer.addEventListener('touchstart', startDrag, { passive: false });
+    document.addEventListener('touchmove', moveDrag, { passive: false });
+    document.addEventListener('touchend', endDrag);
+}
+
     // Progress Evolution Tabs
     const tabButtons = document.querySelectorAll('.tab-button');
     const evolutionContent = document.querySelector('#evolution-content');
@@ -724,4 +713,72 @@ document.addEventListener('DOMContentLoaded', () => {
             reviewItems[currentReview].classList.add('active');
         }, 5000);
     }
+});
+
+
+// paul-banner)
+document.addEventListener('DOMContentLoaded', function () {
+  const container = document.getElementById('paul-banner');
+  if (!container) return;
+
+  // Définir le lien de la vidéo ici (ajoutez votre URL, ou laissez vide pour mode images)
+  const videoUrl = ''; // Exemple: 'https://example.com/your-video.mp4' ou vide ''
+
+  // Contrôle vidéo et mode
+  const video = container.querySelector('.paul-banner-video');
+  const soundBtn = container.querySelector('.paul-video-sound-toggle');
+  const videoWrapper = container.querySelector('.paul-banner-video-wrapper');
+
+  if (videoUrl) {
+    // Mode vidéo : définir src, afficher wrapper, cacher images
+    video.src = videoUrl;
+    videoWrapper.style.display = 'block';
+    document.querySelectorAll('.paul-banner-image').forEach(img => {
+      img.style.display = 'none';
+    });
+  } else {
+    // Mode images : cacher wrapper vidéo et bouton son, add class for CSS adjustment
+    videoWrapper.style.display = 'none';
+    container.classList.add('image-mode');
+  }
+
+  if (video && soundBtn && videoUrl) {
+    soundBtn.addEventListener('click', () => {
+      video.muted = !video.muted;
+      soundBtn.classList.toggle('muted', video.muted);
+    });
+  }
+
+  // Slider (fonctionne dans les deux modes pour les textes/transitions)
+  const slides = container.querySelectorAll('.paul-banner-slide');
+  const indicators = container.querySelectorAll('.paul-banner-indicator');
+  if (slides.length <= 1) return;
+
+  const intervalTime = 5 * 1000; // Durée par slide en ms (défaut 5s)
+  let currentSlide = 0;
+  let slideTimer;
+
+  function showSlide(index) {
+    slides.forEach((s, i) => s.classList.toggle('active', i === index));
+    indicators.forEach((ind, i) => ind.classList.toggle('active', i === index));
+    currentSlide = index;
+  }
+
+  function nextSlide() {
+    showSlide((currentSlide + 1) % slides.length);
+  }
+
+  showSlide(0);
+  slideTimer = setInterval(nextSlide, intervalTime);
+
+  indicators.forEach((ind, i) => {
+    ind.addEventListener('click', () => {
+      clearInterval(slideTimer);
+      showSlide(i);
+      slideTimer = setInterval(nextSlide, intervalTime);
+    });
+  });
+
+  container.addEventListener('mouseenter', () => clearInterval(slideTimer));
+  container.addEventListener('mouseleave', () => slideTimer = setInterval(nextSlide, intervalTime));
 });
