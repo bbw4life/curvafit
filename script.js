@@ -164,27 +164,58 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    // Drag Functionality
+        // Drag Functionality
     if (audioPlayer) {
         let isDragging = false;
         let offsetX, offsetY;
-        audioPlayer.addEventListener('mousedown', (e) => {
+
+        // Function to start drag
+        const startDrag = (e) => {
             isDragging = true;
-            offsetX = e.clientX - audioPlayer.getBoundingClientRect().left;
-            offsetY = e.clientY - audioPlayer.getBoundingClientRect().top;
-            audioPlayer.style.cursor = 'grabbing';
-        });
-        document.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                audioPlayer.style.left = `${e.clientX - offsetX}px`;
-                audioPlayer.style.bottom = 'auto'; // Permet le déplacement libre
-                audioPlayer.style.top = `${e.clientY - offsetY}px`;
+            if (e.type === 'touchstart') {
+                offsetX = e.touches[0].clientX - audioPlayer.getBoundingClientRect().left;
+                offsetY = e.touches[0].clientY - audioPlayer.getBoundingClientRect().top;
+            } else {
+                offsetX = e.clientX - audioPlayer.getBoundingClientRect().left;
+                offsetY = e.clientY - audioPlayer.getBoundingClientRect().top;
             }
-        });
-        document.addEventListener('mouseup', () => {
+            audioPlayer.style.cursor = 'grabbing';
+            e.preventDefault(); // Prevent scrolling on touch
+        };
+
+        // Function to drag
+        const drag = (e) => {
+            if (isDragging) {
+                let clientX, clientY;
+                if (e.type === 'touchmove') {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                audioPlayer.style.left = `${clientX - offsetX}px`;
+                audioPlayer.style.bottom = 'auto'; // Permet le déplacement libre
+                audioPlayer.style.top = `${clientY - offsetY}px`;
+                e.preventDefault(); // Prevent scrolling on touch
+            }
+        };
+
+        // Function to end drag
+        const endDrag = () => {
             isDragging = false;
             audioPlayer.style.cursor = 'move';
-        });
+        };
+
+        // Mouse events
+        audioPlayer.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', endDrag);
+
+        // Touch events
+        audioPlayer.addEventListener('touchstart', startDrag, { passive: false });
+        document.addEventListener('touchmove', drag, { passive: false });
+        document.addEventListener('touchend', endDrag);
     }
     // Progress Evolution Tabs
     const tabButtons = document.querySelectorAll('.tab-button');
