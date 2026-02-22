@@ -116,7 +116,11 @@ exports.handler = async (event) => {
       orderData = {
         orderId: orderId,
         shipping: customData.shipping,
-        cart: customData.cart,
+        cart: purchaseUnit.items.map(i => ({
+          title: i.name,
+          quantity: i.quantity,
+          price: parseFloat(i.unit_amount.value)
+        })),
         total: parseFloat(purchaseUnit.amount.value),
         paymentMethod: "PayPal",
       };

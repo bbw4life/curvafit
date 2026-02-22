@@ -76,6 +76,10 @@ exports.handler = async (event) => {
       quantity: 1
     });
 
+    /* ================= MINIMAL CART FOR METADATA ================= */
+
+    const minimalCart = cart.map(({id, title, price, quantity}) => ({id, title, price, quantity}));
+
     /* ================= CREATE SESSION ================= */
 
     const session = await stripe.checkout.sessions.create({
@@ -90,7 +94,7 @@ exports.handler = async (event) => {
 
       metadata: {
         shipping: JSON.stringify(shipping),
-        cart: JSON.stringify(cart)
+        cart: JSON.stringify(minimalCart)
       }
     });
 

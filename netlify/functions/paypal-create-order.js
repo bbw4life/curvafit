@@ -67,11 +67,8 @@ exports.handler = async (event) => {
           }
         },
 
-        // 🔥 IMPORTANT POUR verify-payment.js
-        custom_id: JSON.stringify({
-          shipping,
-          cart
-        }),
+        // 🔥 IMPORTANT POUR verify-payment.js - only shipping
+        custom_id: JSON.stringify({shipping}),
 
         items: cart.map(item => ({
           name: item.title,
