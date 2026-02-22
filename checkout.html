@@ -4,55 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Checkout - CurvaFit</title>
-
     <!-- SEO -->
     <meta name="description" content="Secure checkout for CurvaFit products">
     <meta name="robots" content="noindex, nofollow">
-
-    <!-- Security Policy (UPDATED FOR PAYPAL) -->
+    <!-- Security Policy -->
     <meta http-equiv="Content-Security-Policy"
     content="default-src 'self' https:;
-             script-src 'self' https://js.stripe.com https://www.paypal.com https://www.paypalobjects.com;
+             script-src 'self' https://js.stripe.com;
              style-src 'self' 'unsafe-inline' https:;
              img-src 'self' https: data:;
              connect-src 'self' https:;
-             frame-src https://js.stripe.com https://hooks.stripe.com https://www.paypal.com;">
-
+             frame-src https://js.stripe.com https://hooks.stripe.com;">
     <!-- Favicon -->
-    <link rel="icon" href="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/favicon.jpg?v=1771465266" type="image/x-icon">
-
-    <!-- Google Fonts -->
+    <link rel="icon" href="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/favicon.ico?v=1771465065" type="image/x-icon">
+    <!-- Google Fonts for Premium Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Styles -->
     <link rel="stylesheet" href="checkout.css">
 </head>
-
 <body>
-
 <header class="checkout-header">
     <div class="header-content">
+        <!-- Payment Icons -->
         <div class="payment-icons">
             <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Visa.png?v=1771670819" alt="Visa">
             <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/mastercard.png?v=1771670819" alt="Mastercard">
             <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/stripe.webp?v=1771670819" alt="Stripe">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/320px-PayPal.svg.png" alt="PayPal">
+            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Apple_Pay_3ff29ddb-d1e6-4391-97c1-e6ce3c11e29d.png?v=1771724676" alt="Apple pay">
+            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/pay_google.png?v=1771724676" alt="Google pay">
         </div>
-
+        <!-- Logo Center -->
         <div class="logo">
             <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo">
             <h1>Secure Checkout</h1>
         </div>
     </div>
 </header>
-
 <main class="checkout-main">
-
+    <!-- ORDER SUMMARY -->
     <section class="order-summary">
         <h2>Order Summary</h2>
         <div class="cart-items"></div>
@@ -63,73 +57,108 @@
             <p class="total">Total: <span id="total">$0.00</span></p>
         </div>
     </section>
-
+    <!-- SHIPPING INFORMATION -->
     <section class="shipping-info">
         <h2>Shipping Information</h2>
         <form id="shipping-form" autocomplete="on">
             <label for="full-name">Full Name</label>
             <input type="text" id="full-name" required>
-
             <label for="email">Email Address</label>
             <input type="email" id="email" required>
-
             <label for="phone">Phone Number</label>
             <input type="tel" id="phone" required>
-
             <label for="country">Country</label>
             <input type="text" id="country" required>
-
             <label for="city">City</label>
             <input type="text" id="city" required>
-
             <label for="state">State / Department</label>
             <input type="text" id="state" required>
-
             <label for="postal-code">Postal Code</label>
             <input type="text" id="postal-code" required>
-
             <label for="address">Full Address</label>
             <textarea id="address" required></textarea>
         </form>
     </section>
-
+    <!-- TRUST SECTION -->
+    <section class="trust-section">
+        <h2>Why Shop With Us?</h2>
+        <div class="trust-items">
+            <div class="trust-item">
+                <i class="fas fa-shipping-fast"></i>
+                <p>Fast Delivery (5–10 Days)</p>
+            </div>
+            <div class="trust-item">
+                <i class="fas fa-undo-alt"></i>
+                <p>30-Day Return Guarantee</p>
+            </div>
+            <div class="trust-item">
+                <i class="fas fa-check-circle"></i>
+                <p>Premium Quality Guarantee</p>
+            </div>
+            <div class="trust-item">
+                <a href="https://wa.me/18292677434?text=Hi%20CurvaFit%20team%2C%20I'm%20excited%20about%20my%20order%20in%20the%20checkout%20page!%20Could%20you%20please%20provide%20more%20details%20on%20delivery%20options%20and%20estimated%20times?" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-whatsapp"></i>
+                    <p>Direct WhatsApp Support</p>
+                </a>
+            </div>
+        </div>
+    </section>
+    <!-- PAYMENT METHOD -->
     <section class="payment-method">
         <h2>Payment Method</h2>
-
         <div class="payment-options">
             <label class="payment-label">
                 <input type="radio" name="payment" value="stripe" checked>
                 <span>Pay with Credit Card (Stripe)</span>
             </label>
-
             <label class="payment-label">
                 <input type="radio" name="payment" value="paypal">
                 <span>Pay with PayPal</span>
             </label>
         </div>
-
-        <!-- PayPal Button Container -->
-        <div id="paypal-button-container" style="margin-top:20px;"></div>
-
         <button type="button" id="pay-button" class="cta">
             Pay Now
         </button>
     </section>
-
 </main>
-
-git add .
-git commit -m "Description de la mise à jour"
-git push
-
-<!-- STRIPE -->
+<!-- Checkout Policies -->
+<div class="checkout-policies">
+    <p>
+        By completing your purchase, you agree to our
+        <a href="#" id="refund-policy-link">Refund Policy</a> and
+        <a href="#" id="shipping-policy-link">Shipping Policy</a>.
+    </p>
+</div>
+<!-- Modals for Policies -->
+<div id="refund-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Refund Policy</h2>
+        <p>We believe that <strong>peace of mind</strong> starts the moment you place your <strong>order</strong>. That's why we offer <strong>simple and flexible</strong> shipping options to suit your needs.</p>
+        <p>We offer <strong>free shipping</strong> on all orders, no matter the size or amount. However, because we prioritize <strong>cost-efficiency</strong> and <strong>sustainability</strong>, standard delivery may take a little longer — usually between <strong>7 to 12 business days</strong>. We invite you to take this delivery window as part of the <strong>slow and peaceful journey</strong> your product begins.</p>
+        <p>Need it faster? We've got you covered. You can choose from our <strong>express shipping options</strong> such as <strong>DHL</strong>, <strong>FedEx</strong>, or other <strong>premium carriers</strong> at checkout. Shipping costs for these methods are calculated based on your <strong>location</strong> and the provider selected.</p>
+        <p>Yes, we ship <strong>worldwide</strong>. Delivery times and shipping options may vary depending on your <strong>country</strong> and <strong>postal regulations</strong>.</p>
+        <p>If you have any questions or specific delivery requests, we're here to help. <strong>Email</strong>: paulfrance13@gmail.com. <strong>Phone</strong>: +1 809 377 0077.</p>
+    </div>
+</div>
+<div id="shipping-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Shipping Policy</h2>
+        <p>We believe that <strong>peace of mind</strong> starts the moment you place your <strong>order</strong>. That's why we offer <strong>simple and flexible</strong> shipping options to suit your needs.</p>
+        <p>We offer <strong>free shipping</strong> on all orders, no matter the size or amount. However, because we prioritize <strong>cost-efficiency</strong> and <strong>sustainability</strong>, standard delivery may take a little longer — usually between <strong>7 to 12 business days</strong>. We invite you to take this delivery window as part of the <strong>slow and peaceful journey</strong> your product begins.</p>
+        <p>Need it faster? We've got you covered. You can choose from our <strong>express shipping options</strong> such as <strong>DHL</strong>, <strong>FedEx</strong>, or other <strong>premium carriers</strong> at checkout. Shipping costs for these methods are calculated based on your <strong>location</strong> and the provider selected.</p>
+        <p>Yes, we ship <strong>worldwide</strong>. Delivery times and shipping options may vary depending on your <strong>country</strong> and <strong>postal regulations</strong>.</p>
+        <p>If you have any questions or specific delivery requests, we're here to help. <strong>Email</strong>: paulfrance13@gmail.com. <strong>Phone</strong>: +1 809 377 0077.</p>
+    </div>
+</div>
+<!-- Stripe Public Key -->
+<script>
+    window.STRIPE_PUBLIC_KEY = "pk_live_REPLACE_WITH_YOUR_PUBLIC_KEY";
+</script>
+<!-- Stripe -->
 <script src="https://js.stripe.com/v3/"></script>
-
-<!-- PAYPAL -->
-<script src="https://www.paypal.com/sdk/js?client-id=AboVnxXQEHf94ouV2NriobFBcaBHV9UVbMBcnEq1J-L_6zVxrAmZdaMZ03ZLquNLJ3sXWXarbwgkXttp&currency=USD"></script>
-
-<!-- YOUR JS -->
+<!-- JS -->
 <script src="checkout.js"></script>
-
 </body>
 </html>

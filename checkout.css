@@ -2,7 +2,7 @@
 /* General Styles */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #ffd0ef;
+    background-color: #f8dee7;
     margin: 0;
     padding: 0;
     color: #333;
@@ -14,7 +14,7 @@ body {
 
 /* Checkout Header */
 .checkout-header {
-    background-color: #faa6c2; /* Nicer than simple white, soft pink tint for premium feel */
+    background-color: #fc90b1; /* Nicer than simple white, soft pink tint for premium feel */
     padding: 0.5rem 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     text-align: center;
@@ -70,7 +70,7 @@ body {
     margin: 0;
     font-size: 1.5rem;
     font-weight: 700;
-    color: #1a1a1a;
+    color: #e7e7e7;
 }
 
 /* Main Content */
@@ -98,8 +98,8 @@ body {
 
 /* Section Common Styles */
 .order-summary, .shipping-info, .trust-section, .payment-method {
-    background: #f5dbdb;
-    padding: 1.5rem;
+    background: #ffecec;
+    padding: 1rem;
     border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
     transition: box-shadow 0.3s ease;
@@ -156,7 +156,7 @@ h2 {
 .total {
     font-weight: 600;
     font-size: 1.1rem;
-    border-top: 1px solid #eb0c87;
+    border-top: 1px solid #fa8c8c;
     padding-top: 0.75rem;
 }
 
@@ -176,17 +176,16 @@ h2 {
 
 #shipping-form input, #shipping-form textarea {
     padding: 0.875rem;
-    border: 1px solid #1a1616;
+    border: 1px solid #ddd;
     border-radius: 8px;
     width: 100%;
-    background: #ffd2e3;;
     box-sizing: border-box;
     font-size: 0.95rem;
     transition: border-color 0.3s ease;
 }
 
 #shipping-form input:focus, #shipping-form textarea:focus {
-    border-color: #e91e63;
+    border-color: #f8c5d6;
     outline: none;
 }
 
@@ -344,9 +343,9 @@ h2 {
 }
 
 .modal-content {
-    background-color: #ffffff;
+    background-color: #ffe8e8;
     margin: auto;
-    padding: 1.5rem;
+    padding: 0.5rem;
     border-radius: 12px;
     max-width: 400px;
     width: 90%;
@@ -373,7 +372,7 @@ h2 {
     position: absolute;
     top: 1rem;
     right: 1.5rem;
-    color: #aaa;
+    color: #000000;
     font-size: 1.5rem;
     font-weight: bold;
     cursor: pointer;
@@ -382,7 +381,7 @@ h2 {
 
 .close:hover,
 .close:focus {
-    color: #333;
+    color: #dd1773;
 }
 
 .modal h2 {
@@ -437,7 +436,6 @@ h2 {
     }
 
     .modal-content {
-        padding: 1.25rem;
         max-width: calc(100% - 8rem); /* Reduced width on mobile */
         width: calc(100% - 8rem);
         margin: 0 auto;
@@ -461,6 +459,21 @@ h2 {
     .modal-content {
         max-width: calc(100% - 4rem); /* Further reduced width for smaller screens */
         width: calc(100% - 4rem);
-        max-height: 420px; /* Further reduced height for smaller screens */
+        max-height: 430px; /* Further reduced height for smaller screens */
+    }
+}
+
+@media (max-width: 380px) {
+    .payment-icons {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        scrollbar-width: none; /* Hide scrollbar in Firefox */
+        -ms-overflow-style: none; /* Hide scrollbar in IE/Edge */
+    }
+
+    .payment-icons::-webkit-scrollbar {
+        display: none; /* Hide scrollbar in Chrome/Safari */
     }
 }
