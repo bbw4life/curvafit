@@ -17,6 +17,43 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.5.1/uicons-solid-rounded/css/uicons-solid-rounded.css">
 </head>
 <body>
+ <section class="paul-announcement-bar">
+
+    <div class="paul-announcement-wrapper">
+
+        <div class="paul-announcement-slider" id="paulAnnouncementSlider">
+
+            <div class="paul-announcement-item active">
+                Free Shipping Worldwide 🌍
+            </div>
+
+            <div class="paul-announcement-item">
+                Premium Quality Guaranteed ✨
+            </div>
+
+            <div class="paul-announcement-item">
+                Secure Checkout 🔒
+            </div>
+
+            <div class="paul-announcement-item">
+                24/7 Customer Support 💬
+            </div>
+
+            <!-- PROMO CODE -->
+            <div class="paul-announcement-item promo">
+                Get 20% with code:
+                <span class="paul-promo-code" id="paulPromoCode">
+                    paul26
+                    <span class="copy-icon" id="copyIcon">📋</span>
+                </span>
+                <span class="copied-message" id="copiedMessage">Copied!</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
 
     <header class="sticky-header">
         <div class="header-container">
@@ -117,53 +154,49 @@
             </div>
         </section>
 
-
-
         <div class="paul-banner-slider" id="paul-banner" style="padding-top: 0px; padding-bottom: 20px;">
-  <!-- MODE VIDÉO -->
-  <div class="paul-banner-video-wrapper" style="display: none;">
-    <video class="paul-banner-video"
-           autoplay
-           muted
-           loop
-           playsinline>
-    </video>
-    <button class="paul-video-sound-toggle muted" aria-label="Activer le son">
-      <svg class="sound-on" viewBox="0 0 24 24" fill="white">
-        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-      </svg>
-      <svg class="sound-off" viewBox="0 0 24 24" fill="white">
-        <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
-      </svg>
-    </button>
-  </div>
-  <!-- CONTAINER DES SLIDES (texte pour vidéo, images + texte pour slider) -->
-  <div class="paul-banner-slider-container">
-    <!-- Slide 1 -->
-    <div class="paul-banner-slide active">
-      <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb4.jpg?v=1768321817" alt="You are BEAUTIFUL just as you are!" class="paul-banner-image" loading="lazy">
-      <h1 class="paul-banner-title">You are BEAUTIFUL just as you are!</h1>
-    </div>
-    <!-- Slide 2 -->
-    <div class="paul-banner-slide">
-      <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb_3.jpg?v=1768321816" alt="Your confidence is your superpower." class="paul-banner-image" loading="lazy">
-      <h1 class="paul-banner-title">Your confidence is your superpower.</h1>
-    </div>
-    <!-- Slide 3 -->
-    <div class="paul-banner-slide">
-      <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb_1.jpg?v=1768321816" alt="BBW = Bold, Beautiful, Worthy!" class="paul-banner-image" loading="lazy">
-      <h1 class="paul-banner-title">BBW = Bold, Beautiful, Worthy!</h1>
-    </div>
-  </div>
-  <!-- INDICATEURS -->
-  <div class="paul-banner-indicators dots">
-    <span class="paul-banner-indicator active" data-slide="0"></span>
-    <span class="paul-banner-indicator" data-slide="1"></span>
-    <span class="paul-banner-indicator" data-slide="2"></span>
-  </div>
-</div>
-
-
+        <!-- MODE VIDÉO -->
+        <div class="paul-banner-video-wrapper" style="display: none;">
+            <video class="paul-banner-video"
+                autoplay
+                muted
+                loop
+                playsinline>
+            </video>
+            <button class="paul-video-sound-toggle muted" aria-label="Activer le son">
+            <svg class="sound-on" viewBox="0 0 24 24" fill="white">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+            <svg class="sound-off" viewBox="0 0 24 24" fill="white">
+                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+            </svg>
+            </button>
+        </div>
+        <!-- CONTAINER DES SLIDES (texte pour vidéo, images + texte pour slider) -->
+        <div class="paul-banner-slider-container">
+            <!-- Slide 1 -->
+            <div class="paul-banner-slide active">
+            <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb4.jpg?v=1768321817" alt="You are BEAUTIFUL just as you are!" class="paul-banner-image" loading="lazy">
+            <h1 class="paul-banner-title">You are BEAUTIFUL just as you are!</h1>
+            </div>
+            <!-- Slide 2 -->
+            <div class="paul-banner-slide">
+            <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb_3.jpg?v=1768321816" alt="Your confidence is your superpower." class="paul-banner-image" loading="lazy">
+            <h1 class="paul-banner-title">Your confidence is your superpower.</h1>
+            </div>
+            <!-- Slide 3 -->
+            <div class="paul-banner-slide">
+            <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb_1.jpg?v=1768321816" alt="BBW = Bold, Beautiful, Worthy!" class="paul-banner-image" loading="lazy">
+            <h1 class="paul-banner-title">BBW = Bold, Beautiful, Worthy!</h1>
+            </div>
+        </div>
+        <!-- INDICATEURS -->
+        <div class="paul-banner-indicators dots">
+            <span class="paul-banner-indicator active" data-slide="0"></span>
+            <span class="paul-banner-indicator" data-slide="1"></span>
+            <span class="paul-banner-indicator" data-slide="2"></span>
+        </div>
+        </div>
 
         <section id="designed-for-curves" class="designed-for-curves-section" data-scroll-reveal>
             <div class="container">
@@ -306,6 +339,50 @@
         </section>
 
 
+        <div class="francenel-milliadaire-banner-slider" id="francenel-milliadaire-banner" style="padding-top: 0px; padding-bottom: 20px;">
+        <!-- MODE VIDÉO -->
+        <div class="francenel-milliadaire-banner-video-wrapper" style="display: none;">
+            <video class="francenel-milliadaire-banner-video"
+                autoplay
+                muted
+                loop
+                playsinline>
+            </video>
+            <button class="francenel-milliadaire-video-sound-toggle muted" aria-label="Activer le son">
+            <svg class="sound-on" viewBox="0 0 24 24" fill="white">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+            <svg class="sound-off" viewBox="0 0 24 24" fill="white">
+                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+            </svg>
+            </button>
+        </div>
+        <!-- CONTAINER DES SLIDES (texte pour vidéo, images + texte pour slider) -->
+        <div class="francenel-milliadaire-banner-slider-container">
+            <!-- Slide 1 -->
+            <div class="francenel-milliadaire-banner-slide active">
+            <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb4.jpg?v=1768321817" alt="You are BEAUTIFUL just as you are!" class="francenel-milliadaire-banner-image" loading="lazy">
+            <h1 class="francenel-milliadaire-banner-title">You are BEAUTIFUL just as you are!</h1>
+            </div>
+            <!-- Slide 2 -->
+            <div class="francenel-milliadaire-banner-slide">
+            <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb_3.jpg?v=1768321816" alt="Your confidence is your superpower." class="francenel-milliadaire-banner-image" loading="lazy">
+            <h1 class="francenel-milliadaire-banner-title">Your confidence is your superpower.</h1>
+            </div>
+            <!-- Slide 3 -->
+            <div class="francenel-milliadaire-banner-slide">
+            <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb_1.jpg?v=1768321816" alt="BBW = Bold, Beautiful, Worthy!" class="francenel-milliadaire-banner-image" loading="lazy">
+            <h1 class="francenel-milliadaire-banner-title">BBW = Bold, Beautiful, Worthy!</h1>
+            </div>
+        </div>
+        <!-- INDICATEURS -->
+        <div class="francenel-milliadaire-banner-indicators dots">
+            <span class="francenel-milliadaire-banner-indicator active" data-slide="0"></span>
+            <span class="francenel-milliadaire-banner-indicator" data-slide="1"></span>
+            <span class="francenel-milliadaire-banner-indicator" data-slide="2"></span>
+        </div>
+        </div>
+
         <section id="comparison" class="comparison-section" data-scroll-reveal>
             <div class="container">
                 <h2>Supportive Activewear & BBW Workout Equipment Comparison</h2>
@@ -426,42 +503,51 @@
         </section>
 
         <section id="faq" class="faq-section" data-scroll-reveal>
-            <div class="container">
-                <h2>Frequently Asked Questions</h2>
-                <div class="accordion">
-                    <div class="accordion-item">
-                        <button class="accordion-header">Are these products size-inclusive?</button>
-                        <div class="accordion-content">
-                            <p>Absolutely—our apparel and gear confidently cover extended sizes, ensuring a perfect fit for curvy women without compromise.</p>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">What is the shipping time?</button>
-                        <div class="accordion-content">
-                            <p>We ship reliably within 2-3 business days, with delivery arriving in 5-10 days based on your location—trackable every step.</p>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">Do you offer returns?</button>
-                        <div class="accordion-content">
-                            <p>Yes, we confidently provide 30-day returns on unused items—our refund policy is straightforward and customer-first.</p>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">Are products machine washable?</button>
-                        <div class="accordion-content">
-                            <p>Most are fully machine washable with proven durability—always check specific care instructions for optimal longevity.</p>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">Do you ship internationally?</button>
-                        <div class="accordion-content">
-                            <p>Yes, we ship securely to over 50 countries, with transparent shipping costs calculated at checkout for your convenience.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+
+            <details>
+                <summary>Are these products size-inclusive?</summary>
+                <p>Absolutely—our apparel and gear confidently cover extended sizes, ensuring a perfect fit for curvy women without compromise.</p>
+            </details>
+
+            <details>
+                <summary>What is the shipping time?</summary>
+                <p>We ship reliably within 2–3 business days, with delivery arriving in 5–10 days based on your location—trackable every step.</p>
+            </details>
+
+            <details>
+                <summary>Do you offer returns?</summary>
+                <p>Yes, we confidently provide 30-day returns on unused items—our refund policy is straightforward and customer-first.</p>
+            </details>
+
+            <details>
+                <summary>Are products machine washable?</summary>
+                <p>Most are fully machine washable with proven durability—always check specific care instructions for optimal longevity.</p>
+            </details>
+
+            <details>
+                <summary>Do you ship internationally?</summary>
+                <p>Yes, we ship securely to over 50 countries, with transparent shipping costs calculated at checkout for your convenience.</p>
+            </details>
+
+            <details>
+                <summary>How do I choose the right size?</summary>
+                <p>We provide a detailed size guide on every product page to help you choose confidently. If you're between sizes, we recommend sizing up for comfort. Our support team is always happy to assist you before ordering.</p>
+            </details>
+
+            <details>
+                <summary>Are your products suitable for beginners?</summary>
+                <p>Yes, absolutely. Our products are designed for all fitness levels—from beginners starting their journey to experienced women looking for extra support and comfort during workouts.</p>
+            </details>
+
+            <details>
+                <summary>How can I track my order?</summary>
+                <p>Once your order ships, you’ll receive a tracking number via email. You can monitor your delivery in real time and stay updated every step of the way.</p>
+            </details>
+
+        </div>
+    </section>
 
         <section id="final-cta" class="final-cta-section" data-scroll-reveal>
             <div class="container">
