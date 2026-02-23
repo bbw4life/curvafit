@@ -90,36 +90,44 @@ exports.handler = async (event) => {
 
     if (paymentMethod === "paypal" && orderId) {
 
-      // Capture the order
-      const request = new paypal.orders.OrdersCaptureRequest(orderId);
-      request.requestBody({});
+  const request = new paypal.orders.OrdersCaptureRequest(orderId);
+  request.requestBody({});
 
-      const capture = await paypalClient.execute(request);
+  const capture = await paypalClient.execute(request);
 
-      if (!capture || capture.result.status !== "COMPLETED") {
-        return { statusCode: 400, body: JSON.stringify({ success: false }) };
-      }
+  if (!capture || !capture.result) {
+    return { statusCode: 400, body: JSON.stringify({ success: false }) };
+  }
 
-      const purchaseUnit = capture.result.purchase_units[0];
+  const purchaseUnit = capture.result.purchase_units[0];
 
-      if (!purchaseUnit.custom_id) {
-        return { statusCode: 400, body: JSON.stringify({ success: false }) };
-      }
+  const paymentStatus =
+    purchaseUnit.payments &&
+    purchaseUnit.payments.captures &&
+    purchaseUnit.payments.captures[0].status;
 
-      const customData = JSON.parse(purchaseUnit.custom_id);
+  if (paymentStatus !== "COMPLETED") {
+    return { statusCode: 400, body: JSON.stringify({ success: false }) };
+  }
 
-      orderData = {
-        orderId: orderId,
-        shipping: customData.shipping,
-        cart: purchaseUnit.items.map(i => ({
-          title: i.name,
-          quantity: i.quantity,
-          price: parseFloat(i.unit_amount.value)
-        })),
-        total: parseFloat(purchaseUnit.amount.value),
-        paymentMethod: "PayPal",
-      };
-    }
+  if (!purchaseUnit.custom_id) {
+    return { statusCode: 400, body: JSON.stringify({ success: false }) };
+  }
+
+  const customData = JSON.parse(purchaseUnit.custom_id);
+
+  orderData = {
+    orderId: orderId,
+    shipping: customData.shipping,
+    cart: purchaseUnit.items.map(i => ({
+      title: i.name,
+      quantity: i.quantity,
+      price: parseFloat(i.unit_amount.value)
+    })),
+    total: parseFloat(purchaseUnit.amount.value),
+    paymentMethod: "PayPal",
+  };
+}
 
     /* ================= FINAL CHECK ================= */
 
