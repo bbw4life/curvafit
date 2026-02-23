@@ -73,10 +73,6 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: JSON.stringify({ success: false }) };
       }
 
-      if (!session.metadata || !session.metadata.shipping || !session.metadata.cart) {
-        return { statusCode: 400, body: JSON.stringify({ success: false }) };
-      }
-
       orderData = {
         orderId: session.id,
         shipping: JSON.parse(session.metadata.shipping),
@@ -88,35 +84,49 @@ exports.handler = async (event) => {
 
     /* ================= PAYPAL ================= */
 
-   if (paymentMethod === "paypal" && orderId) {
+    if (paymentMethod === "paypal" && orderId) {
 
-  const request = new paypal.orders.OrdersGetRequest(orderId);
-  const order = await paypalClient.execute(request);
+      console.log("Verifying PayPal Order:", orderId);
 
-  if (!order || order.result.status !== "COMPLETED") {
-    return { statusCode: 400, body: JSON.stringify({ success: false }) };
-  }
+      const request = new paypal.orders.OrdersGetRequest(orderId);
+      const response = await paypalClient.execute(request);
 
-  const purchaseUnit = order.result.purchase_units[0];
+      if (!response || !response.result) {
+        console.log("No PayPal response");
+        return { statusCode: 400, body: JSON.stringify({ success: false }) };
+      }
 
-  if (!purchaseUnit.custom_id) {
-    return { statusCode: 400, body: JSON.stringify({ success: false }) };
-  }
+      console.log("PayPal status:", response.result.status);
 
-  const customData = JSON.parse(purchaseUnit.custom_id);
+      // Accept both COMPLETED and APPROVED
+      if (
+        response.result.status !== "COMPLETED" &&
+        response.result.status !== "APPROVED"
+      ) {
+        return { statusCode: 400, body: JSON.stringify({ success: false }) };
+      }
 
-  orderData = {
-    orderId: orderId,
-    shipping: customData.shipping,
-    cart: purchaseUnit.items.map(i => ({
-      title: i.name,
-      quantity: i.quantity,
-      price: parseFloat(i.unit_amount.value)
-    })),
-    total: parseFloat(purchaseUnit.amount.value),
-    paymentMethod: "PayPal",
-  };
-}
+      const purchaseUnit = response.result.purchase_units[0];
+
+      if (!purchaseUnit.custom_id) {
+        console.log("Missing custom_id");
+        return { statusCode: 400, body: JSON.stringify({ success: false }) };
+      }
+
+      const customData = JSON.parse(purchaseUnit.custom_id);
+
+      orderData = {
+        orderId: orderId,
+        shipping: customData.shipping,
+        cart: purchaseUnit.items.map(i => ({
+          title: i.name,
+          quantity: i.quantity,
+          price: parseFloat(i.unit_amount.value)
+        })),
+        total: parseFloat(purchaseUnit.amount.value),
+        paymentMethod: "PayPal",
+      };
+    }
 
     /* ================= FINAL CHECK ================= */
 
@@ -137,7 +147,7 @@ exports.handler = async (event) => {
     };
 
   } catch (error) {
-    console.error("Verify Error:", error);
+    console.error("Verify Error FULL:", error.response?.data || error);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: error.message }),
