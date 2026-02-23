@@ -4,16 +4,10 @@ const { google } = require('googleapis');
 
 /* ================= PAYPAL ================= */
 
-const paypalEnvironment =
-  process.env.NODE_ENV === "production"
-    ? new paypal.core.LiveEnvironment(
-        process.env.PAYPAL_CLIENT_ID,
-        process.env.PAYPAL_CLIENT_SECRET
-      )
-    : new paypal.core.SandboxEnvironment(
-        process.env.PAYPAL_CLIENT_ID,
-        process.env.PAYPAL_CLIENT_SECRET
-      );
+const paypalEnvironment = new paypal.core.SandboxEnvironment(
+  process.env.PAYPAL_CLIENT_ID,
+  process.env.PAYPAL_CLIENT_SECRET
+);
 
 const paypalClient = new paypal.core.PayPalHttpClient(paypalEnvironment);
 
