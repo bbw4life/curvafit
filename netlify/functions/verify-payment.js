@@ -29,7 +29,7 @@ async function appendToGoogleSheets(data) {
 
   await sheets.spreadsheets.values.append({
     spreadsheetId: GOOGLE_SHEET_ID,
-    range: "Sheet1!A:L",
+    range: "Sheet1!A1",
     valueInputOption: "RAW",
     resource: {
       values: [[
