@@ -135,7 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(data.error || 'PayPal order failed');
                 localStorage.setItem("pendingOrder", "paypal");
                 window.location.href =
-                    `https://www.paypal.com/checkoutnow?token=${data.orderId}`;
+               `https://www.sandbox.paypal.com/checkoutnow?token=${data.orderId}`;
+    
             }
         } catch (error) {
             alert("Payment error: " + error.message);
