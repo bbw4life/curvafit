@@ -96,16 +96,14 @@ exports.handler = async (event) => {
 
     if (paymentMethod === "paypal" && orderId) {
 
-      const request = new paypal.orders.OrdersCaptureRequest(orderId);
-      request.requestBody({});
+      const request = new paypal.orders.OrdersGetRequest(orderId);
+      const order = await paypalClient.execute(request);
 
-      const capture = await paypalClient.execute(request);
-
-      if (!capture || capture.result.status !== "COMPLETED") {
+      if (!order || order.result.status !== "COMPLETED") {
         return { statusCode: 400, body: JSON.stringify({ success: false }) };
       }
 
-      const purchaseUnit = capture.result.purchase_units[0];
+      const purchaseUnit = order.result.purchase_units[0];
 
       if (!purchaseUnit.custom_id) {
         return { statusCode: 400, body: JSON.stringify({ success: false }) };
