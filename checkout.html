@@ -39,7 +39,7 @@
             <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/pay_google.png?v=1771724676" alt="Google pay">
         </div>
         <!-- Logo Center -->
-        <div class="logo">  paul achet le produit pour lui
+        <div class="logo">
             <a href="index.html"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo"></a>
             <h1>Secure Checkout</h1>
         </div>
@@ -66,13 +66,19 @@
             <label for="email">Email Address</label>
             <input type="email" id="email" required>
             <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" required>
+            <div class="phone-wrapper">
+                <select id="phone-code" required></select>
+                <input type="tel" id="phone-number" required>
+            </div>
             <label for="country">Country</label>
-            <input type="text" id="country" required>
-            <label for="city">City</label>
-            <input type="text" id="city" required>
+            <div class="select-wrapper">
+                <input type="text" id="country-search" placeholder="Search country...">
+                <select id="country" required></select>
+            </div>
             <label for="state">State / Department</label>
-            <input type="text" id="state" required>
+            <select id="state" required></select>
+            <label for="city">City</label>
+            <select id="city" required></select>
             <label for="postal-code">Postal Code</label>
             <input type="text" id="postal-code" required>
             <label for="address">Full Address</label>

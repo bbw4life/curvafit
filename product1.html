@@ -19,28 +19,12 @@
 </head>
 <body>
 <section class="paul-announcement-bar">
-
     <div class="paul-announcement-wrapper">
-
         <div class="paul-announcement-slider" id="paulAnnouncementSlider">
-
-            <div class="paul-announcement-item active">
-                Free Shipping Worldwide 🌍
-            </div>
-
-            <div class="paul-announcement-item">
-                Premium Quality Guaranteed ✨
-            </div>
-
-            <div class="paul-announcement-item">
-                Secure Checkout 🔒
-            </div>
-
-            <div class="paul-announcement-item">
-                24/7 Customer Support 💬
-            </div>
-
-            <!-- PROMO CODE -->
+            <div class="paul-announcement-item active">Free Shipping Worldwide 🌍</div>
+            <div class="paul-announcement-item">Premium Quality Guaranteed ✨</div>
+            <div class="paul-announcement-item">Secure Checkout 🔒</div>
+            <div class="paul-announcement-item">24/7 Customer Support 💬</div>
             <div class="paul-announcement-item promo">
                 Get 20% with code:
                 <span class="paul-promo-code" id="paulPromoCode">
@@ -49,324 +33,194 @@
                 </span>
                 <span class="copied-message" id="copiedMessage">Copied!</span>
             </div>
-
         </div>
-
     </div>
-
 </section>
-
-    <header class="sticky-header">
-        <div class="header-container">
-            <div class="search-icon">
-                <i class="fi fi-rr-search"></i>
+<header class="sticky-header">
+    <div class="header-container">
+        <div class="search-icon"><i class="fi fi-rr-search"></i></div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search programs, nutrition, shop..." list="search-suggestions">
+            <datalist id="search-suggestions">
+                <option value="Programs">
+                <option value="Nutrition">
+                <option value="Shop">
+                <option value="Community">
+                <option value="Blog">
+                <option value="Success Stories">
+            </datalist>
+            <i class="fi fi-rr-search submit-search"></i>
+        </div>
+        <div class="header-icons">
+            <div class="icon-wrapper"><i class="fas fa-heart wishlist-icon"></i><span class="badge wishlist-badge">0</span></div>
+            <div class="icon-wrapper"><i class="fas fa-shopping-cart cart-icon"></i><span class="badge cart-badge">0</span></div>
+        </div>
+        <div class="logo">
+            <a href="index.html"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo"></a>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html"><i class="fi fi-rr-home"></i> Home</a></li>
+                <li><a href="method.html"><i class="fi fi-rr-process"></i> Method</a></li>
+                <li><a href="programs.html"><i class="fi fi-rr-dumbbell"></i> Programs</a></li>
+                <li><a href="nutrition.html"><i class="fi fi-rr-apple-whole"></i> Nutrition</a></li>
+                <li><a href="shop.html" class="active"><i class="fi fi-rr-shopping-cart"></i> Shop</a></li>
+                <li><a href="success.html"><i class="fi fi-rr-trophy"></i> Success</a></li>
+                <li><a href="community.html"><i class="fi fi-rr-users"></i> Community</a></li>
+                <li><a href="blog.html"><i class="fi fi-rr-edit"></i> Blog</a></li>
+                <li><a href="about.html"><i class="fi fi-rr-info"></i> About</a></li>
+                <li><a href="contact.html"><i class="fi fi-rr-envelope"></i> Contact</a></li>
+            </ul>
+        </nav>
+        <div class="hamburger-menu"><i class="fi fi-rr-menu-burger"></i></div>
+    </div>
+</header>
+<main>
+    <!-- ==================== PRODUIT PRINCIPAL ==================== -->
+    <section class="product-section" data-product-id="resistance-bands">
+        <div class="container product-layout">
+            <div class="product-media">
+            <div class="thumbnails" id="product-thumbnails">
             </div>
-            <div class="search-bar">
-                <input type="text" placeholder="Search programs, nutrition, shop..." list="search-suggestions">
-                <datalist id="search-suggestions">
-                    <option value="Programs">
-                    <option value="Nutrition">
-                    <option value="Shop">
-                    <option value="Community">
-                    <option value="Blog">
-                    <option value="Success Stories">
-                </datalist>
-                <i class="fi fi-rr-search submit-search"></i>
-            </div>
-            <div class="header-icons">
-                <div class="icon-wrapper">
-                    <i class="fas fa-heart wishlist-icon"></i>
-                    <span class="badge wishlist-badge">0</span>
-                </div>
-                <div class="icon-wrapper">
-                    <i class="fas fa-shopping-cart cart-icon"></i>
-                    <span class="badge cart-badge">0</span>
-                </div>
-            </div>
-            <div class="logo">
-                <a href="index.html"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo"></a>
-            </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="index.html"><i class="fi fi-rr-home"></i> Home</a></li>
-                    <li><a href="method.html"><i class="fi fi-rr-process"></i> Method</a></li>
-                    <li><a href="programs.html"><i class="fi fi-rr-dumbbell"></i> Programs</a></li>
-                    <li><a href="nutrition.html"><i class="fi fi-rr-apple-whole"></i> Nutrition</a></li>
-                    <li><a href="shop.html" class="active"><i class="fi fi-rr-shopping-cart"></i> Shop</a></li>
-                    <li><a href="success.html"><i class="fi fi-rr-trophy"></i> Success</a></li>
-                    <li><a href="community.html"><i class="fi fi-rr-users"></i> Community</a></li>
-                    <li><a href="blog.html"><i class="fi fi-rr-edit"></i> Blog</a></li>
-                    <li><a href="about.html"><i class="fi fi-rr-info"></i> About</a></li>
-                    <li><a href="contact.html"><i class="fi fi-rr-envelope"></i> Contact</a></li>
-                </ul>
-            </nav>
-            <div class="hamburger-menu">
-                <i class="fi fi-rr-menu-burger"></i>
+            <div class="main-image-slider" id="main-image-slider">
+                <div class="slider-arrow prev"><i class="fi fi-rr-angle-left"></i></div>
+                <div class="slider-arrow next"><i class="fi fi-rr-angle-right"></i></div>
+                <span class="product-badge">In promotion</span>
             </div>
         </div>
-    </header>
-
-    <main>
-        <section class="product-section">
-            <div class="container product-layout">
-                <div class="product-media">
-                    <div class="thumbnails">
-                        <div class="thumbnail-item active">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow4_a9227abc-e102-4a7b-98f6-099ddcb7d64e.webp?v=1771884540" alt="Thumbnail 1">
-                        </div>
-                        <div class="thumbnail-item">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_7_34cbe5a0-ea02-44e1-9021-6fc9a0f59e47.webp?v=1771884540" alt="Thumbnail 2">
-                        </div>
-                        <div class="thumbnail-item">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_9_fd535894-2578-4b8a-84a2-a7c29f33289a.webp?v=1771884540" alt="Thumbnail 3">
-                        </div>
-                        <div class="thumbnail-item">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540" alt="Thumbnail 4">
-                        </div>
-                        <div class="thumbnail-item">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540" alt="Thumbnail 5">
-                        </div>
-                        <div class="thumbnail-item">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_6_eecf21aa-e517-4bb3-8a8f-acba192c2ee5.jpg?v=1771884540" alt="Thumbnail 6">
-                        </div>
-                        <div class="thumbnail-item">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_6_eecf21aa-e517-4bb3-8a8f-acba192c2ee5.jpg?v=1771884540" alt="Thumbnail 7">
-                        </div>
-                        <div class="thumbnail-item">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_8_a061f9a0-813c-4cf1-8bc4-2e953051174a.jpg?v=1771884540" alt="Thumbnail 8">
-                        </div>
-                        <div class="thumbnail-item">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_2_2931fd8b-047d-465b-8043-b7d7126b39f7.jpg?v=1771884541" alt="Thumbnail 9">
-                        </div>
-                        <div class="thumbnail-item">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_3_6f466031-c570-4b5a-a705-f3df71589a31.png?v=1771884541" alt="Thumbnail 10">
-                        </div>
-                        </div>
-                        <div class="main-image-slider">
-                            <div class="slider-arrow prev"><i class="fi fi-rr-angle-left"></i></div>
-                            <div class="main-image active">
-                                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow4_a9227abc-e102-4a7b-98f6-099ddcb7d64e.webp?v=1771884540" alt="Main Image 1">
-                            </div>
-                            <div class="main-image">
-                                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_7_34cbe5a0-ea02-44e1-9021-6fc9a0f59e47.webp?v=1771884540" alt="Main Image 2">
-                            </div>
-                            <div class="main-image">
-                                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_9_fd535894-2578-4b8a-84a2-a7c29f33289a.webp?v=1771884540" alt="Main Image 3">
-                            </div>
-                            <div class="main-image">
-                                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540" alt="Main Image 4">
-                            </div>
-                            <div class="main-image">
-                                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540" alt="Main Image 5">
-                            </div>
-                            <div class="main-image">
-                                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_6_eecf21aa-e517-4bb3-8a8f-acba192c2ee5.jpg?v=1771884540" alt="Main Image 6">
-                            </div>
-                            <div class="main-image">
-                                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_6_eecf21aa-e517-4bb3-8a8f-acba192c2ee5.jpg?v=1771884540" alt="Main Image 7">
-                            </div>
-                            <div class="main-image">
-                                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_8_a061f9a0-813c-4cf1-8bc4-2e953051174a.jpg?v=1771884540" alt="Main Image 8">
-                            </div>
-                            <div class="main-image">
-                                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_2_2931fd8b-047d-465b-8043-b7d7126b39f7.jpg?v=1771884541" alt="Main Image 9">
-                            </div>
-                            <div class="main-image">
-                                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_3_6f466031-c570-4b5a-a705-f3df71589a31.png?v=1771884541" alt="Main Image 10">
-                            </div>
-                            <div class="slider-arrow next"><i class="fi fi-rr-angle-right"></i></div>
-                            <span class="product-badge">In promotion</span>
-                        </div>
-                        </div>
-                    <div class="product-content">
-                        <div class="paul-title-block paul-title-block1">
-                        <div class="paul-main-title" style="color: #e91e63; font-size: 30px; font-weight: bold; text-transform: none; text-align: left; margin: 0px 0; padding: 0; line-height: 1.2;">
-                            Comfortable Resistance Bands
-                        </div>
+            <div class="product-content">
+                <div class="paul-title-block paul-title-block1">
+                    <div class="paul-main-title" style="color: #e91e63; font-size: 30px; font-weight: bold; text-transform: none; text-align: left; margin: 0px 0; padding: 0; line-height: 1.2;">
+                        Comfortable Resistance Bands
                     </div>
-
-                    <div class="product-features features-border">
-                        <div class="feature-item">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540" alt="Anti-Slip Grips">
-                            <p>Anti-Slip Grips</p>
-                        </div>
-                        <div class="feature-item">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540" alt="Durable">
-                            <p>Durable</p>
-                        </div>
-                        <div class="feature-item">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540" alt="Joint Support">
-                            <p>Joint Support</p>
-                        </div>
-                        <div class="feature-item">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540" alt="Progressive Resistance">
-                            <p>Progressive Resistance</p>
-                        </div>
-                        </div>
-
-                        <div class="live-viewers">
-                        <p>
-                            <span class="eye-icon">
+                </div>
+                <div class="product-features features-border">
+                    <div class="feature-item"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540" alt="Anti-Slip Grips"><p>Anti-Slip Grips</p></div>
+                    <div class="feature-item"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540" alt="Durable"><p>Durable</p></div>
+                    <div class="feature-item"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540" alt="Joint Support"><p>Joint Support</p></div>
+                    <div class="feature-item"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540" alt="Progressive Resistance"><p>Progressive Resistance</p></div>
+                </div>
+                <div class="live-viewers">
+                    <p>
+                        <span class="eye-icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                             </svg>
-                            </span>
-
-                            <span class="live-text">
-                            LIVE: <span id="live-count-example"></span> people also viewed this product.
-                            </span>
-                        </p>
+                        </span>
+                        <span class="live-text">LIVE: <span id="live-count-example"></span> people also viewed this product.</span>
+                    </p>
+                </div>
+                <div class="unique-star-rating-container star-rating-border-block1" style="max-width: 100%; overflow: visible;">
+                    <div class="unique-stars" data-rating="4.8" style="--unique-star-color: #f0eee9 !important; --unique-background-color: #007f4e !important; --unique-icon-size: 20px !important; --unique-gap: 4px !important; --unique-star-bg-padding: 2px; --unique-star-bg-radius: 4px;" onclick="redirectToReviews('')"></div>
+                    <span class="unique-rating-text" style="font-size: 20px !important; color: #000000 !important; font-weight: bold; margin: 0 6px 0 4px; white-space: normal; cursor: pointer; line-height: 1.3;" onclick="redirectToReviews('')">4.8 / 5</span>
+                    <span class="unique-reviews" style="font-size: 20px; color: #000000; border: none; cursor: pointer; white-space: normal; font-weight: bold; line-height: 1.3; flex-shrink: 1;" onclick="redirectToReviews('')">128 reviews</span>
+                    <div class="unique-truck-wrapper" style="position: relative; margin-left: auto; flex-shrink: 0;">
+                        <div class="unique-truck" style="--truck-color: #000; --truck-size: 20px;">
+                            <svg viewBox="0 0 24 24" fill="var(--truck-color)">
+                                <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17v-2.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                            </svg>
                         </div>
-                    <div class="unique-star-rating-container star-rating-border-block1" style="max-width: 100%; overflow: visible;">
-                        <div class="unique-stars" data-rating="4.8" style="--unique-star-color: #f0eee9 !important; --unique-background-color: #007f4e !important; --unique-icon-size: 20px !important; --unique-gap: 4px !important; --unique-star-bg-padding: 2px; --unique-star-bg-radius: 4px;" onclick="redirectToReviews('')"></div>
-                        <span class="unique-rating-text" style="font-size: 20px !important; color: #000000 !important; font-weight: bold; margin: 0 6px 0 4px; white-space: normal; cursor: pointer; line-height: 1.3;" onclick="redirectToReviews('')">4.8 / 5</span>
-                        <span class="unique-reviews" style="font-size: 20px; color: #000000; border: none; cursor: pointer; white-space: normal; font-weight: bold; line-height: 1.3; flex-shrink: 1;" onclick="redirectToReviews('')">128 reviews</span>
-                        <div class="unique-truck-wrapper" style="position: relative; margin-left: auto; flex-shrink: 0;">
-                            <div class="unique-truck" style="--truck-color: #000; --truck-size: 20px;">
-                                <svg viewBox="0 0 24 24" fill="var(--truck-color)">
-                                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17v-2.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-                                </svg>
-                            </div>
-                            <span class="unique-truck-tooltip">Fast delivery</span>
-                        </div>
-                    </div>
-                    <div class="marquee-container-block1" style="overflow: hidden; white-space: nowrap; color: #fff; background-color: #e91e63; font-size: 16px; font-weight: bold; line-height: 20px; display: block;">
-                        <marquee behavior="scroll" direction="left" scrollamount="5" style="margin: 0; padding: 0; line-height: 20px;">
-                            20% OFF - Limited Time Offer!  •  Free Shipping on Orders Over $50!  •  New Collection Just Dropped!  •  100% Secure Payment Guaranteed!  •  Join Thousands of Happy Customers!
-                        </marquee>
-                    </div>
-                    <div class="product-price">
-                        <span class="compare-price">$39.99</span>
-                        <span class="current-price">$29.99</span>
-                    </div>
-                    <div class="delivery-info delivery-border-block1" style="color: #333; font-size: 20px !important; line-height: 1.2; margin-top: 10px;">
-                        <p id="delivery-text" style="margin: 0 !important; padding: 0 !important; font-size: 20px !important; visibility: hidden;">
-                            <strong style="color: #e91e63; font-weight: bold; font-size: 20px !important;">
-                                Delivery between
-                            </strong>
-                            <span id="start-date" class="delivery-date" style="color: #673ab7; font-weight: bold; font-size: 20px !important;">
-                                2026-02-24
-                            </span>
-                            and
-                            <span id="end-date" class="delivery-date" style="color: #673ab7; font-weight: bold; font-size: 20px !important;">
-                                2026-02-28
-                            </span>
-                        </p>
-                    </div>
-                <div class="product-options">
-                    <label for="size-select">Select Size:</label>
-                    <select id="size-select">
-                        <option>XL (42-44)</option>
-                        <option>2XL (46-48)</option>
-                        <option>3XL (50-52)</option>
-                        <option>4XL (54-56)</option>
-                        <option>5XL (58-60)</option>
-                    </select>
-                    <label for="color-select">Select Color:</label>
-                    <div class="color-swatches">
-                        <div class="swatch" style="background: pink;" data-color="Pink"></div>
-                        <div class="swatch" style="background: black;" data-color="Purple"></div>
-                        <div class="swatch" style="background: blue;" data-color="Blue"></div>
-                        <div class="swatch" style="background: white;" data-color="Green"></div>
-                        <div class="swatch" style="background: yellow;" data-color="Yellow"></div>
+                        <span class="unique-truck-tooltip">Fast delivery</span>
                     </div>
                 </div>
-                    <div id="size-chart-paul-guide-wrapper-1" class="size-chart-paul-guide-wrapper size-chart-paul-guide-border-1" style="margin-top: 10px; position: relative;">
-                    <!-- Toggle -->
+                <div class="marquee-container-block1" style="overflow: hidden; white-space: nowrap; color: #fff; background-color: #e91e63; font-size: 16px; font-weight: bold; line-height: 20px; display: block;">
+                    <marquee behavior="scroll" direction="left" scrollamount="5" style="margin: 0; padding: 0; line-height: 20px;">
+                        20% OFF - Limited Time Offer! • Free Shipping on Orders Over $50! • New Collection Just Dropped! • 100% Secure Payment Guaranteed! • Join Thousands of Happy Customers!
+                    </marquee>
+                </div>
+                <div class="product-price">
+                    <div class="price-wrapper">
+                        <span class="compare-price"></span>
+                        <span class="current-price"></span>
+                    </div>
+                    <span class="product-discount-badge"></span>
+                </div>
+                <div class="delivery-info delivery-border-block1" style="color: #333; font-size: 20px !important; line-height: 1.2; margin-top: 10px;">
+                    <p id="delivery-text" style="margin: 0 !important; padding: 0 !important; font-size: 20px !important; visibility: hidden;">
+                        <strong style="color: #e91e63; font-weight: bold; font-size: 20px !important;">Delivery between</strong>
+                        <span id="start-date" class="delivery-date" style="color: #673ab7; font-weight: bold; font-size: 20px !important;">2026-02-24</span>
+                        and
+                        <span id="end-date" class="delivery-date" style="color: #673ab7; font-weight: bold; font-size: 20px !important;">2026-02-28</span>
+                    </p>
+                </div>
+                <div class="product-options">
+                    <label for="size-select">Select Size:</label>
+                    <select id="size-select"></select>
+                    <span class="wishlist-icon-product" title="Add to Wishlist">
+                        <svg class="wishlist-icon-empty" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <svg class="wishlist-icon-filled" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </span>
+                    <label for="color-select">Select Color:</label>
+                    <div class="color-swatches"></div>
+                </div>
+                <!-- Size Chart -->
+                <div id="size-chart-paul-guide-wrapper-1" class="size-chart-paul-guide-wrapper size-chart-paul-guide-border-1" style="margin-top: 10px; position: relative;">
                     <div class="size-chart-paul-guide-toggle">
-                        <span class="size-chart-paul-guide-text" style="color: #000000;">
-                        Size Chart
-                        </span>
+                        <span class="size-chart-paul-guide-text" style="color: #000000;">Size Chart</span>
                         <span class="size-chart-paul-guide-icon" style="width: 20px; height: 20px; color: #000000; margin-left: 10px; flex-shrink: 0; display: inline-block;">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                         </span>
                     </div>
-                    </div>
-                    <!-- Modal + Overlay -->
-                    <div id="size-chart-paul-guide-modal-1" class="size-chart-paul-guide-modal">
+                </div>
+                <div id="size-chart-paul-guide-modal-1" class="size-chart-paul-guide-modal">
                     <div class="modal-paul-guide-content animated-border">
                         <span class="modal-paul-guide-close">×</span>
-                        <h2 class="modal-paul-guide-title" style="color: #000000; font-size: 20px;">
-                        Guide des Tailles pour <strong>BBW</strong> (Big Beautiful Women) - Tailles Plus
-                        </h2>
+                        <h2 class="modal-paul-guide-title" style="color: #000000; font-size: 20px;">Guide des Tailles pour <strong>BBW</strong> (Big Beautiful Women) - Tailles Plus</h2>
+                        <!-- tout le contenu du modal reste identique -->
                         <div class="modal-paul-guide-row">
-                        <div class="modal-paul-guide-image">
-                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_2_2931fd8b-047d-465b-8043-b7d7126b39f7.jpg?v=1771884541" alt="Size Chart" loading="lazy" style="max-width: 100%; height: auto; display: block; border: 1px solid #dddddd; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"/>
+                            <div class="modal-paul-guide-image">
+                                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_2_2931fd8b-047d-465b-8043-b7d7126b39f7.jpg?v=1771884541" alt="Size Chart" loading="lazy" style="max-width: 100%; height: auto; display: block; border: 1px solid #dddddd; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"/>
+                            </div>
+                            <div class="modal-paul-guide-side-text" style="color: #333333; font-size: 14px;">
+                                Ce guide fournit des <strong>détails précis</strong> sur les tailles pour les vêtements adaptés aux courbes généreuses. Mesurez-vous avec un ruban à mesurer pour une <strong>précision optimale</strong>. Les mesures sont en <strong>centimètres (cm)</strong>.
+                            </div>
                         </div>
-                        <div class="modal-paul-guide-side-text" style="color: #333333; font-size: 14px;">
-                            Ce guide fournit des <strong>détails précis</strong> sur les tailles pour les vêtements adaptés aux courbes généreuses. Mesurez-vous avec un ruban à mesurer pour une <strong>précision optimale</strong>. Les mesures sont en <strong>centimètres (cm)</strong>.
-                        </div>
-                        </div>
-                        <h3 class="modal-paul-guide-bold-title" style="color: #000000; font-size: 18px; font-weight: bold;">
-                        Conseils Importants
-                        </h3>
+                        <!-- le reste du modal reste inchangé (je l'ai laissé complet pour ne rien gâter) -->
+                        <h3 class="modal-paul-guide-bold-title" style="color: #000000; font-size: 18px; font-weight: bold;">Conseils Importants</h3>
                         <div class="modal-paul-guide-detailed-text">
-                        <ul>
-                            <li><strong>Buste</strong> : Mesurez autour de la partie la plus large de votre poitrine.</li>
-                            <li><strong>Taille</strong> : Mesurez autour de la partie la plus étroite de votre taille naturelle.</li>
-                            <li><strong>Hanches</strong> : Mesurez autour de la partie la plus large de vos hanches.</li>
-                            <li>Si vous êtes entre deux tailles, choisissez la <strong>taille supérieure</strong> pour plus de confort.</li>
-                            <li>Les tailles peuvent varier légèrement selon les tissus et les styles, mais ce guide est basé sur des <strong>standards pour BBW</strong>.</li>
-                        </ul>
-                        <h3>Tableau des Tailles (Exemples Réels pour BBW)</h3>
-                        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                            <thead>
-                            <tr style="background-color: #f0f0f0;">
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;"><strong>Taille</strong></th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;"><strong>Buste (cm)</strong></th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;"><strong>Taille (cm)</strong></th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;"><strong>Hanches (cm)</strong></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td style="border: 1px solid #ddd; padding: 8px;"><strong>XL (42-44)</strong></td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">105-110</td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">85-90</td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">110-115</td>
-                            </tr>
-                            <tr>
-                                <td style="border: 1px solid #ddd; padding: 8px;"><strong>2XL (46-48)</strong></td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">115-120</td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">95-100</td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">120-125</td>
-                            </tr>
-                            <tr>
-                                <td style="border: 1px solid #ddd; padding: 8px;"><strong>3XL (50-52)</strong></td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">125-130</td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">105-110</td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">130-135</td>
-                            </tr>
-                            <tr>
-                                <td style="border: 1px solid #ddd; padding: 8px;"><strong>4XL (54-56)</strong></td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">135-140</td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">115-120</td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">140-145</td>
-                            </tr>
-                            <tr>
-                                <td style="border: 1px solid #ddd; padding: 8px;"><strong>5XL (58-60)</strong></td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">145-150</td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">125-130</td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">150-155</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <p style="margin-top: 10px;">Pour des questions spécifiques, contactez notre <strong>service client</strong>. Ce guide est indicatif ; les tailles peuvent varier selon les marques.</p>
+                            <ul>
+                                <li><strong>Buste</strong> : Mesurez autour de la partie la plus large de votre poitrine.</li>
+                                <li><strong>Taille</strong> : Mesurez autour de la partie la plus étroite de votre taille naturelle.</li>
+                                <li><strong>Hanches</strong> : Mesurez autour de la partie la plus large de vos hanches.</li>
+                                <li>Si vous êtes entre deux tailles, choisissez la <strong>taille supérieure</strong> pour plus de confort.</li>
+                                <li>Les tailles peuvent varier légèrement selon les tissus et les styles, mais ce guide est basé sur des <strong>standards pour BBW</strong>.</li>
+                            </ul>
+                            <h3>Tableau des Tailles (Exemples Réels pour BBW)</h3>
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                                <thead>
+                                <tr style="background-color: #f0f0f0;">
+                                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;"><strong>Taille</strong></th>
+                                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;"><strong>Buste (cm)</strong></th>
+                                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;"><strong>Taille (cm)</strong></th>
+                                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;"><strong>Hanches (cm)</strong></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr><td style="border: 1px solid #ddd; padding: 8px;"><strong>XL (42-44)</strong></td><td style="border: 1px solid #ddd; padding: 8px;">105-110</td><td style="border: 1px solid #ddd; padding: 8px;">85-90</td><td style="border: 1px solid #ddd; padding: 8px;">110-115</td></tr>
+                                <tr><td style="border: 1px solid #ddd; padding: 8px;"><strong>2XL (46-48)</strong></td><td style="border: 1px solid #ddd; padding: 8px;">115-120</td><td style="border: 1px solid #ddd; padding: 8px;">95-100</td><td style="border: 1px solid #ddd; padding: 8px;">120-125</td></tr>
+                                <tr><td style="border: 1px solid #ddd; padding: 8px;"><strong>3XL (50-52)</strong></td><td style="border: 1px solid #ddd; padding: 8px;">125-130</td><td style="border: 1px solid #ddd; padding: 8px;">105-110</td><td style="border: 1px solid #ddd; padding: 8px;">130-135</td></tr>
+                                <tr><td style="border: 1px solid #ddd; padding: 8px;"><strong>4XL (54-56)</strong></td><td style="border: 1px solid #ddd; padding: 8px;">135-140</td><td style="border: 1px solid #ddd; padding: 8px;">115-120</td><td style="border: 1px solid #ddd; padding: 8px;">140-145</td></tr>
+                                <tr><td style="border: 1px solid #ddd; padding: 8px;"><strong>5XL (58-60)</strong></td><td style="border: 1px solid #ddd; padding: 8px;">145-150</td><td style="border: 1px solid #ddd; padding: 8px;">125-130</td><td style="border: 1px solid #ddd; padding: 8px;">150-155</td></tr>
+                                </tbody>
+                            </table>
+                            <p style="margin-top: 10px;">Pour des questions spécifiques, contactez notre <strong>service client</strong>. Ce guide est indicatif ; les tailles peuvent varier selon les marques.</p>
                         </div>
                     </div>
+                </div>
+                <div id="size-chart-paul-guide-overlay-1" class="size-chart-paul-guide-overlay"></div>
+                <div class="quantity-add">
+                    <div class="quantity">
+                        <button class="qty-minus">-</button>
+                        <input type="number" value="1" min="1">
+                        <button class="qty-plus">+</button>
                     </div>
-                    <div id="size-chart-paul-guide-overlay-1" class="size-chart-paul-guide-overlay">
-                    </div>
-
-                    <div class="quantity-add">
-                        <div class="quantity">
-                            <button class="qty-minus">-</button>
-                            <input type="number" value="1" min="1">
-                            <button class="qty-plus">+</button>
-                        </div>
-                        <button class="add-to-cart cta button-3d">Add to Cart</button>
-                        <button class="buy-now cta button-3d">Shop Now</button>
-                    </div>
+                    <button class="add-to-cart cta button-3d">Add to Cart</button>
+                    <button class="buy-now cta button-3d">Shop Now</button>
+                </div>
                     <div class="paul_story_bloc__wrapper">
                         <div class="paul_story_bloc__container paul-story-block-block1" id="paul-story-container-block1">
                             <div class="paul_story_bloc__grid">
@@ -449,14 +303,11 @@
                             </div>
                         </details>
                     </div>
-
                     <div class="paul-images-block">
                     <div class="images-slider-wrapper">
                         <div class="images-slider-track">
-
                         <!-- Slide 1 -->
                         <div class="slide-item">
-
                             <div class="image-wrapper">
                             <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_3_6f466031-c570-4b5a-a705-f3df71589a31.png?v=1771884541" alt="Image 1"
                                 loading="lazy"
@@ -464,19 +315,15 @@
                                 sizes="(min-width: 1025px) 33vw, (min-width: 768px) 45vw, 90vw"
                                 class="slide-image">
                             </div>
-
                             <div class="slide-title">
                             Title 1
                             </div>
-
                             <div class="slide-text">
                             Text description 1.
                             </div>
                         </div>
-
                         <!-- Slide 2 -->
                         <div class="slide-item">
-
                             <div class="image-wrapper">
                             <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_8_a061f9a0-813c-4cf1-8bc4-2e953051174a.jpg?v=1771884540" alt="Image 2"
                                 loading="lazy"
@@ -484,19 +331,15 @@
                                 sizes="(min-width: 1025px) 33vw, (min-width: 768px) 45vw, 90vw"
                                 class="slide-image">
                             </div>
-
                             <div class="slide-title">
                             Title 2
                             </div>
-
                             <div class="slide-text">
                             Text description 2.
                             </div>
                         </div>
-
                         <!-- Slide 3 -->
                         <div class="slide-item">
-
                             <div class="image-wrapper">
                             <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/sanaica_1.webp?v=1754484822" alt="Image 3"
                                 loading="lazy"
@@ -504,19 +347,15 @@
                                 sizes="(min-width: 1025px) 33vw, (min-width: 768px) 45vw, 90vw"
                                 class="slide-image">
                             </div>
-
                             <div class="slide-title">
                             Title 3
                             </div>
-
                             <div class="slide-text">
                             Text description 3.
                             </div>
                         </div>
-
                         <!-- Slide 4 -->
                         <div class="slide-item">
-
                             <div class="image-wrapper">
                             <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_2.jpg?v=1754485309" alt="Image 4"
                                 loading="lazy"
@@ -524,89 +363,78 @@
                                 sizes="(min-width: 1025px) 33vw, (min-width: 768px) 45vw, 90vw"
                                 class="slide-image">
                             </div>
-
                             <div class="slide-title">
                             Title 4
                             </div>
-
                             <div class="slide-text">
                             Text description 4.
                             </div>
                         </div>
-
                         </div>
                     </div>
-                    </div>                 
-
+                    </div>
                     <div class="paul-faq-block">
                 <details class="faq-item">
                     <summary class="faq-question">
                     <div class="question-text">Question 1?</div>
                     <span class="chevron">›</span>
                     </summary>
-
                     <div class="faq-answer rte">
                     Answer 1.
                     </div>
                 </details>
-                
+          
                 <details class="faq-item">
                     <summary class="faq-question">
                     <div class="question-text">Question 2?</div>
                     <span class="chevron">›</span>
                     </summary>
-
                     <div class="faq-answer rte">
                     Answer 2.
                     </div>
                 </details>
-                
+          
                 <details class="faq-item">
                     <summary class="faq-question">
                     <div class="question-text">Question 3?</div>
                     <span class="chevron">›</span>
                     </summary>
-
                     <div class="faq-answer rte">
                     Answer 3.
                     </div>
                 </details>
-                
+          
                 <details class="faq-item">
                     <summary class="faq-question">
                     <div class="question-text">Question 4?</div>
                     <span class="chevron">›</span>
                     </summary>
-
                     <div class="faq-answer rte">
                     Answer 4.
                     </div>
                 </details>
-                
+          
                 <details class="faq-item">
                     <summary class="faq-question">
                     <div class="question-text">Question 5?</div>
                     <span class="chevron">›</span>
                     </summary>
-
                     <div class="faq-answer rte">
                     Answer 5.
                     </div>
                 </details>
-                
+          
                 <details class="faq-item">
                     <summary class="faq-question">
                     <div class="question-text">Question 6?</div>
                     <span class="chevron">›</span>
                     </summary>
-
                     <div class="faq-answer rte">
                     Answer 6.
                     </div>
                 </details>
                 </div>
             <div>
-
             <div class="paul-shipping-icons paul-shipping-block1">
             <div class="icons-row">
             <!-- Icon 1 -->
@@ -616,7 +444,6 @@
             </div>
             <span class="icon-text">Free Shipping</span>
             </div>
-
             <!-- Icon 2 -->
             <div class="icon-item">
             <div class="icon-svg" style="color: #000 !important;">
@@ -624,7 +451,6 @@
             </div>
             <span class="icon-text">30 Day Returns</span>
             </div>
-
             <!-- Icon 3 -->
             <div class="icon-item">
             <div class="icon-svg" style="color: #000 !important;">
@@ -634,11 +460,327 @@
             </div>
         </div>
         </div>
-
         </div>
         </section>
-    </main>
+        <section id="wave-section">
+        <svg width="0" height="0">
+            <defs>
+            <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color: var(--color1);" />
+                <stop offset="100%" style="stop-color: var(--color2);" />
+            </linearGradient>
+            </defs>
+        </svg>
+        <div class="wave-container">
+            <svg class="wave" viewBox="0 0 1000 100" preserveAspectRatio="none">
+            <path d="M0,50 L100,50 L150,30 L200,70 L250,50 L300,30 L350,70 L400,50 L450,30 L500,70 L550,50 L600,30 L650,70 L700,50 L750,30 L800,70 L850,50 L900,30 L950,70 L1000,50 L1000,100 L0,100 Z" /> <!-- Fine Zigzag -->
+            </svg>
+        </div>
+        </section>
+       <section id="mini-product-slider" class="mini-product-slider">
+    <h2 class="section-title">You May Also Like</h2>
+    <div class="slider-container">
+        <div class="product-slider">
 
+            <!-- 1 -->
+            <div class="product-item" data-product-id="resistance-bands">
+                <div class="product-image">
+                    <a href="product1.html">
+                        <div class="mini-media-slider" id="mini-slider-resistance-bands">
+                            <!-- JS va injecter les images ici -->
+                            <div class="mini-media-slider-prev"></div>
+                            <div class="mini-media-slider-next"></div>
+                        </div>
+                    </a>
+                    <div class="mini-discount-badge"></div>
+                    <span class="mini-wishlist-icon" data-id="resistance-bands">
+                        <svg class="wishlist-icon-empty" width="30px" height="30px" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <svg class="wishlist-icon-filled" width="30px" height="30px" viewBox="0 0 24 24" fill="#000000" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="product-info">
+                    <p class="product-price">
+                        <span class="current-price"></span>
+                        <span class="compare-price"></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 2 -->
+            <div class="product-item" data-product-id="yoga-mat">
+                <div class="product-image">
+                    <a href="product2.html">
+                        <div class="mini-media-slider" id="mini-slider-yoga-mat">
+                            <!-- JS va injecter les images ici -->
+                            <div class="mini-media-slider-prev"></div>
+                            <div class="mini-media-slider-next"></div>
+                        </div>
+                    </a>
+                    <div class="mini-discount-badge"></div>
+                    <span class="mini-wishlist-icon" data-id="yoga-mat">
+                        <svg class="wishlist-icon-empty" width="30px" height="30px" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <svg class="wishlist-icon-filled" width="30px" height="30px" viewBox="0 0 24 24" fill="#000000" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="product-info">
+                    <p class="product-price">
+                        <span class="current-price"></span>
+                        <span class="compare-price"></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 3 -->
+            <div class="product-item" data-product-id="leggings">
+                <div class="product-image">
+                    <a href="product3.html">
+                        <div class="mini-media-slider" id="mini-slider-leggings">
+                            <!-- JS va injecter les images ici -->
+                            <div class="mini-media-slider-prev"></div>
+                            <div class="mini-media-slider-next"></div>
+                        </div>
+                    </a>
+                    <div class="mini-discount-badge"></div>
+                    <span class="mini-wishlist-icon" data-id="leggings">
+                        <svg class="wishlist-icon-empty" width="30px" height="30px" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <svg class="wishlist-icon-filled" width="30px" height="30px" viewBox="0 0 24 24" fill="#000000" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="product-info">
+                    <p class="product-price">
+                        <span class="current-price"></span>
+                        <span class="compare-price"></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 4 -->
+            <div class="product-item" data-product-id="sports-bra">
+                <div class="product-image">
+                    <a href="product4.html">
+                        <div class="mini-media-slider" id="mini-slider-sports-bra">
+                            <!-- JS va injecter les images ici -->
+                            <div class="mini-media-slider-prev"></div>
+                            <div class="mini-media-slider-next"></div>
+                        </div>
+                    </a>
+                    <div class="mini-discount-badge"></div>
+                    <span class="mini-wishlist-icon" data-id="sports-bra">
+                        <svg class="wishlist-icon-empty" width="30px" height="30px" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <svg class="wishlist-icon-filled" width="30px" height="30px" viewBox="0 0 24 24" fill="#000000" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="product-info">
+                    <p class="product-price">
+                        <span class="current-price"></span>
+                        <span class="compare-price"></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 5 -->
+            <div class="product-item" data-product-id="hydration-bottle">
+                <div class="product-image">
+                    <a href="product5.html">
+                        <div class="mini-media-slider" id="mini-slider-hydration-bottle">
+                            <!-- JS va injecter les images ici -->
+                            <div class="mini-media-slider-prev"></div>
+                            <div class="mini-media-slider-next"></div>
+                        </div>
+                    </a>
+                    <div class="mini-discount-badge"></div>
+                    <span class="mini-wishlist-icon" data-id="hydration-bottle">
+                        <svg class="wishlist-icon-empty" width="30px" height="30px" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <svg class="wishlist-icon-filled" width="30px" height="30px" viewBox="0 0 24 24" fill="#000000" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="product-info">
+                    <p class="product-price">
+                        <span class="current-price"></span>
+                        <span class="compare-price"></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 6 -->
+            <div class="product-item" data-product-id="workout-towel">
+                <div class="product-image">
+                    <a href="product6.html">
+                        <div class="mini-media-slider" id="mini-slider-workout-towel">
+                            <!-- JS va injecter les images ici -->
+                            <div class="mini-media-slider-prev"></div>
+                            <div class="mini-media-slider-next"></div>
+                        </div>
+                    </a>
+                    <div class="mini-discount-badge"></div>
+                    <span class="mini-wishlist-icon" data-id="workout-towel">
+                        <svg class="wishlist-icon-empty" width="30px" height="30px" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <svg class="wishlist-icon-filled" width="30px" height="30px" viewBox="0 0 24 24" fill="#000000" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="product-info">
+                    <p class="product-price">
+                        <span class="current-price"></span>
+                        <span class="compare-price"></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 7 -->
+            <div class="product-item" data-product-id="fitness-tracker">
+                <div class="product-image">
+                    <a href="product7.html">
+                        <div class="mini-media-slider" id="mini-slider-fitness-tracker">
+                            <!-- JS va injecter les images ici -->
+                            <div class="mini-media-slider-prev"></div>
+                            <div class="mini-media-slider-next"></div>
+                        </div>
+                    </a>
+                    <div class="mini-discount-badge"></div>
+                    <span class="mini-wishlist-icon" data-id="fitness-tracker">
+                        <svg class="wishlist-icon-empty" width="30px" height="30px" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <svg class="wishlist-icon-filled" width="30px" height="30px" viewBox="0 0 24 24" fill="#000000" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="product-info">
+                    <p class="product-price">
+                        <span class="current-price"></span>
+                        <span class="compare-price"></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 8 -->
+            <div class="product-item" data-product-id="protein-shaker">
+                <div class="product-image">
+                    <a href="product8.html">
+                        <div class="mini-media-slider" id="mini-slider-protein-shaker">
+                            <!-- JS va injecter les images ici -->
+                            <div class="mini-media-slider-prev"></div>
+                            <div class="mini-media-slider-next"></div>
+                        </div>
+                    </a>
+                    <div class="mini-discount-badge"></div>
+                    <span class="mini-wishlist-icon" data-id="protein-shaker">
+                        <svg class="wishlist-icon-empty" width="30px" height="30px" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <svg class="wishlist-icon-filled" width="30px" height="30px" viewBox="0 0 24 24" fill="#000000" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="product-info">
+                    <p class="product-price">
+                        <span class="current-price"></span>
+                        <span class="compare-price"></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 9 -->
+            <div class="product-item" data-product-id="dumbbell-set">
+                <div class="product-image">
+                    <a href="product9.html">
+                        <div class="mini-media-slider" id="mini-slider-dumbbell-set">
+                            <!-- JS va injecter les images ici -->
+                            <div class="mini-media-slider-prev"></div>
+                            <div class="mini-media-slider-next"></div>
+                        </div>
+                    </a>
+                    <div class="mini-discount-badge"></div>
+                    <span class="mini-wishlist-icon" data-id="dumbbell-set">
+                        <svg class="wishlist-icon-empty" width="30px" height="30px" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <svg class="wishlist-icon-filled" width="30px" height="30px" viewBox="0 0 24 24" fill="#000000" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="product-info">
+                    <p class="product-price">
+                        <span class="current-price"></span>
+                        <span class="compare-price"></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 10 -->
+            <div class="product-item" data-product-id="jump-rope">
+                <div class="product-image">
+                    <a href="product10.html">
+                        <div class="mini-media-slider" id="mini-slider-jump-rope">
+                            <!-- JS va injecter les images ici -->
+                            <div class="mini-media-slider-prev"></div>
+                            <div class="mini-media-slider-next"></div>
+                        </div>
+                    </a>
+                    <div class="mini-discount-badge"></div>
+                    <span class="mini-wishlist-icon" data-id="jump-rope">
+                        <svg class="wishlist-icon-empty" width="30px" height="30px" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <svg class="wishlist-icon-filled" width="30px" height="30px" viewBox="0 0 24 24" fill="#000000" stroke="#000000" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="product-info">
+                    <p class="product-price">
+                        <span class="current-price"></span>
+                        <span class="compare-price"></span>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+        <section id="custom-wave-section">
+    <svg width="0" height="0">
+        <defs>
+            <linearGradient id="custom-wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color: var(--color1);" />
+                <stop offset="100%" style="stop-color: var(--color2);" />
+            </linearGradient>
+        </defs>
+    </svg>
+    <div class="custom-wave-container">
+        <svg class="custom-wave" viewBox="0 0 1000 100" preserveAspectRatio="none">
+            <path d="M0,50 L100,50 L150,30 L200,70 L250,50 L300,30 L350,70 L400,50 L450,30 L500,70 L550,50 L600,30 L650,70 L700,50 L750,30 L800,70 L850,50 L900,30 L950,70 L1000,50 L1000,100 L0,100 Z" />
+        </svg>
+    </div>
+</section>
+    </main>
     <footer class="footer">
         <div class="container footer-grid">
             <div class="footer-brand">
@@ -681,7 +823,6 @@
             <p>&copy; 2026 CurvaFit. All rights reserved.</p>
         </div>
     </footer>
-
 <script src="script.js"></script>
 <script src="products.js"></script>
 <div class="overlay"></div>

@@ -174,7 +174,7 @@ h2 {
     display: block;
 }
 
-#shipping-form input, #shipping-form textarea {
+#shipping-form input, #shipping-form textarea, #shipping-form select {
     padding: 0.875rem;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -184,9 +184,34 @@ h2 {
     transition: border-color 0.3s ease;
 }
 
-#shipping-form input:focus, #shipping-form textarea:focus {
+#shipping-form input:focus, #shipping-form textarea:focus, #shipping-form select:focus {
     border-color: #f8c5d6;
     outline: none;
+}
+
+.phone-wrapper {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.phone-wrapper select {
+    width: 40%;
+}
+
+.phone-wrapper input {
+    width: 60%;
+}
+
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper input {
+    margin-bottom: 0.5rem;
+}
+
+.select-wrapper select {
+    width: 100%;
 }
 
 /* Trust Section */
@@ -440,6 +465,14 @@ h2 {
         width: calc(100% - 8rem);
         margin: 0 auto;
         max-height: 400px; /* Reduced height on mobile */
+    }
+
+    .phone-wrapper select {
+        width: 50%;
+    }
+
+    .phone-wrapper input {
+        width: 50%;
     }
 }
 

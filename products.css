@@ -88,10 +88,7 @@
 .product-content > * {
     margin-bottom: 15px;
 }
-.product-price {
-    font-size: 1.5rem;
-    margin: 20px 0;
-}
+
 .compare-price {
     text-decoration: line-through;
     color: #999;
@@ -100,6 +97,31 @@
 .current-price {
     color: #e91e63;
     font-weight: bold;
+}
+
+.product-price {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    font-size: 2rem;
+    margin: 20px 0;
+}
+
+.price-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+}
+
+.product-discount-badge {
+    background-color: #e91e63; /* Match your theme color */
+    color: white;
+    padding: 1px 2px !important;
+    border-radius: 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    white-space: nowrap;
 }
 
 .product-options {
@@ -180,11 +202,13 @@
 .add-to-cart {
     font-size: 15px !important;
     padding: 10px 10px;
+    cursor: pointer;
 }
 .buy-now {
     background: #673ab7;
     font-size: 15px !important;
     padding: 10px 10px;
+    cursor: pointer;
 }
 /* Mobile */
 @media (max-width: 768px) {
@@ -354,13 +378,13 @@
     }
     .unique-reviews,
     .unique-rating-text {
-      font-size: calc(16px - 3px) !important;
+      font-size: 16px !important;
     }
     .unique-stars {
-      --unique-icon-size: calc(20px - 3px) !important;
+      --unique-icon-size: 17px !important;
     }
     .unique-truck {
-      --truck-size: calc(20px - 4px) !important;
+      --truck-size: 20px !important;
     }
   }
 /* Marquee Announcement */
@@ -1237,3 +1261,312 @@ details[open] .chevron {
         overflow-y: hidden !important;
     }
 }
+
+.size-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.wishlist-icon-product {
+    cursor: pointer;
+    color: #e91e63;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wishlist-icon-product svg {
+    width: 30px;
+    height: 30px;
+    transition: fill 0.3s ease, stroke 0.3s ease;
+}
+
+.wishlist-icon-product.added svg {
+    fill: #e91e63;
+    stroke: none;
+}
+
+/* Reset specific to the section */
+#wave-section * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Main container of the section */
+#wave-section {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background: #000000;
+  overflow: hidden; /* Contain content to avoid offset */
+  isolation: isolate; /* Isolate the style context */
+}
+/* Wave container */
+#wave-section .wave-container {
+  position: absolute;
+  width: 200%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+}
+/* Common style for waves */
+#wave-section .wave {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  fill: url(#wave-gradient);
+  animation: wave-slide 10s linear infinite;
+}
+/* Gradient for waves */
+#wave-gradient {
+  --color1: #f318b1;
+  --color2: #e7d8df;
+}
+/* Scroll animation with configurable direction */
+@keyframes wave-slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* CSS for Mini Product Slider */
+#mini-product-slider {
+  padding: 10px 0;
+  background-color: #f8e3e3;
+  border-top: 2px solid #f131b8;
+}
+
+#mini-product-slider .section-title {
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+  color: #000000;
+  margin-bottom: 15px;
+}
+
+#mini-product-slider .slider-container {
+  position: relative;
+  overflow: hidden;
+}
+
+#mini-product-slider .product-slider {
+  display: flex;
+  gap: 20px !important;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0 10px;
+}
+
+#mini-product-slider .product-slider::-webkit-scrollbar {
+  display: none;
+}
+
+#mini-product-slider .product-item {
+  flex: 0 0 250px;
+  text-align: center;
+  scroll-snap-align: center;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 10px;
+}
+
+@media (max-width: 768px) {
+  #mini-product-slider .product-item {
+    flex: 0 0 200px;
+  }
+}
+
+#mini-product-slider .product-image {
+  position: relative;
+  width: 100%;
+}
+
+#mini-product-slider .mini-media-slider {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  height: 250px;
+}
+
+#mini-product-slider .mini-media-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  display: none;
+  margin: 0 auto;
+  position: relative;
+}
+
+#mini-product-slider .mini-media-image.active {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  #mini-product-slider .mini-media-slider {
+    height: 190px;
+  }
+  #mini-product-slider .product-slider {
+    gap: 10px !important;
+  }
+}
+
+#mini-product-slider .mini-media-slider-prev,
+#mini-product-slider .mini-media-slider-next {
+  display: flex !important;
+  color: #000000;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: opacity 0.3s ease;
+  z-index: 2;
+  cursor: pointer;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+#mini-product-slider .mini-media-slider-prev { left: 10px; }
+#mini-product-slider .mini-media-slider-next { right: 10px; }
+
+#mini-product-slider .mini-media-slider-prev:before { content: '\2190'; font-size: 15px; }
+#mini-product-slider .mini-media-slider-next:before { content: '\2192'; font-size: 15px; }
+
+/* === UNIFORM COLOURS (une seule couleur pour tous les produits) === */
+#mini-product-slider .mini-discount-badge {
+  position: absolute !important;
+  top: 5px !important;
+  left: 10px !important;
+  background-color: #ff0000 !important;   /* rouge pour TOUS les badges */
+  color: #ffffff !important;
+  padding: 2px 5px !important;
+  font-size: 15px !important;
+  border-radius: 5px !important;
+  z-index: 3 !important;
+}
+
+#mini-product-slider .product-info {
+  margin-top: 10px !important;
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  text-align: center !important;
+  width: 100% !important;
+  z-index: 2 !important;
+}
+
+#mini-product-slider .product-price {
+  font-size: 18px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  margin: 0 !important;
+}
+
+#mini-product-slider .current-price {
+  color: #000000 !important;   /* noir pour le prix actuel sur TOUS les produits */
+}
+
+#mini-product-slider .compare-price {
+  color: #999999 !important;   /* gris pour le prix barré sur TOUS les produits */
+  text-decoration: line-through;
+  font-size: 16px !important;
+}
+
+/* Wishlist (position qui était en inline) */
+#mini-product-slider .mini-wishlist-icon {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  transition: transform 0.2s ease, opacity 0.3s ease;
+  z-index: 2;
+}
+
+#mini-product-slider .mini-wishlist-icon:hover {
+  transform: scale(1.2);
+}
+
+#mini-product-slider .mini-wishlist-icon .wishlist-icon-empty { display: block; }
+#mini-product-slider .mini-wishlist-icon .wishlist-icon-filled { display: none; }
+
+#mini-product-slider .mini-wishlist-icon.added .wishlist-icon-empty { display: none; }
+#mini-product-slider .mini-wishlist-icon.added .wishlist-icon-filled { display: block; opacity: 1; }
+
+#mini-product-slider .mini-wishlist-icon.added {
+  animation: wishlist-confirm 0.5s ease;
+  transform: scale(1.2);
+  opacity: 0.9;
+}
+
+@keyframes wishlist-confirm {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.5); }
+  100% { transform: scale(1.2); }
+}
+
+
+/* Reset spécifique à cette section */
+#custom-wave-section * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Section principale */
+#custom-wave-section {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background: #000000;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Conteneur de la vague */
+#custom-wave-section .custom-wave-container {
+  position: absolute;
+  width: 200%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+}
+
+/* Vague SVG */
+#custom-wave-section .custom-wave {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  fill: url(#custom-wave-gradient);
+  animation: custom-wave-slide 10s linear infinite;
+  animation-direction: reverse; /* ← Animation vers la DROITE */
+}
+
+/* Gradient */
+#custom-wave-gradient {
+  --color1: #f318b1;
+  --color2: #e7d8df;
+}
+
+/* Animation (inchangée, juste renommée + reverse pour aller à droite) */
+@keyframes custom-wave-slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+
