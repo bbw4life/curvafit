@@ -156,7 +156,7 @@ const postalInput = document.getElementById('postal-code');
 /* Load Countries */
 async function loadCountries() {
     try {
-        const res = await fetch('https://restcountries.com/v3.1/all');
+        const res = await fetch('https://restcountries.com/v3.1/all?fields=name,idd');
         const data = await res.json();
 
         const countries = data.sort((a, b) =>
@@ -212,11 +212,6 @@ countrySelect.addEventListener('change', async function () {
         console.error("City load error", err);
         citySelect.innerHTML = '<option value="">No cities found</option>';
     }
-});
-
-/* When city selected */
-citySelect.addEventListener('change', async function () {
-    postalInput.value = "Auto-detected";
 });
 
 /* Init */
