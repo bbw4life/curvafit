@@ -1,5 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
+
+function getProductUrl(id) {
+  const productIndex = products.findIndex(p => p.id === id) + 1;
+  return `product${productIndex}.html`;
+}
+
+
   function populateMainProductMedia(media) {
     const thumbsContainer = document.getElementById('product-thumbnails');
     const mainSlider = document.getElementById('main-image-slider');
@@ -110,32 +117,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const pid = productSection.dataset.productId;
         const prod = products.find(p => p.id === pid);
         if (prod && prod.media) populateMainProductMedia(prod.media);
-      // ==================== COLOR SWATCHES + NOM EN HOVER ====================
-      function populateColorSwatches(product) {
-        const container = document.querySelector('.color-swatches');
-        if (!container || !product?.colors?.length) return;
 
-        container.innerHTML = '';
+        // ==================== COLOR SWATCHES + NOM EN HOVER ====================
+        function populateColorSwatches(product) {
+          const container = document.querySelector('.color-swatches');
+          if (!container || !product?.colors?.length) return;
 
-        product.colors.forEach((color, index) => {
-          const swatch = document.createElement('div');
-          swatch.className = `swatch ${index === 0 ? 'active' : ''}`;
-          swatch.style.backgroundColor = color.hex;
-          swatch.dataset.color = color.name;
-          swatch.addEventListener('click', () => {
-            container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
-            swatch.classList.add('active');
-            if (window.innerWidth <= 767) {
-              const mainSlider = document.getElementById('main-image-slider');
-              if (mainSlider) {
-                mainSlider.scrollIntoView({ behavior: 'smooth' });
+          container.innerHTML = '';
+
+          product.colors.forEach((color, index) => {
+            const swatch = document.createElement('div');
+            swatch.className = `swatch ${index === 0 ? 'active' : ''}`;
+            swatch.style.backgroundColor = color.hex;
+            swatch.dataset.color = color.name;
+            swatch.addEventListener('click', () => {
+              container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+              swatch.classList.add('active');
+            });
+            swatch.addEventListener('click', () => {
+              if (window.innerWidth < 768) {
+                const mediaSection = document.querySelector('.product-media');
+                if (mediaSection) {
+                  mediaSection.scrollIntoView({ behavior: 'smooth' });
+                }
               }
-            }
-          });
+            });
 
-          container.appendChild(swatch);
-        });
-      }
+            container.appendChild(swatch);
+          });
+        }
 
         // Delivery Date
         if (prod) {
@@ -534,8 +544,8 @@ document.addEventListener('DOMContentLoaded', () => {
         cartItem.dataset.size = item.size;
         cartItem.dataset.color = item.color;
         cartItem.innerHTML = `
-          <a href="/products/${item.id}"><img src="${item.image}" alt="${item.title}"></a>
-          <a href="/products/${item.id}"><h4>${item.title}</h4></a>
+          <img src="${item.image}" alt="${item.title}">
+          <h4>${item.title}</h4>
           <p>$${parseFloat(item.price).toFixed(2)}</p>
           <p>Size: ${item.size || 'N/A'}</p>
           <p>Color: ${item.color || 'N/A'}</p>
@@ -547,6 +557,22 @@ document.addEventListener('DOMContentLoaded', () => {
           <button class="remove-item"><i class="fi fi-sr-trash"></i></button>
         `;
         cartItemsContainer.appendChild(cartItem);
+
+        const img = cartItem.querySelector('img');
+      const title = cartItem.querySelector('h4');
+      if (img && title) {
+        const productUrl = getProductUrl(item.id);
+        img.style.cursor = 'pointer';
+        title.style.cursor = 'pointer';
+        img.addEventListener('click', () => {
+          window.location.href = productUrl;
+        });
+        title.addEventListener('click', () => {
+          window.location.href = productUrl;
+        });
+      }
+
+
       });
       cartItemsContainer.querySelectorAll('.qty-plus').forEach(btn => btn.addEventListener('click', handleQuantityChange));
       cartItemsContainer.querySelectorAll('.qty-minus').forEach(btn => btn.addEventListener('click', handleQuantityChange));
