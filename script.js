@@ -125,6 +125,12 @@ document.addEventListener('DOMContentLoaded', () => {
           swatch.addEventListener('click', () => {
             container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
             swatch.classList.add('active');
+            if (window.innerWidth <= 767) {
+              const mainSlider = document.getElementById('main-image-slider');
+              if (mainSlider) {
+                mainSlider.scrollIntoView({ behavior: 'smooth' });
+              }
+            }
           });
 
           container.appendChild(swatch);
@@ -528,8 +534,8 @@ document.addEventListener('DOMContentLoaded', () => {
         cartItem.dataset.size = item.size;
         cartItem.dataset.color = item.color;
         cartItem.innerHTML = `
-          <img src="${item.image}" alt="${item.title}">
-          <h4>${item.title}</h4>
+          <a href="/products/${item.id}"><img src="${item.image}" alt="${item.title}"></a>
+          <a href="/products/${item.id}"><h4>${item.title}</h4></a>
           <p>$${parseFloat(item.price).toFixed(2)}</p>
           <p>Size: ${item.size || 'N/A'}</p>
           <p>Color: ${item.color || 'N/A'}</p>
