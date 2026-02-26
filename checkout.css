@@ -14,7 +14,7 @@ body {
 /* Checkout Header */
 .checkout-header {
     background-color: #fc90b1; /* Nicer than simple white, soft pink tint for premium feel */
-    padding: 0.5rem 1rem;
+    padding: 0.2rem 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     text-align: center;
     position: sticky;
@@ -411,11 +411,53 @@ h2 {
         display: none; /* Hide scrollbar for cleaner look */
     }
 }
-
 select {
     padding: 0.875rem;
     border: 1px solid #ddd;
     border-radius: 8px;
     width: 100%;
     font-size: 0.95rem;
+}
+
+/* Reset specific to the section */
+#wave-section * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Main container of the section */
+#wave-section {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background: #db0f7f;
+  overflow: hidden; /* Contain content to avoid offset */
+  isolation: isolate; /* Isolate the style context */
+}
+/* Wave container */
+#wave-section .wave-container {
+  position: absolute;
+  width: 200%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+}
+/* Common style for waves */
+#wave-section .wave {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  fill: url(#wave-gradient);
+  animation: wave-slide 10s linear infinite;
+}
+/* Gradient for waves */
+#wave-gradient {
+  --color1: #000000;
+  --color2: #ddced5;
+}
+/* Scroll animation with configurable direction */
+@keyframes wave-slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }

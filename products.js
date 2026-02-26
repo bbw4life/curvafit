@@ -171,44 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Implement if needed
   }
 
-  // Delivery Date (inchangé)
-  const baseStartStr = "2026-02-24";
-  const baseEndStr = "2026-02-28";
-  if (baseStartStr && baseEndStr) {
-    const baseStart = new Date(baseStartStr + "T00:00:00");
-    const baseEnd = new Date(baseEndStr + "T00:00:00");
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    let initialDaysUntilStart = Math.max(1, Math.ceil((baseStart.getTime() - today.getTime()) / 86400000));
-    let deliveryDurationDays = Math.max(1, Math.ceil((baseEnd.getTime() - baseStart.getTime()) / 86400000));
-    const cycleDays = initialDaysUntilStart + deliveryDurationDays;
-    let currentStart = new Date(baseStart);
-    let currentEnd = new Date(baseEnd);
-    while (currentEnd.getTime() < today.getTime()) {
-      currentStart.setDate(currentStart.getDate() + cycleDays);
-      currentEnd.setDate(currentEnd.getDate() + cycleDays);
-    }
-    if (currentEnd.getTime() <= today.getTime()) {
-      currentStart.setDate(currentStart.getDate() + cycleDays);
-      currentEnd.setDate(currentEnd.getDate() + cycleDays);
-    }
-    function formatDate(date) {
-      const d = date.getDate().toString().padStart(2, '0');
-      const m = (date.getMonth() + 1).toString().padStart(2, '0');
-      const y = date.getFullYear().toString().slice(-2);
-      return `${d}/${m}/${y}`;
-    }
-    const startEl = document.getElementById("start-date");
-    const endEl = document.getElementById("end-date");
-    const textEl = document.getElementById("delivery-text");
-    if (startEl && endEl) {
-      startEl.innerText = formatDate(currentStart);
-      endEl.innerText = formatDate(currentEnd);
-    }
-    if (textEl) {
-      textEl.style.visibility = "visible";
-    }
-  }
 
   // Stories (inchangé)
   const container = document.getElementById('paul-story-container-block1');
@@ -366,4 +328,90 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateLiveViewers, updateFrequency);
   updateLiveViewers();
 
-});   // FIN DOMContentLoaded
+});
+
+
+
+    const writeButton = document.getElementById('write-review');
+    const reviewForm = document.getElementById('review-form');
+    const reviewsList = document.querySelector('.reviews-list');
+    const totalReviewsSpan = document.getElementById('total-reviews');
+    const readMoreBtn = document.getElementById('read-more');
+
+    let counts = {1: 0, 2: 1, 3: 2, 4: 7, 5: 35};
+    let total = 45;
+
+    function updateSummary() {
+        totalReviewsSpan.textContent = total;
+        for (let i = 1; i <= 5; i++) {
+            const percentage = (counts[i] / total) * 100;
+            document.getElementById(`bar-${i}`).style.width = `${percentage}%`;
+            document.getElementById(`count-${i}`).textContent = counts[i];
+        }
+    }
+
+    const hiddenReviews = document.querySelectorAll('.review-card.hidden');
+    let showingAll = false;
+
+    readMoreBtn.addEventListener('click', () => {
+        if (!showingAll) {
+            hiddenReviews.forEach(review => review.classList.remove('hidden'));
+            readMoreBtn.textContent = 'Close Reviews';
+            showingAll = true;
+        } else {
+            hiddenReviews.forEach(review => review.classList.add('hidden'));
+            readMoreBtn.textContent = 'Read more reviews';
+            showingAll = false;
+        }
+    });
+
+    writeButton.addEventListener('click', () => {
+        reviewForm.style.display = 'block';
+        writeButton.style.display = 'none'; // Optional: hide button after click
+    });
+
+    const form = reviewForm.querySelector('form');
+    form.noValidate = true;
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('review-name').value.trim();
+        const rating = parseInt(document.getElementById('review-rating').value);
+        const title = document.getElementById('review-title').value.trim();
+        const text = document.getElementById('review-text').value.trim();
+
+        if (!name || !rating || !title || !text) return;
+
+        const newReview = document.createElement('div');
+        newReview.className = 'review-card';
+        const avatarLetter = name.charAt(0).toUpperCase();
+        const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).replace(/ /g, '-');
+        const stars = '★'.repeat(rating);
+
+        newReview.innerHTML = `
+            <div class="avatar">${avatarLetter}</div>
+            <h4>${name}</h4>
+            <div class="stars">${stars}</div>
+            <span class="date">${currentDate}</span>
+            <h5>${title}</h5>
+            <p>${text}</p>
+            <div class="review-images"></div>
+            <div class="social-icon"></div>
+        `;
+
+        reviewsList.appendChild(newReview);
+        counts[rating]++;
+        total++;
+        updateSummary();
+
+        // Clear form
+        document.getElementById('review-name').value = '';
+        document.getElementById('review-rating').value = '';
+        document.getElementById('review-title').value = '';
+        document.getElementById('review-text').value = '';
+
+        reviewForm.style.display = 'none';
+        writeButton.style.display = 'block';
+    });
+
+    updateSummary(); // Initial update

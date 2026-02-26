@@ -110,6 +110,90 @@ document.addEventListener('DOMContentLoaded', () => {
         const pid = productSection.dataset.productId;
         const prod = products.find(p => p.id === pid);
         if (prod && prod.media) populateMainProductMedia(prod.media);
+      // ==================== COLOR SWATCHES + NOM EN HOVER ====================
+      function populateColorSwatches(product) {
+        const container = document.querySelector('.color-swatches');
+        if (!container || !product?.colors?.length) return;
+
+        container.innerHTML = '';
+
+        product.colors.forEach((color, index) => {
+          const swatch = document.createElement('div');
+          swatch.className = `swatch ${index === 0 ? 'active' : ''}`;
+          swatch.style.backgroundColor = color.hex;
+          swatch.dataset.color = color.name;
+          swatch.addEventListener('click', () => {
+            container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
+          });
+
+          container.appendChild(swatch);
+        });
+      }
+
+        // Delivery Date
+        if (prod) {
+          const baseStartStr = prod.start_date;
+          const baseEndStr = prod.end_date;
+
+          if (!baseStartStr || !baseEndStr) {
+            showText(); // Si pas de dates, affiche le texte statique
+            return;
+          }
+
+          const baseStart = new Date(baseStartStr + "T00:00:00");
+          const baseEnd = new Date(baseEndStr + "T00:00:00");
+
+          if (isNaN(baseStart.getTime()) || isNaN(baseEnd.getTime())) {
+            showText();
+            return;
+          }
+
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          let initialDaysUntilStart = Math.max(1, Math.ceil((baseStart.getTime() - today.getTime()) / 86400000));
+          let deliveryDurationDays = Math.max(1, Math.ceil((baseEnd.getTime() - baseStart.getTime()) / 86400000));
+          const cycleDays = initialDaysUntilStart + deliveryDurationDays;
+
+          let currentStart = new Date(baseStart);
+          let currentEnd = new Date(baseEnd);
+
+          while (currentEnd.getTime() < today.getTime()) {
+            currentStart.setDate(currentStart.getDate() + cycleDays);
+            currentEnd.setDate(currentEnd.getDate() + cycleDays);
+          }
+
+          if (currentEnd.getTime() <= today.getTime()) {
+            currentStart.setDate(currentStart.getDate() + cycleDays);
+            currentEnd.setDate(currentEnd.getDate() + cycleDays);
+          }
+
+          function formatDate(date) {
+            const d = date.getDate().toString().padStart(2, '0');
+            const m = (date.getMonth() + 1).toString().padStart(2, '0');
+            const y = date.getFullYear().toString().slice(-2);
+            return `${d}/${m}/${y}`;
+          }
+
+          const startEl = document.getElementById("start-date");
+          const endEl = document.getElementById("end-date");
+          const textEl = document.getElementById("delivery-text");
+
+          if (startEl && endEl) {
+            startEl.innerText = formatDate(currentStart);
+            endEl.innerText = formatDate(currentEnd);
+          }
+
+          // Afficher le texte seulement après mise à jour
+          showText();
+
+          function showText() {
+            if (textEl) {
+              textEl.style.visibility = "visible";
+            }
+          }
+        }
       }
       document.querySelectorAll('.mini-media-slider').forEach(slider => {
         const item = slider.closest('.product-item');
