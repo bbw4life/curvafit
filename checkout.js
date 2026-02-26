@@ -14,8 +14,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const shippingForm = document.getElementById('shipping-form');
     const payButton = document.getElementById('pay-button');
     const paymentOptions = document.querySelectorAll('input[name="payment"]');
-    const TAX_RATE = 0.1;
-    const SHIPPING_COST = 10.00;
+    let productsData = [];
+    let TAX_RATE = 0.1;  // Fallback si pas dans JSON
+    let SHIPPING_COST = 10.00;  // Fallback si pas dans JSON
+    let promos = [];
+    let appliedPromo = null;
+    let discountAmount = 0;
+
+    fetch('products.data.json')
+      .then(response => response.json())
+      .then(data => {
+        productsData = data;
+        // Trouver l'objet settings (premier élément avec "type": "settings")
+        const settings = productsData.find(item => item.type === "settings");
+        if (settings) {
+          TAX_RATE = settings.tax_rate || 0.1;
+          SHIPPING_COST = settings.shipping_cost || 10.00;
+          promos = settings.promos || [];
+        }
+        renderCart();  // Appeler renderCart après chargement pour appliquer les nouvelles valeurs
+      })
+      .catch(error => {
+        console.error('Erreur de chargement de products.data.json:', error);
+        renderCart();  // Continuer avec fallbacks si erreur
+      });
     function renderCart() {
         if (!cart.length) {
             cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
@@ -23,9 +45,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         cartItemsContainer.innerHTML = '';
         let subtotal = 0;
+        let bundleSavings = 0;
+        let hasBundle = false;
         cart.forEach(item => {
             const price = Number(item.price) || 0;
             const quantity = Number(item.quantity) || 0;
+            const itemTotal = price * quantity;
+            if (item.fromBundle) {
+                hasBundle = true;
+                bundleSavings += (item.compare_price ? (item.compare_price - price) * quantity : 0);
+            }
+            subtotal += itemTotal;
             const itemDiv = document.createElement('div');
             itemDiv.classList.add('item');
             const img = document.createElement('img');
@@ -35,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const info = document.createElement('div');
             info.innerHTML = `
                 <h3>${item.title || ''}</h3>
-                <p>Price: $${price.toFixed(2)}</p>
+                <p>Price: $${price.toFixed(2)} ${item.fromBundle ? '(Bundle Discount Applied)' : ''}</p>
                 <p>Quantity: ${quantity}</p>
                 <p>Size: ${item.size || 'N/A'}</p>
                 <p>Color: ${item.color || 'N/A'}</p>
@@ -44,16 +74,16 @@ document.addEventListener('DOMContentLoaded', () => {
             itemDiv.appendChild(img);
             itemDiv.appendChild(info);
             cartItemsContainer.appendChild(itemDiv);
-            subtotal += price * quantity;
         });
-        const taxes = subtotal * TAX_RATE;
-        const total = subtotal + taxes + SHIPPING_COST;
-        subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
-        taxesElement.textContent = `$${taxes.toFixed(2)}`;
-        shippingElement.textContent = `$${SHIPPING_COST.toFixed(2)}`;
-        totalElement.textContent = `$${total.toFixed(2)}`;
+        if (hasBundle && bundleSavings > 0) {
+            const savingsDiv = document.createElement('div');
+            savingsDiv.classList.add('bundle-savings');
+            savingsDiv.innerHTML = `<p>Bundle Savings: -$${bundleSavings.toFixed(2)}</p>`;
+            cartItemsContainer.appendChild(savingsDiv);
+        }
+        updatePromoDisplay();
+        updateTotals();
     }
-    renderCart();
     paymentOptions.forEach(option => {
         option.addEventListener('change', () => {
             payButton.textContent =
@@ -95,6 +125,10 @@ document.addEventListener('DOMContentLoaded', () => {
         payButton.textContent = "Processing...";
         const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
         const shippingData = getShippingData();
+        if (discountAmount > 0) {
+            // Tu peux envoyer discountAmount au serveur si besoin
+            // Pour l'instant on le garde côté client
+        }
         try {
             let response;
             let data;
@@ -217,6 +251,120 @@ countrySelect.addEventListener('change', async function () {
 /* Init */
 loadCountries();
 
+function updatePromoDisplay() {
+    const hasBundle = cart.some(item => item.fromBundle);
+    const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const suggested = promos.find(p => p.items === totalQuantity);
 
+    const suggestedDiv = document.getElementById('suggested-promo');
+    const suggestedCodeEl = document.getElementById('suggested-code');
+    const itemCountDisplay = document.getElementById('item-count-display');
+    const promoMessage = document.getElementById('promo-message');
+
+    if (suggestedDiv && suggestedCodeEl && itemCountDisplay) {
+        itemCountDisplay.textContent = totalQuantity;
+
+        if (!hasBundle && suggested) {
+            suggestedDiv.style.display = 'block';
+            suggestedCodeEl.textContent = suggested.code;
+        } else {
+            suggestedDiv.style.display = 'none';
+        }
+    }
+
+    // Réinitialise message si bundle
+    if (hasBundle) {
+        promoMessage.textContent = "Promo codes are not available with bundle purchases.";
+        promoMessage.style.color = 'red';
+    } else {
+        promoMessage.textContent = '';
+    }
+}
+
+function getSubtotal() {
+    let subtotal = 0;
+    cart.forEach(item => {
+        const price = Number(item.price) || 0;
+        const quantity = Number(item.quantity) || 0;
+        subtotal += price * quantity;
+    });
+    return subtotal;
+}
+
+function updateTotals() {
+    const subtotal = getSubtotal();
+    let bundleSavings = 0;
+    let hasBundle = false;
+
+    cart.forEach(item => {
+        if (item.fromBundle) {
+            hasBundle = true;
+            bundleSavings += (item.compare_price ? (item.compare_price - item.price) * item.quantity : 0);
+        }
+    });
+
+    const taxes = subtotal * TAX_RATE;
+    const finalTotal = subtotal + taxes + SHIPPING_COST - discountAmount;
+
+    document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('taxes').textContent = `$${taxes.toFixed(2)}`;
+    document.getElementById('shipping').textContent = `$${SHIPPING_COST.toFixed(2)}`;
+    document.getElementById('total').textContent = `$${finalTotal.toFixed(2)}`;
+
+    // Affichage discount
+    const promoLine = document.getElementById('promo-line');
+    const discountEl = document.getElementById('discount-amount');
+    if (discountAmount > 0) {
+        promoLine.style.display = 'block';
+        discountEl.textContent = `-$${discountAmount.toFixed(2)}`;
+    } else {
+        promoLine.style.display = 'none';
+    }
+}
+
+// Copy bouton
+document.getElementById('copy-suggested')?.addEventListener('click', () => {
+    const code = document.getElementById('suggested-code').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('Code copied: ' + code);
+    });
+});
+
+// Apply promo
+document.getElementById('apply-promo')?.addEventListener('click', () => {
+    const input = document.getElementById('promo-input').value.trim().toUpperCase();
+    const promoMessage = document.getElementById('promo-message');
+    const hasBundle = cart.some(item => item.fromBundle);
+    const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+    if (hasBundle) {
+        promoMessage.textContent = "Promo codes cannot be used with bundles.";
+        promoMessage.style.color = 'red';
+        return;
+    }
+
+    if (!input) {
+        promoMessage.textContent = "Please enter a code.";
+        promoMessage.style.color = 'red';
+        return;
+    }
+
+    const promo = promos.find(p => p.code.toUpperCase() === input);
+
+    if (promo && promo.items === totalQuantity) {
+        appliedPromo = promo;
+        const subtotal = getSubtotal();
+        discountAmount = subtotal * (promo.percent / 100);
+        promoMessage.textContent = `Promo applied: ${promo.percent}% off!`;
+        promoMessage.style.color = 'green';
+        updateTotals();
+    } else {
+        appliedPromo = null;
+        discountAmount = 0;
+        promoMessage.textContent = "Invalid or inapplicable promo code.";
+        promoMessage.style.color = 'red';
+        updateTotals();
+    }
+});
 
 });

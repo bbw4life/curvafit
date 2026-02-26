@@ -64,7 +64,10 @@
       "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_3_6f466031-c570-4b5a-a705-f3df71589a31.png?v=1771884541"
     ],
     "start_date": "2026-03-07",
-    "end_date": "2026-03-10"
+    "end_date": "2026-03-10",
+    "single_discount": 7,
+    "duo_discount": 10,
+    "trio_discount": 20
   },
   {
     "cj_id": "689838374",
@@ -802,5 +805,37 @@
     ],
     "start_date": "2026-02-24",
     "end_date": "2026-02-28"
+  },
+  {
+    "type": "settings",
+    "tax_rate": 0.1,
+    "shipping_cost": 10.00,
+    "promos": [
+      {
+        "code": "PAUL81",
+        "items": 10,
+        "percent": 40
+      },
+      {
+        "code": "CURVA15",
+        "items": 4,
+        "percent": 20
+      },
+      {
+        "code": "FITNESS25",
+        "items": 5,
+        "percent": 25
+      },
+      {
+        "code": "BUNDLEFREE",
+        "items": 6,
+        "percent": 30
+      },
+      {
+        "code": "CURVA40",
+        "items": 7,
+        "percent": 40
+      }
+    ]
   }
 ]

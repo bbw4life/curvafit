@@ -49,8 +49,8 @@
         <svg width="0" height="0">
             <defs>
             <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" style="stop-color: var(--color1);" />
-                <stop offset="100%" style="stop-color: var(--color2);" />
+                <stop offset="0%" />
+                <stop offset="100%" />
             </linearGradient>
             </defs>
         </svg>
@@ -66,55 +66,67 @@
         <h2>Order Summary</h2>
         <div class="cart-items"></div>
         <div class="summary-totals">
+            <div class="promo-wrapper">
+            <h3>Promo Code</h3>
+            <!-- Code promo suggéré (affiché automatiquement selon nombre de produits) -->
+            <div id="suggested-promo">
+                <p>Recommended code for your cart (<span id="item-count-display">0</span> items):</p>
+                <strong id="suggested-code"></strong>
+                <button id="copy-suggested">
+                    Copy
+                </button>
+            </div>
+            <!-- Champ pour entrer et appliquer un code -->
+            <div class="promo-input-group">
+                <input type="text" id="promo-input" placeholder="Enter promo code">
+                <button id="apply-promo">
+                    Apply
+                </button>
+            </div>
+            <p id="promo-message"></p>
+        </div>
             <p>Subtotal: <span id="subtotal">$0.00</span></p>
             <p>Taxes (10%): <span id="taxes">$0.00</span></p>
             <p>Shipping: <span id="shipping">$0.00</span></p>
             <p class="total">Total: <span id="total">$0.00</span></p>
+            <p id="promo-line">
+                Discount: <span id="discount-amount">-$0.00</span>
+            </p>
         </div>
     </section>
     <!-- SHIPPING INFORMATION -->
 <section class="shipping-info">
     <h2>Shipping Information</h2>
     <form id="shipping-form" autocomplete="on">
-
         <label for="full-name">Full Name</label>
         <input type="text" id="full-name" required>
-
         <label for="email">Email Address</label>
         <input type="email" id="email" required>
-
         <!-- PHONE WITH COUNTRY CODE -->
         <label for="phone">Phone Number</label>
-        <div style="display:flex; gap:0.5rem;">
-            <input type="text" id="phone-code" readonly 
-                   style="width:90px; background:#f3f3f3; cursor:not-allowed;">
-            <input type="tel" id="phone" required style="flex:1;">
+        <div class="phone-input-group">
+            <input type="text" id="phone-code" readonly>
+            <input type="tel" id="phone" required>
         </div>
-
         <!-- COUNTRY SELECT -->
         <label for="country">Country</label>
         <select id="country" required>
             <option value="">Select your country</option>
         </select>
-
         <!-- CITY SELECT -->
         <label for="city">City</label>
         <select id="city" required>
             <option value="">Select your city</option>
         </select>
-
         <!-- STATE MANUAL -->
         <label for="state">State / Department</label>
         <input type="text" id="state" required>
-
         <!-- POSTAL MANUAL -->
         <label for="postal-code">Postal Code</label>
         <input type="text" id="postal-code" required>
-
         <!-- ADDRESS -->
         <label for="address">Full Address</label>
         <textarea id="address" required></textarea>
-
     </form>
 </section>
     <!-- TRUST SECTION -->

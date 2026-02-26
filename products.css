@@ -133,6 +133,8 @@
     font-weight: bold;
     color: #333;
 }
+
+
 #size-select {
     width: 100%;
     max-width: 300px;
@@ -959,6 +961,7 @@ details[open] .chevron {
   box-shadow: 0 8px 24px rgba(0,0,0,0.18);
   padding: 10px;
   overflow-y: auto;
+  padding: 2px 20px;
   box-sizing: border-box;
 }
 .modal-paul-guide-content.animated-border {
@@ -1790,6 +1793,7 @@ details[open] .chevron {
     display: flex;
     gap: 10px;
     margin-top: 10px;
+    flex-wrap: wrap; /* Added to prevent overflow on mobile */
 }
 
 .review-images img {
@@ -1853,6 +1857,48 @@ details[open] .chevron {
 @media (max-width: 768px) {
     .reviews-list {
         grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .review-card {
+        padding: 2px;
+    }
+
+    .avatar {
+        width: 50px; /* Reduced size */
+        height: 50px;
+    }
+
+    .review-card h4 {
+        font-size: 18px; /* Reduced font size */
+    }
+
+    .review-card .stars {
+        font-size: 18px; /* Reduced */
+    }
+
+    .review-card .date {
+        font-size: 16px; /* Reduced */
+    }
+
+    .review-card h5 {
+        font-size: 16px; /* Reduced */
+        margin: 8px 0 4px; /* Reduced margins */
+    }
+
+    .review-card p {
+        font-size: 14px; /* Reduced */
+    }
+
+    .review-images img {
+        width: 50px; /* Reduced image size to fit better and reduce height */
+        height: 50px;
+    }
+
+    .reviews-header h2,
+    .average-rating,
+    .stars {
+        font-size: 24px; /* Slightly reduced header sizes for mobile */
     }
 }
 
@@ -1905,6 +1951,258 @@ details[open] .chevron {
 .color-swatches .swatch:hover::before {
   opacity: 1;
   visibility: visible;
+}
+
+
+.bundle-save-container {
+  max-width: 450px;
+  margin: 0 0;
+  font-family: Arial, sans-serif;
+}
+.bundle-save-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0px 0;
+  padding: 5px;
+  padding-bottom: 0px !important;
+  margin-bottom: 20px !important;
+  border: 2px solid #000000 !important;
+  border-radius: 16px !important;
+  box-sizing: border-box !important;
+  background: #ffffff;
+}
+.bundle-title {
+  text-align: center;
+  font-size: 16px !important;
+  color: #ff0000 !important;
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-top: -5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.title-decoration {
+  flex: 1;
+  height: 2px;
+  background: transparent;
+  border-top: 2px solid #ff0000;
+  border-radius: 2px;
+  min-width: 40px;
+  max-width: 120px;
+}
+
+.bundle-option {
+  border: 1px solid #ccc !important;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  padding: 0px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.bundle-option:hover,
+.bundle-option.active {
+  border-color: #000000 !important;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
+}
+
+.bundle-option input {
+  margin-right: 12px;
+}
+.bundle-option label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: -10px !important;
+  cursor: pointer;
+}
+.bundle-content {
+  display: flex;
+  margin-bottom: 0px !important;
+  flex-direction: column;
+}
+.bundle-name {
+  font-weight: bold;
+  margin: 2px 6px;
+  font-size: 16px;
+  color: #000000;
+}
+.bundle-description {
+  font-size: 12px;
+  color: #fff;
+  border-radius: 20px !important;
+  margin: 5px 3px !important;
+  padding: 4px 6px;
+}
+.bundle-price {
+  font-weight: bold;
+  font-size: 16px;
+  color: #000;
+  white-space: nowrap;
+}
+.original-price {
+  font-size: 14px;
+  color: #999;
+  text-decoration: line-through;
+  margin-left: 6px;
+}
+/* Badges */
+.bundle-badge {
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 4px 9px;
+  border-radius: 12px;
+  z-index: 2;
+}
+.duo-badge {
+  background-color: #FF6B6B;
+  color: #FFFFFF;
+}
+.trio-badge {
+  background-color: #4ECDC4;
+  color: #FFFFFF;
+}
+/* Ligne image + selects */
+.variant-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0px 0;
+}
+.variant-preview {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  margin-bottom: -15px !important;
+}
+.variant-preview img {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  align-self: center;
+}
+/* Sélecteurs */
+.variant-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  flex: 1;
+}
+.variant-grid > div {
+  flex: 1 1 45%;
+  min-width: 45%;
+  max-width: 50%;
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+.variant-grid label {
+  display: block;
+  margin: 5px 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.variant-grid select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #333333;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+.variant-grid select:focus {
+  outline: none;
+  border-color: #000000;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.12);
+}
+/* Textes Item 1, Item 2, Item 3 */
+.pair-title {
+  display: block;
+  color: #000000;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+/* Boutons */
+.bundle-add-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  border: 0px none #000000;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.bundle-add-btn:hover {
+  background-color: #111111;
+}
+/* Mobile responsive – image reste à gauche, selects côte à côte */
+@media screen and (max-width: 400px) {
+  .variant-row {
+    flex-direction: row !important; /* force horizontal */
+    align-items: center;
+    gap: 2px !important; /* espace réduit */
+  }
+  .variant-preview img {
+    width: 60px; /* image plus petite pour mobile */
+    height: 60px;
+  }
+  .variant-grid {
+    flex-wrap: nowrap !important; /* empêche passage à la ligne */
+    gap: 2px !important;
+  }
+  .variant-grid > div {
+    flex: 1 1 auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+    padding: 0 4px !important;
+  }
+  .variant-grid select {
+    font-size: 13px !important; /* texte un peu plus petit */
+    padding: 6px 0px !important; /* moins de padding interne */
+  }
+}
+/* Pour que la selection zone ne "saute" pas trop */
+.bundle-selection {
+  transition: all 0.22s ease; /* ouverture/fermeture douce */
+  overflow: hidden; /* évite débordements */
+  display:none; 
+  margin-top:0px; 
+  padding:6px; 
+  background:#f9f9f9; 
+  border-radius:0px;
+}
+.single-description {
+  color: #000 !important;
+  background: #f0f0f0 !important;
+}
+.duo-description {
+  color: #fff !important;
+  background: #ff6b6b !important;
+}
+.trio-description {
+  color: #fff !important;
+  background: #4ecdc4 !important;
 }
 
 
