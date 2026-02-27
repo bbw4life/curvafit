@@ -38,16 +38,19 @@ function getProductUrl(id) {
     thumbs[currentMainIndex].classList.add('active');
     const thumbsContainer = document.getElementById('product-thumbnails');
     const activeThumb = thumbs[currentMainIndex];
-    if (activeThumb && thumbsContainer) {
-      if (thumbsContainer.scrollHeight > thumbsContainer.clientHeight) {
-        // Vertical scroll
-        const offset = activeThumb.offsetTop - (thumbsContainer.clientHeight / 2) + (activeThumb.clientHeight / 2);
-        thumbsContainer.scrollTo({ top: offset, behavior: 'smooth' });
-      } else if (thumbsContainer.scrollWidth > thumbsContainer.clientWidth) {
-        // Horizontal scroll
-        const offset = activeThumb.offsetLeft - (thumbsContainer.clientWidth / 2) + (activeThumb.clientWidth / 2);
-        thumbsContainer.scrollTo({ left: offset, behavior: 'smooth' });
-      }
+    const isHorizontal = thumbsContainer.scrollWidth > thumbsContainer.clientWidth;
+    if (isHorizontal) {
+      const scrollAmount = activeThumb.offsetLeft - (thumbsContainer.clientWidth / 2) + (activeThumb.clientWidth / 2);
+      thumbsContainer.scrollTo({
+        left: scrollAmount,
+        behavior: 'smooth'
+      });
+    } else {
+      const scrollAmount = activeThumb.offsetTop - (thumbsContainer.clientHeight / 2) + (activeThumb.clientHeight / 2);
+      thumbsContainer.scrollTo({
+        top: scrollAmount,
+        behavior: 'smooth'
+      });
     }
   }
   function populateMiniSlider(slider, media) {
@@ -156,27 +159,10 @@ function getProductUrl(id) {
           swatch.addEventListener('click', () => {
             container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
             swatch.classList.add('active');
-            const selectedColor = swatch.dataset.color;
-            const colorObj = product.colors.find(c => c.name === selectedColor);
-            if (colorObj) {
-              const imageSrc = colorObj.image;
-              const mediaIndex = prod.media.findIndex(m => m.split('/').pop().split('?')[0] === imageSrc);
-              if (mediaIndex !== -1) {
-                changeMainImage(mediaIndex);
-              }
-            }
-            const isMobile = window.matchMedia("(max-width: 767px)").matches;
-            if (isMobile) {
-              const mainSlider = document.getElementById('main-image-slider');
-              if (mainSlider) {
-                mainSlider.scrollIntoView({ behavior: 'smooth' });
-              }
-            }
           });
           container.appendChild(swatch);
         });
       }
-      populateColorSwatches(prod);
         // Delivery Date
         if (prod) {
           const baseStartStr = prod.start_date;
