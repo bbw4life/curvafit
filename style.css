@@ -3601,5 +3601,96 @@ a {
 }
 
 
+/* ==================== STORE INFOS SECTION ==================== */
+.store-infos-section {
+    padding: 10px 0;
+    background-color: #000000;
+    background-size: cover;
+    background-position: center;
+}
 
+.store-infos__container {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
 
+.store-infos__container::-webkit-scrollbar {
+    display: none;
+}
+
+.store-infos__item {
+    flex: 0 0 260px;
+    background-color: #1C2526;
+    border: 1px solid #ffffff;
+    border-radius: 12px;
+    padding: 10px;
+    scroll-snap-align: center;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.store-infos__item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+}
+
+.store-infos__icon svg {
+    width: 40px;
+    height: 40px;
+    fill: #f120a1;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.store-infos__item:hover .store-infos__icon svg {
+    transform: scale(1.25);
+}
+
+.store-infos__content h3 {
+    color: #ffffff !important;
+    font-size: 18px !important;
+    font-weight: bold !important;
+    margin: 0 0 6px 0 !important;
+    background-color: rgba(231, 51, 162, 0.877);
+    padding: 6px 12px;
+    border-radius: 6px;
+    display: inline-block;
+    line-height: 1.3;
+}
+
+.store-infos__content p {
+    color: #ffffff;
+    font-size: 14.5px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* ==================== DESKTOP GRID ==================== */
+@media (min-width: 768px) {
+    .store-infos__container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        overflow-x: visible;
+        gap: 25px;
+        padding: 0 10px;
+    }
+    
+    .store-infos__item {
+        flex: none;
+        width: auto;
+    }
+}
+
+.store-infos-section.bg-image {
+    background-image: url('https://ton-image.jpg');
+}

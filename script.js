@@ -70,6 +70,24 @@ function getProductUrl(id) {
     .then(response => response.json())
     .then(data => {
       products = data;
+
+      // Nouveau code pour le tableau de comparaison
+    const comparisonTable = document.querySelector('.comparison-table tbody');
+    if (comparisonTable) {
+      const rows = comparisonTable.querySelectorAll('tr');  // Récupère toutes les lignes <tr> du <tbody>
+      rows.forEach((row, index) => {  // Boucle sur chaque ligne (index 0 à 11, correspondant aux 12 produits)
+        const product = products[index];  // Récupère le produit correspondant à l'index
+        if (product) {
+          // Mettre à jour la 1ère cellule : Titre du produit
+          const titleCell = row.querySelector('td:nth-child(1)');
+          if (titleCell) titleCell.textContent = product.title;
+
+          // Mettre à jour la 2ème cellule : Prix du produit (formaté en $XX.XX)
+          const priceCell = row.querySelector('td:nth-child(2)');
+          if (priceCell) priceCell.textContent = `$${product.price.toFixed(2)}`;
+        }
+      });
+    }
       document.querySelectorAll('.product-card').forEach(card => {
         const id = card.dataset.id;
         const product = products.find(p => p.id === id);
