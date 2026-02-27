@@ -151,6 +151,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const paulContainer = document.getElementById('sanaica-banner-paul');
+  if (paulContainer) {
+    const videoUrl = '';
+    const video = paulContainer.querySelector('.sanaica-banner-paul-video');
+    const soundBtn = paulContainer.querySelector('.sanaica-video-sound-toggle');
+    const videoWrapper = paulContainer.querySelector('.sanaica-banner-paul-video-wrapper');
+    if (videoUrl) {
+      video.src = videoUrl;
+      videoWrapper.style.display = 'block';
+      document.querySelectorAll('.sanaica-banner-paul-image').forEach(img => img.style.display = 'none');
+    } else {
+      videoWrapper.style.display = 'none';
+      paulContainer.classList.add('image-mode');
+    }
+    if (video && soundBtn && videoUrl) {
+      soundBtn.addEventListener('click', () => {
+        video.muted = !video.muted;
+        soundBtn.classList.toggle('muted', video.muted);
+      });
+    }
+    const slides = paulContainer.querySelectorAll('.sanaica-banner-paul-slide');
+    const indicators = paulContainer.querySelectorAll('.sanaica-banner-paul-indicator');
+    if (slides.length <= 1) return;
+    const intervalTime = 5 * 1000;
+    let currentSlide = 0;
+    let slideTimer;
+    function showSlide(index) {
+      slides.forEach((s, i) => s.classList.toggle('active', i === index));
+      indicators.forEach((ind, i) => ind.classList.toggle('active', i === index));
+      currentSlide = index;
+    }
+    function nextSlide() { showSlide((currentSlide + 1) % slides.length); }
+    showSlide(0);
+    slideTimer = setInterval(nextSlide, intervalTime);
+    indicators.forEach((ind, i) => {
+      ind.addEventListener('click', () => {
+        clearInterval(slideTimer);
+        showSlide(i);
+        slideTimer = setInterval(nextSlide, intervalTime);
+      });
+    });
+    paulContainer.addEventListener('mouseenter', () => clearInterval(slideTimer));
+    paulContainer.addEventListener('mouseleave', () => slideTimer = setInterval(nextSlide, intervalTime));
+  }
+
   // Star Rating JS
   const starsContainers = document.querySelectorAll('.unique-stars');
   starsContainers.forEach(stars => {

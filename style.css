@@ -3198,7 +3198,6 @@ a {
   border-radius: 8px;
   text-shadow: 0 2px 4px #000000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  width: 95%;
   z-index: 3;
   line-height: 1.2;
   transition: all 1.5s ease-in-out;
@@ -3238,26 +3237,6 @@ a {
   height: 12px;
   border-radius: 50%;
 }
-.paul-banner-indicators.bars .paul-banner-indicator {
-  width: 40px;
-  height: 5px;
-  border-radius: 3px;
-}
-.paul-banner-indicators.vertical-lines .paul-banner-indicator {
-  width: 4px;
-  height: 24px;
-  border-radius: 2px;
-}
-.paul-banner-indicators.squares .paul-banner-indicator {
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
-}
-.paul-banner-indicators.thin-lines .paul-banner-indicator {
-  width: 28px;
-  height: 3px;
-  border-radius: 2px;
-}
 /* Vidéo */
 .paul-banner-video-wrapper {
   position: absolute;
@@ -3296,18 +3275,23 @@ a {
 /* Responsive */
 @media (max-width: 768px) {
   #paul-banner { height: 170px !important; }
-  #paul-banner .paul-banner-title { font-size: 24px; padding: 0.3rem 0.8rem; }
-  .paul-banner-indicators.dots .paul-banner-indicator { width: 10px; height: 10px; }
-  .paul-banner-indicators.bars .paul-banner-indicator { width: 32px; height: 4px; }
-  .paul-banner-indicators.vertical-lines .paul-banner-indicator { height: 18px; }
-  .paul-banner-indicators.squares .paul-banner-indicator { width: 11px; height: 11px; }
-  .paul-banner-indicators.thin-lines .paul-banner-indicator { width: 22px; height: 2.5px; }
+  #paul-banner .paul-banner-title { 
+    font-size: 20px; 
+    padding: 0.5rem 0rem; 
+    width: 100%;
+}
+  .paul-banner-indicators.dots .paul-banner-indicator { 
+    width: 10px; height: 10px; 
+}
+
   #paul-banner.image-mode .paul-banner-indicators {
-    bottom: 25px; /* Same adjustment for mobile */
+    bottom: 25px;
   }
 }
 @media (max-width: 480px) {
-  #paul-banner .paul-banner-title { padding: 0.2rem 0.5rem; }
+  #paul-banner .paul-banner-title {
+     padding: 0.2rem 0.5rem; 
+ }
 }
 /* Pointer events */
 #paul-banner .paul-banner-slider-container,
@@ -3372,7 +3356,6 @@ a {
   border-radius: 8px;
   text-shadow: 0 2px 4px #000000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  width: 95%;
   z-index: 3;
   line-height: 1.2;
   transition: all 1.5s ease-in-out;
@@ -3470,18 +3453,24 @@ a {
 /* Responsive */
 @media (max-width: 768px) {
   #francenel-milliadaire-banner { height: 170px !important; }
-  #francenel-milliadaire-banner .francenel-milliadaire-banner-title { font-size: 24px; padding: 0.3rem 0.8rem; }
-  .francenel-milliadaire-banner-indicators.dots .francenel-milliadaire-banner-indicator { width: 10px; height: 10px; }
-  .francenel-milliadaire-banner-indicators.bars .francenel-milliadaire-banner-indicator { width: 32px; height: 4px; }
-  .francenel-milliadaire-banner-indicators.vertical-lines .francenel-milliadaire-banner-indicator { height: 18px; }
-  .francenel-milliadaire-banner-indicators.squares .francenel-milliadaire-banner-indicator { width: 11px; height: 11px; }
-  .francenel-milliadaire-banner-indicators.thin-lines .francenel-milliadaire-banner-indicator { width: 22px; height: 2.5px; }
+  #francenel-milliadaire-banner .francenel-milliadaire-banner-title { 
+    font-size: 24px; 
+    padding: 0.5rem 0rem;
+    width: 100%;
+ }
+  .francenel-milliadaire-banner-indicators.dots .francenel-milliadaire-banner-indicator { 
+    width: 10px; 
+    height: 10px; 
+}
+  
   #francenel-milliadaire-banner.image-mode .francenel-milliadaire-banner-indicators {
     bottom: 25px; /* Same adjustment for mobile */
   }
 }
 @media (max-width: 480px) {
-  #francenel-milliadaire-banner .francenel-milliadaire-banner-title { padding: 0.2rem 0.5rem; }
+  #francenel-milliadaire-banner .francenel-milliadaire-banner-title { 
+    padding: 0.2rem 0.5rem;
+ }
 }
 /* Pointer events */
 #francenel-milliadaire-banner .francenel-milliadaire-banner-slider-container,
@@ -3625,3 +3614,6 @@ a {
 .store-infos-section.bg-image {
     background-image: url('https://ton-image.jpg');
 }
+
+
+

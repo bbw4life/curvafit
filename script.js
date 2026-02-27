@@ -1050,6 +1050,7 @@ if (bundleContainer) {
       reviewItems[currentReview].classList.add('active');
     }, 5000);
   }
+
   const paulContainer = document.getElementById('paul-banner');
   if (paulContainer) {
     const videoUrl = '';
@@ -1094,6 +1095,7 @@ if (bundleContainer) {
     paulContainer.addEventListener('mouseenter', () => clearInterval(slideTimer));
     paulContainer.addEventListener('mouseleave', () => slideTimer = setInterval(nextSlide, intervalTime));
   }
+  
   const francenelContainer = document.getElementById('francenel-milliadaire-banner');
   if (francenelContainer) {
     const videoUrl = 'https://cdn.shopify.com/videos/c/o/v/8747957409cc4beda31702abfcd4ed91.mp4';

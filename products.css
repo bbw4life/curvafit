@@ -15,7 +15,7 @@
 @media (min-width: 769px) {
     .product-media {
         position: sticky;
-        top: 100px; /* Adjust based on header height */
+        top: 100px;
         align-self: flex-start;
     }
 }
@@ -25,7 +25,7 @@
     flex-direction: column;
     gap: 5px;
     overflow-y: auto;
-    max-height: 500px; /* Match main image height */
+    max-height: 510px; /* Match main image height */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
 }
@@ -2217,7 +2217,6 @@ details[open] .chevron {
 }
 
 
-
 .paul-announcement-bar {
     width: 100%;
     background: #111;
@@ -2226,21 +2225,21 @@ details[open] .chevron {
     overflow: hidden;
     position: fixed !important;
     top: 0 !important;
-    z-index: 1001 !important;
+    z-index: 10 !important;
     width: 100% !important;
 }
 
 .paul-announcement-wrapper {
-    max-width: 100%;           /* correction du "100%px" qui était invalide */
+    max-width: 100%;
     margin: auto;
     text-align: center;
-    padding: 0;                /* ← padding dessus/dessous supprimé */
+    padding: 0;
     position: relative;
 }
 
 .paul-announcement-slider {
     position: relative;
-    height: 38px; 
+    height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2305,8 +2304,6 @@ details[open] .chevron {
     }
 }
 
-
-
 .sticky-header {
     position: sticky !important;
     top: 38px !important;
@@ -2320,6 +2317,9 @@ details[open] .chevron {
         width: 100% !important;
         z-index: 1000 !important;
     }
+    .product-section {
+    padding: 10px 0 !important;
+}
 }
 
 body {
@@ -2328,6 +2328,161 @@ body {
 
 @media (max-width: 768px) {
     body {
-        padding-top: calc(28px + var(--header-height, 50px));
+        padding-top: calc(30px + var(--header-height, 50px));
     }
 }
+
+
+#sanaica-banner-paul {
+  position: relative;
+  height: 110px;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: -20px;
+}
+#sanaica-banner-paul .sanaica-banner-paul-slider-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+#sanaica-banner-paul .sanaica-banner-paul-slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.8s ease-in-out;
+  z-index: 4;
+}
+#sanaica-banner-paul .sanaica-banner-paul-slide.active {
+  opacity: 1;
+  z-index: 2;
+}
+#sanaica-banner-paul .sanaica-banner-paul-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+#sanaica-banner-paul .sanaica-banner-paul-placeholder {
+  width: 100%; height: 100%;
+  background: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+}
+#sanaica-banner-paul .sanaica-banner-paul-title {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -40%);
+  opacity: 0;
+  color: #f00b76;
+  font-size: 30px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  text-shadow: 0 2px 4px #000000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  z-index: 3;
+  line-height: 1.2;
+  transition: all 1.5s ease-in-out;
+}
+#sanaica-banner-paul .sanaica-banner-paul-slide.active .sanaica-banner-paul-title {
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+/* ─────────────── INDICATEURS ─────────────── */
+#sanaica-banner-paul .sanaica-banner-paul-indicators {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 6;
+}
+#sanaica-banner-paul.image-mode .sanaica-banner-paul-indicators {
+  bottom: 25px;
+}
+#sanaica-banner-paul .sanaica-banner-paul-indicator {
+  cursor: pointer;
+  transition: all 0.35s ease;
+  background: #f3f3f3;
+  opacity: 0.7;
+}
+#sanaica-banner-paul .sanaica-banner-paul-indicator.active {
+  background: #dd1260;
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.sanaica-banner-paul-indicators.dots .sanaica-banner-paul-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+/* Vidéo */
+.sanaica-banner-paul-video-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.sanaica-banner-paul-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sanaica-video-sound-toggle {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.5);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sanaica-video-sound-toggle svg {
+  width: calc(50px * 0.52);
+  height: calc(50px * 0.52);
+  fill: #ffffff;
+  display: none;
+}
+.sanaica-video-sound-toggle .sound-off { display: block; }
+.sanaica-video-sound-toggle:not(.muted) .sound-on { display: block; }
+.sanaica-video-sound-toggle:not(.muted) .sound-off { display: none; }
+/* Responsive */
+@media (max-width: 768px) {
+  #sanaica-banner-paul { height: 90px !important; }
+  .sanaica-banner-paul-indicators.dots .sanaica-banner-paul-indicator { 
+    width: 10px; height: 10px; 
+  }
+  #sanaica-banner-paul.image-mode .sanaica-banner-paul-indicators {
+    bottom: 25px;
+  }
+}
+@media (max-width: 480px) {
+  #sanaica-banner-paul .sanaica-banner-paul-title { 
+    padding: 0.5rem 0rem;
+    font-size: 18px;
+    width: 100%;
+  }
+}
+/* Pointer events */
+#sanaica-banner-paul .sanaica-banner-paul-slider-container,
+#sanaica-banner-paul .sanaica-banner-paul-slide,
+#sanaica-banner-paul .sanaica-banner-paul-title { pointer-events: none; }
+#sanaica-banner-paul .sanaica-banner-paul-indicators,
+.sanaica-video-sound-toggle { pointer-events: auto; }
