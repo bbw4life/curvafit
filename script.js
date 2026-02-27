@@ -36,10 +36,10 @@ function getProductUrl(id) {
     else currentMainIndex = dir;
     images[currentMainIndex].classList.add('active');
     thumbs[currentMainIndex].classList.add('active');
-    const activeThumb = thumbs[currentMainIndex];
     const thumbsContainer = document.getElementById('product-thumbnails');
-    if (thumbsContainer && activeThumb) {
-      activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    const activeThumb = thumbs[currentMainIndex];
+    if (activeThumb && thumbsContainer) {
+      activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center' });
     }
   }
   function populateMiniSlider(slider, media) {
@@ -148,19 +148,20 @@ function getProductUrl(id) {
           swatch.addEventListener('click', () => {
             container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
             swatch.classList.add('active');
-            const colorName = swatch.dataset.color;
-            const colorObj = product.colors.find(c => c.name === colorName);
+            const selectedColor = swatch.dataset.color;
+            const colorObj = product.colors.find(c => c.name === selectedColor);
             if (colorObj) {
               const imageSrc = colorObj.image;
-              const mediaIndex = product.media.findIndex(src => src === imageSrc);
+              const mediaIndex = prod.media.findIndex(m => m.includes(imageSrc));
               if (mediaIndex !== -1) {
                 changeMainImage(mediaIndex);
-                if (window.innerWidth < 768) {
-                  const mainSlider = document.getElementById('main-image-slider');
-                  if (mainSlider) {
-                    mainSlider.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }
+              }
+            }
+            const isMobile = window.matchMedia("(max-width: 767px)").matches;
+            if (isMobile) {
+              const mainSlider = document.getElementById('main-image-slider');
+              if (mainSlider) {
+                mainSlider.scrollIntoView({ behavior: 'smooth' });
               }
             }
           });
