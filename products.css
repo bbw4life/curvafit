@@ -2204,3 +2204,35 @@ details[open] .chevron {
   color: #fff !important;
   background: #4ecdc4 !important;
 }
+
+
+
+
+
+
+
+/* ====================== EFFET 3D SCROLL ====================== */
+[data-scroll-reveal] {
+    opacity: 0;
+    transform: perspective(1400px) 
+               rotateX(18deg) 
+               rotateY(12deg) 
+               translateY(100px) 
+               scale(0.88);
+    transition: all 1.4s cubic-bezier(0.23, 1, 0.32, 1);
+    will-change: transform, opacity;
+}
+
+[data-scroll-reveal].revealed {
+    opacity: 1;
+    transform: perspective(1400px) 
+               rotateX(0deg) 
+               rotateY(0deg) 
+               translateY(0) 
+               scale(1);
+}
+
+/* Légère variation pour les enfants (effet plus "pop") */
+.product-content [data-scroll-reveal] {
+    transition-delay: 80ms;
+}

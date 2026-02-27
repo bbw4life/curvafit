@@ -521,7 +521,7 @@ select {
     gap: 0.5rem;
 }
 #phone-code {
-    width: 90px;
+    width: 90px !important;
     background: #f3f3f3;
     cursor: not-allowed;
 }

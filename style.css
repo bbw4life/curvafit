@@ -3600,10 +3600,9 @@ a {
     display: block;
 }
 
-
 /* ==================== STORE INFOS SECTION ==================== */
 .store-infos-section {
-    padding: 10px 0;
+    padding: 20px 0;
     background-color: #000000;
     background-size: cover;
     background-position: center;
