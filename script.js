@@ -145,10 +145,24 @@ function getProductUrl(id) {
           swatch.addEventListener('click', () => {
             container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
             swatch.classList.add('active');
+            const colorObj = product.colors.find(c => c.name === swatch.dataset.color);
+            if (colorObj && colorObj.image) {
+              const activeMainImg = document.querySelector('#main-image-slider .main-image.active img');
+              const activeThumbImg = document.querySelector('#product-thumbnails .thumbnail-item.active img');
+              if (activeMainImg) activeMainImg.src = colorObj.image;
+              if (activeThumbImg) activeThumbImg.src = colorObj.image;
+              if (window.innerWidth < 768) {
+                const mainSlider = document.getElementById('main-image-slider');
+                if (mainSlider) {
+                  mainSlider.scrollIntoView({ behavior: 'smooth' });
+                }
+              }
+            }
           });
           container.appendChild(swatch);
         });
       }
+      populateColorSwatches(prod);
         // Delivery Date
         if (prod) {
           const baseStartStr = prod.start_date;
@@ -324,50 +338,32 @@ if (bundleContainer) {
       renderCart();
       checkout(); // Redirect to checkout.html
     }
-    // Click on bundle option → toggle if same block
+    // Prevent default label behavior
+    document.querySelectorAll('.bundle-option label').forEach(label => {
+      label.addEventListener('click', e => e.preventDefault());
+    });
+    // Click on bundle option → toggle
     document.querySelectorAll(".bundle-option").forEach(option => {
       option.addEventListener("click", function(e) {
-        if (e.target.closest(".bundle-selection")) return; // Évite de fermer si clic dans la sélection
-        const selection = this.querySelector(".bundle-selection");
-        const isAlreadyActive = this.classList.contains("active");
+        if (e.target.closest(".bundle-selection")) return; // Avoid toggle if click in selection
+        const radio = this.querySelector("input[type='radio']");
+        const wasChecked = radio.checked;
         // Close all
         document.querySelectorAll(".bundle-option").forEach(el => {
           el.classList.remove("active");
           const sel = el.querySelector(".bundle-selection");
           if (sel) sel.style.display = "none";
+          el.querySelector("input[type='radio']").checked = false;
         });
-        // Open this if was not already active
-        if (!isAlreadyActive) {
+        if (!wasChecked) {
+          radio.checked = true;
           this.classList.add("active");
-          this.querySelector('input[type="radio"]').checked = true; // Ajout : Coche le radio pour synchroniser
+          const selection = this.querySelector(".bundle-selection");
           if (selection) {
             selection.style.display = "block";
             populateSelectors(selection);
           }
-        } else {
-          this.classList.remove("active");
-          this.querySelector('input[type="radio"]').checked = false;
-          if (selection) selection.style.display = "none";
-        }
-      });
-    });
-    // Ajout pour synchroniser avec le changement du radio (si clic sur label)
-    document.querySelectorAll('input[name="bundle"]').forEach(radio => {
-      radio.addEventListener('change', () => {
-        if (radio.checked) {
-          document.querySelectorAll('.bundle-option').forEach(el => {
-            el.classList.remove('active');
-            const sel = el.querySelector('.bundle-selection');
-            if (sel) sel.style.display = 'none';
-          });
-          const parent = radio.closest('.bundle-option');
-          parent.classList.add('active');
-          const selection = parent.querySelector('.bundle-selection');
-          if (selection) {
-            selection.style.display = 'block';
-            populateSelectors(selection);
-          }
-        }
+        } // If was checked, stays closed
       });
     });
     // Click on "Add to cart" buttons
