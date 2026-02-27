@@ -2224,14 +2224,11 @@ details[open] .chevron {
     color: #fff;
     font-size: 25px;
     overflow: hidden;
-    position: relative;
-
     position: fixed !important;
     top: 0 !important;
     z-index: 1001 !important;
     width: 100% !important;
 }
-
 
 .paul-announcement-wrapper {
     max-width: 100%;           /* correction du "100%px" qui était invalide */
@@ -2243,7 +2240,7 @@ details[open] .chevron {
 
 .paul-announcement-slider {
     position: relative;
-    height: 38px;              /* ajusté pour que le texte 25px soit bien centré */
+    height: 38px; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2257,7 +2254,7 @@ details[open] .chevron {
     display: flex;
     align-items: center;
     justify-content: center;
-    line-height: 1;            /* supprime l'espace vertical par défaut */
+    line-height: 1;
 }
 
 .paul-announcement-item.active {
@@ -2283,7 +2280,7 @@ details[open] .chevron {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 2px 8px;          /* petit padding interne seulement pour le bouton promo */
+    padding: 2px 8px;
 }
 
 .copy-icon {
@@ -2304,13 +2301,15 @@ details[open] .chevron {
         font-size: 18px;
     }
     .paul-announcement-slider {
-        height: 28px;          /* hauteur adaptée pour mobile */
+        height: 28px;
     }
 }
 
+
+
 .sticky-header {
     position: sticky !important;
-    top: 30px !important;
+    top: 38px !important;
     z-index: 1000 !important;
 }
 
@@ -2320,5 +2319,15 @@ details[open] .chevron {
         top: 28px !important;
         width: 100% !important;
         z-index: 1000 !important;
+    }
+}
+
+body {
+    padding-top: calc(38px + var(--header-height, 0px));
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-top: calc(28px + var(--header-height, 50px));
     }
 }
