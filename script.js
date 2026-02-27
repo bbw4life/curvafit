@@ -36,6 +36,11 @@ function getProductUrl(id) {
     else currentMainIndex = dir;
     images[currentMainIndex].classList.add('active');
     thumbs[currentMainIndex].classList.add('active');
+    const activeThumb = thumbs[currentMainIndex];
+    const thumbsContainer = document.getElementById('product-thumbnails');
+    if (thumbsContainer && activeThumb) {
+      activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
   }
   function populateMiniSlider(slider, media) {
     if (!slider || !media) return;
@@ -70,18 +75,16 @@ function getProductUrl(id) {
     .then(response => response.json())
     .then(data => {
       products = data;
-
       // Nouveau code pour le tableau de comparaison
     const comparisonTable = document.querySelector('.comparison-table tbody');
     if (comparisonTable) {
-      const rows = comparisonTable.querySelectorAll('tr');  // Récupère toutes les lignes <tr> du <tbody>
-      rows.forEach((row, index) => {  // Boucle sur chaque ligne (index 0 à 11, correspondant aux 12 produits)
-        const product = products[index];  // Récupère le produit correspondant à l'index
+      const rows = comparisonTable.querySelectorAll('tr'); // Récupère toutes les lignes <tr> du <tbody>
+      rows.forEach((row, index) => { // Boucle sur chaque ligne (index 0 à 11, correspondant aux 12 produits)
+        const product = products[index]; // Récupère le produit correspondant à l'index
         if (product) {
           // Mettre à jour la 1ère cellule : Titre du produit
           const titleCell = row.querySelector('td:nth-child(1)');
           if (titleCell) titleCell.textContent = product.title;
-
           // Mettre à jour la 2ème cellule : Prix du produit (formaté en $XX.XX)
           const priceCell = row.querySelector('td:nth-child(2)');
           if (priceCell) priceCell.textContent = `$${product.price.toFixed(2)}`;
@@ -145,16 +148,18 @@ function getProductUrl(id) {
           swatch.addEventListener('click', () => {
             container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
             swatch.classList.add('active');
-            const colorObj = product.colors.find(c => c.name === swatch.dataset.color);
-            if (colorObj && colorObj.image) {
-              const activeMainImg = document.querySelector('#main-image-slider .main-image.active img');
-              const activeThumbImg = document.querySelector('#product-thumbnails .thumbnail-item.active img');
-              if (activeMainImg) activeMainImg.src = colorObj.image;
-              if (activeThumbImg) activeThumbImg.src = colorObj.image;
-              if (window.innerWidth < 768) {
-                const mainSlider = document.getElementById('main-image-slider');
-                if (mainSlider) {
-                  mainSlider.scrollIntoView({ behavior: 'smooth' });
+            const colorName = swatch.dataset.color;
+            const colorObj = product.colors.find(c => c.name === colorName);
+            if (colorObj) {
+              const imageSrc = colorObj.image;
+              const mediaIndex = product.media.findIndex(src => src === imageSrc);
+              if (mediaIndex !== -1) {
+                changeMainImage(mediaIndex);
+                if (window.innerWidth < 768) {
+                  const mainSlider = document.getElementById('main-image-slider');
+                  if (mainSlider) {
+                    mainSlider.scrollIntoView({ behavior: 'smooth' });
+                  }
                 }
               }
             }
@@ -162,7 +167,6 @@ function getProductUrl(id) {
           container.appendChild(swatch);
         });
       }
-      populateColorSwatches(prod);
         // Delivery Date
         if (prod) {
           const baseStartStr = prod.start_date;
@@ -373,7 +377,6 @@ if (bundleContainer) {
         const type = container.closest(".bundle-option").dataset.bundle;
         const items = [];
         let itemImage = product.image;
-
         // Calcul du discount selon le type de bundle
         let discount = 0;
         if (type === "single") {
@@ -383,22 +386,20 @@ if (bundleContainer) {
         } else if (type === "trio") {
           discount = (product.trio_discount || 0) / 100;
         }
-
         // Prix réduit par item (appliqué uniformément pour que le total soit correct)
         const discountedPrice = product.price * (1 - discount);
-
         if (type === "single") {
           if (!hasColors && !hasSizes) {
             items.push({
               id: product.id,
               title: product.title,
-              price: discountedPrice,  // Prix réduit
-              compare_price: product.compare_price,  // Ajout pour économies dans checkout
+              price: discountedPrice, // Prix réduit
+              compare_price: product.compare_price, // Ajout pour économies dans checkout
               image: itemImage,
               size: null,
               color: null,
               quantity: 1,
-              fromBundle: true  // Marqueur bundle
+              fromBundle: true // Marqueur bundle
             });
           } else {
             const values = getSelectedValues(container);
@@ -414,13 +415,13 @@ if (bundleContainer) {
             items.push({
               id: product.id,
               title: product.title,
-              price: discountedPrice,  // Prix réduit
-              compare_price: product.compare_price,  // Ajout pour économies dans checkout
+              price: discountedPrice, // Prix réduit
+              compare_price: product.compare_price, // Ajout pour économies dans checkout
               image: itemImage,
               size: selectedSize,
               color: selectedColor,
               quantity: 1,
-              fromBundle: true  // Marqueur bundle
+              fromBundle: true // Marqueur bundle
             });
           }
         } else {
@@ -434,13 +435,13 @@ if (bundleContainer) {
               items.push({
                 id: product.id,
                 title: product.title,
-                price: discountedPrice,  // Prix réduit
-                compare_price: product.compare_price,  // Ajout pour économies dans checkout
+                price: discountedPrice, // Prix réduit
+                compare_price: product.compare_price, // Ajout pour économies dans checkout
                 image: pairImage,
                 size: null,
                 color: null,
                 quantity: 1,
-                fromBundle: true  // Marqueur bundle
+                fromBundle: true // Marqueur bundle
               });
               continue;
             }
@@ -459,13 +460,13 @@ if (bundleContainer) {
             items.push({
               id: product.id,
               title: product.title,
-              price: discountedPrice,  // Prix réduit
-              compare_price: product.compare_price,  // Ajout pour économies dans checkout
+              price: discountedPrice, // Prix réduit
+              compare_price: product.compare_price, // Ajout pour économies dans checkout
               image: pairImage,
               size: selectedSize,
               color: selectedColor,
               quantity: 1,
-              fromBundle: true  // Marqueur bundle
+              fromBundle: true // Marqueur bundle
             });
           }
           if (!valid) return;
@@ -912,7 +913,7 @@ if (bundleContainer) {
         id: product.id,
         title: product.title,
         price: product.price,
-        compare_price: product.compare_price,  // Ajout pour économies dans checkout (même pour ajouts normaux)
+        compare_price: product.compare_price, // Ajout pour économies dans checkout (même pour ajouts normaux)
         image: itemImage,
         size: selectedSize,
         color: selectedColor,

@@ -259,6 +259,17 @@
     .paul-title-block {
       margin-top: -20px !important;
     }
+  }
+.paul-main-title {
+    color: #e91e63;
+    font-size: 30px;
+    font-weight: bold;
+    text-transform: none;
+    text-align: left;
+    margin: 0px 0;
+    padding: 0;
+    line-height: 1.2;
+}
     .add-to-cart {
     padding: 7px 10px !important;
     font-size: 12px !important;
@@ -267,7 +278,7 @@
     padding: 7px 10px !important;
     font-size: 12px !important;
 }
-  }
+
 /* Star Rating */
 .unique-star-rating-container {
     display: flex;
