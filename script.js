@@ -39,7 +39,15 @@ function getProductUrl(id) {
     const thumbsContainer = document.getElementById('product-thumbnails');
     const activeThumb = thumbs[currentMainIndex];
     if (activeThumb && thumbsContainer) {
-      activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+      if (thumbsContainer.scrollHeight > thumbsContainer.clientHeight) {
+        // Vertical scroll
+        const offset = activeThumb.offsetTop - (thumbsContainer.clientHeight / 2) + (activeThumb.clientHeight / 2);
+        thumbsContainer.scrollTo({ top: offset, behavior: 'smooth' });
+      } else if (thumbsContainer.scrollWidth > thumbsContainer.clientWidth) {
+        // Horizontal scroll
+        const offset = activeThumb.offsetLeft - (thumbsContainer.clientWidth / 2) + (activeThumb.clientWidth / 2);
+        thumbsContainer.scrollTo({ left: offset, behavior: 'smooth' });
+      }
     }
   }
   function populateMiniSlider(slider, media) {
@@ -152,7 +160,7 @@ function getProductUrl(id) {
             const colorObj = product.colors.find(c => c.name === selectedColor);
             if (colorObj) {
               const imageSrc = colorObj.image;
-              const mediaIndex = prod.media.findIndex(m => m.includes(imageSrc));
+              const mediaIndex = prod.media.findIndex(m => m.split('/').pop().split('?')[0] === imageSrc);
               if (mediaIndex !== -1) {
                 changeMainImage(mediaIndex);
               }
@@ -168,6 +176,7 @@ function getProductUrl(id) {
           container.appendChild(swatch);
         });
       }
+      populateColorSwatches(prod);
         // Delivery Date
         if (prod) {
           const baseStartStr = prod.start_date;
