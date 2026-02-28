@@ -2537,17 +2537,6 @@ body {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 #main-image-slider {
     position: relative;
     overflow: visible;
@@ -2593,20 +2582,18 @@ body {
 
 .modal-zoom-container {
     position: relative;
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     overflow: hidden;
     touch-action: none;
 }
 
 #modal-zoom-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+    max-width: 100%;
+    max-height: 100%;
     cursor: zoom-in;
     transition: transform 0.25s ease;
     user-select: none;
-    transform-origin: 50% 50%;
 }
 
 .modal-close {
