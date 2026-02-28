@@ -150,7 +150,7 @@ function getProductUrl(id) {
         if (prod && prod.media) populateMainProductMedia(prod.media);
 
 
-               // ==================== ZOOM MODAL MOBILE (clic + zoom doigts + flèches au-dessus) ====================
+            // ==================== ZOOM CORRIGÉ (Desktop souris + Mobile doigts + pan) ====================
       if (enableMediaZoom) {
         const mainSlider = document.getElementById('main-image-slider');
         const mainImages = mainSlider ? mainSlider.querySelectorAll('.main-image') : [];
@@ -161,84 +161,110 @@ function getProductUrl(id) {
         const modalNext = document.getElementById('modal-next');
 
         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        let currentModalIndex = currentMainIndex; // synchronisé avec le slider principal
-
-        // Liste des images (même que le slider)
+        let currentModalIndex = 0;
         const mediaList = prod ? prod.media : [];
 
-        function openModal(index) {
-          if (!mediaList.length) return;
-          currentModalIndex = index;
-          modalImg.src = mediaList[currentModalIndex];
-          modalImg.style.transform = 'scale(1)'; // reset zoom
-          modal.classList.add('active');
-        }
-
-        function changeModalImage(direction) {
-          if (!mediaList.length) return;
-          currentModalIndex = (currentModalIndex + direction + mediaList.length) % mediaList.length;
-          modalImg.src = mediaList[currentModalIndex];
-          modalImg.style.transform = 'scale(1)'; // reset zoom à chaque changement
-        }
-
-        // ====================== OUVERTURE MODAL (mobile) ======================
-        mainImages.forEach((container, idx) => {
+        // ====================== DESKTOP : suit la souris ======================
+        mainImages.forEach(container => {
           const img = container.querySelector('img');
           if (!img) return;
 
-          if (isTouchDevice) {
-            container.style.cursor = 'pointer';
-            container.addEventListener('click', (e) => {
-              e.stopImmediatePropagation();
-              openModal(idx);
+          if (!isTouchDevice) {
+            container.addEventListener('mousemove', e => {
+              const rect = container.getBoundingClientRect();
+              const x = ((e.clientX - rect.left) / rect.width) * 100;
+              const y = ((e.clientY - rect.top) / rect.height) * 100;
+              img.style.transformOrigin = `${x}% ${y}%`;
+            });
+
+            container.addEventListener('mouseleave', () => {
+              img.style.transformOrigin = 'center center';
             });
           }
         });
 
-        // ====================== FLÈCHES DANS LE MODAL ======================
-        modalPrev.addEventListener('click', () => changeModalImage(-1));
-        modalNext.addEventListener('click', () => changeModalImage(1));
-
-        // ====================== ZOOM AVEC LES DOIGTS (pinch) ======================
-        function enablePinchZoom(img) {
-          let scale = 1;
-          let lastScale = 1;
-          let startDistance = 0;
-
-          img.addEventListener('touchstart', e => {
-            if (e.touches.length === 2) {
-              startDistance = Math.hypot(
-                e.touches[0].pageX - e.touches[1].pageX,
-                e.touches[0].pageY - e.touches[1].pageY
-              );
-              lastScale = scale;
-            }
-          });
-
-          img.addEventListener('touchmove', e => {
-            if (e.touches.length === 2) {
-              e.preventDefault();
-              const currentDistance = Math.hypot(
-                e.touches[0].pageX - e.touches[1].pageX,
-                e.touches[0].pageY - e.touches[1].pageY
-              );
-
-              scale = Math.max(1, Math.min(lastScale * (currentDistance / startDistance), 5));
-              img.style.transform = `scale(${scale})`;
-            }
-          });
-
-          // Double-tap pour reset (bonus)
-          img.addEventListener('dblclick', () => {
-            scale = 1;
-            img.style.transform = 'scale(1)';
+        // ====================== MOBILE : clic → modal + zoom/pan avec doigts ======================
+        if (isTouchDevice) {
+          mainImages.forEach((container, idx) => {
+            container.style.cursor = 'pointer';
+            container.addEventListener('click', e => {
+              e.stopImmediatePropagation();
+              currentModalIndex = idx;
+              modalImg.src = mediaList[currentModalIndex];
+              modalImg.style.transform = 'scale(1) translate(0px, 0px)';
+              modal.classList.add('active');
+            });
           });
         }
 
-        // Appliquer le pinch une fois l’image chargée
-        modalImg.addEventListener('load', () => enablePinchZoom(modalImg));
+        // ====================== Flèches dans le modal ======================
+        if (modalPrev && modalNext) {
+          modalPrev.addEventListener('click', () => {
+            currentModalIndex = (currentModalIndex - 1 + mediaList.length) % mediaList.length;
+            modalImg.src = mediaList[currentModalIndex];
+            modalImg.style.transform = 'scale(1) translate(0px, 0px)';
+          });
+          modalNext.addEventListener('click', () => {
+            currentModalIndex = (currentModalIndex + 1) % mediaList.length;
+            modalImg.src = mediaList[currentModalIndex];
+            modalImg.style.transform = 'scale(1) translate(0px, 0px)';
+          });
+        }
 
-        // ====================== FERMETURE ======================
+        // ====================== ZOOM + PAN AVEC LES DOIGTS (mobile) ======================
+        let scale = 1;
+        let posX = 0, posY = 0;
+        let startX = 0, startY = 0;
+        let isDragging = false;
+        let lastDistance = 0;
+
+        function updateTransform() {
+          modalImg.style.transform = `scale(${scale}) translate(${posX}px, ${posY}px)`;
+        }
+
+        modalImg.addEventListener('touchstart', e => {
+          if (e.touches.length === 2) {
+            lastDistance = Math.hypot(
+              e.touches[0].pageX - e.touches[1].pageX,
+              e.touches[0].pageY - e.touches[1].pageY
+            );
+          } else if (e.touches.length === 1 && scale > 1) {
+            isDragging = true;
+            startX = e.touches[0].pageX - posX;
+            startY = e.touches[0].pageY - posY;
+          }
+        });
+
+        modalImg.addEventListener('touchmove', e => {
+          if (e.touches.length === 2) {
+            e.preventDefault();
+            const dist = Math.hypot(
+              e.touches[0].pageX - e.touches[1].pageX,
+              e.touches[0].pageY - e.touches[1].pageY
+            );
+            scale = Math.max(1, Math.min(5, scale * (dist / lastDistance)));
+            lastDistance = dist;
+            updateTransform();
+          } 
+          else if (e.touches.length === 1 && isDragging) {
+            e.preventDefault();
+            posX = e.touches[0].pageX - startX;
+            posY = e.touches[0].pageY - startY;
+            updateTransform();
+          }
+        });
+
+        modalImg.addEventListener('touchend', () => {
+          isDragging = false;
+        });
+
+        // Double-tap reset
+        modalImg.addEventListener('dblclick', () => {
+          scale = 1; posX = 0; posY = 0;
+          updateTransform();
+        });
+
+        // Fermeture
         closeBtn.addEventListener('click', () => modal.classList.remove('active'));
         modal.addEventListener('click', e => {
           if (e.target === modal) modal.classList.remove('active');
