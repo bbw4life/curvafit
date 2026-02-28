@@ -25,7 +25,7 @@
     flex-direction: column;
     gap: 5px;
     overflow-y: auto;
-    max-height: 510px; /* Match main image height */
+    max-height: 500px; /* Match main image height */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
 }
@@ -56,7 +56,7 @@
 }
 .main-image img {
     width: 100%;
-    height: 520px;
+    height: 500px;
     border: 2px solid #000000;;
 }
 .slider-arrow {
@@ -2486,3 +2486,145 @@ body {
 #sanaica-banner-paul .sanaica-banner-paul-title { pointer-events: none; }
 #sanaica-banner-paul .sanaica-banner-paul-indicators,
 .sanaica-video-sound-toggle { pointer-events: auto; }
+
+
+/* Scrolling Text Group Section */
+.scrolling-text-group-section {
+  width: 100%;
+  overflow: hidden;
+  background-color: #a50f85;
+  padding: 0;
+  z-index: 5;
+  position: relative;
+}
+
+.scroll-container {
+  width: 100%;
+}
+
+.scroll-content {
+  display: flex;
+  white-space: nowrap;
+  animation: scroll 20s linear infinite;
+}
+
+.scroll-content span {
+  font-size: 1.3rem;
+  color: #ffe3ec;
+  margin-right: 2rem;
+  font-weight: 600;
+  padding: 0.5rem;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+@media (max-width: 768px) {
+  .scroll-content {
+    animation: scroll 15s linear infinite;
+  }
+
+  .scroll-content span {
+    font-size: 1rem;
+    margin-right: 1rem;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ==================== ZOOM HOVER DESKTOP (Shopify-style : suit la souris) ==================== */
+#main-image-slider {
+    position: relative;           /* ← IMPORTANT pour les flèches */
+    overflow: visible;            /* ← empêche les flèches d'être coupées */
+}
+
+#main-image-slider .main-image {
+    overflow: hidden;
+    cursor: zoom-in;
+    position: relative;
+    z-index: 1;                   /* images derrière les flèches */
+}
+
+/* ON NE TOUCHE À AUCUNE HAUTEUR */
+#main-image-slider .main-image img {
+    transition: transform 0.08s linear;
+    will-change: transform;
+}
+
+/* Zoom qui suit la souris */
+#main-image-slider .main-image:hover img {
+    transform: scale(2.6);
+}
+
+/* ==================== FLÈCHES (priorité maximale) ==================== */
+#main-image-slider .slider-arrow {
+    position: absolute !important;
+    z-index: 9999 !important;     /* ← ça force la flèche gauche à réapparaître */
+    pointer-events: all;
+}
+
+/* ==================== ZOOM MODAL FULL SCREEN (mobile uniquement) ==================== */
+.media-zoom-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    align-items: center;
+    justify-content: center;
+}
+
+.media-zoom-modal.active {
+    display: flex;
+}
+
+.modal-zoom-container {
+    position: relative;
+    max-width: 95%;
+    max-height: 95%;
+    overflow: hidden;
+    touch-action: none;
+}
+
+#modal-zoom-image {
+    max-width: 100%;
+    max-height: 100%;
+    cursor: zoom-in;
+    transition: transform 0.25s ease;
+    user-select: none;
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: #fff;
+    font-size: 45px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10001;
+    text-shadow: 0 0 10px rgba(0,0,0,0.8);
+}
+
+.modal-close:hover {
+    color: #ff69b4;
+}

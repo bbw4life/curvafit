@@ -86,6 +86,8 @@ function getProductUrl(id) {
     .then(response => response.json())
     .then(data => {
       products = data;
+      const settings = products.find(p => p.type === "settings") || {};
+      const enableMediaZoom = (settings.enable_media_zoom || "no").toLowerCase() === "yes";
       // Nouveau code pour le tableau de comparaison
     const comparisonTable = document.querySelector('.comparison-table tbody');
     if (comparisonTable) {
@@ -146,6 +148,65 @@ function getProductUrl(id) {
         const pid = productSection.dataset.productId;
         const prod = products.find(p => p.id === pid);
         if (prod && prod.media) populateMainProductMedia(prod.media);
+
+
+              // ==================== ZOOM LOOPING (desktop = suit la souris comme Shopify) ====================
+      if (enableMediaZoom) {
+        const mainSlider = document.getElementById('main-image-slider');
+        const mainImages = mainSlider ? mainSlider.querySelectorAll('.main-image') : [];
+        const modal = document.getElementById('media-zoom-modal');
+        const modalImg = document.getElementById('modal-zoom-image');
+        const closeBtn = modal ? modal.querySelector('.modal-close') : null;
+
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+        mainImages.forEach(container => {
+          const img = container.querySelector('img');
+          if (!img) return;
+
+          // ====================== DESKTOP : zoom qui suit la souris ======================
+          if (!isTouchDevice) {
+            container.addEventListener('mousemove', (e) => {
+              const rect = container.getBoundingClientRect();
+              const x = ((e.clientX - rect.left) / rect.width) * 100;
+              const y = ((e.clientY - rect.top) / rect.height) * 100;
+              img.style.transformOrigin = `${x}% ${y}%`;
+            });
+
+            // Reset quand on sort
+            container.addEventListener('mouseleave', () => {
+              img.style.transformOrigin = 'center center';
+            });
+          }
+
+          // ====================== MOBILE : clic → plein écran ======================
+          if (isTouchDevice) {
+            container.style.cursor = 'pointer';
+            container.addEventListener('click', (e) => {
+              e.stopImmediatePropagation();
+              modalImg.src = img.src;
+              modal.classList.add('active');
+            });
+          }
+        });
+
+        // Fermeture modal
+        if (closeBtn && modal) {
+          closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('active');
+          });
+
+          // Double-tap pour zoomer/dézoomer dans le modal (looping)
+          modalImg.addEventListener('dblclick', () => {
+            modalImg.style.transform = modalImg.style.transform === 'scale(2.5)' 
+              ? 'scale(1)' 
+              : 'scale(2.5)';
+          });
+        }
+      }
+
+
       // ==================== COLOR SWATCHES + NOM EN HOVER ====================
       function populateColorSwatches(product) {
         const container = document.querySelector('.color-swatches');

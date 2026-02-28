@@ -47,7 +47,7 @@ a {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1px 0;
+    padding: 0px 0;
 }
 
 .search-icon {
@@ -1286,7 +1286,7 @@ a {
   width: 100%;
   overflow: hidden;
   background-color: #a50f85; /* Elegant berry / plum tone */
-  padding: 1rem 0;
+  padding: 0;
   z-index: 10;
   position: relative;
 }
@@ -1302,11 +1302,11 @@ a {
 }
 
 .marquee-content span {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   color: #ffe3ec; /* Soft warm pink for contrast */
   margin-right: 2rem;
   font-weight: 600;
-  padding: 0 0.5rem;
+  padding: 0.7rem;
   text-transform: uppercase;
 }
 
@@ -1321,7 +1321,7 @@ a {
   }
 
   .marquee-content span {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     margin-right: 1rem;
   }
 }
