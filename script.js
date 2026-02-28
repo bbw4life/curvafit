@@ -148,9 +148,6 @@ function getProductUrl(id) {
         const pid = productSection.dataset.productId;
         const prod = products.find(p => p.id === pid);
         if (prod && prod.media) populateMainProductMedia(prod.media);
-        if (prod) populateColorSwatches(prod);
-
-
            // ==================== ZOOM LOOPING (desktop = suit la souris comme Shopify) ====================
       if (enableMediaZoom) {
         const mainSlider = document.getElementById('main-image-slider');
@@ -159,9 +156,7 @@ function getProductUrl(id) {
         const modalImg = document.getElementById('modal-zoom-image');
         const modalContainer = document.querySelector('.modal-zoom-container');
         const closeBtn = modal ? modal.querySelector('.modal-close') : null;
-
         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
         // === VARIABLES POUR LE PAN / GLISSER SUR MOBILE ===
         let scale = 1;
         let translateX = 0;
@@ -171,12 +166,10 @@ function getProductUrl(id) {
         let lastTouchY = 0;
         let maxTranslateX = 0;
         let maxTranslateY = 0;
-
         function updateTransform(smooth = true) {
           modalImg.style.transition = smooth ? 'transform 0.25s ease' : 'none';
           modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
         }
-
         function calculateBounds() {
           if (!modalImg.naturalWidth || !modalContainer) return;
           const contW = modalContainer.clientWidth;
@@ -189,16 +182,13 @@ function getProductUrl(id) {
           maxTranslateX = Math.max(0, (effW - contW) / 2);
           maxTranslateY = Math.max(0, (effH - contH) / 2);
         }
-
         function clampTranslate() {
           translateX = Math.max(-maxTranslateX, Math.min(maxTranslateX, translateX));
           translateY = Math.max(-maxTranslateY, Math.min(maxTranslateY, translateY));
         }
-
         mainImages.forEach(container => {
           const img = container.querySelector('img');
           if (!img) return;
-
           // ====================== DESKTOP : zoom qui suit la souris (inchangé) ======================
           if (!isTouchDevice) {
             container.addEventListener('mousemove', (e) => {
@@ -207,12 +197,10 @@ function getProductUrl(id) {
               const y = ((e.clientY - rect.top) / rect.height) * 100;
               img.style.transformOrigin = `${x}% ${y}%`;
             });
-
             container.addEventListener('mouseleave', () => {
               img.style.transformOrigin = 'center center';
             });
           }
-
           // ====================== MOBILE : clic → plein écran ======================
           if (isTouchDevice) {
             container.style.cursor = 'pointer';
@@ -220,13 +208,11 @@ function getProductUrl(id) {
               e.stopImmediatePropagation();
               modalImg.src = img.src;
               modal.classList.add('active');
-
               // Reset zoom à l'ouverture
               scale = 1;
               translateX = 0;
               translateY = 0;
               updateTransform(false);
-
               if (modalImg.complete) {
                 calculateBounds();
               } else {
@@ -235,7 +221,6 @@ function getProductUrl(id) {
             });
           }
         });
-
         // ==================== MODAL (fermeture + double-tap + GLISSER) ====================
         if (closeBtn && modal) {
           const closeModal = () => {
@@ -245,12 +230,10 @@ function getProductUrl(id) {
             translateY = 0;
             modalImg.style.transform = '';
           };
-
           closeBtn.addEventListener('click', closeModal);
           modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal();
           });
-
           // Double-tap (exactement comme avant, mais avec les variables)
           modalImg.addEventListener('dblclick', () => {
             if (scale > 1) {
@@ -264,7 +247,6 @@ function getProductUrl(id) {
             clampTranslate();
             updateTransform(true);
           });
-
           // ====================== GLISSER L'IMAGE (pan / looping comme Shopify) ======================
           modalImg.addEventListener('touchstart', (e) => {
             if (e.touches.length > 1 || scale <= 1) return;
@@ -274,7 +256,6 @@ function getProductUrl(id) {
             modalImg.style.transition = 'none';
             e.preventDefault();
           });
-
           modalImg.addEventListener('touchmove', (e) => {
             if (!isDragging || e.touches.length > 1) return;
             const touchX = e.touches[0].clientX;
@@ -289,57 +270,28 @@ function getProductUrl(id) {
             updateTransform(false);
             e.preventDefault();
           });
-
           modalImg.addEventListener('touchend', () => {
             isDragging = false;
           });
         }
       }
-// ==================== COLOR SWATCHES + SCROLL IMMÉDIAT VERS MEDIA (mobile comme Shopify) ====================
-function populateColorSwatches(product) {
-  const container = document.querySelector('.color-swatches');
-  if (!container || !product?.colors?.length) return;
-
-  container.innerHTML = '';
-
-  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                   window.innerWidth <= 768;
-
-  product.colors.forEach((color, index) => {
-    const swatch = document.createElement('div');
-    swatch.className = `swatch ${index === 0 ? 'active' : ''}`;
-    swatch.style.backgroundColor = color.hex;
-    swatch.dataset.color = color.name;
-
-    swatch.addEventListener('click', () => {
-      // Mise à jour du swatch actif
-      container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
-      swatch.classList.add('active');
-
-      // ====================== SCROLL IMMÉDIAT VERS LES IMAGES (mobile seulement) ======================
-      if (isMobile) {
-        const mediaContainer = document.getElementById('main-image-slider') || 
-                               document.querySelector('.product-media') ||
-                               document.querySelector('.product-section') ||
-                               document.querySelector('.main-product-media');
-
-        if (mediaContainer) {
-          const rect = mediaContainer.getBoundingClientRect();
-          const headerOffset = 90; // ← ajuste ce chiffre si tu as une barre fixe en haut (ex: 70, 100, 120)
-
-          const scrollToY = window.pageYOffset + rect.top - headerOffset;
-
-          window.scrollTo({
-            top: scrollToY,
-            behavior: 'smooth'
+      // ==================== COLOR SWATCHES + NOM EN HOVER ====================
+      function populateColorSwatches(product) {
+        const container = document.querySelector('.color-swatches');
+        if (!container || !product?.colors?.length) return;
+        container.innerHTML = '';
+        product.colors.forEach((color, index) => {
+          const swatch = document.createElement('div');
+          swatch.className = `swatch ${index === 0 ? 'active' : ''}`;
+          swatch.style.backgroundColor = color.hex;
+          swatch.dataset.color = color.name;
+          swatch.addEventListener('click', () => {
+            container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
           });
-        }
+          container.appendChild(swatch);
+        });
       }
-    });
-
-    container.appendChild(swatch);
-  });
-}
         // Delivery Date
         if (prod) {
           const baseStartStr = prod.start_date;
@@ -1227,7 +1179,6 @@ if (bundleContainer) {
       reviewItems[currentReview].classList.add('active');
     }, 5000);
   }
-
   const paulContainer = document.getElementById('paul-banner');
   if (paulContainer) {
     const videoUrl = '';
@@ -1272,7 +1223,7 @@ if (bundleContainer) {
     paulContainer.addEventListener('mouseenter', () => clearInterval(slideTimer));
     paulContainer.addEventListener('mouseleave', () => slideTimer = setInterval(nextSlide, intervalTime));
   }
-  
+ 
   const francenelContainer = document.getElementById('francenel-milliadaire-banner');
   if (francenelContainer) {
     const videoUrl = 'https://cdn.shopify.com/videos/c/o/v/8747957409cc4beda31702abfcd4ed91.mp4';
