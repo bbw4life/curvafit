@@ -82,45 +82,6 @@ function getProductUrl(id) {
     else index = (index + 1) % images.length;
     images[index].classList.add('active');
   }
-
-
-  // ====================== NOUVELLE FONCTION COLOR SWATCHES (placée au bon endroit) ======================
-  function populateColorSwatches(product) {
-    const container = document.querySelector('.color-swatches');
-    if (!container || !product?.colors?.length) return;
-
-    container.innerHTML = '';
-    product.colors.forEach((color, index) => {
-      const swatch = document.createElement('div');
-      swatch.className = `swatch ${index === 0 ? 'active' : ''}`;
-      swatch.style.backgroundColor = color.hex;
-      swatch.dataset.color = color.name;
-
-      swatch.addEventListener('click', () => {
-        // Mise à jour visuelle
-        container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
-        swatch.classList.add('active');
-
-        // ====================== SCROLL AUTO SUR MOBILE ======================
-        const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent);
-        
-        if (isMobile) {
-          console.log('✅ Swatch cliqué → scroll vers media');
-          const mediaSlider = document.getElementById('main-image-slider');
-          if (mediaSlider) {
-            setTimeout(() => {  // ← petit délai pour que le layout soit stable
-              mediaSlider.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-              });
-            }, 80);
-          }
-        }
-      });
-
-      container.appendChild(swatch);
-    });
-  }
   fetch('products.data.json')
     .then(response => response.json())
     .then(data => {
@@ -188,7 +149,7 @@ function getProductUrl(id) {
         const prod = products.find(p => p.id === pid);
         if (prod && prod.media) {
           populateMainProductMedia(prod.media);
-          populateColorSwatches(prod);   // ← CETTE LIGNE EST OBLIGATOIRE
+          populateColorSwatches(prod);
         }
            // ==================== ZOOM LOOPING (desktop = suit la souris comme Shopify) ====================
       if (enableMediaZoom) {
@@ -316,6 +277,23 @@ function getProductUrl(id) {
             isDragging = false;
           });
         }
+      }
+      // ==================== COLOR SWATCHES + NOM EN HOVER ====================
+      function populateColorSwatches(product) {
+        const container = document.querySelector('.color-swatches');
+        if (!container || !product?.colors?.length) return;
+        container.innerHTML = '';
+        product.colors.forEach((color, index) => {
+          const swatch = document.createElement('div');
+          swatch.className = `swatch ${index === 0 ? 'active' : ''}`;
+          swatch.style.backgroundColor = color.hex;
+          swatch.dataset.color = color.name;
+          swatch.addEventListener('click', () => {
+            container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
+          });
+          container.appendChild(swatch);
+        });
       }
         // Delivery Date
         if (prod) {
@@ -1316,3 +1294,23 @@ if (bundleContainer) {
     });
   }
 });
+
+  // ====================== GLOBAL DELEGATION SWATCH CLICK (FONCTIONNE À COUP SÛR) ======================
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.swatch')) {
+      console.log('🔥 GLOBAL SWATCH CLICK DETECTED !');
+
+      const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent);
+      if (isMobile) {
+        const mediaSlider = document.getElementById('main-image-slider');
+        if (mediaSlider) {
+          setTimeout(() => {
+            mediaSlider.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }, 50);
+        }
+      }
+    }
+  });
