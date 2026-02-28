@@ -150,21 +150,55 @@ function getProductUrl(id) {
         if (prod && prod.media) populateMainProductMedia(prod.media);
 
 
-      // ==================== ZOOM LOOPING (desktop = suit la souris comme Shopify) ====================
+           // ==================== ZOOM LOOPING (desktop = suit la souris comme Shopify) ====================
       if (enableMediaZoom) {
         const mainSlider = document.getElementById('main-image-slider');
         const mainImages = mainSlider ? mainSlider.querySelectorAll('.main-image') : [];
         const modal = document.getElementById('media-zoom-modal');
         const modalImg = document.getElementById('modal-zoom-image');
+        const modalContainer = document.querySelector('.modal-zoom-container');
         const closeBtn = modal ? modal.querySelector('.modal-close') : null;
 
         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+        // === VARIABLES POUR LE PAN / GLISSER SUR MOBILE ===
+        let scale = 1;
+        let translateX = 0;
+        let translateY = 0;
+        let isDragging = false;
+        let lastTouchX = 0;
+        let lastTouchY = 0;
+        let maxTranslateX = 0;
+        let maxTranslateY = 0;
+
+        function updateTransform(smooth = true) {
+          modalImg.style.transition = smooth ? 'transform 0.25s ease' : 'none';
+          modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        }
+
+        function calculateBounds() {
+          if (!modalImg.naturalWidth || !modalContainer) return;
+          const contW = modalContainer.clientWidth;
+          const contH = modalContainer.clientHeight;
+          const fitScale = Math.min(contW / modalImg.naturalWidth, contH / modalImg.naturalHeight);
+          const dispW = modalImg.naturalWidth * fitScale;
+          const dispH = modalImg.naturalHeight * fitScale;
+          const effW = dispW * scale;
+          const effH = dispH * scale;
+          maxTranslateX = Math.max(0, (effW - contW) / 2);
+          maxTranslateY = Math.max(0, (effH - contH) / 2);
+        }
+
+        function clampTranslate() {
+          translateX = Math.max(-maxTranslateX, Math.min(maxTranslateX, translateX));
+          translateY = Math.max(-maxTranslateY, Math.min(maxTranslateY, translateY));
+        }
 
         mainImages.forEach(container => {
           const img = container.querySelector('img');
           if (!img) return;
 
-          // ====================== DESKTOP : zoom qui suit la souris ======================
+          // ====================== DESKTOP : zoom qui suit la souris (inchangé) ======================
           if (!isTouchDevice) {
             container.addEventListener('mousemove', (e) => {
               const rect = container.getBoundingClientRect();
@@ -173,7 +207,6 @@ function getProductUrl(id) {
               img.style.transformOrigin = `${x}% ${y}%`;
             });
 
-            // Reset quand on sort
             container.addEventListener('mouseleave', () => {
               img.style.transformOrigin = 'center center';
             });
@@ -186,22 +219,78 @@ function getProductUrl(id) {
               e.stopImmediatePropagation();
               modalImg.src = img.src;
               modal.classList.add('active');
+
+              // Reset zoom à l'ouverture
+              scale = 1;
+              translateX = 0;
+              translateY = 0;
+              updateTransform(false);
+
+              if (modalImg.complete) {
+                calculateBounds();
+              } else {
+                modalImg.onload = calculateBounds;
+              }
             });
           }
         });
 
-        // Fermeture modal
+        // ==================== MODAL (fermeture + double-tap + GLISSER) ====================
         if (closeBtn && modal) {
-          closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+          const closeModal = () => {
+            modal.classList.remove('active');
+            scale = 1;
+            translateX = 0;
+            translateY = 0;
+            modalImg.style.transform = '';
+          };
+
+          closeBtn.addEventListener('click', closeModal);
           modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.classList.remove('active');
+            if (e.target === modal) closeModal();
           });
 
-          // Double-tap pour zoomer/dézoomer dans le modal (looping)
+          // Double-tap (exactement comme avant, mais avec les variables)
           modalImg.addEventListener('dblclick', () => {
-            modalImg.style.transform = modalImg.style.transform === 'scale(2.5)' 
-              ? 'scale(1)' 
-              : 'scale(2.5)';
+            if (scale > 1) {
+              scale = 1;
+              translateX = 0;
+              translateY = 0;
+            } else {
+              scale = 2.5;
+            }
+            calculateBounds();
+            clampTranslate();
+            updateTransform(true);
+          });
+
+          // ====================== GLISSER L'IMAGE (pan / looping comme Shopify) ======================
+          modalImg.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 1 || scale <= 1) return;
+            isDragging = true;
+            lastTouchX = e.touches[0].clientX;
+            lastTouchY = e.touches[0].clientY;
+            modalImg.style.transition = 'none';
+            e.preventDefault();
+          });
+
+          modalImg.addEventListener('touchmove', (e) => {
+            if (!isDragging || e.touches.length > 1) return;
+            const touchX = e.touches[0].clientX;
+            const touchY = e.touches[0].clientY;
+            const deltaX = touchX - lastTouchX;
+            const deltaY = touchY - lastTouchY;
+            translateX += deltaX;
+            translateY += deltaY;
+            lastTouchX = touchX;
+            lastTouchY = touchY;
+            clampTranslate();
+            updateTransform(false);
+            e.preventDefault();
+          });
+
+          modalImg.addEventListener('touchend', () => {
+            isDragging = false;
           });
         }
       }
