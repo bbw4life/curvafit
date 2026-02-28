@@ -295,7 +295,7 @@ function getProductUrl(id) {
           });
         }
       }
-// ==================== COLOR SWATCHES + SCROLL VERS MEDIA (mobile comme Shopify) ====================
+// ==================== COLOR SWATCHES + SCROLL IMMÉDIAT VERS MEDIA (mobile comme Shopify) ====================
 function populateColorSwatches(product) {
   const container = document.querySelector('.color-swatches');
   if (!container || !product?.colors?.length) return;
@@ -312,30 +312,27 @@ function populateColorSwatches(product) {
     swatch.dataset.color = color.name;
 
     swatch.addEventListener('click', () => {
-      // Mise à jour visuelle
+      // Mise à jour du swatch actif
       container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
       swatch.classList.add('active');
 
-      // ====================== SCROLL VERS LES IMAGES (uniquement mobile) ======================
+      // ====================== SCROLL IMMÉDIAT VERS LES IMAGES (mobile seulement) ======================
       if (isMobile) {
         const mediaContainer = document.getElementById('main-image-slider') || 
                                document.querySelector('.product-media') ||
                                document.querySelector('.product-section') ||
-                               document.querySelector('.main-product-media'); // au cas où tu as changé le nom
+                               document.querySelector('.main-product-media');
 
         if (mediaContainer) {
-          // Méthode ultra-fiable (mieux que scrollIntoView sur certains mobiles)
-          setTimeout(() => {
-            const rect = mediaContainer.getBoundingClientRect();
-            const offset = 15; // petit espace en haut (comme Shopify)
-            
-            const scrollToY = window.pageYOffset + rect.top - offset;
+          const rect = mediaContainer.getBoundingClientRect();
+          const headerOffset = 90; // ← ajuste ce chiffre si tu as une barre fixe en haut (ex: 70, 100, 120)
 
-            window.scrollTo({
-              top: scrollToY,
-              behavior: 'smooth'
-            });
-          }, 120); // délai un peu plus long pour que le navigateur ait fini de recalculer le layout
+          const scrollToY = window.pageYOffset + rect.top - headerOffset;
+
+          window.scrollTo({
+            top: scrollToY,
+            behavior: 'smooth'
+          });
         }
       }
     });
