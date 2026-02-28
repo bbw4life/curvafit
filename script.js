@@ -148,7 +148,9 @@ function getProductUrl(id) {
         const pid = productSection.dataset.productId;
         const prod = products.find(p => p.id === pid);
         if (prod && prod.media) populateMainProductMedia(prod.media);
-        populateColorSwatches(prod);
+        if (prod) {
+        populateColorSwatches(prod);   // ← ajoute cette ligne
+      }
 
 
            // ==================== ZOOM LOOPING (desktop = suit la souris comme Shopify) ====================
@@ -295,12 +297,17 @@ function getProductUrl(id) {
           });
         }
       }
-      // ==================== COLOR SWATCHES + NOM EN HOVER ====================
+// ==================== COLOR SWATCHES + SCROLL VERS LES IMAGES (mobile like Shopify) ====================
 function populateColorSwatches(product) {
   const container = document.querySelector('.color-swatches');
   if (!container || !product?.colors?.length) return;
 
   container.innerHTML = '';
+
+  const isMobile = 'ontouchstart' in window || 
+                   navigator.maxTouchPoints > 0 || 
+                   window.innerWidth <= 768;
+
   product.colors.forEach((color, index) => {
     const swatch = document.createElement('div');
     swatch.className = `swatch ${index === 0 ? 'active' : ''}`;
@@ -308,17 +315,25 @@ function populateColorSwatches(product) {
     swatch.dataset.color = color.name;
 
     swatch.addEventListener('click', () => {
-      // Mise à jour active (ce qui existait déjà)
+      // Activation du swatch
       container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
       swatch.classList.add('active');
 
-      // === NOUVEAU : Scroll vers les images médias (exactement comme Shopify) ===
-      const mainSlider = document.getElementById('main-image-slider');
-      if (mainSlider) {
-        mainSlider.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'   // remonte bien en haut de la zone images
-        });
+      // ====================== SCROLL VERS LES IMAGES (mobile seulement) ======================
+      if (isMobile) {
+        const mediaContainer = document.getElementById('main-image-slider') || 
+                               document.querySelector('.product-media') || 
+                               document.querySelector('.product-section');
+
+        if (mediaContainer) {
+          // Petit délai pour que le navigateur prenne en compte tout changement de layout
+          setTimeout(() => {
+            mediaContainer.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'        // colle le haut des images en haut de l'écran
+            });
+          }, 80);
+        }
       }
     });
 
