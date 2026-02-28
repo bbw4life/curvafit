@@ -148,7 +148,7 @@ function getProductUrl(id) {
         const pid = productSection.dataset.productId;
         const prod = products.find(p => p.id === pid);
         if (prod && prod.media) populateMainProductMedia(prod.media);
-        if (prod) populateColorSwatches(prod);
+        populateColorSwatches(prod);
 
 
            // ==================== ZOOM LOOPING (desktop = suit la souris comme Shopify) ====================
@@ -295,32 +295,36 @@ function getProductUrl(id) {
           });
         }
       }
-            // ==================== COLOR SWATCHES + SCROLL VERS LES IMAGES (comme Shopify) ====================
-      function populateColorSwatches(product) {
-        const container = document.querySelector('.color-swatches');
-        if (!container || !product?.colors?.length) return;
-        container.innerHTML = '';
-        product.colors.forEach((color, index) => {
-          const swatch = document.createElement('div');
-          swatch.className = `swatch ${index === 0 ? 'active' : ''}`;
-          swatch.style.backgroundColor = color.hex;
-          swatch.dataset.color = color.name;
-          swatch.addEventListener('click', () => {
-            container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
-            swatch.classList.add('active');
+      // ==================== COLOR SWATCHES + NOM EN HOVER ====================
+function populateColorSwatches(product) {
+  const container = document.querySelector('.color-swatches');
+  if (!container || !product?.colors?.length) return;
 
-            // ====================== REMONTE LE SCROLL VERS LES IMAGES MÉDIAS ======================
-            const mainSlider = document.getElementById('main-image-slider');
-            if (mainSlider) {
-              mainSlider.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-              });
-            }
-          });
-          container.appendChild(swatch);
+  container.innerHTML = '';
+  product.colors.forEach((color, index) => {
+    const swatch = document.createElement('div');
+    swatch.className = `swatch ${index === 0 ? 'active' : ''}`;
+    swatch.style.backgroundColor = color.hex;
+    swatch.dataset.color = color.name;
+
+    swatch.addEventListener('click', () => {
+      // Mise à jour active (ce qui existait déjà)
+      container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+      swatch.classList.add('active');
+
+      // === NOUVEAU : Scroll vers les images médias (exactement comme Shopify) ===
+      const mainSlider = document.getElementById('main-image-slider');
+      if (mainSlider) {
+        mainSlider.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'   // remonte bien en haut de la zone images
         });
       }
+    });
+
+    container.appendChild(swatch);
+  });
+}
         // Delivery Date
         if (prod) {
           const baseStartStr = prod.start_date;
