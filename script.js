@@ -148,9 +148,7 @@ function getProductUrl(id) {
         const pid = productSection.dataset.productId;
         const prod = products.find(p => p.id === pid);
         if (prod && prod.media) populateMainProductMedia(prod.media);
-        if (prod) {
-        populateColorSwatches(prod);   // ← ajoute cette ligne
-      }
+        if (prod) populateColorSwatches(prod);
 
 
            // ==================== ZOOM LOOPING (desktop = suit la souris comme Shopify) ====================
@@ -297,15 +295,14 @@ function getProductUrl(id) {
           });
         }
       }
-// ==================== COLOR SWATCHES + SCROLL VERS LES IMAGES (mobile like Shopify) ====================
+// ==================== COLOR SWATCHES + SCROLL VERS MEDIA (mobile comme Shopify) ====================
 function populateColorSwatches(product) {
   const container = document.querySelector('.color-swatches');
   if (!container || !product?.colors?.length) return;
 
   container.innerHTML = '';
 
-  const isMobile = 'ontouchstart' in window || 
-                   navigator.maxTouchPoints > 0 || 
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
                    window.innerWidth <= 768;
 
   product.colors.forEach((color, index) => {
@@ -315,24 +312,30 @@ function populateColorSwatches(product) {
     swatch.dataset.color = color.name;
 
     swatch.addEventListener('click', () => {
-      // Activation du swatch
+      // Mise à jour visuelle
       container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
       swatch.classList.add('active');
 
-      // ====================== SCROLL VERS LES IMAGES (mobile seulement) ======================
+      // ====================== SCROLL VERS LES IMAGES (uniquement mobile) ======================
       if (isMobile) {
         const mediaContainer = document.getElementById('main-image-slider') || 
-                               document.querySelector('.product-media') || 
-                               document.querySelector('.product-section');
+                               document.querySelector('.product-media') ||
+                               document.querySelector('.product-section') ||
+                               document.querySelector('.main-product-media'); // au cas où tu as changé le nom
 
         if (mediaContainer) {
-          // Petit délai pour que le navigateur prenne en compte tout changement de layout
+          // Méthode ultra-fiable (mieux que scrollIntoView sur certains mobiles)
           setTimeout(() => {
-            mediaContainer.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'        // colle le haut des images en haut de l'écran
+            const rect = mediaContainer.getBoundingClientRect();
+            const offset = 15; // petit espace en haut (comme Shopify)
+            
+            const scrollToY = window.pageYOffset + rect.top - offset;
+
+            window.scrollTo({
+              top: scrollToY,
+              behavior: 'smooth'
             });
-          }, 80);
+          }, 120); // délai un peu plus long pour que le navigateur ait fini de recalculer le layout
         }
       }
     });
