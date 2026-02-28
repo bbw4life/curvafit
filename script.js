@@ -148,6 +148,7 @@ function getProductUrl(id) {
         const pid = productSection.dataset.productId;
         const prod = products.find(p => p.id === pid);
         if (prod && prod.media) populateMainProductMedia(prod.media);
+        if (prod) populateColorSwatches(prod);
 
 
            // ==================== ZOOM LOOPING (desktop = suit la souris comme Shopify) ====================
@@ -294,7 +295,7 @@ function getProductUrl(id) {
           });
         }
       }
-      // ==================== COLOR SWATCHES + NOM EN HOVER ====================
+            // ==================== COLOR SWATCHES + SCROLL VERS LES IMAGES (comme Shopify) ====================
       function populateColorSwatches(product) {
         const container = document.querySelector('.color-swatches');
         if (!container || !product?.colors?.length) return;
@@ -307,6 +308,15 @@ function getProductUrl(id) {
           swatch.addEventListener('click', () => {
             container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
             swatch.classList.add('active');
+
+            // ====================== REMONTE LE SCROLL VERS LES IMAGES MÉDIAS ======================
+            const mainSlider = document.getElementById('main-image-slider');
+            if (mainSlider) {
+              mainSlider.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }
           });
           container.appendChild(swatch);
         });
