@@ -2628,3 +2628,33 @@ body {
 .modal-close:hover {
     color: #ff69b4;
 }
+
+/* ==================== FLÈCHES DANS LE MODAL (au-dessus du zoom) ==================== */
+.modal-zoom-container {
+    position: relative;
+}
+
+.modal-slider-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.65);
+    color: white;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    z-index: 10002;
+    cursor: pointer;
+    user-select: none;
+}
+
+.modal-prev { left: 15px; }
+.modal-next { right: 15px; }
+
+.modal-slider-arrow:hover {
+    background: rgba(255,105,180,0.9);
+}

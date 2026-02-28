@@ -150,60 +150,99 @@ function getProductUrl(id) {
         if (prod && prod.media) populateMainProductMedia(prod.media);
 
 
-              // ==================== ZOOM LOOPING (desktop = suit la souris comme Shopify) ====================
+               // ==================== ZOOM MODAL MOBILE (clic + zoom doigts + flèches au-dessus) ====================
       if (enableMediaZoom) {
         const mainSlider = document.getElementById('main-image-slider');
         const mainImages = mainSlider ? mainSlider.querySelectorAll('.main-image') : [];
         const modal = document.getElementById('media-zoom-modal');
         const modalImg = document.getElementById('modal-zoom-image');
-        const closeBtn = modal ? modal.querySelector('.modal-close') : null;
+        const closeBtn = modal.querySelector('.modal-close');
+        const modalPrev = document.getElementById('modal-prev');
+        const modalNext = document.getElementById('modal-next');
 
         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        let currentModalIndex = currentMainIndex; // synchronisé avec le slider principal
 
-        mainImages.forEach(container => {
+        // Liste des images (même que le slider)
+        const mediaList = prod ? prod.media : [];
+
+        function openModal(index) {
+          if (!mediaList.length) return;
+          currentModalIndex = index;
+          modalImg.src = mediaList[currentModalIndex];
+          modalImg.style.transform = 'scale(1)'; // reset zoom
+          modal.classList.add('active');
+        }
+
+        function changeModalImage(direction) {
+          if (!mediaList.length) return;
+          currentModalIndex = (currentModalIndex + direction + mediaList.length) % mediaList.length;
+          modalImg.src = mediaList[currentModalIndex];
+          modalImg.style.transform = 'scale(1)'; // reset zoom à chaque changement
+        }
+
+        // ====================== OUVERTURE MODAL (mobile) ======================
+        mainImages.forEach((container, idx) => {
           const img = container.querySelector('img');
           if (!img) return;
 
-          // ====================== DESKTOP : zoom qui suit la souris ======================
-          if (!isTouchDevice) {
-            container.addEventListener('mousemove', (e) => {
-              const rect = container.getBoundingClientRect();
-              const x = ((e.clientX - rect.left) / rect.width) * 100;
-              const y = ((e.clientY - rect.top) / rect.height) * 100;
-              img.style.transformOrigin = `${x}% ${y}%`;
-            });
-
-            // Reset quand on sort
-            container.addEventListener('mouseleave', () => {
-              img.style.transformOrigin = 'center center';
-            });
-          }
-
-          // ====================== MOBILE : clic → plein écran ======================
           if (isTouchDevice) {
             container.style.cursor = 'pointer';
             container.addEventListener('click', (e) => {
               e.stopImmediatePropagation();
-              modalImg.src = img.src;
-              modal.classList.add('active');
+              openModal(idx);
             });
           }
         });
 
-        // Fermeture modal
-        if (closeBtn && modal) {
-          closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-          modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.classList.remove('active');
+        // ====================== FLÈCHES DANS LE MODAL ======================
+        modalPrev.addEventListener('click', () => changeModalImage(-1));
+        modalNext.addEventListener('click', () => changeModalImage(1));
+
+        // ====================== ZOOM AVEC LES DOIGTS (pinch) ======================
+        function enablePinchZoom(img) {
+          let scale = 1;
+          let lastScale = 1;
+          let startDistance = 0;
+
+          img.addEventListener('touchstart', e => {
+            if (e.touches.length === 2) {
+              startDistance = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+              );
+              lastScale = scale;
+            }
           });
 
-          // Double-tap pour zoomer/dézoomer dans le modal (looping)
-          modalImg.addEventListener('dblclick', () => {
-            modalImg.style.transform = modalImg.style.transform === 'scale(2.5)' 
-              ? 'scale(1)' 
-              : 'scale(2.5)';
+          img.addEventListener('touchmove', e => {
+            if (e.touches.length === 2) {
+              e.preventDefault();
+              const currentDistance = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+              );
+
+              scale = Math.max(1, Math.min(lastScale * (currentDistance / startDistance), 5));
+              img.style.transform = `scale(${scale})`;
+            }
+          });
+
+          // Double-tap pour reset (bonus)
+          img.addEventListener('dblclick', () => {
+            scale = 1;
+            img.style.transform = 'scale(1)';
           });
         }
+
+        // Appliquer le pinch une fois l’image chargée
+        modalImg.addEventListener('load', () => enablePinchZoom(modalImg));
+
+        // ====================== FERMETURE ======================
+        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', e => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
       }
 
 
