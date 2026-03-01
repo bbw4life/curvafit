@@ -201,22 +201,32 @@
     border: none;
 }
 
-.add-to-cart {
-    font-size: 15px !important;
+button.add-to-cart.cta.button-3d {
+  font-size: 18px !important;
     padding: 10px 10px;
     cursor: pointer;
+    width: 200px;
 }
-.buy-now {
+button.buy-now.cta.button-3d {
     background: #673ab7;
-    font-size: 15px !important;
+    font-size: 18px !important;
     padding: 10px 10px;
     cursor: pointer;
+    width: 200px;
 }
 /* Mobile */
 @media (max-width: 768px) {
     .product-layout {
         flex-direction: column;
     }
+    button.buy-now.cta.button-3d {
+      font-size: 15px !important;
+    }
+
+    button.add-to-cart.cta.button-3d {
+      font-size: 15px !important;
+    }
+
     .product-media {
         width: 100%;
         flex-direction: column-reverse;
@@ -1858,7 +1868,7 @@ details[open] .chevron {
 #review-form button {
     padding: 10px;
     background-color: #4498dd;
-    color: #fff;
+    color: #f8f8f8;
     border: none;
     border-radius: 20px;
     border-bottom: 1px solid rgb(0, 0, 0);
@@ -2533,8 +2543,6 @@ body {
     margin-right: 1rem;
   }
 }
-
-
 
 
 #main-image-slider {

@@ -2,113 +2,87 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event) => {
   try {
-
-    if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Method Not Allowed" };
+    if (!event.body) {
+      return response(400, { success: false, error: "No data received" });
     }
 
     const { cart, shipping } = JSON.parse(event.body);
 
-    /* ================= VALIDATION ================= */
-
-    if (!cart || !Array.isArray(cart) || cart.length === 0) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: "Cart is empty" })
-      };
+    // Validation cart
+    if (!Array.isArray(cart) || cart.length === 0) {
+      return response(400, { success: false, error: "Cart is empty" });
     }
 
     if (!shipping || !shipping.email || !shipping.fullName) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: "Missing shipping information" })
-      };
+      return response(400, { success: false, error: "Shipping info missing" });
     }
-
-    /* ================= CALCULATE TOTAL SERVER SIDE ================= */
 
     let subtotal = 0;
 
-    cart.forEach(item => {
-      const price = Number(item.price);
-      const quantity = Number(item.quantity);
-
-      if (!price || !quantity) {
+    const lineItems = cart.map(item => {
+      if (!item.price || !item.quantity || !item.title) {
         throw new Error("Invalid cart item");
       }
 
+      const price = parseFloat(item.price);
+      const quantity = parseInt(item.quantity);
+
+      if (price <= 0 || quantity <= 0) {
+        throw new Error("Invalid price or quantity");
+      }
+
       subtotal += price * quantity;
-    });
 
-    const taxes = subtotal * 0.1;
-    const shippingCost = 10.00;
-
-    /* ================= BUILD LINE ITEMS ================= */
-
-    const lineItems = cart.map(item => ({
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: item.title
+      return {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: item.title,
+            metadata: {
+              cj_product_id: item.cj_product_id || "",
+              cj_variant_id: item.cj_variant_id || ""
+            }
+          },
+          unit_amount: Math.round(price * 100),
         },
-        unit_amount: Math.round(Number(item.price) * 100)
-      },
-      quantity: Number(item.quantity)
-    }));
-
-    // Tax line
-    lineItems.push({
-      price_data: {
-        currency: 'usd',
-        product_data: { name: 'Tax (10%)' },
-        unit_amount: Math.round(taxes * 100)
-      },
-      quantity: 1
+        quantity: quantity,
+      };
     });
-
-    // Shipping line
-    lineItems.push({
-      price_data: {
-        currency: 'usd',
-        product_data: { name: 'Shipping' },
-        unit_amount: Math.round(shippingCost * 100)
-      },
-      quantity: 1
-    });
-
-    /* ================= MINIMAL CART FOR METADATA ================= */
-
-    const minimalCart = cart.map(({id, title, price, quantity}) => ({id, title, price, quantity}));
-
-    /* ================= CREATE SESSION ================= */
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      line_items: lineItems,
       mode: 'payment',
       customer_email: shipping.email,
-
-      line_items: lineItems,
-
-      success_url: `${process.env.URL}/thankyou.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.URL}/checkout.html`,
-
+      success_url: `${process.env.BASE_URL}/thankyou.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.BASE_URL}/checkout.html`,
       metadata: {
+        cart: JSON.stringify(cart),
         shipping: JSON.stringify(shipping),
-        cart: JSON.stringify(minimalCart)
+        subtotal: subtotal.toFixed(2)
       }
     });
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ sessionId: session.id })
-    };
+    return response(200, {
+      success: true,
+      sessionId: session.id
+    });
 
   } catch (error) {
-    console.error("Stripe Error:", error);
-
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message })
-    };
+    console.error("Stripe Session Error:", error.message);
+    return response(500, {
+      success: false,
+      error: "Payment session creation failed"
+    });
   }
 };
+
+function response(statusCode, body) {
+  return {
+    statusCode,
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  };
+}

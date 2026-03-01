@@ -264,8 +264,8 @@ a {
 .button-3d {
     display: inline-block;
     padding: 15px 30px;
-    background-color: #e91e63; /* Pink button */
-    color: white;
+    background-color: #e91e63; 
+    color: rgb(255, 255, 255);
     border-radius: 30px;
     box-shadow: 0 4px 6px rgba(233,30,99,0.4);
     transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s;

@@ -148,9 +148,9 @@ function getProductUrl(id) {
         const pid = productSection.dataset.productId;
         const prod = products.find(p => p.id === pid);
         if (prod && prod.media) {
-          populateMainProductMedia(prod.media);
-          populateColorSwatches(prod);
-        }
+        populateMainProductMedia(prod.media);
+        populateColorSwatches(prod);
+      }
            // ==================== ZOOM LOOPING (desktop = suit la souris comme Shopify) ====================
       if (enableMediaZoom) {
         const mainSlider = document.getElementById('main-image-slider');
@@ -1294,12 +1294,8 @@ if (bundleContainer) {
     });
   }
 });
-
-  // ====================== GLOBAL DELEGATION SWATCH CLICK (FONCTIONNE À COUP SÛR) ======================
   document.addEventListener('click', function(e) {
     if (e.target.closest('.swatch')) {
-      console.log('🔥 GLOBAL SWATCH CLICK DETECTED !');
-
       const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent);
       if (isMobile) {
         const mediaSlider = document.getElementById('main-image-slider');

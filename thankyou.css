@@ -1,45 +1,62 @@
-/* thankyou.css - Specific CSS for thankyou.html (or reuse if global) */
-
 body {
     font-family: Arial, sans-serif;
-    background-color: #f8f8f8;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     margin: 0;
-    padding: 0;
     text-align: center;
 }
-
-.thankyou-header {
-    background-color: white;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.logo img {
-    height: 50px;
-}
-
-.logo h1 {
-    margin: 10px 0;
-}
-
-.thankyou-main {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
+.container {
     background: white;
+    padding: 40px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
 }
-
-.order-summary {
+h1 {
+    color: #4CAF50;
+}
+p {
+    font-size: 18px;
     margin: 20px 0;
 }
-
-.cta {
+.error {
+    color: #F44336;
+}
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.button {
     display: inline-block;
-    padding: 15px 30px;
-    background-color: #e91e63;
+    background: #2196F3;
     color: white;
+    padding: 10px 20px;
+    margin: 10px;
     text-decoration: none;
     border-radius: 4px;
+    transition: background 0.3s;
+}
+.button:hover {
+    background: #1976D2;
+}
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+    p {
+        font-size: 16px;
+    }
 }
