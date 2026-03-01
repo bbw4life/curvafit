@@ -150,6 +150,69 @@ function getProductUrl(id) {
         if (prod && prod.media) {
         populateMainProductMedia(prod.media);
         populateColorSwatches(prod);
+        // Populate size select with default "Select Size"
+        const sizeSelect = document.getElementById('size-select');
+        if (sizeSelect && prod.sizes && prod.sizes.length > 0) {
+          sizeSelect.innerHTML = '';
+          const defaultOpt = document.createElement('option');
+          defaultOpt.value = "";
+          defaultOpt.textContent = "Select Size";
+          sizeSelect.appendChild(defaultOpt);
+          prod.sizes.forEach(size => {
+            const opt = document.createElement('option');
+            opt.value = size;
+            opt.textContent = size;
+            sizeSelect.appendChild(opt);
+          });
+        }
+        // Function to get variant price
+        function getVariantPrice(product, color, size) {
+          if (!color || !size) return product.price;
+          const variant = product.variants.find(v => v.color === color && v.size === size);
+          return variant ? variant.price : product.price;
+        }
+        // Update product price and image
+        function updateProductPrice() {
+          const activeSwatch = document.querySelector('.swatch.active');
+          let selectedColor = activeSwatch ? activeSwatch.dataset.color : null;
+          let selectedSize = sizeSelect ? sizeSelect.value : null;
+          if (selectedSize === "") selectedSize = null;
+          const price = getVariantPrice(prod, selectedColor, selectedSize);
+          const currentPriceEl = document.querySelector('.current-price');
+          if (currentPriceEl) currentPriceEl.textContent = `$${price.toFixed(2)}`;
+          // Update discount badge if exists
+          const badge = document.querySelector('.discount-badge');
+          if (badge) {
+            if (prod.compare_price > price) {
+              const discountPercent = Math.round(((prod.compare_price - price) / prod.compare_price) * 100);
+              badge.textContent = `-${discountPercent}%`;
+              badge.classList.add('active');
+            } else {
+              badge.classList.remove('active');
+            }
+          }
+          // Update main image based on color if selected
+          if (selectedColor) {
+            const colorObj = prod.colors.find(c => c.name === selectedColor);
+            if (colorObj && colorObj.image) {
+              const mainImg = document.querySelector('#main-image-slider .main-image.active img');
+              if (mainImg) mainImg.src = colorObj.image;
+            }
+          }
+        }
+        // Add listeners
+        document.querySelectorAll('.swatch').forEach(swatch => {
+          swatch.addEventListener('click', () => {
+            document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
+            updateProductPrice();
+          });
+        });
+        if (sizeSelect) {
+          sizeSelect.addEventListener('change', updateProductPrice);
+        }
+        // Initial update with default price
+        updateProductPrice();
       }
            // ==================== ZOOM LOOPING (desktop = suit la souris comme Shopify) ====================
       if (enableMediaZoom) {
@@ -237,8 +300,8 @@ function getProductUrl(id) {
           modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal();
           });
-          // Double-tap (exactement comme avant, mais avec les variables)
-          modalImg.addEventListener('dblclick', () => {
+          // Single click to toggle zoom
+          modalImg.addEventListener('click', () => {
             if (scale > 1) {
               scale = 1;
               translateX = 0;
@@ -283,14 +346,15 @@ function getProductUrl(id) {
         const container = document.querySelector('.color-swatches');
         if (!container || !product?.colors?.length) return;
         container.innerHTML = '';
-        product.colors.forEach((color, index) => {
+        product.colors.forEach((color) => {
           const swatch = document.createElement('div');
-          swatch.className = `swatch ${index === 0 ? 'active' : ''}`;
+          swatch.className = `swatch`;
           swatch.style.backgroundColor = color.hex;
           swatch.dataset.color = color.name;
           swatch.addEventListener('click', () => {
             container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
             swatch.classList.add('active');
+            updateProductPrice();
           });
           container.appendChild(swatch);
         });
@@ -361,6 +425,11 @@ if (bundleContainer) {
   const productId = productSection.dataset.productId;
   const product = products.find(p => p.id === productId);
   if (product) {
+    function getVariantPrice(product, color, size) {
+      if (!color || !size) return product.price;
+      const variant = product.variants.find(v => v.color === color && v.size === size);
+      return variant ? variant.price : product.price;
+    }
     const hasSizes = product.sizes && product.sizes.length > 0;
     const hasColors = product.colors && product.colors.length > 0;
     const uniqueSizes = hasSizes ? product.sizes : [];
@@ -398,19 +467,30 @@ if (bundleContainer) {
           const colorSelect = createSelect(uniqueColors, "Color");
           if (colorSelect) {
             div.appendChild(colorSelect);
-            colorSelect.querySelector('select').addEventListener('change', (e) => {
+            const selectEl = colorSelect.querySelector('select');
+            selectEl.addEventListener('change', (e) => {
               const selectedColorName = e.target.value;
               const colorObj = product.colors.find(c => c.name === selectedColorName);
               if (colorObj) {
                 const previewImg = div.closest('.variant-row').querySelector('.variant-preview img');
                 if (previewImg) previewImg.src = colorObj.image;
               }
+              // Update bundle price
+              const bundleType = container.closest('.bundle-option').dataset.bundle;
+              calculateBundlePrice(bundleType);
             });
           }
         }
         if (hasSizes) {
           const sizeSelect = createSelect(uniqueSizes, "Size");
-          if (sizeSelect) div.appendChild(sizeSelect);
+          if (sizeSelect) {
+            div.appendChild(sizeSelect);
+            const selectEl = sizeSelect.querySelector('select');
+            selectEl.addEventListener('change', () => {
+              const bundleType = container.closest('.bundle-option').dataset.bundle;
+              calculateBundlePrice(bundleType);
+            });
+          }
         }
         // No options case
         if (!hasColors && !hasSizes) {
@@ -430,30 +510,56 @@ if (bundleContainer) {
       selects.forEach(select => {
         const label = select.parentElement.querySelector("label")?.textContent.toLowerCase() || "";
         const value = select.value;
-        if (label.includes("color")) {
-          values.color = value;
-        } else if (label.includes("size")) {
-          values.size = value;
+        if (value !== "") {
+          if (label.includes("color")) {
+            values.color = value;
+          } else if (label.includes("size")) {
+            values.size = value;
+          }
         }
       });
       return values;
     }
-    // Update bundle prices
+    // Calculate and update bundle price for a type
+    function calculateBundlePrice(type) {
+      const option = document.querySelector(`.bundle-option[data-bundle="${type}"]`);
+      if (!option) return;
+      const selectors = option.querySelectorAll(".variant-selectors");
+      let totalPrice = 0;
+      let totalCompare = 0;
+      selectors.forEach(sel => {
+        const values = getSelectedValues(sel);
+        const color = values.color || null;
+        const size = values.size || null;
+        const varPrice = getVariantPrice(product, color, size);
+        totalPrice += varPrice;
+        totalCompare += product.compare_price;
+      });
+      const dSingle = (product.single_discount || 0) / 100;
+      const dDuo = (product.duo_discount || 0) / 100;
+      const dTrio = (product.trio_discount || 0) / 100;
+      const discount = type === "single" ? dSingle : type === "duo" ? dDuo : dTrio;
+      const discountedTotal = totalPrice * (1 - discount);
+      const priceEl = document.getElementById(`${type}-price`);
+      if (priceEl) priceEl.textContent = `$${discountedTotal.toFixed(2)}`;
+      const discountedCompare = totalCompare * (1 - discount);
+      const originalEl = document.getElementById(`${type}-original-price`);
+      if (originalEl) originalEl.textContent = `$${discountedCompare.toFixed(2)}`;
+    }
+    // Update bundle prices (initial with default)
     function updateBundlePrices(product) {
-      const price = product.price;
-      const compare = product.compare_price || price; // Si pas de compare, utilise price
-      const dSingle = (product.single_discount || 0) / 100; // Direct du JSON, fallback 0 si absent
-      const dDuo = (product.duo_discount || 0) / 100; // Pas de fallback hardcoded, utilise 0 si absent
-      const dTrio = (product.trio_discount || 0) / 100; // Idem
-      // Single : applique discount si >0
-      document.getElementById("single-price").textContent = `$${ (price * (1 - dSingle)).toFixed(2) }`;
-      document.getElementById("single-original-price").textContent = (compare > price * (1 - dSingle)) ? `$${ (compare * (1 - dSingle)).toFixed(2) }` : "";
-      // Duo : x2 avec discount
-      document.getElementById("duo-price").textContent = `$${ (price * 2 * (1 - dDuo)).toFixed(2) }`;
-      document.getElementById("duo-original-price").textContent = `$${ (compare * 2 * (1 - dDuo)).toFixed(2) }`; // Original sans discount
-      // Trio : x3 avec discount
-      document.getElementById("trio-price").textContent = `$${ (price * 3 * (1 - dTrio)).toFixed(2) }`;
-      document.getElementById("trio-original-price").textContent = `$${ (compare * 3 * (1 - dTrio)).toFixed(2) }`; // Original sans discount
+      const dSingle = (product.single_discount || 0) / 100;
+      const dDuo = (product.duo_discount || 0) / 100;
+      const dTrio = (product.trio_discount || 0) / 100;
+      // Single
+      document.getElementById("single-price").textContent = `$${ (product.price * (1 - dSingle)).toFixed(2) }`;
+      document.getElementById("single-original-price").textContent = `$${ (product.compare_price * (1 - dSingle)).toFixed(2) }`;
+      // Duo
+      document.getElementById("duo-price").textContent = `$${ (product.price * 2 * (1 - dDuo)).toFixed(2) }`;
+      document.getElementById("duo-original-price").textContent = `$${ (product.compare_price * 2 * (1 - dDuo)).toFixed(2) }`;
+      // Trio
+      document.getElementById("trio-price").textContent = `$${ (product.price * 3 * (1 - dTrio)).toFixed(2) }`;
+      document.getElementById("trio-original-price").textContent = `$${ (product.compare_price * 3 * (1 - dTrio)).toFixed(2) }`;
     }
     // Add items to cart and redirect to checkout
     function addBundleToCart(items) {
@@ -494,6 +600,9 @@ if (bundleContainer) {
           if (selection) {
             selection.style.display = "block";
             populateSelectors(selection);
+            // Update price after populate
+            const type = this.dataset.bundle;
+            calculateBundlePrice(type);
           }
         } // If was checked, stays closed
       });
@@ -514,42 +623,44 @@ if (bundleContainer) {
         } else if (type === "trio") {
           discount = (product.trio_discount || 0) / 100;
         }
-        // Prix réduit par item (appliqué uniformément pour que le total soit correct)
-        const discountedPrice = product.price * (1 - discount);
         if (type === "single") {
           if (!hasColors && !hasSizes) {
+            const varPrice = product.price;
+            const discountedPrice = varPrice * (1 - discount);
             items.push({
               id: product.id,
               title: product.title,
-              price: discountedPrice, // Prix réduit
-              compare_price: product.compare_price, // Ajout pour économies dans checkout
+              price: discountedPrice,
+              compare_price: product.compare_price,
               image: itemImage,
               size: null,
               color: null,
               quantity: 1,
-              fromBundle: true // Marqueur bundle
+              fromBundle: true
             });
           } else {
             const values = getSelectedValues(container);
-            if (hasColors && values.color) {
-              const colorObj = product.colors.find(c => c.name === values.color);
-              if (colorObj) itemImage = colorObj.image;
-            }
-            const selectedSize = hasSizes ? values.size : null;
             const selectedColor = hasColors ? values.color : null;
+            const selectedSize = hasSizes ? values.size : null;
             if ((hasColors && !selectedColor) || (hasSizes && !selectedSize)) {
               return alert("Please complete your selection.");
             }
+            if (selectedColor) {
+              const colorObj = product.colors.find(c => c.name === selectedColor);
+              if (colorObj) itemImage = colorObj.image;
+            }
+            const varPrice = getVariantPrice(product, selectedColor, selectedSize);
+            const discountedPrice = varPrice * (1 - discount);
             items.push({
               id: product.id,
               title: product.title,
-              price: discountedPrice, // Prix réduit
-              compare_price: product.compare_price, // Ajout pour économies dans checkout
+              price: discountedPrice,
+              compare_price: product.compare_price,
               image: itemImage,
               size: selectedSize,
               color: selectedColor,
               quantity: 1,
-              fromBundle: true // Marqueur bundle
+              fromBundle: true
             });
           }
         } else {
@@ -560,41 +671,45 @@ if (bundleContainer) {
             if (!pair) continue;
             let pairImage = product.image;
             if (!hasColors && !hasSizes) {
+              const varPrice = product.price;
+              const discountedPrice = varPrice * (1 - discount);
               items.push({
                 id: product.id,
                 title: product.title,
-                price: discountedPrice, // Prix réduit
-                compare_price: product.compare_price, // Ajout pour économies dans checkout
+                price: discountedPrice,
+                compare_price: product.compare_price,
                 image: pairImage,
                 size: null,
                 color: null,
                 quantity: 1,
-                fromBundle: true // Marqueur bundle
+                fromBundle: true
               });
               continue;
             }
             const values = getSelectedValues(pair);
-            if (hasColors && values.color) {
-              const colorObj = product.colors.find(c => c.name === values.color);
-              if (colorObj) pairImage = colorObj.image;
-            }
-            const selectedSize = hasSizes ? values.size : null;
             const selectedColor = hasColors ? values.color : null;
+            const selectedSize = hasSizes ? values.size : null;
             if ((hasColors && !selectedColor) || (hasSizes && !selectedSize)) {
               valid = false;
               alert(`Item ${i}: Please complete selection.`);
               break;
             }
+            if (selectedColor) {
+              const colorObj = product.colors.find(c => c.name === selectedColor);
+              if (colorObj) pairImage = colorObj.image;
+            }
+            const varPrice = getVariantPrice(product, selectedColor, selectedSize);
+            const discountedPrice = varPrice * (1 - discount);
             items.push({
               id: product.id,
               title: product.title,
-              price: discountedPrice, // Prix réduit
-              compare_price: product.compare_price, // Ajout pour économies dans checkout
+              price: discountedPrice,
+              compare_price: product.compare_price,
               image: pairImage,
               size: selectedSize,
               color: selectedColor,
               quantity: 1,
-              fromBundle: true // Marqueur bundle
+              fromBundle: true
             });
           }
           if (!valid) return;
@@ -1017,31 +1132,40 @@ if (bundleContainer) {
     const id = container.dataset.id || container.dataset.productId;
     const product = products.find(p => p.id === id);
     if (!product) return;
+    function getVariantPrice(product, color, size) {
+      if (!color || !size) return product.price;
+      const variant = product.variants.find(v => v.color === color && v.size === size);
+      return variant ? variant.price : product.price;
+    }
     const isProductPage = !!container.dataset.productId;
     let quantity = 1;
     const qtyInput = container.querySelector('.quantity input');
     if (qtyInput) quantity = parseInt(qtyInput.value);
-    let selectedSize = product.sizes ? product.sizes[0] : null;
-    let selectedColor = product.colors ? product.colors[0].name : null;
+    let selectedSize = product.sizes && product.sizes.length > 0 ? null : null;
+    let selectedColor = product.colors && product.colors.length > 0 ? null : null;
     let itemImage = product.image;
     if (isProductPage) {
       const sizeSelect = document.getElementById('size-select');
       const activeSwatch = document.querySelector('.color-swatches .swatch.active');
-      if (sizeSelect) selectedSize = sizeSelect.value;
-      if (activeSwatch) selectedColor = activeSwatch.dataset.color;
-      if (product.colors && selectedColor) {
+      selectedSize = sizeSelect && sizeSelect.value !== "" ? sizeSelect.value : null;
+      selectedColor = activeSwatch ? activeSwatch.dataset.color : null;
+      if ((product.colors.length > 0 && !selectedColor) || (product.sizes.length > 0 && !selectedSize)) {
+        return alert("Please select all options.");
+      }
+      if (selectedColor) {
         const colorObj = product.colors.find(c => c.name === selectedColor);
         if (colorObj && colorObj.image) itemImage = colorObj.image;
       }
     }
     let item = cart.find(i => i.id === id && i.size === selectedSize && i.color === selectedColor);
+    const varPrice = getVariantPrice(product, selectedColor, selectedSize);
     if (item) item.quantity += quantity;
     else {
       cart.push({
         id: product.id,
         title: product.title,
-        price: product.price,
-        compare_price: product.compare_price, // Ajout pour économies dans checkout (même pour ajouts normaux)
+        price: varPrice,
+        compare_price: product.compare_price,
         image: itemImage,
         size: selectedSize,
         color: selectedColor,
