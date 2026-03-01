@@ -5,54 +5,69 @@ function getProductUrl(id) {
   return `product${productIndex}.html`;
 }
   function populateMainProductMedia(media) {
-    const thumbsContainer = document.getElementById('product-thumbnails');
-    const mainSlider = document.getElementById('main-image-slider');
-    if (!thumbsContainer || !mainSlider) return;
-    thumbsContainer.innerHTML = '';
-    mainSlider.querySelectorAll('.main-image').forEach(el => el.remove());
-    media.forEach((src, index) => {
-      const thumb = document.createElement('div');
-      thumb.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
-      thumb.innerHTML = `<img src="${src}" alt="Thumbnail ${index+1}" loading="lazy">`;
-      thumb.addEventListener('click', () => changeMainImage(index));
-      thumbsContainer.appendChild(thumb);
-      const mainDiv = document.createElement('div');
-      mainDiv.className = `main-image ${index === 0 ? 'active' : ''}`;
-      mainDiv.innerHTML = `<img src="${src}" alt="Main Image" loading="lazy">`;
-      mainSlider.insertBefore(mainDiv, mainSlider.querySelector('.slider-arrow.next'));
-    });
-    mainSlider.querySelector('.prev').onclick = () => changeMainImage('prev');
-    mainSlider.querySelector('.next').onclick = () => changeMainImage('next');
-  }
+  const thumbsContainer = document.getElementById('product-thumbnails');
+  const mainSlider = document.getElementById('main-image-slider');
+  if (!thumbsContainer || !mainSlider) return;
+
+  thumbsContainer.innerHTML = '';
+  mainSlider.querySelectorAll('.main-image').forEach(el => el.remove());
+
+  media.forEach((src, index) => {
+    // Thumbnail
+    const thumb = document.createElement('div');
+    thumb.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
+    thumb.innerHTML = `<img src="${src}" alt="Thumbnail ${index+1}" loading="lazy">`;
+    thumb.addEventListener('click', () => changeMainImage(index));
+    thumbsContainer.appendChild(thumb);
+
+    // Main image + on stocke l'original !
+    const mainDiv = document.createElement('div');
+    mainDiv.className = `main-image ${index === 0 ? 'active' : ''}`;
+    mainDiv.dataset.originalSrc = src;                    // ← AJOUT IMPORTANT
+    mainDiv.innerHTML = `<img src="${src}" alt="Main Image" loading="lazy">`;
+    mainSlider.insertBefore(mainDiv, mainSlider.querySelector('.slider-arrow.next'));
+  });
+
+  mainSlider.querySelector('.prev').onclick = () => changeMainImage('prev');
+  mainSlider.querySelector('.next').onclick = () => changeMainImage('next');
+}
   let currentMainIndex = 0;
   function changeMainImage(dir) {
-    const images = document.querySelectorAll('#main-image-slider .main-image');
-    const thumbs = document.querySelectorAll('#product-thumbnails .thumbnail-item');
-    if (!images.length) return;
-    images[currentMainIndex].classList.remove('active');
-    thumbs[currentMainIndex].classList.remove('active');
-    if (dir === 'prev') currentMainIndex = (currentMainIndex - 1 + images.length) % images.length;
-    else if (dir === 'next') currentMainIndex = (currentMainIndex + 1) % images.length;
-    else currentMainIndex = dir;
-    images[currentMainIndex].classList.add('active');
-    thumbs[currentMainIndex].classList.add('active');
-    const thumbsContainer = document.getElementById('product-thumbnails');
-    const activeThumb = thumbs[currentMainIndex];
-    const isHorizontal = thumbsContainer.scrollWidth > thumbsContainer.clientWidth;
-    if (isHorizontal) {
-      const scrollAmount = activeThumb.offsetLeft - (thumbsContainer.clientWidth / 2) + (activeThumb.clientWidth / 2);
-      thumbsContainer.scrollTo({
-        left: scrollAmount,
-        behavior: 'smooth'
-      });
-    } else {
-      const scrollAmount = activeThumb.offsetTop - (thumbsContainer.clientHeight / 2) + (activeThumb.clientHeight / 2);
-      thumbsContainer.scrollTo({
-        top: scrollAmount,
-        behavior: 'smooth'
-      });
-    }
+  const images = document.querySelectorAll('#main-image-slider .main-image');
+  const thumbs = document.querySelectorAll('#product-thumbnails .thumbnail-item');
+  if (!images.length) return;
+
+  images[currentMainIndex].classList.remove('active');
+  thumbs[currentMainIndex].classList.remove('active');
+
+  if (dir === 'prev') currentMainIndex = (currentMainIndex - 1 + images.length) % images.length;
+  else if (dir === 'next') currentMainIndex = (currentMainIndex + 1) % images.length;
+  else currentMainIndex = dir;
+
+  images[currentMainIndex].classList.add('active');
+  thumbs[currentMainIndex].classList.add('active');
+
+  // === SCROLL THUMBNAILS ===
+  const thumbsContainer = document.getElementById('product-thumbnails');
+  const activeThumb = thumbs[currentMainIndex];
+  const isHorizontal = thumbsContainer.scrollWidth > thumbsContainer.clientWidth;
+  if (isHorizontal) {
+    const scrollAmount = activeThumb.offsetLeft - (thumbsContainer.clientWidth / 2) + (activeThumb.clientWidth / 2);
+    thumbsContainer.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+  } else {
+    const scrollAmount = activeThumb.offsetTop - (thumbsContainer.clientHeight / 2) + (activeThumb.clientHeight / 2);
+    thumbsContainer.scrollTo({ top: scrollAmount, behavior: 'smooth' });
   }
+
+  // ====================== FIX DU BUG ======================
+  // On force toujours l'image média originale quand on clique sur une thumbnail
+  const activeContainer = images[currentMainIndex];
+  const activeImg = activeContainer.querySelector('img');
+  if (activeImg && activeContainer.dataset.originalSrc) {
+    activeImg.src = activeContainer.dataset.originalSrc;
+  }
+  // =======================================================
+}
   function populateMiniSlider(slider, media) {
     if (!slider || !media) return;
     slider.innerHTML = '';
@@ -171,20 +186,29 @@ function getProductUrl(id) {
           const variant = product.variants.find(v => v.color === color && v.size === size);
           return variant ? variant.price : product.price;
         }
+        // Function to get variant compare price (calculated proportionally)
+        function getVariantComparePrice(product, color, size) {
+          const varPrice = getVariantPrice(product, color, size);
+          const ratio = product.compare_price / product.price;
+          return varPrice * ratio;
+        }
         // Update product price and image
         function updateProductPrice() {
           const activeSwatch = document.querySelector('.swatch.active');
           let selectedColor = activeSwatch ? activeSwatch.dataset.color : null;
           let selectedSize = sizeSelect ? sizeSelect.value : null;
           if (selectedSize === "") selectedSize = null;
-          const price = getVariantPrice(prod, selectedColor, selectedSize);
+          const currentPrice = getVariantPrice(prod, selectedColor, selectedSize);
+          const currentCompare = getVariantComparePrice(prod, selectedColor, selectedSize);
           const currentPriceEl = document.querySelector('.current-price');
-          if (currentPriceEl) currentPriceEl.textContent = `$${price.toFixed(2)}`;
+          if (currentPriceEl) currentPriceEl.textContent = `$${currentPrice.toFixed(2)}`;
+          const comparePriceEl = document.querySelector('.compare-price');
+          if (comparePriceEl) comparePriceEl.textContent = `$${currentCompare.toFixed(2)}`;
           // Update discount badge if exists
           const badge = document.querySelector('.discount-badge');
           if (badge) {
-            if (prod.compare_price > price) {
-              const discountPercent = Math.round(((prod.compare_price - price) / prod.compare_price) * 100);
+            if (currentCompare > currentPrice) {
+              const discountPercent = Math.round(((currentCompare - currentPrice) / currentCompare) * 100);
               badge.textContent = `-${discountPercent}%`;
               badge.classList.add('active');
             } else {
@@ -430,6 +454,11 @@ if (bundleContainer) {
       const variant = product.variants.find(v => v.color === color && v.size === size);
       return variant ? variant.price : product.price;
     }
+    function getVariantComparePrice(product, color, size) {
+      const varPrice = getVariantPrice(product, color, size);
+      const ratio = product.compare_price / product.price;
+      return varPrice * ratio;
+    }
     const hasSizes = product.sizes && product.sizes.length > 0;
     const hasColors = product.colors && product.colors.length > 0;
     const uniqueSizes = hasSizes ? product.sizes : [];
@@ -527,13 +556,14 @@ if (bundleContainer) {
       const selectors = option.querySelectorAll(".variant-selectors");
       let totalPrice = 0;
       let totalCompare = 0;
+      const ratio = product.compare_price / product.price;
       selectors.forEach(sel => {
         const values = getSelectedValues(sel);
         const color = values.color || null;
         const size = values.size || null;
         const varPrice = getVariantPrice(product, color, size);
         totalPrice += varPrice;
-        totalCompare += product.compare_price;
+        totalCompare += varPrice * ratio;
       });
       const dSingle = (product.single_discount || 0) / 100;
       const dDuo = (product.duo_discount || 0) / 100;
@@ -551,15 +581,16 @@ if (bundleContainer) {
       const dSingle = (product.single_discount || 0) / 100;
       const dDuo = (product.duo_discount || 0) / 100;
       const dTrio = (product.trio_discount || 0) / 100;
+      const ratio = product.compare_price / product.price;
       // Single
       document.getElementById("single-price").textContent = `$${ (product.price * (1 - dSingle)).toFixed(2) }`;
-      document.getElementById("single-original-price").textContent = `$${ (product.compare_price * (1 - dSingle)).toFixed(2) }`;
+      document.getElementById("single-original-price").textContent = `$${ (product.price * ratio * (1 - dSingle)).toFixed(2) }`;
       // Duo
       document.getElementById("duo-price").textContent = `$${ (product.price * 2 * (1 - dDuo)).toFixed(2) }`;
-      document.getElementById("duo-original-price").textContent = `$${ (product.compare_price * 2 * (1 - dDuo)).toFixed(2) }`;
+      document.getElementById("duo-original-price").textContent = `$${ (product.price * ratio * 2 * (1 - dDuo)).toFixed(2) }`;
       // Trio
       document.getElementById("trio-price").textContent = `$${ (product.price * 3 * (1 - dTrio)).toFixed(2) }`;
-      document.getElementById("trio-original-price").textContent = `$${ (product.compare_price * 3 * (1 - dTrio)).toFixed(2) }`;
+      document.getElementById("trio-original-price").textContent = `$${ (product.price * ratio * 3 * (1 - dTrio)).toFixed(2) }`;
     }
     // Add items to cart and redirect to checkout
     function addBundleToCart(items) {
@@ -623,15 +654,17 @@ if (bundleContainer) {
         } else if (type === "trio") {
           discount = (product.trio_discount || 0) / 100;
         }
+        const ratio = product.compare_price / product.price;
         if (type === "single") {
           if (!hasColors && !hasSizes) {
             const varPrice = product.price;
+            const varCompare = varPrice * ratio;
             const discountedPrice = varPrice * (1 - discount);
             items.push({
               id: product.id,
               title: product.title,
               price: discountedPrice,
-              compare_price: product.compare_price,
+              compare_price: varCompare,
               image: itemImage,
               size: null,
               color: null,
@@ -650,12 +683,13 @@ if (bundleContainer) {
               if (colorObj) itemImage = colorObj.image;
             }
             const varPrice = getVariantPrice(product, selectedColor, selectedSize);
+            const varCompare = varPrice * ratio;
             const discountedPrice = varPrice * (1 - discount);
             items.push({
               id: product.id,
               title: product.title,
               price: discountedPrice,
-              compare_price: product.compare_price,
+              compare_price: varCompare,
               image: itemImage,
               size: selectedSize,
               color: selectedColor,
@@ -672,12 +706,13 @@ if (bundleContainer) {
             let pairImage = product.image;
             if (!hasColors && !hasSizes) {
               const varPrice = product.price;
+              const varCompare = varPrice * ratio;
               const discountedPrice = varPrice * (1 - discount);
               items.push({
                 id: product.id,
                 title: product.title,
                 price: discountedPrice,
-                compare_price: product.compare_price,
+                compare_price: varCompare,
                 image: pairImage,
                 size: null,
                 color: null,
@@ -699,12 +734,13 @@ if (bundleContainer) {
               if (colorObj) pairImage = colorObj.image;
             }
             const varPrice = getVariantPrice(product, selectedColor, selectedSize);
+            const varCompare = varPrice * ratio;
             const discountedPrice = varPrice * (1 - discount);
             items.push({
               id: product.id,
               title: product.title,
               price: discountedPrice,
-              compare_price: product.compare_price,
+              compare_price: varCompare,
               image: pairImage,
               size: selectedSize,
               color: selectedColor,
@@ -1137,6 +1173,11 @@ if (bundleContainer) {
       const variant = product.variants.find(v => v.color === color && v.size === size);
       return variant ? variant.price : product.price;
     }
+    function getVariantComparePrice(product, color, size) {
+      const varPrice = getVariantPrice(product, color, size);
+      const ratio = product.compare_price / product.price;
+      return varPrice * ratio;
+    }
     const isProductPage = !!container.dataset.productId;
     let quantity = 1;
     const qtyInput = container.querySelector('.quantity input');
@@ -1159,13 +1200,14 @@ if (bundleContainer) {
     }
     let item = cart.find(i => i.id === id && i.size === selectedSize && i.color === selectedColor);
     const varPrice = getVariantPrice(product, selectedColor, selectedSize);
+    const varCompare = getVariantComparePrice(product, selectedColor, selectedSize);
     if (item) item.quantity += quantity;
     else {
       cart.push({
         id: product.id,
         title: product.title,
         price: varPrice,
-        compare_price: product.compare_price,
+        compare_price: varCompare,
         image: itemImage,
         size: selectedSize,
         color: selectedColor,
