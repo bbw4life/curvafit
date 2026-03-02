@@ -204,18 +204,15 @@ a {
 }
 
 
-/* Hero Section */
-.hero-section {
-    height: 100vh;
+.home-hero-banner {
+    background-size: cover;
+    background-position: center;
+    height: 450px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     text-align: center;
     position: relative;
-    color: white;
-    overflow: hidden;
-    background-color: #673ab7; /* Fallback purple if image fails */
 }
 
 .parallax-background {
@@ -236,30 +233,24 @@ a {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(233, 30, 99, 0.6), rgba(103, 58, 183, 0.4)); /* Pink to purple gradient */
+    background: linear-gradient(to bottom, rgba(245, 126, 166, 0.466), rgba(245, 241, 250, 0.452)); /* Pink to purple gradient */
     z-index: -1;
 }
 
-.hero-content {
-    max-width: 800px;
-    padding: 20px;
-}
-
 .hero-content h1 {
-    font-size: 3rem;
+    font-size: 2rem;
     margin-bottom: 10px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 .hero-content h2 {
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin-bottom: 15px;
     color: burlywood !important;
 }
 
 .hero-content p {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
+    font-size: 1rem;
     color: white;
 }
 
@@ -302,6 +293,47 @@ a {
     40% { transform: translateY(-10px); }
     60% { transform: translateY(-5px); }
 }
+
+@media (max-width: 768px) {
+    .home-hero-banner {
+        height: auto;
+        min-height: 60vh;
+        align-items: flex-start; 
+        box-sizing: border-box;
+    }
+
+    .hero-content {
+        padding: 0 25px;
+        max-width: 100%;
+    }
+
+    .hero-content h1 {
+        font-size: 1.7rem !important;
+        margin-bottom: 0.6em;
+    }
+
+    .hero-content h2 {
+        font-size: 1.4rem !important;
+    }
+
+    .hero-content p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .hero-content .button-3d,
+    .hero-content .secondary-cta {
+        display: block;
+        width: 100%;
+        max-width: 320px;
+        margin: 12px auto;
+    }
+
+    .secondary-cta {
+        margin-left: 0;
+    }
+}
+
 
 /* Trust Badges */
 .trust-badges-section {
@@ -3626,4 +3658,18 @@ a {
 .store-infos-section.bg-image {
     background-image: url('https://ton-image.jpg');
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

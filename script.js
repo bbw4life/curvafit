@@ -162,6 +162,18 @@ function getProductUrl(id) {
               colorContainer.appendChild(swatch);
             });
             colorContainer.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+            const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent);
+          if (isMobile) {
+            const swatches = document.querySelectorAll('.color-swatches .swatch');
+            swatches.forEach(swatch => {
+              swatch.style.pointerEvents = 'none'; // Désactive clics/touch temporairement
+            });
+            setTimeout(() => {
+              swatches.forEach(swatch => {
+                swatch.style.pointerEvents = 'auto'; // Réactive après reset
+              });
+            }, 1000); // Délai adapté au mobile
+          }
           }
           const sizeSelect = document.getElementById('size-select');
           if (sizeSelect && prod.sizes && prod.sizes.length > 0) {
@@ -720,7 +732,6 @@ if (bundleContainer) {
     // Mise à jour prix base
     if (typeof updateProductPrice === 'function') updateProductPrice();
   }, 300);
-
   document.querySelectorAll('section').forEach(sec => {
     if (!sec.hasAttribute('data-scroll-reveal')) {
       sec.setAttribute('data-scroll-reveal', '');
