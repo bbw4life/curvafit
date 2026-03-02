@@ -717,6 +717,15 @@ if (bundleContainer) {
         img.src = container.dataset.originalSrc;
       }
     });
+    const productSection = document.querySelector('.product-section');
+    if (productSection) {
+      const pid = productSection.dataset.productId;
+      const prod = products.find(p => p.id === pid);
+      if (prod && prod.image) {
+        const mainImg = document.querySelector('#main-image-slider .main-image.active img');
+        if (mainImg) mainImg.src = prod.image;
+      }
+    }
     // Mise à jour prix base
     if (typeof updateProductPrice === 'function') updateProductPrice();
   }, 300);

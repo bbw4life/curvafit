@@ -1486,7 +1486,7 @@ if (bundleContainer) {
 
 
 
-  document.addEventListener('DOMContentLoaded', () => {
+ document.addEventListener('DOMContentLoaded', () => {
   let products = [];
 function getProductUrl(id) {
   const productIndex = products.findIndex(p => p.id === id) + 1;
@@ -2618,8 +2618,8 @@ if (bundleContainer) {
     let quantity = 1;
     const qtyInput = container.querySelector('.quantity input');
     if (qtyInput) quantity = parseInt(qtyInput.value);
-    let selectedSize = product.sizes && product.sizes.length > 0 ? null : null;
-    let selectedColor = product.colors && product.colors.length > 0 ? null : null;
+    let selectedSize = null;
+    let selectedColor = null;
     let itemImage = product.image;
     if (isProductPage) {
       const sizeSelect = document.getElementById('size-select');
@@ -2632,6 +2632,16 @@ if (bundleContainer) {
       if (selectedColor) {
         const colorObj = product.colors.find(c => c.name === selectedColor);
         if (colorObj && colorObj.image) itemImage = colorObj.image;
+      }
+    } else {
+      // From shop.html, select first color and size if available
+      if (product.colors && product.colors.length > 0) {
+        selectedColor = product.colors[0].name;
+        const colorObj = product.colors[0];
+        if (colorObj && colorObj.image) itemImage = colorObj.image;
+      }
+      if (product.sizes && product.sizes.length > 0) {
+        selectedSize = product.sizes[0];
       }
     }
     let item = cart.find(i => i.id === id && i.size === selectedSize && i.color === selectedColor);
