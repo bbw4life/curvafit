@@ -2649,3 +2649,9 @@ product-card:hover img {
 .product-card:hover {
     box-shadow: 0 10px 25px rgba(233, 30, 99, 0.25);
 }
+
+
+.product-grid-section button.add-to-cart.cta.button-3d {
+  width: 80% !important;
+  font-size: 20px !important;
+}
