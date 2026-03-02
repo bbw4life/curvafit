@@ -220,11 +220,13 @@ button.buy-now.cta.button-3d {
         flex-direction: column;
     }
     button.buy-now.cta.button-3d {
-      font-size: 15px !important;
+      font-size: 13px !important;
+      width: 100px;
     }
 
     button.add-to-cart.cta.button-3d {
-      font-size: 15px !important;
+      font-size: 13px !important;
+      width: 100px;
     }
 
     .product-media {
@@ -2622,4 +2624,28 @@ body {
     color: #ff69b4;
 }
 
+.product-grid-section .product-card img {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+    object-fit: cover !important;
+    border-radius: 5px;
+    display: block;
+    image-rendering: -webkit-optimize-contrast;
+    transition: transform 0.3s ease;
+}
 
+.product-card {
+    overflow: hidden;
+    border-radius: 12px;
+    background: #fce4ec;
+    padding: 12px;
+    transition: all 0.3s;
+}
+
+product-card:hover img {
+    transform: scale(1.05);
+}
+.product-card:hover {
+    box-shadow: 0 10px 25px rgba(233, 30, 99, 0.25);
+}
