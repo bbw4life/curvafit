@@ -207,24 +207,26 @@ a {
 .home-hero-banner {
     background-size: cover;
     background-position: center;
-    height: 450px;
+    min-height: 60vh; /* Reduced height for a more compact feel */
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     position: relative;
+    overflow: hidden;
 }
 
 .parallax-background {
     background-size: cover;
     background-position: center;
     position: absolute;
-    top: 0;
+    top: -5%; /* Subtle offset for depth */
     left: 0;
     width: 100%;
-    height: 100%;
-    z-index: -1;
-    transform: translateZ(-1px) scale(1.1); /* Parallax effect */
+    height: 110%; /* Balanced for parallax without excess */
+    z-index: -2;
+    transform: translateZ(-1px) scale(1.05); /* Softer parallax */
+    filter: brightness(1.05) contrast(1.1); /* Enhance image vibrancy */
 }
 
 .gradient-overlay {
@@ -233,114 +235,167 @@ a {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(245, 126, 166, 0.466), rgba(245, 241, 250, 0.452)); /* Pink to purple gradient */
+    background: linear-gradient(145deg, rgba(255, 182, 193, 0.7) 0%, rgba(216, 191, 216, 0.6) 100%); /* Softer pink-plum gradient for elegance */
     z-index: -1;
+    mix-blend-mode: overlay; /* Better integration with background */
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    padding: 0 30px;
+    animation: fadeIn 1.5s ease-out; /* Smooth entrance animation */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .hero-content h1 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    font-size: clamp(2rem, 4vw, 2.8rem); /* Reduced desktop size for h1 */
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #e718a2;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    letter-spacing: 0.5px;
+    line-height: 1.2;
 }
 
 .hero-content h2 {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-    color: burlywood !important;
+    font-size: clamp(1.2rem, 2.5vw, 1.8rem); /* Slightly reduced for balance */
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: #ffe4b5; /* Soft lemon chiffon for warmth */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    line-height: 1.3;
 }
 
 .hero-content p {
-    font-size: 1rem;
-    color: white;
+    font-size: clamp(0.9rem, 1.8vw, 1.1rem); /* Adjusted for smaller text */
+    color: #f816c0;
+    margin-bottom: 25px;
+    line-height: 1.6;
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .button-3d {
     display: inline-block;
-    padding: 15px 30px;
-    background-color: #e91e63; 
-    color: rgb(255, 255, 255);
-    border-radius: 30px;
-    box-shadow: 0 4px 6px rgba(233,30,99,0.4);
-    transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, #ff69b4, #db7093); /* Refined pink gradient */
+    color: #ffffff;
+    border-radius: 40px;
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    margin: 0 8px;
 }
 
 .button-3d:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(233,30,99,0.6);
-    background-color: #c2185b; /* Darker pink */
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.5);
+    background: linear-gradient(135deg, #ff1493, #c71585);
 }
 
 .button-3d:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 4px rgba(233,30,99,0.2);
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 2px 8px rgba(255, 105, 180, 0.2);
 }
 
 .secondary-cta {
     background-color: transparent;
-    border: 2px solid white;
-    margin-left: 10px;
+    border: 2px solid #ffffff;
+    color: #ffffff;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.secondary-cta:hover {
+    background-color: #ffffff;
+    color: #971541;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
 }
 
 .scroll-indicator {
     position: absolute;
-    bottom: 20px;
-    animation: bounce 2s infinite;
-    color: white;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2.5s infinite ease-in-out;
+    color: #da0b61;
+    font-size: 1.2rem;
+    opacity: 0.75;
 }
 
 @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-10px); }
-    60% { transform: translateY(-5px); }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
 }
 
 @media (max-width: 768px) {
     .home-hero-banner {
-        height: auto;
-        min-height: 60vh;
-        align-items: flex-start; 
-        box-sizing: border-box;
+        min-height: 30vh; /* Further reduced height on mobile */
+        padding: 20px 0; /* Adjusted padding for better flow */
     }
 
     .hero-content {
-        padding: 0 25px;
-        max-width: 100%;
+        padding: 0 15px;
     }
 
     .hero-content h1 {
-        font-size: 1.7rem !important;
-        margin-bottom: 0.6em;
+        font-size: clamp(1.5rem, 6vw, 2rem); /* Slightly increased h1 size on mobile */
+        margin-bottom: 10px;
     }
 
     .hero-content h2 {
-        font-size: 1.4rem !important;
+        font-size: clamp(1.1rem, 4vw, 1.5rem); /* Slightly increased h2 size on mobile */
+        margin-bottom: 15px;
     }
 
     .hero-content p {
-        font-size: 0.9rem;
-        line-height: 1.5;
+        font-size: clamp(0.85rem, 3vw, 1.05rem); /* Slightly increased p size on mobile */
+        max-width: 100%;
+        margin-bottom: 20px;
     }
 
-    .hero-content .button-3d,
-    .hero-content .secondary-cta {
-        display: block;
-        width: 100%;
-        max-width: 320px;
-        margin: 12px auto;
+    .button-3d {
+        display: inline-block;
+        width: auto; /* Reduced width to fit on one line */
+        max-width: 200px; /* Limit max width for smaller buttons */
+        margin: 0 5px;
+        padding: 8px 15px; /* Adjusted padding for narrower buttons */
+        font-size: 0.9rem; /* Slightly smaller font for mobile fit */
     }
 
-    .secondary-cta {
-        margin-left: 0;
+    .scroll-indicator {
+        bottom: 15px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-hero-banner {
+        min-height: 25vh; /* Even shorter for very small screens */
+    }
+
+    .button-3d {
+        max-width: 140px; /* Further reduce for very small screens */
+        padding: 8px 12px;
+        font-size: 0.85rem;
     }
 }
 
 
 /* Trust Badges */
 .trust-badges-section {
-    padding: 40px 0;
+    padding: 20px 0;
     text-align: center;
-    background-image: url('https://cdn.shopify.com/s/files/1/0643/8263/2041/files/cuv_bag.webp?v=1771453677'); /* Ajout de background-image */
+    background-image: url('https://cdn.shopify.com/s/files/1/0643/8263/2041/files/bg_plus_size_fit.webp?v=1772559170'); /* Ajout de background-image */
     background-size: cover;
+    color: white !important;
     background-position: center;
     position: relative; /* Pour overlay si besoin */
 }
@@ -352,7 +407,7 @@ a {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(252, 228, 236, 0.8); /* Light pink overlay */
+    background-color: rgba(22, 20, 21, 0.692); /* Light pink overlay */
     z-index: -1;
 }
 
@@ -362,6 +417,7 @@ a {
     gap: 20px;
     margin-top: 20px;
     flex-wrap: wrap; /* Permet le wrap en mobile pour éviter décalage */
+    perspective: 1000px; /* Ajout pour effet 3D */
 }
 
 .partner-logos img {
@@ -370,6 +426,13 @@ a {
     border-radius: 50px;
     border: 1px solid rgb(223, 10, 109);
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    transition: transform 0.3s ease; /* Transition pour l'effet zoom */
+    transform-style: preserve-3d; /* Préserve le style 3D */
+}
+
+.partner-logos img:hover {
+    transform: scale(1.1) translateZ(20px); /* Petit effet zoom 3D */
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); /* Amélioration de l'ombre pour profondeur */
 }
 
 @media (max-width: 768px) {
@@ -384,13 +447,34 @@ a {
 }
 
 
-/* Statistics */
-.statistics-section {
-    padding: 15px 0;
+/* Index Statistics */
+.index-stats {
+    padding: 20px 0;
     background-color: #f3e5f5;
 }
-/* Animated border element */
-.stat-card::before {
+
+.index-stats .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.index-stats .stat-card {
+    position: relative;
+    text-align: center;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    border: 1px solid #6f2b46;
+    box-shadow: 
+        0 6px 15px rgba(111, 43, 70, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* Animated border element for index */
+.index-stats .stat-card::before {
     content: "";
     position: absolute;
     inset: -2px;
@@ -402,28 +486,72 @@ a {
     transition: opacity 0.3s ease;
 }
 
-/* Hover effect */
-.stat-card:hover {
+/* Hover effect for index */
+.index-stats .stat-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 15px 30px rgba(111, 43, 70, 0.35);
 }
 
-.stat-card:hover::before {
+.index-stats .stat-card:hover::before {
     opacity: 1;
     animation: rotateBorder 3s linear infinite;
 }
 
-/* Animation */
+/* Animation for index */
 @keyframes rotateBorder {
     0% { background-position: 0% 50%; }
     100% { background-position: 300% 50%; }
 }
 
-/* Counter */
-.counter {
+/* Counter for index */
+.index-stats .counter {
     font-size: 2.5rem;
     color: #6f2b46;
 }
+
+/* Community Statistics */
+.community-stats {
+    padding: 10px 0;
+    background: linear-gradient(135deg, #f3e5f5, #fce4ec);
+}
+
+/* Success Statistics (if used elsewhere, otherwise optional) */
+.success-statistics-section {
+    background-color: #eedaf1;
+}
+
+.community-stats .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+}
+
+.community-stats .stat-card {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(103,58,183,0.15);
+    transition: transform 0.3s;
+}
+
+.community-stats .stat-card:hover {
+    transform: translateY(-10px);
+}
+
+.community-stats .stat-card i {
+    font-size: 3rem;
+    color: #e91e63;
+    margin-bottom: 15px;
+}
+
+.community-stats .counter {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #673ab7;
+}
+
+
 
 /* Problem/Solution */
 .problem-solution-section {
@@ -1836,16 +1964,6 @@ a {
 }
 
 
-
-/* Hero Section (Already exists, but ensure class consistency) */
-#programs-hero .trust-sentence {
-    font-size: 1.1rem;
-    margin-top: 20px;
-    font-weight: 500;
-    color: #fff;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-}
-
 /* Program Tiers Section */
 .program-tiers-section {
     padding: 20px 0;
@@ -2302,12 +2420,12 @@ a {
     box-shadow: 0 8px 16px rgba(0,0,0,0.25);
 }
 
-/* Banner Section */
 .banner-section {
     padding: 20px 0;
     background-size: cover;
-    background-position: center;
+    background-position: center center;
     color: white;
+    min-height: 200px;
     text-align: center;
     position: relative;
 }
@@ -2315,11 +2433,8 @@ a {
 .banner-section::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent overlay for readability */
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.3);
     z-index: 1;
 }
 
@@ -2334,6 +2449,7 @@ a {
 .banner-section p {
     margin-bottom: 20px;
 }
+
 
 /* What We Don't Do Section */
 .what-we-dont-do-section {
@@ -3637,6 +3753,4 @@ a {
 .store-infos-section.bg-image {
     background-image: url('https://ton-image.jpg');
 }
-
-
 

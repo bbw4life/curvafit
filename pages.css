@@ -252,15 +252,7 @@
     border-radius: 10px;
 }
 
-/* Success Statistics */
-.success-statistics-section {
-    background-color: #eedaf1;
-}
-.stat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-}
+
 
 /* Educational Section */
 .educational-section {
@@ -402,6 +394,10 @@ a.button-3d:hover {
 
 a.button-3d.secondary-cta {
     background: linear-gradient(135deg, #673ab7, #512da8);
+}
+
+.hero-overlay {
+    pointer-events: none !important;
 }
 
 .community-hero-section {
@@ -761,42 +757,6 @@ a.button-3d.secondary-cta {
     font-size: 1.8rem;
 }
 
-/* Statistics Section - Design amélioré avec icônes et animations */
-.statistics-section {
-    padding: 60px 0;
-    background: linear-gradient(135deg, #f3e5f5, #fce4ec);
-}
-
-.stat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 30px;
-}
-
-.stat-card {
-    text-align: center;
-    padding: 30px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 20px rgba(103,58,183,0.15);
-    transition: transform 0.3s;
-}
-
-.stat-card:hover {
-    transform: translateY(-10px);
-}
-
-.stat-card i {
-    font-size: 3rem;
-    color: #e91e63;
-    margin-bottom: 15px;
-}
-
-.counter {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #673ab7;
-}
 
 /* Current Challenge Section */
 .current-challenge-section {
