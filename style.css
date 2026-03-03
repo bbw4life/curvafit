@@ -383,33 +383,12 @@ a {
     }
 }
 
+
 /* Statistics */
 .statistics-section {
-    padding: 20px 0;
+    padding: 15px 0;
     background-color: #f3e5f5;
 }
-
-.statistics-section .container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-}
-
-.stat-card {
-    position: relative;
-    text-align: center;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 15px;
-    overflow: hidden;
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
-    border: 1px solid #6f2b46;
-    box-shadow: 
-        0 6px 15px rgba(111, 43, 70, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.6);
-
-}
-
 /* Animated border element */
 .stat-card::before {
     content: "";
@@ -3658,3 +3637,6 @@ a {
 .store-infos-section.bg-image {
     background-image: url('https://ton-image.jpg');
 }
+
+
+
