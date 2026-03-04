@@ -376,7 +376,7 @@ a {
     .button-3d {
         display: inline-block;
         width: auto; /* Reduced width to fit on one line */
-        max-width: 200px; /* Limit max width for smaller buttons */
+        max-width: 100% !important; /* Limit max width for smaller buttons */
         margin: 0 5px;
         padding: 8px 15px; /* Adjusted padding for narrower buttons */
         font-size: 0.9rem; /* Slightly smaller font for mobile fit */
