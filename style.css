@@ -296,7 +296,7 @@ a {
 
 .button-3d {
     display: inline-block;
-    padding: 12px 28px;
+    padding: 10px 20px;
     background: linear-gradient(135deg, #ff69b4, #db7093); /* Refined pink gradient */
     color: #ffffff;
     border-radius: 40px;
@@ -330,6 +330,15 @@ a {
     color: #971541;
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
 }
+
+.button-3d {
+        display: inline-block;
+        width: auto;
+        max-width: 100% !important;
+        margin: 0 5px;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
 
 .scroll-indicator {
     position: absolute;
@@ -373,14 +382,6 @@ a {
         margin-bottom: 20px;
     }
 
-    .button-3d {
-        display: inline-block;
-        width: auto; /* Reduced width to fit on one line */
-        max-width: 100% !important; /* Limit max width for smaller buttons */
-        margin: 0 5px;
-        padding: 8px 15px; /* Adjusted padding for narrower buttons */
-        font-size: 0.9rem; /* Slightly smaller font for mobile fit */
-    }
 
     .scroll-indicator {
         bottom: 15px;
@@ -391,12 +392,6 @@ a {
 @media (max-width: 480px) {
     .home-hero-banner {
         min-height: 25vh; /* Even shorter for very small screens */
-    }
-
-    .button-3d {
-        max-width: 140px; /* Further reduce for very small screens */
-        padding: 8px 12px;
-        font-size: 0.85rem;
     }
 }
 
@@ -1384,7 +1379,14 @@ a {
     .button-3d {
         padding: 10px 20px;
     }
+    .button-3d {
+        max-width: 140px;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
 }
+
+
 
 /* Glassmorphism */
 .glassmorphism {
