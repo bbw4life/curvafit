@@ -263,6 +263,18 @@ a {
     line-height: 1.2;
 }
 
+.sanaica-banner h1 {
+    color: #ffffff;
+}
+
+.sanaica-banner h2 {
+    color: #fc0eac !important;
+}
+
+.sanaica-banner p {
+    color: #ffffff !important;
+}
+
 .hero-content h2 {
     font-size: clamp(1.2rem, 2.5vw, 1.8rem); /* Slightly reduced for balance */
     font-weight: 500;
@@ -462,7 +474,7 @@ a {
 .index-stats .stat-card {
     position: relative;
     text-align: center;
-    padding: 20px;
+    padding: 5px;
     background-color: #ffffff;
     border-radius: 15px;
     overflow: hidden;
@@ -473,7 +485,7 @@ a {
         inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
-/* Animated border element for index */
+
 .index-stats .stat-card::before {
     content: "";
     position: absolute;
@@ -509,16 +521,11 @@ a {
     color: #6f2b46;
 }
 
-/* Community Statistics */
 .community-stats {
-    padding: 10px 0;
+    padding: 20px 0;
     background: linear-gradient(135deg, #f3e5f5, #fce4ec);
 }
 
-/* Success Statistics (if used elsewhere, otherwise optional) */
-.success-statistics-section {
-    background-color: #eedaf1;
-}
 
 .community-stats .stat-grid {
     display: grid;
@@ -528,15 +535,22 @@ a {
 
 .community-stats .stat-card {
     text-align: center;
-    padding: 20px;
+    padding: 5px;
     background: white;
     border-radius: 20px;
     box-shadow: 0 10px 20px rgba(103,58,183,0.15);
     transition: transform 0.3s;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    border: 1px solid #050203;
+    box-shadow:
+        0 6px 15px rgba(111, 43, 70, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .community-stats .stat-card:hover {
     transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(111, 43, 70, 0.35);
+    background: linear-gradient(135deg, #f160de, #e691ad);
 }
 
 .community-stats .stat-card i {
@@ -2420,36 +2434,6 @@ a {
     box-shadow: 0 8px 16px rgba(0,0,0,0.25);
 }
 
-.banner-section {
-    padding: 20px 0;
-    background-size: cover;
-    background-position: center center;
-    color: white;
-    min-height: 200px;
-    text-align: center;
-    position: relative;
-}
-
-.banner-section::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.3);
-    z-index: 1;
-}
-
-.banner-section .container {
-    position: relative;
-    z-index: 2;
-}
-
-.banner-section h2 {
-    margin-bottom: 10px;
-}
-.banner-section p {
-    margin-bottom: 20px;
-}
-
 
 /* What We Don't Do Section */
 .what-we-dont-do-section {
@@ -3753,4 +3737,5 @@ a {
 .store-infos-section.bg-image {
     background-image: url('https://ton-image.jpg');
 }
+
 
