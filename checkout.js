@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let appliedPromo = null;
     let discountAmount = 0;
 
-    fetch('products.data.json')
+    fetch('/products.data.json')
       .then(response => response.json())
       .then(data => {
         productsData = data;
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCart();  // Appeler renderCart après chargement pour appliquer les nouvelles valeurs
       })
       .catch(error => {
-        console.error('Erreur de chargement de products.data.json:', error);
+        console.error('Erreur de chargement de /products.data.json:', error);
         renderCart();  // Continuer avec fallbacks si erreur
       });
     function renderCart() {

@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     else index = (index + 1) % images.length;
     images[index].classList.add('active');
   }
-  fetch('products.data.json')
+  fetch('/products.data.json')
     .then(response => response.json())
     .then(data => {
       products = data;
@@ -1242,7 +1242,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   function checkout() {
     localStorage.setItem('checkoutCart', JSON.stringify(cart));
-    window.location.href = 'checkout.html';
+    window.location.href = '/checkout.html';
   }
   function toggleWishlist(e) {
     const icon = e.target.closest('.wishlist-toggle, .wishlist-icon-product, .mini-wishlist-icon');

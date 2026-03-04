@@ -4,12 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const productSection = document.querySelector('.product-section');
   const currentProductId = productSection ? (productSection.dataset.productId || 'resistance-bands') : 'resistance-bands';
 
-  fetch('products.data.json')
+  fetch('/products.data.json')
     .then(response => response.json())
     .then(allProducts => {
       const product = allProducts.find(p => p.id === currentProductId);
       if (!product) {
-        console.error('Produit non trouvé dans products.data.json :', currentProductId);
+        console.error('Produit non trouvé dans /products.data.json :', currentProductId);
         return;
       }
 
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       calculateDiscount();
     })
-    .catch(err => console.error('Erreur chargement products.data.json', err));
+    .catch(err => console.error('Erreur chargement /products.data.json', err));
 
   // ====================== HELPERS CJ ======================
   function setupColorListeners() {

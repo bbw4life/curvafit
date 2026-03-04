@@ -220,13 +220,16 @@ button.buy-now.cta {
         flex-direction: column;
     }
 
-    button.add-to-cart.cta {
-  font-size: 12px !important;
-  }
-  button.buy-now.cta {
-      background: #673ab7;
-      font-size: 12px !important;
-  }
+  button.add-to-cart.cta {
+    padding: 7px 10px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+}
+button.buy-now.cta {
+    padding: 7px 10px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+}
 
     .product-media {
         width: 100%;
@@ -280,14 +283,6 @@ button.buy-now.cta {
     margin: 0px 0;
     padding: 0;
     line-height: 1.2;
-}
-    .add-to-cart {
-    padding: 7px 10px !important;
-    font-size: 12px !important;
-}
-.buy-now {
-    padding: 7px 10px !important;
-    font-size: 12px !important;
 }
 
 /* Star Rating */
@@ -2653,4 +2648,93 @@ product-card:hover img {
 .product-grid-section button.add-to-cart.cta.button-3d {
   width: 80% !important;
   font-size: 20px !important;
+}
+
+
+
+.paul-shop-marquee {
+  width: 100%;
+  overflow: hidden;
+  background-color: #f73e6c;
+  padding: 0;
+  z-index: 10;
+  position: relative;
+}
+
+.marquee-container { width: 100%; }
+
+.marquee-content {
+  display: flex;
+  white-space: nowrap;
+  animation: marquee 20s linear infinite reverse;
+}
+
+.marquee-content span {
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin-right: 2rem;
+  font-weight: 600;
+  padding: 0.3rem;
+  text-transform: uppercase;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+@media (max-width: 768px) {
+  .marquee-content {
+    animation: marquee 15s linear infinite reverse;
+  }
+  .marquee-content span {
+    font-size: 1.2rem;
+    margin-right: 1rem;
+  }
+}
+
+
+/* Sanaica Paul Shop Marquee */
+.sanaica-paul-shop {
+  width: 100%;
+  overflow: hidden;
+  background-color: #000000;
+  padding: 0;
+  z-index: 10;
+  position: relative;
+}
+
+.marquee-container {
+  width: 100%;
+}
+
+.marquee-content {
+  display: flex;
+  white-space: nowrap;
+  animation: marquee 20s linear infinite;
+}
+
+.marquee-content span {
+  font-size: 1.5rem;
+  color: #ffe3ec;
+  margin-right: 2rem;
+  font-weight: 600;
+  padding: 0.2rem;
+  text-transform: uppercase;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+@media (max-width: 768px) {
+  .marquee-content {
+    animation: marquee 15s linear infinite;
+  }
+
+  .marquee-content span {
+    font-size: 1.2rem;
+    margin-right: 1rem;
+  }
 }

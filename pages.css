@@ -468,8 +468,6 @@ h1, h2, h3 {
     color: #e91e63;
 }
 
-
-
 .community-hero-section a.button-3d {
     background: linear-gradient(135deg, #e91e63, #c2185b) !important;
     color: white !important;
@@ -1057,10 +1055,6 @@ h1, h2, h3 {
     }
 }
 
-
-
-
-
 /* Hero Section */
 .blog-banner {
     background-size: cover;
@@ -1119,7 +1113,7 @@ h1, h2, h3 {
 
 /* Featured Article */
 .featured-article-section {
-    padding: 20px 0;
+    padding: 10px 0;
     background-color: #fce4ec;
 }
 .featured-card {
