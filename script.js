@@ -173,6 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
               colorContainer.appendChild(swatch);
             });
             colorContainer.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+          } else if (colorContainer) {
+            colorContainer.style.display = 'none';
           }
           const sizeSelect = document.getElementById('size-select');
           if (sizeSelect && prod.sizes && prod.sizes.length > 0) {
@@ -187,6 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
               opt.textContent = size;
               sizeSelect.appendChild(opt);
             });
+          } else if (sizeSelect) {
+            sizeSelect.style.display = 'none';
           }
           function getVariantPrice(product, color, size) {
             if (!color || !size) return product.price;
@@ -441,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
             defaultOption.textContent = placeholder;
             select.appendChild(defaultOption);
             options.forEach(value => {
-              const opt = document.createElement("option");
+              const opt = document.createElement('option');
               opt.value = value;
               opt.textContent = value;
               select.appendChild(opt);

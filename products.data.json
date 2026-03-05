@@ -1,123 +1,74 @@
 [
   {
-    "cj_id": "689838373",
-    "sku_internal": "RB-001",
-    "id": "resistance-bands",
-    "active": true,
-    "stock_managed_by": "cj",
-    "currency": "$",
-    "last_updated": "2026-02-28",
+  "cj_id": "CJYD1954211",
+  "sku_internal": "CJYD1954211",
+  "id": "resistance-bands",
+  "active": true,
+  "stock_managed_by": "cj",
+  "currency": "$",
+  "last_updated": "2026-02-28",
+  "start_date": "2026-03-07",
+  "end_date": "2026-03-10",
+  "single_discount": 7,
+  "duo_discount": 10,
+  "trio_discount": 20,
+  "title": "Neck Memory Home Sleep Pillow",
+  "description": "Ergonomic memory foam neck pillow with 3D contour design. Provides perfect neck and shoulder support, relieves pressure points and improves sleep quality. Ideal for side, back and stomach sleepers.",
+  "price": 29.26,
+  "compare_price": 56.95,
+  "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_12_3eda61ad-07b1-49f1-882c-220e14a421fc.webp?v=1754486479",
+  "sizes": [],
+  "colors": [
+    {
+      "name": "Gray",
+      "hex": "#9E9E9E",
+      "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_1_aeda37b4-a4ab-4731-a053-cb94dfb9ac3b.webp?v=1754486478",
+      "active": true
+    },
+    {
+      "name": "Black",
+      "hex": "#000000",
+      "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_9.webp",
+      "active": true
+    },
+    {
+      "name": "White",
+      "hex": "#FFFFFF",
+      "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_6.webp",
+      "active": true
+    },
+    {
+      "name": "Black Pillowcase",
+      "hex": "#1C1C1C",
+      "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Sf557550825534dea9083e446ec6cbba4C.webp",
+      "active": true
+    }
+  ],
+  "variants": [
+    { "vid": "CJYD1954211101AZ", "color": "Gray", "size": "", "price": 27.26, "active": true },
+    { "vid": "CJYD1954211102BY", "color": "Black", "size": "", "price": 32.26, "active": true },
+    { "vid": "CJYD1954211103CX", "color": "White", "size": "", "price": 29.26, "active": true },
+    { "vid": "CJYD1954211104DW", "color": "Black Pillowcase", "size": "", "price": 2.63, "active": true }
+  ],
+  "media": [
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Sd3bfdf0074e743968ee398c542640734b.webp?v=1754486496",
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_7_34cbe5a0-ea02-44e1-9021-6fc9a0f59e47.webp?v=1771884540",
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_9_fd535894-2578-4b8a-84a2-a7c29f33289a.webp?v=1771884540",
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540",
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_6_eecf21aa-e517-4bb3-8a8f-acba192c2ee5.jpg?v=1771884540",
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_8_a061f9a0-813c-4cf1-8bc4-2e953051174a.jpg?v=1771884540",
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_2_2931fd8b-047d-465b-8043-b7d7126b39f7.jpg?v=1771884541",
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_3_6f466031-c570-4b5a-a705-f3df71589a31.png?v=1771884541"
+  ],
+  "promo": {
     "start_date": "2026-03-07",
     "end_date": "2026-03-10",
     "single_discount": 7,
     "duo_discount": 10,
-    "trio_discount": 20,
-    "title": "Comfortable Resistance Bands paul",
-    "description": "Progressive resistance levels with anti-slip grips for stability, designed to support joint health under higher body weight pressure while maintaining durability.",
-    "price": 46.44,
-    "compare_price": 79.29,
-    "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_12_3eda61ad-07b1-49f1-882c-220e14a421fc.webp?v=1754486479",
-    "sizes": [
-      "XL (42-44)",
-      "2XL (46-48)",
-      "3XL (50-52)",
-      "4XL (54-56)",
-      "5XL (58-60)"
-    ],
-    "colors": [
-      {
-        "name": "Pink",
-        "hex": "#FF69B4",
-        "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_1_aeda37b4-a4ab-4731-a053-cb94dfb9ac3b.webp?v=1754486478",
-        "active": true
-      },
-      {
-        "name": "Black",
-        "hex": "#000000",
-        "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_9.webp",
-        "active": true
-      },
-      {
-        "name": "Blue",
-        "hex": "#2196F3",
-        "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_6.webp",
-        "active": true
-      },
-      {
-        "name": "Green",
-        "hex": "#4CAF50",
-        "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Sf557550825534dea9083e446ec6cbba4C.webp",
-        "active": true
-      },
-      {
-        "name": "Yellow",
-        "hex": "#FFEB3B",
-        "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/S6fa99d50654f415da99dadc3135c273ez.webp",
-        "active": true
-      },
-      {
-        "name": "Red",
-        "hex": "#F44336",
-        "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_10.webp",
-        "active": true
-      }
-    ],
-    "variants": [
-      { "vid": "CJ_PINK_XL", "color": "Pink", "size": "XL (42-44)", "price": 40.04, "active": true },
-      { "vid": "CJ_PINK_2XL", "color": "Pink", "size": "2XL (46-48)", "price": 20.44, "active": true },
-      { "vid": "CJ_PINK_3XL", "color": "Pink", "size": "3XL (50-52)", "price": 39.44, "active": true },
-      { "vid": "CJ_PINK_4XL", "color": "Pink", "size": "4XL (54-56)", "price": 35.44, "active": true },
-      { "vid": "CJ_PINK_5XL", "color": "Pink", "size": "5XL (58-60)", "price": 27.44, "active": true },
-
-      { "vid": "CJ_BLACK_XL", "color": "Black", "size": "XL (42-44)", "price": 37.44, "active": true },
-      { "vid": "CJ_BLACK_2XL", "color": "Black", "size": "2XL (46-48)", "price": 30.44, "active": true },
-      { "vid": "CJ_BLACK_3XL", "color": "Black", "size": "3XL (50-52)", "price": 30.44, "active": true },
-      { "vid": "CJ_BLACK_4XL", "color": "Black", "size": "4XL (54-56)", "price": 30.44, "active": true },
-      { "vid": "CJ_BLACK_5XL", "color": "Black", "size": "5XL (58-60)", "price": 30.44, "active": true },
-
-      { "vid": "CJ_BLUE_XL", "color": "Blue", "size": "XL (42-44)", "price": 30.44, "active": true },
-      { "vid": "CJ_BLUE_2XL", "color": "Blue", "size": "2XL (46-48)", "price": 30.44, "active": true },
-      { "vid": "CJ_BLUE_3XL", "color": "Blue", "size": "3XL (50-52)", "price": 30.44, "active": true },
-      { "vid": "CJ_BLUE_4XL", "color": "Blue", "size": "4XL (54-56)", "price": 30.44, "active": true },
-      { "vid": "CJ_BLUE_5XL", "color": "Blue", "size": "5XL (58-60)", "price": 30.44, "active": true },
-
-      { "vid": "CJ_GREEN_XL", "color": "Green", "size": "XL (42-44)", "price": 30.44, "active": true },
-      { "vid": "CJ_GREEN_2XL", "color": "Green", "size": "2XL (46-48)", "price": 30.44, "active": true },
-      { "vid": "CJ_GREEN_3XL", "color": "Green", "size": "3XL (50-52)", "price": 30.44, "active": true },
-      { "vid": "CJ_GREEN_4XL", "color": "Green", "size": "4XL (54-56)", "price": 30.44, "active": true },
-      { "vid": "CJ_GREEN_5XL", "color": "Green", "size": "5XL (58-60)", "price": 30.44, "active": true },
-
-      { "vid": "CJ_YELLOW_XL", "color": "Yellow", "size": "XL (42-44)", "price": 30.44, "active": true },
-      { "vid": "CJ_YELLOW_2XL", "color": "Yellow", "size": "2XL (46-48)", "price": 30.44, "active": true },
-      { "vid": "CJ_YELLOW_3XL", "color": "Yellow", "size": "3XL (50-52)", "price": 30.44, "active": true },
-      { "vid": "CJ_YELLOW_4XL", "color": "Yellow", "size": "4XL (54-56)", "price": 30.44, "active": true },
-      { "vid": "CJ_YELLOW_5XL", "color": "Yellow", "size": "5XL (58-60)", "price": 30.44, "active": true },
-
-      { "vid": "CJ_RED_XL", "color": "Red", "size": "XL (42-44)", "price": 30.44, "active": true },
-      { "vid": "CJ_RED_2XL", "color": "Red", "size": "2XL (46-48)", "price": 30.44, "active": true },
-      { "vid": "CJ_RED_3XL", "color": "Red", "size": "3XL (50-52)", "price": 30.44, "active": true },
-      { "vid": "CJ_RED_4XL", "color": "Red", "size": "4XL (54-56)", "price": 30.44, "active": true },
-      { "vid": "CJ_RED_5XL", "color": "Red", "size": "5XL (58-60)", "price": 30.44, "active": true }
-    ],
-    "media": [
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Sd3bfdf0074e743968ee398c542640734b.webp?v=1754486496",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_7_34cbe5a0-ea02-44e1-9021-6fc9a0f59e47.webp?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_9_fd535894-2578-4b8a-84a2-a7c29f33289a.webp?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_6_eecf21aa-e517-4bb3-8a8f-acba192c2ee5.jpg?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_8_a061f9a0-813c-4cf1-8bc4-2e953051174a.jpg?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_2_2931fd8b-047d-465b-8043-b7d7126b39f7.jpg?v=1771884541",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_3_6f466031-c570-4b5a-a705-f3df71589a31.png?v=1771884541"
-    ],
-    "promo": {
-      "start_date": "2026-03-07",
-      "end_date": "2026-03-10",
-      "single_discount": 7,
-      "duo_discount": 10,
-      "trio_discount": 20
-    }
-  },
+    "trio_discount": 20
+  }
+},
   {
     "cj_id": "689838374",
     "sku_internal": "YM-001",
@@ -187,31 +138,26 @@
       { "vid": "CJ_PINK_6MM", "color": "Pink", "size": "6mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_PINK_7MM", "color": "Pink", "size": "7mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_PINK_8MM", "color": "Pink", "size": "8mm Thick", "price": 39.99, "active": true },
-
       { "vid": "CJ_BLACK_4MM", "color": "Black", "size": "4mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_BLACK_5MM", "color": "Black", "size": "5mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_BLACK_6MM", "color": "Black", "size": "6mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_BLACK_7MM", "color": "Black", "size": "7mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_BLACK_8MM", "color": "Black", "size": "8mm Thick", "price": 39.99, "active": true },
-
       { "vid": "CJ_BLUE_4MM", "color": "Blue", "size": "4mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_BLUE_5MM", "color": "Blue", "size": "5mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_BLUE_6MM", "color": "Blue", "size": "6mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_BLUE_7MM", "color": "Blue", "size": "7mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_BLUE_8MM", "color": "Blue", "size": "8mm Thick", "price": 39.99, "active": true },
-
       { "vid": "CJ_GREEN_4MM", "color": "Green", "size": "4mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_GREEN_5MM", "color": "Green", "size": "5mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_GREEN_6MM", "color": "Green", "size": "6mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_GREEN_7MM", "color": "Green", "size": "7mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_GREEN_8MM", "color": "Green", "size": "8mm Thick", "price": 39.99, "active": true },
-
       { "vid": "CJ_YELLOW_4MM", "color": "Yellow", "size": "4mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_YELLOW_5MM", "color": "Yellow", "size": "5mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_YELLOW_6MM", "color": "Yellow", "size": "6mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_YELLOW_7MM", "color": "Yellow", "size": "7mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_YELLOW_8MM", "color": "Yellow", "size": "8mm Thick", "price": 39.99, "active": true },
-
       { "vid": "CJ_RED_4MM", "color": "Red", "size": "4mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_RED_5MM", "color": "Red", "size": "5mm Thick", "price": 39.99, "active": true },
       { "vid": "CJ_RED_6MM", "color": "Red", "size": "6mm Thick", "price": 39.99, "active": true },
@@ -306,31 +252,26 @@
       { "vid": "CJ_PINK_3XL", "color": "Pink", "size": "3XL (44-46\")", "price": 49.99, "active": true },
       { "vid": "CJ_PINK_4XL", "color": "Pink", "size": "4XL (48-50\")", "price": 49.99, "active": true },
       { "vid": "CJ_PINK_5XL", "color": "Pink", "size": "5XL (52-54\")", "price": 49.99, "active": true },
-
       { "vid": "CJ_BLACK_XL", "color": "Black", "size": "XL (36-38\")", "price": 49.99, "active": true },
       { "vid": "CJ_BLACK_2XL", "color": "Black", "size": "2XL (40-42\")", "price": 49.99, "active": true },
       { "vid": "CJ_BLACK_3XL", "color": "Black", "size": "3XL (44-46\")", "price": 49.99, "active": true },
       { "vid": "CJ_BLACK_4XL", "color": "Black", "size": "4XL (48-50\")", "price": 49.99, "active": true },
       { "vid": "CJ_BLACK_5XL", "color": "Black", "size": "5XL (52-54\")", "price": 49.99, "active": true },
-
       { "vid": "CJ_BLUE_XL", "color": "Blue", "size": "XL (36-38\")", "price": 49.99, "active": true },
       { "vid": "CJ_BLUE_2XL", "color": "Blue", "size": "2XL (40-42\")", "price": 49.99, "active": true },
       { "vid": "CJ_BLUE_3XL", "color": "Blue", "size": "3XL (44-46\")", "price": 49.99, "active": true },
       { "vid": "CJ_BLUE_4XL", "color": "Blue", "size": "4XL (48-50\")", "price": 49.99, "active": true },
       { "vid": "CJ_BLUE_5XL", "color": "Blue", "size": "5XL (52-54\")", "price": 49.99, "active": true },
-
       { "vid": "CJ_GREEN_XL", "color": "Green", "size": "XL (36-38\")", "price": 49.99, "active": true },
       { "vid": "CJ_GREEN_2XL", "color": "Green", "size": "2XL (40-42\")", "price": 49.99, "active": true },
       { "vid": "CJ_GREEN_3XL", "color": "Green", "size": "3XL (44-46\")", "price": 49.99, "active": true },
       { "vid": "CJ_GREEN_4XL", "color": "Green", "size": "4XL (48-50\")", "price": 49.99, "active": true },
       { "vid": "CJ_GREEN_5XL", "color": "Green", "size": "5XL (52-54\")", "price": 49.99, "active": true },
-
       { "vid": "CJ_YELLOW_XL", "color": "Yellow", "size": "XL (36-38\")", "price": 49.99, "active": true },
       { "vid": "CJ_YELLOW_2XL", "color": "Yellow", "size": "2XL (40-42\")", "price": 49.99, "active": true },
       { "vid": "CJ_YELLOW_3XL", "color": "Yellow", "size": "3XL (44-46\")", "price": 49.99, "active": true },
       { "vid": "CJ_YELLOW_4XL", "color": "Yellow", "size": "4XL (48-50\")", "price": 49.99, "active": true },
       { "vid": "CJ_YELLOW_5XL", "color": "Yellow", "size": "5XL (52-54\")", "price": 49.99, "active": true },
-
       { "vid": "CJ_RED_XL", "color": "Red", "size": "XL (36-38\")", "price": 49.99, "active": true },
       { "vid": "CJ_RED_2XL", "color": "Red", "size": "2XL (40-42\")", "price": 49.99, "active": true },
       { "vid": "CJ_RED_3XL", "color": "Red", "size": "3XL (44-46\")", "price": 49.99, "active": true },
@@ -425,31 +366,26 @@
       { "vid": "CJ_PINK_3XL", "color": "Pink", "size": "3XL (42-44\")", "price": 34.99, "active": true },
       { "vid": "CJ_PINK_4XL", "color": "Pink", "size": "4XL (46-48\")", "price": 34.99, "active": true },
       { "vid": "CJ_PINK_5XL", "color": "Pink", "size": "5XL (50-52\")", "price": 34.99, "active": true },
-
       { "vid": "CJ_BLACK_XL", "color": "Black", "size": "XL (34-36\")", "price": 34.99, "active": true },
       { "vid": "CJ_BLACK_2XL", "color": "Black", "size": "2XL (38-40\")", "price": 34.99, "active": true },
       { "vid": "CJ_BLACK_3XL", "color": "Black", "size": "3XL (42-44\")", "price": 34.99, "active": true },
       { "vid": "CJ_BLACK_4XL", "color": "Black", "size": "4XL (46-48\")", "price": 34.99, "active": true },
       { "vid": "CJ_BLACK_5XL", "color": "Black", "size": "5XL (50-52\")", "price": 34.99, "active": true },
-
       { "vid": "CJ_BLUE_XL", "color": "Blue", "size": "XL (34-36\")", "price": 34.99, "active": true },
       { "vid": "CJ_BLUE_2XL", "color": "Blue", "size": "2XL (38-40\")", "price": 34.99, "active": true },
       { "vid": "CJ_BLUE_3XL", "color": "Blue", "size": "3XL (42-44\")", "price": 34.99, "active": true },
       { "vid": "CJ_BLUE_4XL", "color": "Blue", "size": "4XL (46-48\")", "price": 34.99, "active": true },
       { "vid": "CJ_BLUE_5XL", "color": "Blue", "size": "5XL (50-52\")", "price": 34.99, "active": true },
-
       { "vid": "CJ_GREEN_XL", "color": "Green", "size": "XL (34-36\")", "price": 34.99, "active": true },
       { "vid": "CJ_GREEN_2XL", "color": "Green", "size": "2XL (38-40\")", "price": 34.99, "active": true },
       { "vid": "CJ_GREEN_3XL", "color": "Green", "size": "3XL (42-44\")", "price": 34.99, "active": true },
       { "vid": "CJ_GREEN_4XL", "color": "Green", "size": "4XL (46-48\")", "price": 34.99, "active": true },
       { "vid": "CJ_GREEN_5XL", "color": "Green", "size": "5XL (50-52\")", "price": 34.99, "active": true },
-
       { "vid": "CJ_YELLOW_XL", "color": "Yellow", "size": "XL (34-36\")", "price": 34.99, "active": true },
       { "vid": "CJ_YELLOW_2XL", "color": "Yellow", "size": "2XL (38-40\")", "price": 34.99, "active": true },
       { "vid": "CJ_YELLOW_3XL", "color": "Yellow", "size": "3XL (42-44\")", "price": 34.99, "active": true },
       { "vid": "CJ_YELLOW_4XL", "color": "Yellow", "size": "4XL (46-48\")", "price": 34.99, "active": true },
       { "vid": "CJ_YELLOW_5XL", "color": "Yellow", "size": "5XL (50-52\")", "price": 34.99, "active": true },
-
       { "vid": "CJ_RED_XL", "color": "Red", "size": "XL (34-36\")", "price": 34.99, "active": true },
       { "vid": "CJ_RED_2XL", "color": "Red", "size": "2XL (38-40\")", "price": 34.99, "active": true },
       { "vid": "CJ_RED_3XL", "color": "Red", "size": "3XL (42-44\")", "price": 34.99, "active": true },
@@ -544,31 +480,26 @@
       { "vid": "CJ_PINK_1L", "color": "Pink", "size": "1L", "price": 19.99, "active": true },
       { "vid": "CJ_PINK_1.5L", "color": "Pink", "size": "1.5L", "price": 19.99, "active": true },
       { "vid": "CJ_PINK_2L", "color": "Pink", "size": "2L", "price": 19.99, "active": true },
-
       { "vid": "CJ_BLACK_500ML", "color": "Black", "size": "500ml", "price": 19.99, "active": true },
       { "vid": "CJ_BLACK_750ML", "color": "Black", "size": "750ml", "price": 19.99, "active": true },
       { "vid": "CJ_BLACK_1L", "color": "Black", "size": "1L", "price": 19.99, "active": true },
       { "vid": "CJ_BLACK_1.5L", "color": "Black", "size": "1.5L", "price": 19.99, "active": true },
       { "vid": "CJ_BLACK_2L", "color": "Black", "size": "2L", "price": 19.99, "active": true },
-
       { "vid": "CJ_BLUE_500ML", "color": "Blue", "size": "500ml", "price": 19.99, "active": true },
       { "vid": "CJ_BLUE_750ML", "color": "Blue", "size": "750ml", "price": 19.99, "active": true },
       { "vid": "CJ_BLUE_1L", "color": "Blue", "size": "1L", "price": 19.99, "active": true },
       { "vid": "CJ_BLUE_1.5L", "color": "Blue", "size": "1.5L", "price": 19.99, "active": true },
       { "vid": "CJ_BLUE_2L", "color": "Blue", "size": "2L", "price": 19.99, "active": true },
-
       { "vid": "CJ_GREEN_500ML", "color": "Green", "size": "500ml", "price": 19.99, "active": true },
       { "vid": "CJ_GREEN_750ML", "color": "Green", "size": "750ml", "price": 19.99, "active": true },
       { "vid": "CJ_GREEN_1L", "color": "Green", "size": "1L", "price": 19.99, "active": true },
       { "vid": "CJ_GREEN_1.5L", "color": "Green", "size": "1.5L", "price": 19.99, "active": true },
       { "vid": "CJ_GREEN_2L", "color": "Green", "size": "2L", "price": 19.99, "active": true },
-
       { "vid": "CJ_YELLOW_500ML", "color": "Yellow", "size": "500ml", "price": 19.99, "active": true },
       { "vid": "CJ_YELLOW_750ML", "color": "Yellow", "size": "750ml", "price": 19.99, "active": true },
       { "vid": "CJ_YELLOW_1L", "color": "Yellow", "size": "1L", "price": 19.99, "active": true },
       { "vid": "CJ_YELLOW_1.5L", "color": "Yellow", "size": "1.5L", "price": 19.99, "active": true },
       { "vid": "CJ_YELLOW_2L", "color": "Yellow", "size": "2L", "price": 19.99, "active": true },
-
       { "vid": "CJ_RED_500ML", "color": "Red", "size": "500ml", "price": 19.99, "active": true },
       { "vid": "CJ_RED_750ML", "color": "Red", "size": "750ml", "price": 19.99, "active": true },
       { "vid": "CJ_RED_1L", "color": "Red", "size": "1L", "price": 19.99, "active": true },
@@ -663,31 +594,26 @@
       { "vid": "CJ_PINK_50X100CM", "color": "Pink", "size": "50x100cm", "price": 14.99, "active": true },
       { "vid": "CJ_PINK_60X120CM", "color": "Pink", "size": "60x120cm", "price": 14.99, "active": true },
       { "vid": "CJ_PINK_70X140CM", "color": "Pink", "size": "70x140cm", "price": 14.99, "active": true },
-
       { "vid": "CJ_BLACK_30X60CM", "color": "Black", "size": "30x60cm", "price": 14.99, "active": true },
       { "vid": "CJ_BLACK_40X80CM", "color": "Black", "size": "40x80cm", "price": 14.99, "active": true },
       { "vid": "CJ_BLACK_50X100CM", "color": "Black", "size": "50x100cm", "price": 14.99, "active": true },
       { "vid": "CJ_BLACK_60X120CM", "color": "Black", "size": "60x120cm", "price": 14.99, "active": true },
       { "vid": "CJ_BLACK_70X140CM", "color": "Black", "size": "70x140cm", "price": 14.99, "active": true },
-
       { "vid": "CJ_BLUE_30X60CM", "color": "Blue", "size": "30x60cm", "price": 14.99, "active": true },
       { "vid": "CJ_BLUE_40X80CM", "color": "Blue", "size": "40x80cm", "price": 14.99, "active": true },
       { "vid": "CJ_BLUE_50X100CM", "color": "Blue", "size": "50x100cm", "price": 14.99, "active": true },
       { "vid": "CJ_BLUE_60X120CM", "color": "Blue", "size": "60x120cm", "price": 14.99, "active": true },
       { "vid": "CJ_BLUE_70X140CM", "color": "Blue", "size": "70x140cm", "price": 14.99, "active": true },
-
       { "vid": "CJ_GREEN_30X60CM", "color": "Green", "size": "30x60cm", "price": 14.99, "active": true },
       { "vid": "CJ_GREEN_40X80CM", "color": "Green", "size": "40x80cm", "price": 14.99, "active": true },
       { "vid": "CJ_GREEN_50X100CM", "color": "Green", "size": "50x100cm", "price": 14.99, "active": true },
       { "vid": "CJ_GREEN_60X120CM", "color": "Green", "size": "60x120cm", "price": 14.99, "active": true },
       { "vid": "CJ_GREEN_70X140CM", "color": "Green", "size": "70x140cm", "price": 14.99, "active": true },
-
       { "vid": "CJ_YELLOW_30X60CM", "color": "Yellow", "size": "30x60cm", "price": 14.99, "active": true },
       { "vid": "CJ_YELLOW_40X80CM", "color": "Yellow", "size": "40x80cm", "price": 14.99, "active": true },
       { "vid": "CJ_YELLOW_50X100CM", "color": "Yellow", "size": "50x100cm", "price": 14.99, "active": true },
       { "vid": "CJ_YELLOW_60X120CM", "color": "Yellow", "size": "60x120cm", "price": 14.99, "active": true },
       { "vid": "CJ_YELLOW_70X140CM", "color": "Yellow", "size": "70x140cm", "price": 14.99, "active": true },
-
       { "vid": "CJ_RED_30X60CM", "color": "Red", "size": "30x60cm", "price": 14.99, "active": true },
       { "vid": "CJ_RED_40X80CM", "color": "Red", "size": "40x80cm", "price": 14.99, "active": true },
       { "vid": "CJ_RED_50X100CM", "color": "Red", "size": "50x100cm", "price": 14.99, "active": true },
@@ -782,31 +708,26 @@
       { "vid": "CJ_PINK_LARGE", "color": "Pink", "size": "Large Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_PINK_XL", "color": "Pink", "size": "XL Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_PINK_2XL", "color": "Pink", "size": "2XL Wrist", "price": 59.99, "active": true },
-
       { "vid": "CJ_BLACK_SMALL", "color": "Black", "size": "Small Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_BLACK_MEDIUM", "color": "Black", "size": "Medium Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_BLACK_LARGE", "color": "Black", "size": "Large Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_BLACK_XL", "color": "Black", "size": "XL Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_BLACK_2XL", "color": "Black", "size": "2XL Wrist", "price": 59.99, "active": true },
-
       { "vid": "CJ_BLUE_SMALL", "color": "Blue", "size": "Small Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_BLUE_MEDIUM", "color": "Blue", "size": "Medium Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_BLUE_LARGE", "color": "Blue", "size": "Large Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_BLUE_XL", "color": "Blue", "size": "XL Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_BLUE_2XL", "color": "Blue", "size": "2XL Wrist", "price": 59.99, "active": true },
-
       { "vid": "CJ_GREEN_SMALL", "color": "Green", "size": "Small Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_GREEN_MEDIUM", "color": "Green", "size": "Medium Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_GREEN_LARGE", "color": "Green", "size": "Large Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_GREEN_XL", "color": "Green", "size": "XL Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_GREEN_2XL", "color": "Green", "size": "2XL Wrist", "price": 59.99, "active": true },
-
       { "vid": "CJ_YELLOW_SMALL", "color": "Yellow", "size": "Small Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_YELLOW_MEDIUM", "color": "Yellow", "size": "Medium Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_YELLOW_LARGE", "color": "Yellow", "size": "Large Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_YELLOW_XL", "color": "Yellow", "size": "XL Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_YELLOW_2XL", "color": "Yellow", "size": "2XL Wrist", "price": 59.99, "active": true },
-
       { "vid": "CJ_RED_SMALL", "color": "Red", "size": "Small Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_RED_MEDIUM", "color": "Red", "size": "Medium Wrist", "price": 59.99, "active": true },
       { "vid": "CJ_RED_LARGE", "color": "Red", "size": "Large Wrist", "price": 59.99, "active": true },
@@ -901,31 +822,26 @@
       { "vid": "CJ_PINK_600ML", "color": "Pink", "size": "600ml", "price": 12.99, "active": true },
       { "vid": "CJ_PINK_700ML", "color": "Pink", "size": "700ml", "price": 12.99, "active": true },
       { "vid": "CJ_PINK_800ML", "color": "Pink", "size": "800ml", "price": 12.99, "active": true },
-
       { "vid": "CJ_BLACK_400ML", "color": "Black", "size": "400ml", "price": 12.99, "active": true },
       { "vid": "CJ_BLACK_500ML", "color": "Black", "size": "500ml", "price": 12.99, "active": true },
       { "vid": "CJ_BLACK_600ML", "color": "Black", "size": "600ml", "price": 12.99, "active": true },
       { "vid": "CJ_BLACK_700ML", "color": "Black", "size": "700ml", "price": 12.99, "active": true },
       { "vid": "CJ_BLACK_800ML", "color": "Black", "size": "800ml", "price": 12.99, "active": true },
-
       { "vid": "CJ_BLUE_400ML", "color": "Blue", "size": "400ml", "price": 12.99, "active": true },
       { "vid": "CJ_BLUE_500ML", "color": "Blue", "size": "500ml", "price": 12.99, "active": true },
       { "vid": "CJ_BLUE_600ML", "color": "Blue", "size": "600ml", "price": 12.99, "active": true },
       { "vid": "CJ_BLUE_700ML", "color": "Blue", "size": "700ml", "price": 12.99, "active": true },
       { "vid": "CJ_BLUE_800ML", "color": "Blue", "size": "800ml", "price": 12.99, "active": true },
-
       { "vid": "CJ_GREEN_400ML", "color": "Green", "size": "400ml", "price": 12.99, "active": true },
       { "vid": "CJ_GREEN_500ML", "color": "Green", "size": "500ml", "price": 12.99, "active": true },
       { "vid": "CJ_GREEN_600ML", "color": "Green", "size": "600ml", "price": 12.99, "active": true },
       { "vid": "CJ_GREEN_700ML", "color": "Green", "size": "700ml", "price": 12.99, "active": true },
       { "vid": "CJ_GREEN_800ML", "color": "Green", "size": "800ml", "price": 12.99, "active": true },
-
       { "vid": "CJ_YELLOW_400ML", "color": "Yellow", "size": "400ml", "price": 12.99, "active": true },
       { "vid": "CJ_YELLOW_500ML", "color": "Yellow", "size": "500ml", "price": 12.99, "active": true },
       { "vid": "CJ_YELLOW_600ML", "color": "Yellow", "size": "600ml", "price": 12.99, "active": true },
       { "vid": "CJ_YELLOW_700ML", "color": "Yellow", "size": "700ml", "price": 12.99, "active": true },
       { "vid": "CJ_YELLOW_800ML", "color": "Yellow", "size": "800ml", "price": 12.99, "active": true },
-
       { "vid": "CJ_RED_400ML", "color": "Red", "size": "400ml", "price": 12.99, "active": true },
       { "vid": "CJ_RED_500ML", "color": "Red", "size": "500ml", "price": 12.99, "active": true },
       { "vid": "CJ_RED_600ML", "color": "Red", "size": "600ml", "price": 12.99, "active": true },
@@ -1026,31 +942,26 @@
       { "vid": "CJ_PINK_15KG", "color": "Pink", "size": "15kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_PINK_20KG", "color": "Pink", "size": "20kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_PINK_25KG", "color": "Pink", "size": "25kg Pair", "price": 69.99, "active": true },
-
       { "vid": "CJ_BLACK_5KG", "color": "Black", "size": "5kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_BLACK_10KG", "color": "Black", "size": "10kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_BLACK_15KG", "color": "Black", "size": "15kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_BLACK_20KG", "color": "Black", "size": "20kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_BLACK_25KG", "color": "Black", "size": "25kg Pair", "price": 69.99, "active": true },
-
       { "vid": "CJ_BLUE_5KG", "color": "Blue", "size": "5kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_BLUE_10KG", "color": "Blue", "size": "10kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_BLUE_15KG", "color": "Blue", "size": "15kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_BLUE_20KG", "color": "Blue", "size": "20kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_BLUE_25KG", "color": "Blue", "size": "25kg Pair", "price": 69.99, "active": true },
-
       { "vid": "CJ_GREEN_5KG", "color": "Green", "size": "5kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_GREEN_10KG", "color": "Green", "size": "10kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_GREEN_15KG", "color": "Green", "size": "15kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_GREEN_20KG", "color": "Green", "size": "20kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_GREEN_25KG", "color": "Green", "size": "25kg Pair", "price": 69.99, "active": true },
-
       { "vid": "CJ_YELLOW_5KG", "color": "Yellow", "size": "5kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_YELLOW_10KG", "color": "Yellow", "size": "10kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_YELLOW_15KG", "color": "Yellow", "size": "15kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_YELLOW_20KG", "color": "Yellow", "size": "20kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_YELLOW_25KG", "color": "Yellow", "size": "25kg Pair", "price": 69.99, "active": true },
-
       { "vid": "CJ_RED_5KG", "color": "Red", "size": "5kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_RED_10KG", "color": "Red", "size": "10kg Pair", "price": 69.99, "active": true },
       { "vid": "CJ_RED_15KG", "color": "Red", "size": "15kg Pair", "price": 69.99, "active": true },
@@ -1151,31 +1062,26 @@
       { "vid": "CJ_PINK_2.8M", "color": "Pink", "size": "2.8m", "price": 19.99, "active": true },
       { "vid": "CJ_PINK_3.0M", "color": "Pink", "size": "3.0m", "price": 19.99, "active": true },
       { "vid": "CJ_PINK_3.2M", "color": "Pink", "size": "3.2m", "price": 19.99, "active": true },
-
       { "vid": "CJ_BLACK_2.4M", "color": "Black", "size": "2.4m", "price": 19.99, "active": true },
       { "vid": "CJ_BLACK_2.6M", "color": "Black", "size": "2.6m", "price": 19.99, "active": true },
       { "vid": "CJ_BLACK_2.8M", "color": "Black", "size": "2.8m", "price": 19.99, "active": true },
       { "vid": "CJ_BLACK_3.0M", "color": "Black", "size": "3.0m", "price": 19.99, "active": true },
       { "vid": "CJ_BLACK_3.2M", "color": "Black", "size": "3.2m", "price": 19.99, "active": true },
-
       { "vid": "CJ_BLUE_2.4M", "color": "Blue", "size": "2.4m", "price": 19.99, "active": true },
       { "vid": "CJ_BLUE_2.6M", "color": "Blue", "size": "2.6m", "price": 19.99, "active": true },
       { "vid": "CJ_BLUE_2.8M", "color": "Blue", "size": "2.8m", "price": 19.99, "active": true },
       { "vid": "CJ_BLUE_3.0M", "color": "Blue", "size": "3.0m", "price": 19.99, "active": true },
       { "vid": "CJ_BLUE_3.2M", "color": "Blue", "size": "3.2m", "price": 19.99, "active": true },
-
       { "vid": "CJ_GREEN_2.4M", "color": "Green", "size": "2.4m", "price": 19.99, "active": true },
       { "vid": "CJ_GREEN_2.6M", "color": "Green", "size": "2.6m", "price": 19.99, "active": true },
       { "vid": "CJ_GREEN_2.8M", "color": "Green", "size": "2.8m", "price": 19.99, "active": true },
       { "vid": "CJ_GREEN_3.0M", "color": "Green", "size": "3.0m", "price": 19.99, "active": true },
       { "vid": "CJ_GREEN_3.2M", "color": "Green", "size": "3.2m", "price": 19.99, "active": true },
-
       { "vid": "CJ_YELLOW_2.4M", "color": "Yellow", "size": "2.4m", "price": 19.99, "active": true },
       { "vid": "CJ_YELLOW_2.6M", "color": "Yellow", "size": "2.6m", "price": 19.99, "active": true },
       { "vid": "CJ_YELLOW_2.8M", "color": "Yellow", "size": "2.8m", "price": 19.99, "active": true },
       { "vid": "CJ_YELLOW_3.0M", "color": "Yellow", "size": "3.0m", "price": 19.99, "active": true },
       { "vid": "CJ_YELLOW_3.2M", "color": "Yellow", "size": "3.2m", "price": 19.99, "active": true },
-
       { "vid": "CJ_RED_2.4M", "color": "Red", "size": "2.4m", "price": 19.99, "active": true },
       { "vid": "CJ_RED_2.6M", "color": "Red", "size": "2.6m", "price": 19.99, "active": true },
       { "vid": "CJ_RED_2.8M", "color": "Red", "size": "2.8m", "price": 19.99, "active": true },
@@ -1276,31 +1182,26 @@
       { "vid": "CJ_PINK_60CM", "color": "Pink", "size": "60cm", "price": 24.99, "active": true },
       { "vid": "CJ_PINK_75CM", "color": "Pink", "size": "75cm", "price": 24.99, "active": true },
       { "vid": "CJ_PINK_90CM", "color": "Pink", "size": "90cm", "price": 24.99, "active": true },
-
       { "vid": "CJ_BLACK_30CM", "color": "Black", "size": "30cm", "price": 24.99, "active": true },
       { "vid": "CJ_BLACK_45CM", "color": "Black", "size": "45cm", "price": 24.99, "active": true },
       { "vid": "CJ_BLACK_60CM", "color": "Black", "size": "60cm", "price": 24.99, "active": true },
       { "vid": "CJ_BLACK_75CM", "color": "Black", "size": "75cm", "price": 24.99, "active": true },
       { "vid": "CJ_BLACK_90CM", "color": "Black", "size": "90cm", "price": 24.99, "active": true },
-
       { "vid": "CJ_BLUE_30CM", "color": "Blue", "size": "30cm", "price": 24.99, "active": true },
       { "vid": "CJ_BLUE_45CM", "color": "Blue", "size": "45cm", "price": 24.99, "active": true },
       { "vid": "CJ_BLUE_60CM", "color": "Blue", "size": "60cm", "price": 24.99, "active": true },
       { "vid": "CJ_BLUE_75CM", "color": "Blue", "size": "75cm", "price": 24.99, "active": true },
       { "vid": "CJ_BLUE_90CM", "color": "Blue", "size": "90cm", "price": 24.99, "active": true },
-
       { "vid": "CJ_GREEN_30CM", "color": "Green", "size": "30cm", "price": 24.99, "active": true },
       { "vid": "CJ_GREEN_45CM", "color": "Green", "size": "45cm", "price": 24.99, "active": true },
       { "vid": "CJ_GREEN_60CM", "color": "Green", "size": "60cm", "price": 24.99, "active": true },
       { "vid": "CJ_GREEN_75CM", "color": "Green", "size": "75cm", "price": 24.99, "active": true },
       { "vid": "CJ_GREEN_90CM", "color": "Green", "size": "90cm", "price": 24.99, "active": true },
-
       { "vid": "CJ_YELLOW_30CM", "color": "Yellow", "size": "30cm", "price": 24.99, "active": true },
       { "vid": "CJ_YELLOW_45CM", "color": "Yellow", "size": "45cm", "price": 24.99, "active": true },
       { "vid": "CJ_YELLOW_60CM", "color": "Yellow", "size": "60cm", "price": 24.99, "active": true },
       { "vid": "CJ_YELLOW_75CM", "color": "Yellow", "size": "75cm", "price": 24.99, "active": true },
       { "vid": "CJ_YELLOW_90CM", "color": "Yellow", "size": "90cm", "price": 24.99, "active": true },
-
       { "vid": "CJ_RED_30CM", "color": "Red", "size": "30cm", "price": 24.99, "active": true },
       { "vid": "CJ_RED_45CM", "color": "Red", "size": "45cm", "price": 24.99, "active": true },
       { "vid": "CJ_RED_60CM", "color": "Red", "size": "60cm", "price": 24.99, "active": true },
@@ -1401,31 +1302,26 @@
       { "vid": "CJ_PINK_12X6X4", "color": "Pink", "size": "12\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_PINK_15X6X4", "color": "Pink", "size": "15\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_PINK_18X6X4", "color": "Pink", "size": "18\" x 6\" x 4\"", "price": 14.99, "active": true },
-
       { "vid": "CJ_BLACK_9X6X4", "color": "Black", "size": "9\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_BLACK_10X6X4", "color": "Black", "size": "10\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_BLACK_12X6X4", "color": "Black", "size": "12\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_BLACK_15X6X4", "color": "Black", "size": "15\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_BLACK_18X6X4", "color": "Black", "size": "18\" x 6\" x 4\"", "price": 14.99, "active": true },
-
       { "vid": "CJ_BLUE_9X6X4", "color": "Blue", "size": "9\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_BLUE_10X6X4", "color": "Blue", "size": "10\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_BLUE_12X6X4", "color": "Blue", "size": "12\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_BLUE_15X6X4", "color": "Blue", "size": "15\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_BLUE_18X6X4", "color": "Blue", "size": "18\" x 6\" x 4\"", "price": 14.99, "active": true },
-
       { "vid": "CJ_GREEN_9X6X4", "color": "Green", "size": "9\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_GREEN_10X6X4", "color": "Green", "size": "10\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_GREEN_12X6X4", "color": "Green", "size": "12\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_GREEN_15X6X4", "color": "Green", "size": "15\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_GREEN_18X6X4", "color": "Green", "size": "18\" x 6\" x 4\"", "price": 14.99, "active": true },
-
       { "vid": "CJ_YELLOW_9X6X4", "color": "Yellow", "size": "9\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_YELLOW_10X6X4", "color": "Yellow", "size": "10\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_YELLOW_12X6X4", "color": "Yellow", "size": "12\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_YELLOW_15X6X4", "color": "Yellow", "size": "15\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_YELLOW_18X6X4", "color": "Yellow", "size": "18\" x 6\" x 4\"", "price": 14.99, "active": true },
-
       { "vid": "CJ_RED_9X6X4", "color": "Red", "size": "9\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_RED_10X6X4", "color": "Red", "size": "10\" x 6\" x 4\"", "price": 14.99, "active": true },
       { "vid": "CJ_RED_12X6X4", "color": "Red", "size": "12\" x 6\" x 4\"", "price": 14.99, "active": true },

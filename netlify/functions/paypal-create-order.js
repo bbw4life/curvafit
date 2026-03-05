@@ -45,6 +45,10 @@ exports.handler = async (event) => {
     let subtotal = 0;
 
     const items = cart.map(item => {
+      if (!item.price || !item.quantity || !item.title || !item.cj_product_id || !item.cj_variant_id) {
+        throw new Error("Invalid cart item");
+      }
+
       const price = parseFloat(item.price);
       const quantity = parseInt(item.quantity);
 
@@ -92,7 +96,8 @@ exports.handler = async (event) => {
             postal_code: shipping.postalCode || "",
             country_code: shipping.country || "US"
           }
-        }
+        },
+        custom_id: JSON.stringify(cart.map(i => ({cj_product_id: i.cj_product_id, cj_variant_id: i.cj_variant_id, quantity: i.quantity})))
       }],
       application_context: {
         return_url: `${process.env.BASE_URL}/thankyou.html`,

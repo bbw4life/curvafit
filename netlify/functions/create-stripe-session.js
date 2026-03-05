@@ -20,7 +20,7 @@ exports.handler = async (event) => {
     let subtotal = 0;
 
     const lineItems = cart.map(item => {
-      if (!item.price || !item.quantity || !item.title) {
+      if (!item.price || !item.quantity || !item.title || !item.cj_product_id || !item.cj_variant_id) {
         throw new Error("Invalid cart item");
       }
 
@@ -39,8 +39,8 @@ exports.handler = async (event) => {
           product_data: {
             name: item.title,
             metadata: {
-              cj_product_id: item.cj_product_id || "",
-              cj_variant_id: item.cj_variant_id || ""
+              cj_product_id: item.cj_product_id,
+              cj_variant_id: item.cj_variant_id
             }
           },
           unit_amount: Math.round(price * 100),

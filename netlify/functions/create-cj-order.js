@@ -10,10 +10,10 @@ exports.handler = async (event) => {
       throw new Error("Missing CJ_ACCESS_TOKEN");
     }
 
-    const { item, shipping } = JSON.parse(event.body);
+    const { cart, shipping } = JSON.parse(event.body);
 
-    if (!item || !item.cj_product_id || !item.cj_variant_id) {
-      throw new Error("Invalid CJ product data");
+    if (!Array.isArray(cart) || cart.length === 0) {
+      throw new Error("Invalid cart data");
     }
 
     if (!shipping || !shipping.fullName || !shipping.address) {
@@ -22,11 +22,11 @@ exports.handler = async (event) => {
 
     const orderBody = {
       orderId: `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
-      products: [{
+      products: cart.map(item => ({
         productId: item.cj_product_id,
         variantId: item.cj_variant_id,
         quantity: parseInt(item.quantity)
-      }],
+      })),
       shippingInfo: {
         countryCode: shipping.country || "US",
         province: shipping.state || "",

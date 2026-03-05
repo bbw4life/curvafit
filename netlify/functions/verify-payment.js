@@ -82,12 +82,14 @@ exports.handler = async (event) => {
 
       const purchaseUnit = orderData.purchase_units[0];
 
-      cart = purchaseUnit.items.map(item => ({
-        title: item.name,
-        price: parseFloat(item.unit_amount.value),
-        quantity: parseInt(item.quantity),
-        cj_product_id: item.cj_product_id || null,
-        cj_variant_id: item.cj_variant_id || null
+      const storedCart = JSON.parse(purchaseUnit.custom_id || '[]');
+
+      cart = purchaseUnit.items.map((ppItem, index) => ({
+        title: ppItem.name,
+        price: parseFloat(ppItem.unit_amount.value),
+        quantity: parseInt(ppItem.quantity),
+        cj_product_id: storedCart[index]?.cj_product_id || null,
+        cj_variant_id: storedCart[index]?.cj_variant_id || null
       }));
 
       const shippingDetails = purchaseUnit.shipping || {};
