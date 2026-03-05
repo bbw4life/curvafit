@@ -73,7 +73,7 @@ exports.handler = async (event) => {
             country_code: shipping.country || "US"
           }
         },
-        custom_id: cart.map(i => i.cj_product_id).join(",").slice(0, 127) // plus sûr
+       custom_id: JSON.stringify(cart).slice(0,127)
       }],
       application_context: {
         return_url: `${process.env.BASE_URL}/thankyou.html`,

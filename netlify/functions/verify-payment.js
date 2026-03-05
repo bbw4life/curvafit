@@ -142,7 +142,7 @@ exports.handler = async (event) => {
         await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ item, shipping })
+          body: JSON.stringify({ cart: [item], shipping })
         });
 
       } else {
@@ -150,7 +150,7 @@ exports.handler = async (event) => {
         await fetch(`${process.env.BASE_URL}/.netlify/functions/save-pending-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ item, shipping })
+          body: JSON.stringify({ cart: [item], shipping })
         });
 
         allFulfilled = false;
