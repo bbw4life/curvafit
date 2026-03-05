@@ -6,19 +6,10 @@
     <title>Thank You - CurvaFit</title>
     <link rel="stylesheet" href="thankyou.css">
     <style>
-        .debug { 
-            background:#f8f9fa; 
-            padding:15px; 
-            border-radius:8px; 
-            margin:20px 0; 
-            font-family:monospace; 
-            font-size:13px; 
-            max-height:300px; 
-            overflow-y:auto; 
-            border:1px solid #ddd;
-        }
+        .debug { background:#f8f9fa; padding:15px; border-radius:8px; margin:20px 0; font-family:monospace; font-size:13px; max-height:350px; overflow-y:auto; border:1px solid #ddd; }
         .error { color:red; font-weight:bold; }
         .success { color:green; font-weight:bold; }
+        .force-btn { background:#e74c3c !important; color:white !important; font-weight:bold; padding:12px 20px !important; }
     </style>
 </head>
 <body>
@@ -30,10 +21,10 @@
         
         <div id="message" style="display:none;"></div>
         
-        <div id="buttons" style="display:none;">
+        <div id="buttons" style="display:none; gap:10px; margin-top:20px;">
             <a href="shop.html" class="button">Continue Shopping</a>
             <a href="orders.html" class="button">View Orders</a>
-            <button onclick="retryVerification()" class="button">🔄 Retry Verification</button>
+            <button onclick="forceVerification()" class="button force-btn">🔥 FORCE VERIFICATION (Test Mode)</button>
         </div>
     </div>
 
@@ -46,27 +37,25 @@
         if (debugEl) debugEl.innerHTML += `<div>${msg}</div>`;
     }
 
-    async function retryVerification() {
+    async function forceVerification() {
+        sessionStorage.removeItem("paymentVerified");
         document.getElementById('debug').innerHTML = '';
-        logDebug("🔄 Manual retry started...");
-        await startVerification();
+        logDebug("🔥 FORCE MODE ACTIVATED - anti-double cleared");
+        await startVerification(true);   // true = force mode
     }
 
-    async function startVerification() {
+    async function startVerification(isForce = false) {
         const spinner = document.getElementById('spinner');
         const messageEl = document.getElementById('message');
         const buttons = document.getElementById('buttons');
-        const debugEl = document.getElementById('debug');
 
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('session_id');
-        const orderID   = urlParams.get('token');     // PayPal
-        const payerID   = urlParams.get('PayerID');   // PayPal extra
+        const orderID   = urlParams.get('token');
 
         logDebug(`📍 Full URL: ${window.location.href}`);
         logDebug(`🔑 session_id = ${sessionId || 'NOT FOUND'}`);
         logDebug(`🔑 token (PayPal) = ${orderID || 'NOT FOUND'}`);
-        logDebug(`🔑 PayerID = ${payerID || 'NOT FOUND'}`);
 
         let payload = null;
 
@@ -79,18 +68,21 @@
             logDebug("✅ PAYPAL mode detected");
         } 
         else {
-            logDebug("❌ No payment parameter found in URL!");
+            logDebug("❌ No payment parameter found!");
             displayError("No payment information found.");
             spinner.style.display = "none";
             return;
         }
 
-        // Anti-double verification
-        const alreadyVerified = sessionStorage.getItem("paymentVerified");
-        if (alreadyVerified === sessionId || alreadyVerified === orderID) {
-            logDebug("⏭️ Already verified (anti-double protection)");
-            showSuccess("Payment already verified.");
-            return;
+        // === ANTI-DOUBLE (sauf en mode FORCE) ===
+        if (!isForce) {
+            const alreadyVerified = sessionStorage.getItem("paymentVerified");
+            if (alreadyVerified === sessionId || alreadyVerified === orderID) {
+                logDebug("⏭️ Already verified (anti-double protection)");
+                showSuccess("Payment already verified.");
+                spinner.style.display = "none";
+                return;
+            }
         }
 
         logDebug("🚀 Calling /.netlify/functions/verify-payment ...");
@@ -103,7 +95,7 @@
             });
 
             const data = await response.json();
-            logDebug(`📨 Response received (status ${response.status}): ${JSON.stringify(data)}`);
+            logDebug(`📨 Response (status ${response.status}): ${JSON.stringify(data)}`);
 
             if (!response.ok || !data.success) {
                 throw new Error(data.error || "Verification failed");
@@ -115,7 +107,7 @@
             const status = data.fulfillmentStatus || "completed";
             const message = status === "completed" 
                 ? "✅ Your order has been successfully processed and sent to CJ Dropshipping!"
-                : "⚠️ Your order is confirmed. Some items are pending stock.";
+                : "⚠️ Order confirmed. Some items pending stock.";
 
             showSuccess(message);
             logDebug(`🎉 VERIFICATION COMPLETE → ${status}`);
@@ -123,7 +115,7 @@
         } catch (error) {
             console.error("❌ Verification error:", error);
             logDebug(`❌ ERROR: ${error.message}`);
-            displayError(error.message || "An error occurred during verification.");
+            displayError(error.message || "An error occurred.");
         } finally {
             spinner.style.display = "none";
         }
@@ -133,19 +125,19 @@
         const messageEl = document.getElementById('message');
         messageEl.innerHTML = `<h1>Thank you for your order!</h1><p>${message}</p>`;
         messageEl.style.display = 'block';
-        document.getElementById('buttons').style.display = 'block';
+        document.getElementById('buttons').style.display = 'flex';
     }
 
     function displayError(message) {
         const messageEl = document.getElementById('message');
         messageEl.innerHTML = `<p class="error">${message}</p>`;
         messageEl.style.display = 'block';
-        document.getElementById('buttons').style.display = 'block';
+        document.getElementById('buttons').style.display = 'flex';
     }
 
     // START
     document.addEventListener('DOMContentLoaded', () => {
-        logDebug("🚀 DOM ready → starting payment verification");
+        logDebug("🚀 DOM ready → starting verification");
         startVerification();
     });
     </script>
