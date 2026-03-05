@@ -1201,23 +1201,31 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
     let quantity = 1;
     const qtyInput = container.querySelector('.quantity input');
     if (qtyInput) quantity = parseInt(qtyInput.value);
+        // === NOUVELLE VERSION 100% COMPATIBLE AVEC TON JSON (remplace de "let selectedSize = null;" jusqu'au push) ===
     let selectedSize = null;
     let selectedColor = null;
     let itemImage = product.image;
+    let cjVariantId = null;
+
     if (isProductPage) {
       const sizeSelect = document.getElementById('size-select');
       const activeSwatch = document.querySelector('.color-swatches .swatch.active');
+      
+      // Pas de tailles → selectedSize reste null
       selectedSize = sizeSelect && sizeSelect.value !== "" ? sizeSelect.value : null;
       selectedColor = activeSwatch ? activeSwatch.dataset.color : null;
-      if ((product.colors.length > 0 && !selectedColor) || (product.sizes.length > 0 && !selectedSize)) {
+
+      if ((product.colors && product.colors.length > 0 && !selectedColor) || 
+          (product.sizes && product.sizes.length > 0 && !selectedSize)) {
         return alert("Please select all options.");
       }
+
       if (selectedColor) {
         const colorObj = product.colors.find(c => c.name === selectedColor);
         if (colorObj && colorObj.image) itemImage = colorObj.image;
       }
     } else {
-      // From shop.html, select first color and size if available
+      // Depuis la boutique
       if (product.colors && product.colors.length > 0) {
         selectedColor = product.colors[0].name;
         const colorObj = product.colors[0];
@@ -1227,13 +1235,44 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
         selectedSize = product.sizes[0];
       }
     }
-    let item = cart.find(i => i.id === id && i.size === selectedSize && i.color === selectedColor);
+
+    // === RECHERCHE INTELLIGENTE DU VARIANT (FIXÉ POUR TON PRODUIT) ===
+    const variant = product.variants.find(v => {
+      const colorMatch = !selectedColor || v.color === selectedColor;
+      const sizeMatch = (!selectedSize && v.size === "") ||   // cas le plus courant chez toi
+                        (selectedSize === null && v.size === "") ||
+                        (selectedSize && v.size === selectedSize);
+      return colorMatch && sizeMatch;
+    });
+
+    if (variant) {
+      cjVariantId = variant.vid;
+      console.log(`✅ Variant trouvé : ${cjVariantId} (couleur: ${selectedColor})`);
+    } else if (product.variants && product.variants.length > 0) {
+      cjVariantId = product.variants[0].vid; // fallback ultra-sûr
+      console.log(`⚠️ Fallback variant utilisé : ${cjVariantId}`);
+    }
+
     const varPrice = getVariantPrice(product, selectedColor, selectedSize);
     const varCompare = getVariantComparePrice(product, selectedColor, selectedSize);
-    const variant = product.variants.find(v => v.color === selectedColor && v.size === selectedSize);
-    if (item) item.quantity += quantity;
-    else {
-      cart.push({ id: product.id, title: product.title, price: varPrice, compare_price: varCompare, image: itemImage, size: selectedSize, color: selectedColor, quantity: quantity, cj_product_id: product.cj_id, cj_variant_id: variant ? variant.vid : null });
+
+    let cartItem = cart.find(i => i.id === id && i.size === selectedSize && i.color === selectedColor);
+
+    if (cartItem) {
+      cartItem.quantity += quantity;
+    } else {
+      cart.push({
+        id: product.id,
+        title: product.title,
+        price: varPrice,
+        compare_price: varCompare,
+        image: itemImage,
+        size: selectedSize,
+        color: selectedColor,
+        quantity: quantity,
+        cj_product_id: product.cj_id,
+        cj_variant_id: cjVariantId
+      });
     }
     saveCart();
     updateBadges();

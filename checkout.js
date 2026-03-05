@@ -135,17 +135,26 @@ document.addEventListener('DOMContentLoaded', () => {
             let response;
             let data;
             if (paymentMethod === 'stripe') {
+                console.log("🔑 STRIPE PUBLIC KEY loaded:", window.STRIPE_PUBLIC_KEY ? "YES ✅" : "NO ❌");
+
+                if (!window.STRIPE_PUBLIC_KEY) {
+                    return alert("Stripe error: public key missing. Please refresh the page.");
+                }
+
+                const stripe = Stripe(window.STRIPE_PUBLIC_KEY);
+
                 response = await fetch('/.netlify/functions/create-stripe-session', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ cart, shipping: shippingData })
                 });
                 data = await response.json();
+
                 if (!response.ok || !data.sessionId) throw new Error(data.error || 'Stripe session failed');
-                const stripe = Stripe(window.STRIPE_PUBLIC_KEY);
+
                 localStorage.setItem("pendingOrder", "stripe");
                 await stripe.redirectToCheckout({ sessionId: data.sessionId });
-            } else {
+            }else {
             let paypalCart = [...cart];
             if (discountAmount > 0) {
                 const preDiscount = getSubtotal();
