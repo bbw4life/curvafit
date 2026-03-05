@@ -134,14 +134,12 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             let response;
             let data;
-            if (paymentMethod === 'stripe') {
-                console.log("🔑 STRIPE PUBLIC KEY loaded:", window.STRIPE_PUBLIC_KEY ? "YES ✅" : "NO ❌");
+                       if (paymentMethod === 'stripe') {
+                const STRIPE_PUBLIC_KEY = "pk_test_51PMDwoF9QAVBUyaUqwc7ekbAhyZdI9oA3ubZT8b7TtWGrykoPLvsql4mexEwEoS5pggyssqN6jpj2w5VQMHOSftf00q97Rbt1f";
 
-                if (!window.STRIPE_PUBLIC_KEY) {
-                    return alert("Stripe error: public key missing. Please refresh the page.");
-                }
+                console.log("🔑 STRIPE PUBLIC KEY loaded successfully");
 
-                const stripe = Stripe(window.STRIPE_PUBLIC_KEY);
+                const stripe = Stripe(STRIPE_PUBLIC_KEY);
 
                 response = await fetch('/.netlify/functions/create-stripe-session', {
                     method: 'POST',
@@ -150,7 +148,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 data = await response.json();
 
-                if (!response.ok || !data.sessionId) throw new Error(data.error || 'Stripe session failed');
+                if (!response.ok || !data.sessionId) {
+                    console.error("Stripe session error:", data);
+                    throw new Error(data.error || 'Stripe session failed');
+                }
 
                 localStorage.setItem("pendingOrder", "stripe");
                 await stripe.redirectToCheckout({ sessionId: data.sessionId });
