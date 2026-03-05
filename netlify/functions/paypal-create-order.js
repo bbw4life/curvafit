@@ -123,7 +123,7 @@ exports.handler = async (event) => {
 
     return response(200, {
       success: true,
-      orderID: orderData.id
+      orderId: orderData.id
     });
 
   } catch (error) {

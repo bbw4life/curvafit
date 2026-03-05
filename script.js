@@ -191,6 +191,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
           } else if (sizeSelect) {
             sizeSelect.style.display = 'none';
+            const sizeLabel = document.querySelector('label[for="size-select"]');
+            if (sizeLabel) sizeLabel.style.display = 'none';
           }
           function getVariantPrice(product, color, size) {
             if (!color || !size) return product.price;
@@ -611,7 +613,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   const varPrice = product.price;
                   const varCompare = varPrice * ratio;
                   const discountedPrice = varPrice * (1 - discount);
-                  const variant = product.variants.length > 0 ? product.variants[0] : null;
+                  const variant = product.variants ? product.variants[0] : null; // Prendre le premier variant si disponible, sinon null
                   items.push({
                     id: product.id,
                     title: product.title,
@@ -622,8 +624,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     color: null,
                     quantity: 1,
                     fromBundle: true,
-                    cj_product_id: product.cj_id, // ← AJOUTE ÇA
-                    cj_variant_id: variant ? variant.vid : null // ← AJOUTE ÇA
+                    cj_product_id: product.cj_id,
+                    cj_variant_id: variant ? variant.vid : null
                   });
                 } else {
                   const values = getSelectedValues(container);
@@ -650,8 +652,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     color: selectedColor,
                     quantity: 1,
                     fromBundle: true,
-                    cj_product_id: product.cj_id, // ← AJOUTE ÇA
-                    cj_variant_id: variant ? variant.vid : null // ← AJOUTE ÇA
+                    cj_product_id: product.cj_id,
+                    cj_variant_id: variant ? variant.vid : null
                   });
                 }
               } else {
@@ -665,7 +667,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const varPrice = product.price;
                     const varCompare = varPrice * ratio;
                     const discountedPrice = varPrice * (1 - discount);
-                    const variant = product.variants.length > 0 ? product.variants[0] : null;
+                    const variant = product.variants ? product.variants[0] : null; // Prendre le premier variant si disponible, sinon null
                     items.push({
                       id: product.id,
                       title: product.title,
@@ -676,8 +678,8 @@ document.addEventListener('DOMContentLoaded', () => {
                       color: null,
                       quantity: 1,
                       fromBundle: true,
-                      cj_product_id: product.cj_id, // ← AJOUTE ÇA
-                      cj_variant_id: variant ? variant.vid : null // ← AJOUTE ÇA
+                      cj_product_id: product.cj_id,
+                      cj_variant_id: variant ? variant.vid : null
                     });
                     continue;
                   }
@@ -707,8 +709,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     color: selectedColor,
                     quantity: 1,
                     fromBundle: true,
-                    cj_product_id: product.cj_id, // ← AJOUTE ÇA
-                    cj_variant_id: variant ? variant.vid : null // ← AJOUTE ÇA
+                    cj_product_id: product.cj_id,
+                    cj_variant_id: variant ? variant.vid : null
                   });
                 }
                 if (!valid) return;
@@ -1108,13 +1110,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const cartItem = document.createElement('div');
         cartItem.classList.add('cart-item');
         cartItem.dataset.id = item.id;
-        cartItem.dataset.size = item.size;
-        cartItem.dataset.color = item.color;
+        if (item.size != null) cartItem.dataset.size = item.size;
+        if (item.color != null) cartItem.dataset.color = item.color;
         cartItem.innerHTML = `<img src="${item.image}" alt="${item.title}">
 <h4>${item.title}</h4>
 <p>$${parseFloat(item.price).toFixed(2)}</p>
-<p>Size: ${item.size || 'N/A'}</p>
-<p>Color: ${item.color || 'N/A'}</p>
+${item.size ? `<p>Size: ${item.size}</p>` : ''}
+${item.color ? `<p>Color: ${item.color}</p>` : ''}
 <div class="quantity">
 <button class="qty-minus">-</button>
 <span>${item.quantity}</span>
@@ -1146,8 +1148,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btn = e.target;
     const itemElement = btn.closest('.cart-item');
     const id = itemElement.dataset.id;
-    const size = itemElement.dataset.size;
-    const color = itemElement.dataset.color;
+    const size = itemElement.dataset.size !== undefined ? itemElement.dataset.size : null;
+    const color = itemElement.dataset.color !== undefined ? itemElement.dataset.color : null;
     const item = cart.find(i => i.id === id && i.size === size && i.color === color);
     if (item) {
       if (btn.classList.contains('qty-plus')) item.quantity++;
@@ -1166,8 +1168,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function removeFromCart(e) {
     const itemElement = e.target.closest('.cart-item');
     const id = itemElement.dataset.id;
-    const size = itemElement.dataset.size;
-    const color = itemElement.dataset.color;
+    const size = itemElement.dataset.size !== undefined ? itemElement.dataset.size : null;
+    const color = itemElement.dataset.color !== undefined ? itemElement.dataset.color : null;
     cart = cart.filter(i => !(i.id === id && i.size === size && i.color === color));
     saveCart();
     updateSubtotal();
@@ -1231,18 +1233,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const variant = product.variants.find(v => v.color === selectedColor && v.size === selectedSize);
     if (item) item.quantity += quantity;
     else {
-      cart.push({
-        id: product.id,
-        title: product.title,
-        price: varPrice,
-        compare_price: varCompare,
-        image: itemImage,
-        size: selectedSize,
-        color: selectedColor,
-        quantity: quantity,
-        cj_product_id: product.cj_id, // ← AJOUTE ÇA
-        cj_variant_id: variant ? variant.vid : (product.variants.length > 0 ? product.variants[0].vid : null) // ← AJOUTE ÇA
-      });
+      cart.push({ id: product.id, title: product.title, price: varPrice, compare_price: varCompare, image: itemImage, size: selectedSize, color: selectedColor, quantity: quantity, cj_product_id: product.cj_id, cj_variant_id: variant ? variant.vid : null });
     }
     saveCart();
     updateBadges();
@@ -1281,17 +1272,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const product = products.find(p => p.id === id);
       if (product) {
         let cartItem = cart.find(i => i.id === id);
-        const variant = product.variants.length > 0 ? product.variants[0] : null;
         if (cartItem) cartItem.quantity++;
-        else cart.push({
-          id: product.id,
-          title: product.title,
-          price: product.price,
-          image: product.image,
-          quantity: 1,
-          cj_product_id: product.cj_id, // ← AJOUTE ÇA
-          cj_variant_id: variant ? variant.vid : null // ← AJOUTE ÇA
-        });
+        else cart.push({ id: product.id, title: product.title, price: product.price, image: product.image, quantity: 1 });
       }
     });
     saveCart();
