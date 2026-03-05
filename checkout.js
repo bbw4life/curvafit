@@ -107,11 +107,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return valid;
     }
     function getShippingData() {
+        const countrySelect = document.getElementById('country');
+        const selectedOption = countrySelect.options[countrySelect.selectedIndex];
         return {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: document.getElementById('phone').value.trim(),
-            country: document.getElementById('country').value.trim(),
+            country: selectedOption.dataset.cca2 || selectedOption.value.trim(),  // ← Utilise ISO code si disponible
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
@@ -190,7 +192,7 @@ const postalInput = document.getElementById('postal-code');
 /* Load Countries */
 async function loadCountries() {
     try {
-        const res = await fetch('https://restcountries.com/v3.1/all?fields=name,idd');
+        const res = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,cca2');  // ← Ajout de cca2 pour ISO code
         const data = await res.json();
 
         const countries = data.sort((a, b) =>
@@ -204,6 +206,7 @@ async function loadCountries() {
             option.dataset.code = country.idd?.root
                 ? country.idd.root + (country.idd.suffixes?.[0] || '')
                 : '';
+            option.dataset.cca2 = country.cca2;  // ← Stocke le code ISO
             countrySelect.appendChild(option);
         });
 
@@ -226,7 +229,7 @@ countrySelect.addEventListener('change', async function () {
         const res = await fetch('https://countriesnow.space/api/v0.1/countries/cities', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ country: this.value })
+            body: JSON.stringify({ country: selectedOption.value })  // ← Utilise le nom complet pour l'API des villes
         });
 
         const data = await res.json();
