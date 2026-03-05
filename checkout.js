@@ -128,8 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
         const shippingData = getShippingData();
         if (discountAmount > 0) {
-            // Tu peux envoyer discountAmount au serveur si besoin
-            // Pour l'instant on le garde côté client
         }
         try {
             let response;
@@ -146,15 +144,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem("pendingOrder", "stripe");
                 await stripe.redirectToCheckout({ sessionId: data.sessionId });
             } else {
-                response = await fetch('/.netlify/functions/paypal-create-order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ cart, shipping: shippingData })
-                });
-                data = await response.json();
-                if (!response.ok || !data.orderId) throw new Error(data.error || 'PayPal order failed');
-                localStorage.setItem("pendingOrder", "paypal");
-                window.location.href = `https://www.sandbox.paypal.com/checkoutnow?token=${data.orderId}`;
+            let paypalCart = [...cart];
+            if (discountAmount > 0) {
+                const preDiscount = getSubtotal();
+                const ratio = (preDiscount - discountAmount) / preDiscount;
+                paypalCart = cart.map(item => ({
+                ...item,
+                price: (Number(item.price) * ratio).toFixed(2)
+                }));
+            }
+
+            const taxes = getSubtotal() * TAX_RATE;
+
+            const bodyData = {
+                cart: paypalCart,
+                shipping: shippingData,
+                shipping_cost: SHIPPING_COST.toFixed(2),
+                tax: taxes.toFixed(2)
+            };
+
+            response = await fetch('/.netlify/functions/paypal-create-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bodyData)
+            });
+
+            data = await response.json();
+
+            if (!response.ok || !data.orderID) {
+                throw new Error(data.error || 'PayPal order failed');
+            }
+
+            // === REDIRECT DYNAMIQUE (sandbox OU live) ===
+            const paypalDomain = data.paypalDomain || 'https://www.sandbox.paypal.com';
+            localStorage.setItem("pendingOrder", "paypal");
+            window.location.href = `${paypalDomain}/checkoutnow?token=${data.orderID}`;
             }
         } catch (error) {
             alert("Payment error: " + error.message);
