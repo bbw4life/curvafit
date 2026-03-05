@@ -8,7 +8,6 @@ exports.handler = async (event) => {
 
     const { cart, shipping } = JSON.parse(event.body);
 
-    // Validation cart
     if (!Array.isArray(cart) || cart.length === 0) {
       return response(400, { success: false, error: "Cart is empty" });
     }
@@ -19,16 +18,30 @@ exports.handler = async (event) => {
 
     let subtotal = 0;
 
-    const lineItems = cart.map(item => {
-      if (!item.price || !item.quantity || !item.title || !item.cj_product_id || !item.cj_variant_id) {
-        throw new Error("Invalid cart item");
+    const lineItems = cart.map((item, index) => {
+      // === DEBUG POUR VOIR EXACTEMENT CE QUI MANQUE ===
+      console.log(`[STRIPE] Item ${index}:`, {
+        title: item.title,
+        price: item.price,
+        quantity: item.quantity,
+        cj_product_id: item.cj_product_id,
+        cj_variant_id: item.cj_variant_id
+      });
+
+      if (!item.price || !item.quantity || !item.title) {
+        throw new Error(`Invalid cart item #${index}: missing price/quantity/title`);
       }
 
       const price = parseFloat(item.price);
       const quantity = parseInt(item.quantity);
 
       if (price <= 0 || quantity <= 0) {
-        throw new Error("Invalid price or quantity");
+        throw new Error(`Invalid price or quantity for item #${index}`);
+      }
+
+      // cj_ fields rendus optionnels (plus jamais de crash)
+      if (!item.cj_product_id) {
+        console.warn(`[STRIPE] Warning: Item #${index} has no cj_product_id`);
       }
 
       subtotal += price * quantity;
@@ -39,8 +52,10 @@ exports.handler = async (event) => {
           product_data: {
             name: item.title,
             metadata: {
-              cj_product_id: item.cj_product_id,
-              cj_variant_id: item.cj_variant_id
+              cj_product_id: item.cj_product_id || '',
+              cj_variant_id: item.cj_variant_id || '',
+              size: item.size || '',
+              color: item.color || ''
             }
           },
           unit_amount: Math.round(price * 100),
@@ -59,7 +74,8 @@ exports.handler = async (event) => {
       metadata: {
         cart: JSON.stringify(cart),
         shipping: JSON.stringify(shipping),
-        subtotal: subtotal.toFixed(2)
+        subtotal: subtotal.toFixed(2),
+        provider: "stripe"
       }
     });
 
@@ -72,7 +88,7 @@ exports.handler = async (event) => {
     console.error("Stripe Session Error:", error.message);
     return response(500, {
       success: false,
-      error: "Payment session creation failed"
+      error: error.message || "Payment session creation failed"
     });
   }
 };
@@ -81,7 +97,8 @@ function response(statusCode, body) {
   return {
     statusCode,
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
     },
     body: JSON.stringify(body)
   };
