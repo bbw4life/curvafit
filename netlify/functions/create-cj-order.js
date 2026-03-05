@@ -21,26 +21,28 @@ exports.handler = async (event) => {
     }
 
     const orderBody = {
-      orderId: `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
-      products: cart.map(item => ({
-        productId: item.cj_product_id,
-        variantId: item.cj_variant_id,
-        quantity: parseInt(item.quantity)
-      })),
-      shippingInfo: {
-        countryCode: shipping.country || "US",
-        province: shipping.state || "",
-        city: shipping.city || "",
-        address: shipping.address,
-        zip: shipping.postalCode || "",
-        phone: shipping.phone || "",
-        name: shipping.fullName,
-        email: shipping.email || ""
-      }
+      orders: [{
+        orderId: `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
+        products: cart.map(item => ({
+          productId: item.cj_product_id,
+          variantId: item.cj_variant_id,
+          quantity: parseInt(item.quantity)
+        })),
+        shippingInfo: {
+          countryCode: shipping.country || "US",
+          province: shipping.state || "",
+          city: shipping.city || "",
+          address: shipping.address,
+          zip: shipping.postalCode || "",
+          phone: shipping.phone || "",
+          name: shipping.fullName,
+          email: shipping.email || ""
+        }
+      }]
     };
 
     const cjResponse = await fetch(
-      "https://api.cjdropshipping.com/api2.0/v1/shopping/order/create",
+      "https://api.cjdropshipping.com/api2.0/v1/shopping/order/batchCreateOrder",
       {
         method: "POST",
         headers: {

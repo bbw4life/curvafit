@@ -1,3 +1,4 @@
+// verify-payment.js
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fetch = require('node-fetch');
 
@@ -82,15 +83,19 @@ exports.handler = async (event) => {
 
       const purchaseUnit = orderData.purchase_units[0];
 
-      const storedCart = JSON.parse(purchaseUnit.custom_id || '[]');
+      // ====================== RECONSTRUCT CJ DATA FROM COMPACT CUSTOM_ID ======================
+      const storedCj = purchaseUnit.custom_id ? purchaseUnit.custom_id.split('|') : [];
 
-      cart = purchaseUnit.items.map((ppItem, index) => ({
-        title: ppItem.name,
-        price: parseFloat(ppItem.unit_amount.value),
-        quantity: parseInt(ppItem.quantity),
-        cj_product_id: storedCart[index]?.cj_product_id || null,
-        cj_variant_id: storedCart[index]?.cj_variant_id || null
-      }));
+      cart = purchaseUnit.items.map((ppItem, index) => {
+        const cjParts = storedCj[index] ? storedCj[index].split(':') : ['', ''];
+        return {
+          title: ppItem.name,
+          price: parseFloat(ppItem.unit_amount.value),
+          quantity: parseInt(ppItem.quantity),
+          cj_product_id: cjParts[0] || null,
+          cj_variant_id: cjParts[1] || null
+        };
+      });
 
       const shippingDetails = purchaseUnit.shipping || {};
       const payer = orderData.payer;

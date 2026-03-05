@@ -62,13 +62,15 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = item.image || '';
             img.alt = item.title || 'Product';
             img.loading = "lazy";
+            let sizeHtml = item.size ? `<p>Size: ${item.size}</p>` : '';
+            let colorHtml = item.color ? `<p>Color: ${item.color}</p>` : '';
             const info = document.createElement('div');
             info.innerHTML = `
                 <h3>${item.title || ''}</h3>
                 <p>Price: $${price.toFixed(2)} ${item.fromBundle ? '(Bundle Discount Applied)' : ''}</p>
                 <p>Quantity: ${quantity}</p>
-                <p>Size: ${item.size || 'N/A'}</p>
-                <p>Color: ${item.color || 'N/A'}</p>
+                ${sizeHtml}
+                ${colorHtml}
                 <p>Total: $${(price * quantity).toFixed(2)}</p>
             `;
             itemDiv.appendChild(img);

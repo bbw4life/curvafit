@@ -1,3 +1,4 @@
+// paypal-create-order.js
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
@@ -49,6 +50,9 @@ exports.handler = async (event) => {
     const taxAmount = parseFloat(tax);
     const finalTotal = (subtotal + shippingCost + taxAmount).toFixed(2);
 
+    // ====================== COMPACT CUSTOM_ID WITH CJ IDS ======================
+    const custom_id = cart.map(item => `${item.cj_product_id || ''}:${item.cj_variant_id || ''}`).join('|');
+
     // ====================== CREATE ORDER ======================
     const orderBody = {
       intent: "CAPTURE",
@@ -73,7 +77,7 @@ exports.handler = async (event) => {
             country_code: shipping.country || "US"
           }
         },
-       custom_id: JSON.stringify(cart).slice(0,127)
+        custom_id: custom_id
       }],
       application_context: {
         return_url: `${process.env.BASE_URL}/thankyou.html`,
