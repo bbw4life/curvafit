@@ -1,6 +1,26 @@
 // create-cj-order.js
 const fetch = require('node-fetch');
 
+async function getAccessToken() {
+  if (!process.env.CJ_API_KEY) {
+    throw new Error("Missing CJ_API_KEY environment variable");
+  }
+
+  const tokenRes = await fetch('https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ apiKey: process.env.CJ_API_KEY })
+  });
+
+  const tokenData = await tokenRes.json();
+
+  if (!tokenRes.ok || tokenData.code !== 200) {
+    throw new Error(tokenData.message || 'Failed to get CJ access token');
+  }
+
+  return tokenData.data.accessToken;
+}
+
 exports.handler = async (event) => {
   console.log('[CJ ORDER] Function invoked with event:', event);
 
@@ -8,11 +28,6 @@ exports.handler = async (event) => {
     if (!event.body) {
       console.log('[CJ ORDER] No body in event');
       return response(400, { success: false, error: "No data received" });
-    }
-
-    if (!process.env.CJ_ACCESS_TOKEN) {
-      console.log('[CJ ORDER] Missing CJ_ACCESS_TOKEN env var');
-      throw new Error("Missing CJ_ACCESS_TOKEN");
     }
 
     const { cart, shipping } = JSON.parse(event.body);
@@ -25,6 +40,8 @@ exports.handler = async (event) => {
       console.log('[CJ ORDER] Invalid shipping:', shipping);
       throw new Error("Invalid shipping data");
     }
+
+    const accessToken = await getAccessToken();
 
     const orderId = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
 
@@ -52,11 +69,11 @@ exports.handler = async (event) => {
     console.log('[CJ ORDER] Sending body:', JSON.stringify(orderBody));
 
     const cjResponse = await fetch(
-      "https://developers.cjdropshipping.cn/api2.0/v1/shopping/order/batchCreateOrder",
+      "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/batchCreateOrder",
       {
         method: "POST",
         headers: {
-          "CJ-Access-Token": process.env.CJ_ACCESS_TOKEN,
+          "CJ-Access-Token": accessToken,
           "Content-Type": "application/json"
         },
         body: JSON.stringify(orderBody)
