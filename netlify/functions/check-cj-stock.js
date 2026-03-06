@@ -1,6 +1,4 @@
-// netlify/functions/check-cj-stock.js
 const fetch = require('node-fetch');
-
 exports.handler = async (event) => {
   try {
     if (!event.body) {
@@ -22,24 +20,9 @@ exports.handler = async (event) => {
         }
       }
     );
-    const responseText = await cjResponse.text();  // Récupère TOUJOURS le texte brut pour debug
-    console.log("CJ RAW RESPONSE STATUS:", cjResponse.status);
-    console.log("CJ RAW RESPONSE (first 200 chars):", responseText.substring(0, 200));
-
-    if (!cjResponse.ok) {
-      throw new Error(`CJ API HTTP error: ${cjResponse.status} - ${responseText.substring(0, 100)}`);
-    }
-
-    let data;
-    try {
-      data = JSON.parse(responseText);
-    } catch (jsonErr) {
-      console.error("CJ RESPONSE IS NOT JSON:", responseText.substring(0, 300));
-      throw new Error(`Invalid JSON from CJ: ${jsonErr.message}`);
-    }
-
-    if (data.code !== 200) {
-      throw new Error(data.message || `CJ error code ${data.code}`);
+    const data = await cjResponse.json();
+    if (!cjResponse.ok || data.code !== 200) {
+      throw new Error(data.message || "CJ stock API error");
     }
     // CJ peut retourner plusieurs warehouses
     const warehouses = data.data || [];
@@ -61,7 +44,6 @@ exports.handler = async (event) => {
     });
   }
 };
-
 function response(statusCode, body) {
   return {
     statusCode,

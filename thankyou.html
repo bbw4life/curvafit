@@ -16,87 +16,69 @@
             <a href="orders.html" class="button">View Orders</a>
         </div>
     </div>
-
- <script>
+    <script>
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log("🚀 Thankyou.html LOADED - Starting verification...");
-
     const spinner = document.getElementById('spinner');
     const messageEl = document.getElementById('message');
     const buttonsEl = document.getElementById('buttons');
-
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('session_id');
-    const orderID = urlParams.get('token');  // PayPal: "token"
-
-    console.log("📋 URL Params:", { sessionId, orderID });
-
+    const orderID = urlParams.get('token'); // PayPal retourne "token" pas orderID
     let payload = null;
     if (sessionId) {
         payload = { provider: 'stripe', sessionId };
-    } else if (orderID) {
+    }
+    else if (orderID) {
         payload = { provider: 'paypal', orderID };
-    } else {
-        console.error("❌ No payment params found!");
+    }
+    else {
         displayError("No payment information found.");
         spinner.style.display = "none";
         return;
     }
-
-    console.log("📤 Preparing to send to verify-payment:", payload);
-
-    // TEMPORAIRE : Commenté anti-double pour forcer l'appel à chaque test
-    // const alreadyVerified = sessionStorage.getItem("paymentVerified");
-    // if (alreadyVerified === sessionId || alreadyVerified === orderID) {
-    //     console.log("🔄 Already verified, skipping...");
-    //     showSuccess("Payment already verified.");
-    //     spinner.style.display = "none";
-    //     return;
-    // }
-
+    // 🔒 Anti double verification
+    const alreadyVerified = sessionStorage.getItem("paymentVerified");
+    if (alreadyVerified === sessionId || alreadyVerified === orderID) {
+        showSuccess("Payment already verified.");
+        spinner.style.display = "none";
+        return;
+    }
     try {
         const response = await fetch('/.netlify/functions/verify-payment', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-
-        console.log("📥 Response from verify-payment:", { status: response.status, ok: response.ok });
-
         const data = await response.json();
-        console.log("📊 Data from verify:", data);
-
         if (!response.ok || !data.success) {
             throw new Error(data.error || "Verification failed");
         }
-
         if (data.paymentVerified) {
             sessionStorage.setItem("paymentVerified", sessionId || orderID);
             localStorage.removeItem("cart");
-
             const message = data.fulfillmentStatus === "completed"
                 ? "Your order has been successfully processed."
                 : "Your order is confirmed. Some items are temporarily out of stock. We will ship them shortly.";
-
             showSuccess(message);
         } else {
             throw new Error("Payment not verified.");
         }
     } catch (error) {
-        console.error("❌ Verification error:", error);
+        console.error("Verification error:", error);
         displayError(error.message || "An error occurred.");
     } finally {
         spinner.style.display = "none";
     }
 });
-
 function showSuccess(message) {
     const messageEl = document.getElementById('message');
-    messageEl.innerHTML = `<h1>Thank you for your order!</h1><p>${message}</p>`;
+    messageEl.innerHTML = `
+        <h1>Thank you for your order!</h1>
+        <p>${message}</p>
+    `;
     messageEl.style.display = 'block';
     document.getElementById('buttons').style.display = 'block';
 }
-
 function displayError(message) {
     const messageEl = document.getElementById('message');
     messageEl.innerHTML = `<p class="error">${message}</p>`;

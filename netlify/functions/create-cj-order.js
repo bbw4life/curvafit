@@ -1,6 +1,4 @@
-// netlify/functions/create-cj-order.js
 const fetch = require('node-fetch');
-
 exports.handler = async (event) => {
   try {
     if (!event.body) {
@@ -15,12 +13,6 @@ exports.handler = async (event) => {
     }
     if (!shipping || !shipping.fullName || !shipping.address) {
       throw new Error("Invalid shipping data");
-    }
-    // Vérification supplémentaire : Tous les items ont cj_product_id et cj_variant_id
-    for (const item of cart) {
-      if (!item.cj_product_id || !item.cj_variant_id) {
-        throw new Error(`Missing CJ IDs for item: ${item.title || 'unknown'}`);
-      }
     }
     const orderBody = {
       orders: [{
@@ -53,24 +45,9 @@ exports.handler = async (event) => {
         body: JSON.stringify(orderBody)
       }
     );
-    const responseText = await cjResponse.text();  // Récupère TOUJOURS le texte brut pour debug
-    console.log("CJ CREATE RAW RESPONSE STATUS:", cjResponse.status);
-    console.log("CJ CREATE RAW RESPONSE (first 200 chars):", responseText.substring(0, 200));
-
-    if (!cjResponse.ok) {
-      throw new Error(`CJ API HTTP error: ${cjResponse.status} - ${responseText.substring(0, 100)}`);
-    }
-
-    let data;
-    try {
-      data = JSON.parse(responseText);
-    } catch (jsonErr) {
-      console.error("CJ CREATE RESPONSE IS NOT JSON:", responseText.substring(0, 300));
-      throw new Error(`Invalid JSON from CJ: ${jsonErr.message}`);
-    }
-
-    if (data.code !== 200) {
-      throw new Error(data.message || `CJ error code ${data.code}`);
+    const data = await cjResponse.json();
+    if (!cjResponse.ok || data.code !== 200) {
+      throw new Error(data.message || "CJ order creation failed");
     }
     return response(200, {
       success: true,
@@ -84,7 +61,6 @@ exports.handler = async (event) => {
     });
   }
 };
-
 function response(statusCode, body) {
   return {
     statusCode,
