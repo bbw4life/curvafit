@@ -21,7 +21,7 @@ exports.handler = async (event) => {
       throw new Error("Missing cj_variant_id");
     }
 
-    const url = `https://developers.cjdropshipping.com/api2.0/v1/product/stock/queryByVid?vid=${cj_variant_id}`;
+    const url = `https://developers.cjdropshipping.cn/api2.0/v1/product/stock/queryByVid?vid=${cj_variant_id}`;
 
     console.log(`[CJ STOCK] Checking variant: ${cj_variant_id} at URL: ${url}`);
 

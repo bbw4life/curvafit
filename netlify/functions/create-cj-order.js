@@ -52,7 +52,7 @@ exports.handler = async (event) => {
     console.log('[CJ ORDER] Sending body:', JSON.stringify(orderBody));
 
     const cjResponse = await fetch(
-      "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/batchCreateOrder",
+      "https://developers.cjdropshipping.cn/api2.0/v1/shopping/order/batchCreateOrder",
       {
         method: "POST",
         headers: {
