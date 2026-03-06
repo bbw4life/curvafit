@@ -45,10 +45,10 @@
     }
   ],
   "variants": [
-    { "vid": "CJYD1954211101AZ", "color": "Gray", "size": "", "price": 27.26, "active": true },
-    { "vid": "CJYD1954211102BY", "color": "Black", "size": "", "price": 32.26, "active": true },
-    { "vid": "CJYD1954211103CX", "color": "White", "size": "", "price": 29.26, "active": true },
-    { "vid": "CJYD1954211104DW", "color": "Black Pillowcase", "size": "", "price": 2.63, "active": true }
+    { "vid": "CJYD195421101AZ", "color": "Gray", "size": "", "price": 27.26, "active": true },
+    { "vid": "CJYD195421102BY", "color": "Black", "size": "", "price": 32.26, "active": true },
+    { "vid": "CJYD195421103CX", "color": "White", "size": "", "price": 29.26, "active": true },
+    { "vid": "CJYD195421104DW", "color": "Black Pillowcase", "size": "", "price": 2.63, "active": true }
   ],
   "media": [
     "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Sd3bfdf0074e743968ee398c542640734b.webp?v=1754486496",
