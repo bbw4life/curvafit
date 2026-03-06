@@ -1,68 +1,63 @@
-// netlify/functions/check-cj-stock.js  ← VERSION AVEC LOGS DÉTAILLÉS
+// netlify/functions/check-cj-stock.js
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-  console.log("[CJ-STOCK] === DÉBUT DE LA REQUÊTE ===");
-  
   try {
     if (!event.body) {
-      console.error("[CJ-STOCK] ERREUR: Aucun body reçu");
       return response(400, { success: false, error: "No data received" });
     }
-
     if (!process.env.CJ_ACCESS_TOKEN) {
-      console.error("[CJ-STOCK] ERREUR: CJ_ACCESS_TOKEN manquant");
       throw new Error("Missing CJ_ACCESS_TOKEN");
     }
-
     const { cj_variant_id } = JSON.parse(event.body);
-    console.log(`[CJ-STOCK] Variant ID reçu: ${cj_variant_id}`);
-
     if (!cj_variant_id) {
-      console.error("[CJ-STOCK] ERREUR: cj_variant_id manquant");
       throw new Error("Missing cj_variant_id");
     }
+    const cjResponse = await fetch(
+      `https://api.cjdropshipping.com/api2.0/v1/product/stock/queryByVid?vid=${cj_variant_id}`,
+      {
+        method: "GET",
+        headers: {
+          "CJ-Access-Token": process.env.CJ_ACCESS_TOKEN
+        }
+      }
+    );
+    const responseText = await cjResponse.text();  // Récupère TOUJOURS le texte brut pour debug
+    console.log("CJ RAW RESPONSE STATUS:", cjResponse.status);
+    console.log("CJ RAW RESPONSE (first 200 chars):", responseText.substring(0, 200));
 
-    const url = `https://api.cjdropshipping.com/api2.0/v1/product/stock/queryByVid?vid=${cj_variant_id}`;
-    console.log(`[CJ-STOCK] Appel API CJ: ${url}`);
-
-    const cjResponse = await fetch(url, {
-      method: "GET",
-      headers: { "CJ-Access-Token": process.env.CJ_ACCESS_TOKEN }
-    });
-
-    const data = await cjResponse.json();
-    console.log(`[CJ-STOCK] Réponse CJ (code ${cjResponse.status}):`, JSON.stringify(data, null, 2));
-
-    if (!cjResponse.ok || data.code !== 200) {
-      console.error("[CJ-STOCK] ERREUR API CJ:", data.message || "Unknown error");
-      throw new Error(data.message || "CJ stock API error");
+    if (!cjResponse.ok) {
+      throw new Error(`CJ API HTTP error: ${cjResponse.status} - ${responseText.substring(0, 100)}`);
     }
 
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (jsonErr) {
+      console.error("CJ RESPONSE IS NOT JSON:", responseText.substring(0, 300));
+      throw new Error(`Invalid JSON from CJ: ${jsonErr.message}`);
+    }
+
+    if (data.code !== 200) {
+      throw new Error(data.message || `CJ error code ${data.code}`);
+    }
+    // CJ peut retourner plusieurs warehouses
     const warehouses = data.data || [];
     let totalStock = 0;
-    warehouses.forEach((wh, i) => {
-      const stock = parseInt(wh.totalInventoryNum || 0);
-      totalStock += stock;
-      console.log(`[CJ-STOCK] Warehouse ${i+1}: ${stock} unités`);
-    });
-
+    for (const warehouse of warehouses) {
+      totalStock += parseInt(warehouse.totalInventoryNum || 0);
+    }
     const inStock = totalStock > 0;
-    console.log(`[CJ-STOCK] TOTAL STOCK: ${totalStock} → inStock: ${inStock}`);
-
     return response(200, {
       success: true,
       stock: totalStock,
-      inStock: inStock,
-      variant_id: cj_variant_id
+      inStock: inStock
     });
-
   } catch (error) {
-    console.error("[CJ-STOCK] CRITICAL ERROR:", error.message);
+    console.error("CJ STOCK ERROR:", error.message);
     return response(500, {
       success: false,
-      error: "Failed to check CJ stock",
-      details: error.message
+      error: "Failed to check CJ stock"
     });
   }
 };
