@@ -1,6 +1,26 @@
 // check-cj-stock.js
 const fetch = require('node-fetch');
 
+async function getAccessToken() {
+  if (!process.env.CJ_API_KEY) {
+    throw new Error("Missing CJ_API_KEY environment variable");
+  }
+
+  const tokenRes = await fetch('https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ apiKey: process.env.CJ_API_KEY })
+  });
+
+  const tokenData = await tokenRes.json();
+
+  if (!tokenRes.ok || tokenData.code !== 200) {
+    throw new Error(tokenData.message || 'Failed to get CJ access token');
+  }
+
+  return tokenData.data.accessToken;
+}
+
 exports.handler = async (event) => {
   console.log('[CJ STOCK] Function invoked with event:', event);
 
@@ -10,16 +30,13 @@ exports.handler = async (event) => {
       return response(400, { success: false, error: "No data received" });
     }
 
-    if (!process.env.CJ_ACCESS_TOKEN) {
-      console.log('[CJ STOCK] Missing CJ_ACCESS_TOKEN env var');
-      throw new Error("Missing CJ_ACCESS_TOKEN");
-    }
-
     const { cj_variant_id } = JSON.parse(event.body);
     if (!cj_variant_id) {
       console.log('[CJ STOCK] Missing cj_variant_id in body');
       throw new Error("Missing cj_variant_id");
     }
+
+    const accessToken = await getAccessToken();
 
     const url = `https://developers.cjdropshipping.com/api2.0/v1/product/stock/queryByVid?vid=${cj_variant_id}`;
 
@@ -28,7 +45,7 @@ exports.handler = async (event) => {
     const cjResponse = await fetch(url, {
       method: "GET",
       headers: {
-        "CJ-Access-Token": process.env.CJ_ACCESS_TOKEN
+        "CJ-Access-Token": accessToken
       }
     });
 
