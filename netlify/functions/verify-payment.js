@@ -7,9 +7,8 @@ exports.handler = async (event) => {
 
   try {
     if (!event.body) throw new Error("No data received");
-
     const { provider, sessionId, orderID } = JSON.parse(event.body);
-    console.log(`Provider: ${provider} | SessionID: ${sessionId || 'N/A'} | OrderID: ${orderID || 'N/A'}`);
+    console.log(`Provider: ${provider} | OrderID: ${orderID || 'N/A'}`);
 
     let cart = [];
     let shipping = {};
@@ -17,24 +16,17 @@ exports.handler = async (event) => {
 
     // ====================== STRIPE ======================
     if (provider === "stripe") {
-      if (!sessionId) throw new Error("Missing Stripe sessionId");
       const session = await stripe.checkout.sessions.retrieve(sessionId);
-      console.log("Stripe session status:", session.payment_status);
-
-      if (session.payment_status !== "paid") throw new Error("Stripe payment not completed");
-
+      if (session.payment_status !== "paid") throw new Error("Stripe not paid");
       cart = JSON.parse(session.metadata.cart || "[]");
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
 
-    // ====================== PAYPAL (CORRIGÉ) ======================
+    // ====================== PAYPAL (FIX DÉFINITIF) ======================
     } else if (provider === "paypal") {
       if (!orderID) throw new Error("Missing PayPal orderID");
 
-      const PAYPAL_BASE = process.env.PAYPAL_ENV === "live" 
-        ? "https://api-m.paypal.com" 
-        : "https://api-m.sandbox.paypal.com";
-
+      const PAYPAL_BASE = process.env.PAYPAL_ENV === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
       const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString("base64");
 
       const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, {
@@ -44,67 +36,72 @@ exports.handler = async (event) => {
       });
       const { access_token } = await tokenRes.json();
 
-      // Capture
+      // 1. Capture
       const captureRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, {
         method: "POST",
         headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" }
       });
-      const orderData = await captureRes.json();
-      console.log("PayPal capture status:", orderData.status);
+      const captureData = await captureRes.json();
+      console.log("PayPal capture status:", captureData.status);
 
-      if (orderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
+      if (captureData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
+
+      // 2. Récupérer les détails complets (ICI se trouve le custom_id fiable)
+      const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, {
+        headers: { Authorization: `Bearer ${access_token}` }
+      });
+      const orderData = await orderRes.json();
 
       const purchaseUnit = orderData.purchase_units?.[0];
       if (!purchaseUnit) throw new Error("No purchase unit found");
 
       const storedCj = purchaseUnit.custom_id ? purchaseUnit.custom_id.split('|') : [];
-      console.log("Stored CJ data from custom_id:", storedCj);
+      console.log("Stored CJ data (récupéré via GET order):", storedCj);
 
-      // Reconstruction robuste (items peut être undefined)
+      // Reconstruction cart
       const itemsArray = purchaseUnit.items || [];
-      cart = itemsArray.map((ppItem, index) => {
-        const cjParts = storedCj[index] ? storedCj[index].split(':') : ['', ''];
+      cart = itemsArray.map((item, i) => {
+        const [cj_product_id, cj_variant_id] = storedCj[i] ? storedCj[i].split(':') : ['', ''];
         return {
-          title: ppItem?.name || `Product ${index + 1}`,
-          price: parseFloat(ppItem?.unit_amount?.value || 0),
-          quantity: parseInt(ppItem?.quantity || 1),
-          cj_product_id: cjParts[0] || null,
-          cj_variant_id: cjParts[1] || null
+          title: item.name,
+          price: parseFloat(item.unit_amount.value),
+          quantity: parseInt(item.quantity),
+          cj_product_id: cj_product_id || null,
+          cj_variant_id: cj_variant_id || null
         };
       });
 
-      // Fallback si PayPal ne renvoie pas les items
+      // Fallback si aucun item (rare)
       if (cart.length === 0 && storedCj.length > 0) {
-        console.log("⚠️ No items in response → reconstructing from custom_id");
-        cart = storedCj.map((cjStr, index) => {
-          const [productId, variantId] = cjStr.split(':');
-          return { title: `Product ${index+1}`, price: 0, quantity: 1, cj_product_id: productId || null, cj_variant_id: variantId || null };
+        cart = storedCj.map((str, i) => {
+          const [p, v] = str.split(':');
+          return { title: `Product ${i+1}`, price: 0, quantity: 1, cj_product_id: p, cj_variant_id: v };
         });
       }
 
-      const shippingDetails = purchaseUnit.shipping || {};
       const payer = orderData.payer || {};
+      const ship = purchaseUnit.shipping || {};
       shipping = {
-        fullName: shippingDetails.name?.full_name || `${payer.name?.given_name || ''} ${payer.name?.surname || ''}`.trim() || "Customer",
-        email: payer.email_address || "",
-        address: shippingDetails.address?.address_line_1 || "",
-        city: shippingDetails.address?.admin_area_2 || "",
-        state: shippingDetails.address?.admin_area_1 || "",
-        postalCode: shippingDetails.address?.postal_code || "",
-        country: shippingDetails.address?.country_code || "US"
+        fullName: ship.name?.full_name || `${payer.name?.given_name || ''} ${payer.name?.surname || ''}`.trim(),
+        email: payer.email_address,
+        address: ship.address?.address_line_1 || "",
+        city: ship.address?.admin_area_2 || "",
+        state: ship.address?.admin_area_1 || "",
+        postalCode: ship.address?.postal_code || "",
+        country: ship.address?.country_code || "US"
       };
       paymentVerified = true;
-    } else {
-      throw new Error("Invalid payment provider");
     }
 
-    if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
+    if (!paymentVerified || cart.length === 0) {
+      console.error("Cart empty after reconstruction");
+      throw new Error("Payment verification failed or cart empty");
+    }
 
-    console.log(`✅ Payment OK - ${cart.length} item(s) to process`);
+    console.log(`✅ ${cart.length} item(s) ready for CJ`);
 
-    // ====================== FULFILLMENT (inchangé) ======================
-    let fulfilled = 0;
-    let pending = 0;
+    // ====================== FULFILLMENT CJ ======================
+    let fulfilled = 0, pending = 0;
 
     for (const item of cart) {
       try {
@@ -127,8 +124,7 @@ exports.handler = async (event) => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ cart: [item], shipping })
           });
-          const cjData = await cjRes.json();
-          if (cjRes.ok && cjData.success) fulfilled++;
+          if (cjRes.ok) fulfilled++;
           else pending++;
         } else {
           await saveAsPending(item, shipping);
@@ -143,7 +139,6 @@ exports.handler = async (event) => {
 
     return response(200, {
       success: true,
-      paymentVerified: true,
       fulfillmentStatus: pending > 0 ? "pending_stock" : "completed"
     });
 
@@ -157,7 +152,7 @@ async function saveAsPending(item, shipping) {
   await fetch(`/.netlify/functions/save-pending-order`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ shipping, item, payment_provider: "auto", payment_id: "verified" })
+    body: JSON.stringify({ shipping, item, payment_provider: "paypal", payment_id: "auto" })
   });
 }
 
