@@ -14,6 +14,9 @@ exports.handler = async (event) => {
     let shipping = {};
     let paymentVerified = false;
 
+    // URL ABSOLUE AUTOMATIQUE (fonctionne toujours)
+    const BASE_URL = process.env.URL || `https://${event.headers.host}`;
+
     // ====================== STRIPE ======================
     if (provider === "stripe") {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
@@ -22,7 +25,7 @@ exports.handler = async (event) => {
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
 
-    // ====================== PAYPAL (FIX DÉFINITIF) ======================
+    // ====================== PAYPAL ======================
     } else if (provider === "paypal") {
       if (!orderID) throw new Error("Missing PayPal orderID");
 
@@ -36,29 +39,27 @@ exports.handler = async (event) => {
       });
       const { access_token } = await tokenRes.json();
 
-      // 1. Capture
-      const captureRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, {
+      // Capture
+      await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, {
         method: "POST",
         headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" }
       });
-      const captureData = await captureRes.json();
-      console.log("PayPal capture status:", captureData.status);
 
-      if (captureData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
-
-      // 2. Récupérer les détails complets (ICI se trouve le custom_id fiable)
+      // Récupération fiable des données (custom_id + items)
       const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, {
         headers: { Authorization: `Bearer ${access_token}` }
       });
       const orderData = await orderRes.json();
+      console.log("PayPal final status:", orderData.status);
+
+      if (orderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
 
       const purchaseUnit = orderData.purchase_units?.[0];
       if (!purchaseUnit) throw new Error("No purchase unit found");
 
       const storedCj = purchaseUnit.custom_id ? purchaseUnit.custom_id.split('|') : [];
-      console.log("Stored CJ data (récupéré via GET order):", storedCj);
+      console.log("Stored CJ data:", storedCj);
 
-      // Reconstruction cart
       const itemsArray = purchaseUnit.items || [];
       cart = itemsArray.map((item, i) => {
         const [cj_product_id, cj_variant_id] = storedCj[i] ? storedCj[i].split(':') : ['', ''];
@@ -71,11 +72,10 @@ exports.handler = async (event) => {
         };
       });
 
-      // Fallback si aucun item (rare)
       if (cart.length === 0 && storedCj.length > 0) {
         cart = storedCj.map((str, i) => {
           const [p, v] = str.split(':');
-          return { title: `Product ${i+1}`, price: 0, quantity: 1, cj_product_id: p, cj_variant_id: v };
+          return { title: `Product ${i+1}`, price: 0, quantity: 1, cj_product_id: p || null, cj_variant_id: v || null };
         });
       }
 
@@ -83,7 +83,7 @@ exports.handler = async (event) => {
       const ship = purchaseUnit.shipping || {};
       shipping = {
         fullName: ship.name?.full_name || `${payer.name?.given_name || ''} ${payer.name?.surname || ''}`.trim(),
-        email: payer.email_address,
+        email: payer.email_address || "",
         address: ship.address?.address_line_1 || "",
         city: ship.address?.admin_area_2 || "",
         state: ship.address?.admin_area_1 || "",
@@ -93,25 +93,22 @@ exports.handler = async (event) => {
       paymentVerified = true;
     }
 
-    if (!paymentVerified || cart.length === 0) {
-      console.error("Cart empty after reconstruction");
-      throw new Error("Payment verification failed or cart empty");
-    }
+    if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
 
     console.log(`✅ ${cart.length} item(s) ready for CJ`);
 
-    // ====================== FULFILLMENT CJ ======================
+    // ====================== FULFILLMENT CJ (URLs ABSOLUES) ======================
     let fulfilled = 0, pending = 0;
 
     for (const item of cart) {
       try {
         if (!item.cj_variant_id) {
-          await saveAsPending(item, shipping);
+          await saveAsPending(item, shipping, BASE_URL);
           pending++;
           continue;
         }
 
-        const stockRes = await fetch(`/.netlify/functions/check-cj-stock`, {
+        const stockRes = await fetch(`${BASE_URL}/.netlify/functions/check-cj-stock`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cj_variant_id: item.cj_variant_id })
@@ -119,20 +116,20 @@ exports.handler = async (event) => {
         const stockData = await stockRes.json();
 
         if (stockData.success && stockData.inStock) {
-          const cjRes = await fetch(`/.netlify/functions/create-cj-order`, {
+          const cjRes = await fetch(`${BASE_URL}/.netlify/functions/create-cj-order`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ cart: [item], shipping })
           });
-          if (cjRes.ok) fulfilled++;
+          if ((await cjRes.json()).success) fulfilled++;
           else pending++;
         } else {
-          await saveAsPending(item, shipping);
+          await saveAsPending(item, shipping, BASE_URL);
           pending++;
         }
       } catch (e) {
         console.error("Item error:", e.message);
-        await saveAsPending(item, shipping);
+        await saveAsPending(item, shipping, BASE_URL);
         pending++;
       }
     }
@@ -148,12 +145,16 @@ exports.handler = async (event) => {
   }
 };
 
-async function saveAsPending(item, shipping) {
-  await fetch(`/.netlify/functions/save-pending-order`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ shipping, item, payment_provider: "paypal", payment_id: "auto" })
-  });
+async function saveAsPending(item, shipping, BASE_URL) {
+  try {
+    await fetch(`${BASE_URL}/.netlify/functions/save-pending-order`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ shipping, item, payment_provider: "paypal", payment_id: "auto" })
+    });
+  } catch (e) {
+    console.error("saveAsPending failed:", e.message);
+  }
 }
 
 function response(statusCode, body) {
