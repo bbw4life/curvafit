@@ -2,26 +2,6 @@
 const { google } = require("googleapis");
 const fetch = require("node-fetch");
 
-async function getAccessToken() {
-  if (!process.env.CJ_API_KEY) {
-    throw new Error("Missing CJ_API_KEY environment variable");
-  }
-
-  const tokenRes = await fetch('https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ apiKey: process.env.CJ_API_KEY })
-  });
-
-  const tokenData = await tokenRes.json();
-
-  if (!tokenRes.ok || tokenData.code !== 200) {
-    throw new Error(tokenData.message || 'Failed to get CJ access token');
-  }
-
-  return tokenData.data.accessToken;
-}
-
 exports.handler = async () => {
   console.log('[RETRY PENDING] Function invoked');
 
@@ -30,7 +10,8 @@ exports.handler = async () => {
       !process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ||
       !process.env.GOOGLE_PRIVATE_KEY ||
       !process.env.GOOGLE_SHEET_ID ||
-      !process.env.BASE_URL
+      !process.env.BASE_URL ||
+      !process.env.CJ_ACCESS_TOKEN
     ) {
       console.log('[RETRY PENDING] Missing env vars');
       throw new Error("Missing environment variables");
@@ -98,8 +79,6 @@ exports.handler = async () => {
       console.log(`[RETRY PENDING] Processing row ${i + 2}:`, { internalId, shipping, cart });
 
       try {
-        const accessToken = await getAccessToken();
-
         // 1️⃣ Check stock
         const stockRes = await fetch(
           `${process.env.BASE_URL}/.netlify/functions/check-cj-stock`,
