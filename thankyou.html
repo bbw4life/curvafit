@@ -16,8 +16,10 @@
             <a href="orders.html" class="button">View Orders</a>
         </div>
     </div>
-   <script>
+  <script>
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log("🚀 thankyou.html LOADED - Starting verification...");
+
     const spinner = document.getElementById('spinner');
     const messageEl = document.getElementById('message');
     const buttonsEl = document.getElementById('buttons');
@@ -27,8 +29,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const orderID = urlParams.get('token');
     const forceReset = urlParams.get('reset') === '1';
 
-    // Force reset pour les tests
-    if (forceReset) sessionStorage.removeItem("paymentVerified");
+    console.log(`📌 sessionId: ${sessionId} | orderID: ${orderID} | forceReset: ${forceReset}`);
+
+    // Force reset pour ce test
+    if (forceReset) {
+        sessionStorage.clear();
+        console.log("🔄 sessionStorage cleared (forceReset)");
+    }
 
     let payload = null;
     if (sessionId) payload = { provider: 'stripe', sessionId };
@@ -40,48 +47,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Vérification anti-double (améliorée)
-    const alreadyVerified = sessionStorage.getItem("paymentVerified");
-    if (!forceReset && (alreadyVerified === sessionId || alreadyVerified === orderID)) {
-        showSuccess("Payment already verified.");
-        spinner.style.display = "none";
-        return;
-    }
-
-    console.log("🚀 Starting verification...");
+    // Vérification anti-double désactivée pour le test (on la remettra après)
+    console.log("🔄 Bypassing alreadyVerified check for debugging");
 
     try {
         const functionUrl = `${window.location.origin}/.netlify/functions/verify-payment`;
+        console.log(`📡 Calling: ${functionUrl}`);
+
         const response = await fetch(functionUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
-        console.log("📡 Response status:", response.status);
+        console.log(`📡 Response status: ${response.status}`);
 
         if (response.status === 404) {
-            throw new Error("404 - Function verify-payment not found. Redéploie sur Netlify.");
+            throw new Error("❌ 404 - verify-payment function not found. Redéploie Netlify !");
         }
 
         const data = await response.json();
+        console.log("📦 Data received:", data);
 
         if (!response.ok || !data.success) {
             throw new Error(data.error || "Verification failed");
         }
 
+        // On sauvegarde seulement après succès
         sessionStorage.setItem("paymentVerified", sessionId || orderID);
-        localStorage.removeItem("cart");
 
         const message = data.fulfillmentStatus === "completed"
-            ? "✅ Order processed and sent to CJ Dropshipping!"
-            : "✅ Order confirmed. Some items pending stock.";
+            ? "✅ Commande envoyée à CJ Dropshipping !"
+            : "✅ Commande confirmée (stock en attente)";
 
         showSuccess(message);
-        console.log("✅ Verification SUCCESS - check CJ now");
+        console.log("🎉 VERIFICATION TERMINÉE - Vérifie ton compte CJ maintenant !");
 
     } catch (error) {
-        console.error("❌ Verification error:", error);
+        console.error("❌ ERREUR COMPLETE:", error);
         displayError(error.message);
     } finally {
         spinner.style.display = "none";
