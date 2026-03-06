@@ -17,7 +17,7 @@
         </div>
     </div>
 
-    <script>
+ <script>
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("🚀 Thankyou.html LOADED - Starting verification...");
 
@@ -43,16 +43,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    console.log("📤 Sending to verify-payment:", payload);
+    console.log("📤 Preparing to send to verify-payment:", payload);
 
-    // Anti double
-    const alreadyVerified = sessionStorage.getItem("paymentVerified");
-    if (alreadyVerified === sessionId || alreadyVerified === orderID) {
-        console.log("🔄 Already verified, skipping...");
-        showSuccess("Payment already verified.");
-        spinner.style.display = "none";
-        return;
-    }
+    // TEMPORAIRE : Commenté anti-double pour forcer l'appel à chaque test
+    // const alreadyVerified = sessionStorage.getItem("paymentVerified");
+    // if (alreadyVerified === sessionId || alreadyVerified === orderID) {
+    //     console.log("🔄 Already verified, skipping...");
+    //     showSuccess("Payment already verified.");
+    //     spinner.style.display = "none";
+    //     return;
+    // }
 
     try {
         const response = await fetch('/.netlify/functions/verify-payment', {
