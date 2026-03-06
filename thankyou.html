@@ -5,141 +5,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thank You - CurvaFit</title>
     <link rel="stylesheet" href="thankyou.css">
-    <style>
-        .debug { background:#f8f9fa; padding:15px; border-radius:8px; margin:20px 0; font-family:monospace; font-size:13px; max-height:350px; overflow-y:auto; border:1px solid #ddd; }
-        .error { color:red; font-weight:bold; }
-        .success { color:green; font-weight:bold; }
-        .force-btn { background:#e74c3c !important; color:white !important; font-weight:bold; padding:12px 20px !important; }
-    </style>
 </head>
 <body>
     <div class="container">
         <h1>Verifying Your Payment...</h1>
         <div id="spinner" class="spinner"></div>
-        
-        <div id="debug" class="debug"></div>
-        
-        <div id="message" style="display:none;"></div>
-        
-        <div id="buttons" style="display:none; gap:10px; margin-top:20px;">
+        <div id="message" style="display: none;"></div>
+        <div id="buttons" style="display: none;">
             <a href="shop.html" class="button">Continue Shopping</a>
             <a href="orders.html" class="button">View Orders</a>
-            <button onclick="forceVerification()" class="button force-btn">🔥 FORCE VERIFICATION (Test Mode)</button>
         </div>
     </div>
 
     <script>
-    console.log("=== THANK YOU PAGE LOADED ===");
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log("🚀 Thankyou.html LOADED - Starting verification...");
 
-    function logDebug(msg) {
-        console.log(msg);
-        const debugEl = document.getElementById('debug');
-        if (debugEl) debugEl.innerHTML += `<div>${msg}</div>`;
+    const spinner = document.getElementById('spinner');
+    const messageEl = document.getElementById('message');
+    const buttonsEl = document.getElementById('buttons');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    const orderID = urlParams.get('token');  // PayPal: "token"
+
+    console.log("📋 URL Params:", { sessionId, orderID });
+
+    let payload = null;
+    if (sessionId) {
+        payload = { provider: 'stripe', sessionId };
+    } else if (orderID) {
+        payload = { provider: 'paypal', orderID };
+    } else {
+        console.error("❌ No payment params found!");
+        displayError("No payment information found.");
+        spinner.style.display = "none";
+        return;
     }
 
-    async function forceVerification() {
-        sessionStorage.removeItem("paymentVerified");
-        document.getElementById('debug').innerHTML = '';
-        logDebug("🔥 FORCE MODE ACTIVATED - anti-double cleared");
-        await startVerification(true);   // true = force mode
+    console.log("📤 Sending to verify-payment:", payload);
+
+    // Anti double
+    const alreadyVerified = sessionStorage.getItem("paymentVerified");
+    if (alreadyVerified === sessionId || alreadyVerified === orderID) {
+        console.log("🔄 Already verified, skipping...");
+        showSuccess("Payment already verified.");
+        spinner.style.display = "none";
+        return;
     }
 
-    async function startVerification(isForce = false) {
-        const spinner = document.getElementById('spinner');
-        const messageEl = document.getElementById('message');
-        const buttons = document.getElementById('buttons');
+    try {
+        const response = await fetch('/.netlify/functions/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('session_id');
-        const orderID   = urlParams.get('token');
+        console.log("📥 Response from verify-payment:", { status: response.status, ok: response.ok });
 
-        logDebug(`📍 Full URL: ${window.location.href}`);
-        logDebug(`🔑 session_id = ${sessionId || 'NOT FOUND'}`);
-        logDebug(`🔑 token (PayPal) = ${orderID || 'NOT FOUND'}`);
+        const data = await response.json();
+        console.log("📊 Data from verify:", data);
 
-        let payload = null;
-
-        if (sessionId) {
-            payload = { provider: 'stripe', sessionId };
-            logDebug("✅ STRIPE mode detected");
-        } 
-        else if (orderID) {
-            payload = { provider: 'paypal', orderID };
-            logDebug("✅ PAYPAL mode detected");
-        } 
-        else {
-            logDebug("❌ No payment parameter found!");
-            displayError("No payment information found.");
-            spinner.style.display = "none";
-            return;
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "Verification failed");
         }
 
-        // === ANTI-DOUBLE (sauf en mode FORCE) ===
-        if (!isForce) {
-            const alreadyVerified = sessionStorage.getItem("paymentVerified");
-            if (alreadyVerified === sessionId || alreadyVerified === orderID) {
-                logDebug("⏭️ Already verified (anti-double protection)");
-                showSuccess("Payment already verified.");
-                spinner.style.display = "none";
-                return;
-            }
-        }
-
-        logDebug("🚀 Calling /.netlify/functions/verify-payment ...");
-
-        try {
-            const response = await fetch('/.netlify/functions/verify-payment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            const data = await response.json();
-            logDebug(`📨 Response (status ${response.status}): ${JSON.stringify(data)}`);
-
-            if (!response.ok || !data.success) {
-                throw new Error(data.error || "Verification failed");
-            }
-
+        if (data.paymentVerified) {
             sessionStorage.setItem("paymentVerified", sessionId || orderID);
             localStorage.removeItem("cart");
 
-            const status = data.fulfillmentStatus || "completed";
-            const message = status === "completed" 
-                ? "✅ Your order has been successfully processed and sent to CJ Dropshipping!"
-                : "⚠️ Order confirmed. Some items pending stock.";
+            const message = data.fulfillmentStatus === "completed"
+                ? "Your order has been successfully processed."
+                : "Your order is confirmed. Some items are temporarily out of stock. We will ship them shortly.";
 
             showSuccess(message);
-            logDebug(`🎉 VERIFICATION COMPLETE → ${status}`);
-
-        } catch (error) {
-            console.error("❌ Verification error:", error);
-            logDebug(`❌ ERROR: ${error.message}`);
-            displayError(error.message || "An error occurred.");
-        } finally {
-            spinner.style.display = "none";
+        } else {
+            throw new Error("Payment not verified.");
         }
+    } catch (error) {
+        console.error("❌ Verification error:", error);
+        displayError(error.message || "An error occurred.");
+    } finally {
+        spinner.style.display = "none";
     }
+});
 
-    function showSuccess(message) {
-        const messageEl = document.getElementById('message');
-        messageEl.innerHTML = `<h1>Thank you for your order!</h1><p>${message}</p>`;
-        messageEl.style.display = 'block';
-        document.getElementById('buttons').style.display = 'flex';
-    }
+function showSuccess(message) {
+    const messageEl = document.getElementById('message');
+    messageEl.innerHTML = `<h1>Thank you for your order!</h1><p>${message}</p>`;
+    messageEl.style.display = 'block';
+    document.getElementById('buttons').style.display = 'block';
+}
 
-    function displayError(message) {
-        const messageEl = document.getElementById('message');
-        messageEl.innerHTML = `<p class="error">${message}</p>`;
-        messageEl.style.display = 'block';
-        document.getElementById('buttons').style.display = 'flex';
-    }
-
-    // START
-    document.addEventListener('DOMContentLoaded', () => {
-        logDebug("🚀 DOM ready → starting verification");
-        startVerification();
-    });
-    </script>
+function displayError(message) {
+    const messageEl = document.getElementById('message');
+    messageEl.innerHTML = `<p class="error">${message}</p>`;
+    messageEl.style.display = 'block';
+    document.getElementById('buttons').style.display = 'block';
+}
+</script>
 </body>
 </html>
