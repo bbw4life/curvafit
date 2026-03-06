@@ -35,7 +35,7 @@ exports.handler = async (event) => {
       }]
     };
     const cjResponse = await fetch(
-      "https://api.cjdropshipping.com/api2.0/v1/shopping/order/batchCreateOrder",
+  "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/batchCreateOrder",
       {
         method: "POST",
         headers: {
