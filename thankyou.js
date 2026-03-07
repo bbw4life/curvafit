@@ -58,11 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // On sauvegarde seulement après succès
         sessionStorage.setItem("paymentVerified", sessionId || orderID);
 
-        const fulfillmentMessage = data.fulfillmentStatus === "completed"
-            ? "✅ Your order has been sent to CJ Dropshipping!"
-            : "✅ Order confirmed (awaiting stock).";
-
-        showSuccess(fulfillmentMessage);
+        showSuccess();
         console.log("🎉 VERIFICATION COMPLETED - Check your CJ account now!");
 
     } catch (error) {
@@ -73,11 +69,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-function showSuccess(fulfillmentMessage) {
+function showSuccess() {
     document.getElementById('message').innerHTML = `
         <h1>Thank You for Your Order, Dear Customer!</h1>
         <p>We are delighted that you chose CurvaFit with full confidence!</p>
-        <p>${fulfillmentMessage}</p>
+        <p>✅ Your order has been confirmed!</p>
         <p>Your order will arrive soon.</p>
         <p>Please check your email inbox for your order tracking number!</p>
         <p>You can reorder below and take advantage of our offers.</p>
