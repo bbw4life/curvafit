@@ -1,4 +1,4 @@
-// save-pending-order.js (corrigé avec plus de logs et gestion d'erreurs)
+// save-pending-order.js
 const { google } = require('googleapis');
 
 exports.handler = async (event) => {
@@ -18,9 +18,6 @@ exports.handler = async (event) => {
       console.log('[SAVE PENDING] Missing Google env vars');
       throw new Error("Missing Google Sheets environment variables");
     }
-
-    console.log('[SAVE PENDING] Sheet ID:', process.env.GOOGLE_SHEET_ID);
-    console.log('[SAVE PENDING] Service Account Email:', process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL);
 
     const { shipping, item, payment_provider, payment_id } = JSON.parse(event.body);
     if (!shipping || !item || !payment_provider || !payment_id) {
@@ -64,18 +61,14 @@ exports.handler = async (event) => {
 
     console.log('[SAVE PENDING] Appending values:', values);
 
-    try {
-      const appendRes = await sheets.spreadsheets.values.append({
-        spreadsheetId,
-        range: "PendingOrders!A:Q",
-        valueInputOption: "RAW",
-        resource: { values }
-      });
-      console.log('[SAVE PENDING] Append response:', appendRes.data);
-    } catch (appendError) {
-      console.error('[SAVE PENDING] Append failed:', appendError.message, appendError.stack);
-      throw appendError;
-    }
+    const appendRes = await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: "PendingOrders!A:Q",
+      valueInputOption: "RAW",
+      resource: { values }
+    });
+
+    console.log('[SAVE PENDING] Append response:', appendRes.data);
 
     return response(200, { success: true });
 
@@ -83,7 +76,7 @@ exports.handler = async (event) => {
     console.error("SAVE PENDING ERROR:", error.message, error.stack);
     return response(500, {
       success: false,
-      error: "Failed to save pending order: " + error.message
+      error: "Failed to save pending order"
     });
   }
 };

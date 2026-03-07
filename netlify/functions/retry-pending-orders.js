@@ -1,4 +1,4 @@
-// retry-pending-order.js (déjà bon, ajouté logs pour env vars et errors)
+// retry-pending-order.js
 const { google } = require("googleapis");
 const fetch = require("node-fetch");
 
@@ -35,10 +35,6 @@ exports.handler = async () => {
       console.log('[RETRY PENDING] Missing env vars');
       throw new Error("Missing environment variables");
     }
-
-    console.log('[RETRY PENDING] Sheet ID:', process.env.GOOGLE_SHEET_ID);
-    console.log('[RETRY PENDING] Service Account Email:', process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL);
-    console.log('[RETRY PENDING] Base URL:', process.env.BASE_URL);
 
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -156,7 +152,7 @@ exports.handler = async () => {
         fulfilled++;
 
       } catch (err) {
-        console.error(`[RETRY PENDING] Error for row ${i + 2}:`, err.message, err.stack);
+        console.error(`[RETRY PENDING] Error for row ${i + 2}:`, err.message);
         errors.push(`Row ${i + 2}: ${err.message}`);
       }
     }
