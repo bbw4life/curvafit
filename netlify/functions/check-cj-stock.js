@@ -38,7 +38,7 @@ exports.handler = async (event) => {
 
     const accessToken = await getAccessToken();
 
-    const url = `https://developers.cjdropshipping.com/api2.0/v1/product/stock/queryByVid?vid=${cj_variant_id}`;
+    const url = `https://developers.cjdropshipping.com/api2.0/v1/product/stock/queryBySku?sku=${cj_variant_id}`;
 
     console.log(`[CJ STOCK] Checking variant: ${cj_variant_id} at URL: ${url}`);
 
