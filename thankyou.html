@@ -1,14 +1,60 @@
+<!-- thankyou.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thank You - CurvaFit</title>
+    <!-- SEO -->
+    <meta name="description" content="Thank you for your order at CurvaFit">
+    <meta name="robots" content="noindex, nofollow">
+    <!-- Security Policy -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https:;
+         script-src 'self' https://js.stripe.com https://www.paypal.com;
+         style-src 'self' 'unsafe-inline' https:;
+         img-src 'self' https: data:;
+         connect-src 'self' https://restcountries.com https://countriesnow.space https:;
+         frame-src https://js.stripe.com https://hooks.stripe.com https://www.paypal.com;">
+    <!-- Favicon -->
+    <link rel="icon" href="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/favicon.jpg?v=1771465266" type="image/x-icon">
+    <!-- Google Fonts for Premium Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Styles -->
+    <link rel="stylesheet" href="checkout.css">
     <link rel="stylesheet" href="thankyou.css">
 </head>
 <body>
+<header class="checkout-header">
+    <div class="header-content">
+        <!-- Logo Center -->
+        <div class="logo">
+            <a href="index.html"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo"></a>
+            <h1>Order Confirmation</h1>
+        </div>
+    </div>
+</header>
+<section id="wave-section">
+    <svg width="0" height="0">
+        <defs>
+        <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" />
+            <stop offset="100%" />
+        </linearGradient>
+        </defs>
+    </svg>
+    <div class="wave-container">
+        <svg class="wave" viewBox="0 0 1000 100" preserveAspectRatio="none">
+        <path d="M0,50 L100,50 L150,30 L200,70 L250,50 L300,30 L350,70 L400,50 L450,30 L500,70 L550,50 L600,30 L650,70 L700,50 L750,30 L800,70 L850,50 L900,30 L950,70 L1000,50 L1000,100 L0,100 Z" /> <!-- Fine Zigzag -->
+        </svg>
+    </div>
+</section>
     <div class="container">
-        <h1>Verifying Your Payment...</h1>
+        <h1>Confirming Your Order...</h1>
         <div id="spinner" class="spinner"></div>
         <div id="message" style="display: none;"></div>
         <div id="buttons" style="display: none;">
@@ -16,91 +62,6 @@
             <a href="orders.html" class="button">View Orders</a>
         </div>
     </div>
-  <script>
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log("🚀 thankyou.html LOADED - Starting verification...");
-
-    const spinner = document.getElementById('spinner');
-    const messageEl = document.getElementById('message');
-    const buttonsEl = document.getElementById('buttons');
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get('session_id');
-    const orderID = urlParams.get('token');
-    const forceReset = urlParams.get('reset') === '1';
-
-    console.log(`📌 sessionId: ${sessionId} | orderID: ${orderID} | forceReset: ${forceReset}`);
-
-    // Force reset pour ce test
-    if (forceReset) {
-        sessionStorage.clear();
-        console.log("🔄 sessionStorage cleared (forceReset)");
-    }
-
-    let payload = null;
-    if (sessionId) payload = { provider: 'stripe', sessionId };
-    else if (orderID) payload = { provider: 'paypal', orderID };
-
-    if (!payload) {
-        displayError("No payment information found.");
-        spinner.style.display = "none";
-        return;
-    }
-
-    // Vérification anti-double désactivée pour le test (on la remettra après)
-    console.log("🔄 Bypassing alreadyVerified check for debugging");
-
-    try {
-        const functionUrl = `${window.location.origin}/.netlify/functions/verify-payment`;
-        console.log(`📡 Calling: ${functionUrl}`);
-
-        const response = await fetch(functionUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        console.log(`📡 Response status: ${response.status}`);
-
-        if (response.status === 404) {
-            throw new Error("❌ 404 - verify-payment function not found. Redéploie Netlify !");
-        }
-
-        const data = await response.json();
-        console.log("📦 Data received:", data);
-
-        if (!response.ok || !data.success) {
-            throw new Error(data.error || "Verification failed");
-        }
-
-        // On sauvegarde seulement après succès
-        sessionStorage.setItem("paymentVerified", sessionId || orderID);
-
-        const message = data.fulfillmentStatus === "completed"
-            ? "✅ Commande envoyée à CJ Dropshipping !"
-            : "✅ Commande confirmée (stock en attente)";
-
-        showSuccess(message);
-        console.log("🎉 VERIFICATION TERMINÉE - Vérifie ton compte CJ maintenant !");
-
-    } catch (error) {
-        console.error("❌ ERREUR COMPLETE:", error);
-        displayError(error.message);
-    } finally {
-        spinner.style.display = "none";
-    }
-});
-
-function showSuccess(message) {
-    document.getElementById('message').innerHTML = `<h1>Thank you for your order!</h1><p>${message}</p>`;
-    document.getElementById('message').style.display = 'block';
-    document.getElementById('buttons').style.display = 'block';
-}
-function displayError(message) {
-    document.getElementById('message').innerHTML = `<p class="error">${message}</p>`;
-    document.getElementById('message').style.display = 'block';
-    document.getElementById('buttons').style.display = 'block';
-}
-</script>
+<script src="thankyou.js"></script>
 </body>
 </html>

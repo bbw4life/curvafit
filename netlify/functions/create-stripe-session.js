@@ -1,3 +1,4 @@
+// create-stripe-session.js
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event) => {
@@ -72,7 +73,11 @@ exports.handler = async (event) => {
       success_url: `${process.env.BASE_URL}/thankyou.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.BASE_URL}/checkout.html`,
       metadata: {
-        cart: JSON.stringify(cart),
+        cj_data: JSON.stringify(cart.map(item => ({
+          cj_product_id: item.cj_product_id || '',
+          cj_variant_id: item.cj_variant_id || '',
+          quantity: item.quantity
+        }))),
         shipping: JSON.stringify(shipping),
         subtotal: subtotal.toFixed(2),
         provider: "stripe"

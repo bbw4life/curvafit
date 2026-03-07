@@ -15,12 +15,27 @@ exports.handler = async (event) => {
     let paymentVerified = false;
 
     const BASE_URL = process.env.URL || `https://${event.headers.host}`;
+    const paymentId = sessionId || orderID;
 
     // ====================== STRIPE ======================
     if (provider === "stripe") {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
       if (session.payment_status !== "paid") throw new Error("Stripe not paid");
-      cart = JSON.parse(session.metadata.cart || "[]");
+
+      const lineItems = await stripe.checkout.sessions.listLineItems(sessionId, { limit: 100 });
+      const storedCj = JSON.parse(session.metadata.cj_data || "[]");
+
+      cart = lineItems.data.map((li, i) => {
+        const cjItem = storedCj[i] || {};
+        return {
+          title: li.description,
+          price: (li.amount_total / 100) / li.quantity,
+          quantity: li.quantity,
+          cj_product_id: cjItem.cj_product_id || null,
+          cj_variant_id: cjItem.cj_variant_id || null
+        };
+      });
+
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
 
@@ -80,7 +95,7 @@ exports.handler = async (event) => {
     const fulfillmentPromises = cart.map(async (item) => {
       try {
         if (!item.cj_variant_id) {
-          await saveAsPending(item, shipping, BASE_URL);
+          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
           return { status: "pending" };
         }
 
@@ -99,12 +114,12 @@ exports.handler = async (event) => {
           console.log(`🎉 CJ Order créé pour ${item.cj_variant_id}`);
           return { status: "fulfilled", cjOrderId: cjData.cjOrderId };
         } else {
-          await saveAsPending(item, shipping, BASE_URL);
+          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
           return { status: "pending" };
         }
       } catch (e) {
         console.error(`Item error ${item.cj_variant_id}:`, e.message);
-        await saveAsPending(item, shipping, BASE_URL);
+        await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
         return { status: "pending" };
       }
     });
@@ -127,12 +142,12 @@ exports.handler = async (event) => {
   }
 };
 
-async function saveAsPending(item, shipping, BASE_URL) {
+async function saveAsPending(item, shipping, BASE_URL, provider, paymentId) {
   try {
     await fetch(`${BASE_URL}/.netlify/functions/save-pending-order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ shipping, item, payment_provider: "paypal", payment_id: "auto" })
+      body: JSON.stringify({ shipping, item, payment_provider: provider, payment_id: paymentId || "auto" })
     });
   } catch (e) { console.error("saveAsPending failed:", e.message); }
 }
