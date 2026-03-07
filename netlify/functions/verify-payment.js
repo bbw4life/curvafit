@@ -91,44 +91,57 @@ exports.handler = async (event) => {
 
     console.log(`✅ ${cart.length} item(s) ready for CJ`);
 
-    // ====================== FULFILLMENT EN PARALLÈLE (anti-timeout) ======================
-    const fulfillmentPromises = cart.map(async (item) => {
-      try {
-        if (!item.cj_variant_id) {
-          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-          return { status: "pending" };
-        }
+    // ====================== FULFILLMENT SÉQUENTIEL (respect CJ QPS limit 1 req/300s) ======================
+    (async () => {
+      console.log(`✅ ${cart.length} item(s) ready for CJ - Processing sequentially...`);
+      let i = 0;
+      for (const item of cart) {
+        try {
+          console.log(`🔄 Processing item ${i+1}/${cart.length}: ${item.cj_variant_id || 'NO_VARIANT'}`);
 
-        const stockRes = await fetch(`${BASE_URL}/.netlify/functions/check-cj-stock`, {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cj_variant_id: item.cj_variant_id })
-        });
-        const stockData = await stockRes.json();
+          if (!item.cj_variant_id) {
+            await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+            i++;
+            continue;
+          }
 
-        if (stockData.success && stockData.inStock) {
-          const cjRes = await fetch(`${BASE_URL}/.netlify/functions/create-cj-order`, {
+          // Délai de sécurité entre chaque produit (sauf le premier)
+          if (i > 0) {
+            console.log("⏳ Waiting 7 seconds to respect CJ QPS limit...");
+            await delay(7000);
+          }
+
+          // Check stock
+          const stockRes = await fetch(`${BASE_URL}/.netlify/functions/check-cj-stock`, {
             method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ cart: [item], shipping })
+            body: JSON.stringify({ cj_variant_id: item.cj_variant_id })
           });
-          const cjData = await cjRes.json();
-          console.log(`🎉 CJ Order créé pour ${item.cj_variant_id}`);
-          return { status: "fulfilled", cjOrderId: cjData.cjOrderId };
-        } else {
-          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-          return { status: "pending" };
-        }
-      } catch (e) {
-        console.error(`Item error ${item.cj_variant_id}:`, e.message);
-        await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-        return { status: "pending" };
-      }
-    });
+          const stockData = await stockRes.json();
 
-    // Lancement parallèle (ne bloque pas)
-    Promise.all(fulfillmentPromises).then(results => {
-      const fulfilled = results.filter(r => r.status === "fulfilled").length;
-      console.log(`🎯 Fulfillment terminé : ${fulfilled}/${cart.length} envoyés à CJ`);
-    });
+          if (stockData.success && stockData.inStock) {
+            const cjRes = await fetch(`${BASE_URL}/.netlify/functions/create-cj-order`, {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ cart: [item], shipping })
+            });
+            const cjData = await cjRes.json();
+
+            if (cjData.success) {
+              console.log(`🎉 CJ Order créé pour ${item.cj_variant_id} → ${cjData.cjOrderId}`);
+            } else {
+              console.log(`❌ CJ Order failed → saving as pending`);
+              await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+            }
+          } else {
+            await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+          }
+        } catch (e) {
+          console.error(`Item ${item.cj_variant_id} error:`, e.message);
+          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+        }
+        i++;
+      }
+      console.log(`🎯 Fulfillment terminé : tous les items traités (séquentiel)`);
+    })();
 
     // On renvoie immédiatement le succès au client (pas de timeout)
     return response(200, {
@@ -150,6 +163,10 @@ async function saveAsPending(item, shipping, BASE_URL, provider, paymentId) {
       body: JSON.stringify({ shipping, item, payment_provider: provider, payment_id: paymentId || "auto" })
     });
   } catch (e) { console.error("saveAsPending failed:", e.message); }
+}
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function response(statusCode, body) {
