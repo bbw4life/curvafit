@@ -39,7 +39,7 @@ p {
 }
 
 .button {
-    background: #007bff; /* Blue */
+    background: #28a745; /* Changed to green for success theme */
     color: white;
     padding: 10px 20px;
     border-radius: 5px;
@@ -49,5 +49,37 @@ p {
 }
 
 .button:hover {
-    background: #0056b3;
+    background: #218838; /* Darker green on hover */
+}
+
+/* Animated 3D-like rotating border around message */
+#message {
+    position: relative;
+    padding: 20px;
+    border-radius: 8px;
+    overflow: hidden; /* Hide overflow for clean effect */
+}
+
+#message::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: conic-gradient(transparent, #28a745, transparent, #28a745); /* Gradient for 3D feel */
+    animation: rotate-border 4s linear infinite;
+    z-index: -1; /* Behind content */
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5); /* Subtle 3D shadow */
+}
+
+@keyframes rotate-border {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
