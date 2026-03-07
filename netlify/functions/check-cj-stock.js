@@ -6,77 +6,128 @@ async function getAccessToken() {
     throw new Error("Missing CJ_API_KEY environment variable");
   }
 
-  const tokenRes = await fetch('https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ apiKey: process.env.CJ_API_KEY })
-  });
+  const tokenRes = await fetch(
+    "https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        apiKey: process.env.CJ_API_KEY
+      })
+    }
+  );
 
   const tokenData = await tokenRes.json();
 
   if (!tokenRes.ok || tokenData.code !== 200) {
-    throw new Error(tokenData.message || 'Failed to get CJ access token');
+    throw new Error(tokenData.message || "Failed to get CJ access token");
   }
 
   return tokenData.data.accessToken;
 }
 
 exports.handler = async (event) => {
-  console.log('[CJ STOCK] Function invoked with event:', event);
+  console.log("[CJ STOCK] Function invoked");
 
   try {
+
     if (!event.body) {
-      console.log('[CJ STOCK] No body in event');
-      return response(400, { success: false, error: "No data received" });
+      console.log("[CJ STOCK] No body received");
+      return response(400, {
+        success: false,
+        error: "No data received"
+      });
     }
 
     const { cj_variant_id } = JSON.parse(event.body);
+
     if (!cj_variant_id) {
-      console.log('[CJ STOCK] Missing cj_variant_id in body');
+      console.log("[CJ STOCK] Missing cj_variant_id");
       throw new Error("Missing cj_variant_id");
     }
 
     const accessToken = await getAccessToken();
 
-    const url = `https://developers.cjdropshipping.com/api2.0/v1/product/stock/queryBySku?sku=${cj_variant_id}`;
+    const url =
+      "https://developers.cjdropshipping.com/api2.0/v1/product/stock/queryBySku?sku=" +
+      cj_variant_id;
 
-    console.log(`[CJ STOCK] Checking variant: ${cj_variant_id} at URL: ${url}`);
+    console.log("[CJ STOCK] Checking SKU:", cj_variant_id);
 
     const cjResponse = await fetch(url, {
       method: "GET",
       headers: {
-        "CJ-Access-Token": accessToken
+        "CJ-Access-Token": accessToken,
+        "Content-Type": "application/json"
       }
     });
 
-    console.log(`[CJ STOCK] API response status: ${cjResponse.status}`);
+    console.log("[CJ STOCK] API status:", cjResponse.status);
 
     const responseText = await cjResponse.text();
-    console.log(`[CJ STOCK] Raw response (first 400 chars): ${responseText.substring(0, 400)}`);
+
+    console.log(
+      "[CJ STOCK] Raw response:",
+      responseText.substring(0, 400)
+    );
 
     let data;
+
     try {
       data = JSON.parse(responseText);
-      console.log('[CJ STOCK] Parsed data:', data);
-    } catch (e) {
-      console.error("[CJ STOCK] JSON parse error:", e.message);
-      throw new Error(`CJ API returned invalid JSON (status ${cjResponse.status}): ${responseText.substring(0, 200)}`);
+      console.log("[CJ STOCK] Parsed data:", data);
+    } catch (err) {
+      console.error("[CJ STOCK] JSON parse error:", err.message);
+      throw new Error(
+        "CJ API returned invalid JSON"
+      );
     }
 
     if (!cjResponse.ok || data.code !== 200) {
-      console.error('[CJ STOCK] API error:', data);
-      throw new Error(data.message || `CJ API error - code: ${data.code || cjResponse.status}`);
+      console.error("[CJ STOCK] API error:", data);
+      throw new Error(
+        data.message || "CJ API error"
+      );
     }
 
-    const warehouses = data.data || [];
+    if (!Array.isArray(data.data)) {
+      console.log("[CJ STOCK] No warehouse data");
+
+      return response(200, {
+        success: true,
+        stock: 0,
+        inStock: false
+      });
+    }
+
+    const warehouses = data.data;
+
     let totalStock = 0;
+
     for (const warehouse of warehouses) {
-      totalStock += parseInt(warehouse.totalInventoryNum || 0);
+
+      const stock =
+        parseInt(
+          warehouse.inventoryNum ||
+          warehouse.totalInventoryNum ||
+          0
+        ) || 0;
+
+      totalStock += stock;
     }
 
     const inStock = totalStock > 0;
 
-    console.log(`[CJ STOCK] ${cj_variant_id} → Stock: ${totalStock} | InStock: ${inStock}`);
+    console.log(
+      "[CJ STOCK]",
+      cj_variant_id,
+      "→ Stock:",
+      totalStock,
+      "| InStock:",
+      inStock
+    );
 
     return response(200, {
       success: true,
@@ -85,18 +136,26 @@ exports.handler = async (event) => {
     });
 
   } catch (error) {
-    console.error("CJ STOCK ERROR:", error.message, error.stack);
+
+    console.error(
+      "CJ STOCK ERROR:",
+      error.message
+    );
+
     return response(500, {
       success: false,
       error: error.message
     });
+
   }
 };
 
 function response(statusCode, body) {
   return {
-    statusCode,
-    headers: { "Content-Type": "application/json" },
+    statusCode: statusCode,
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(body)
   };
 }
