@@ -14,7 +14,10 @@ exports.handler = async (event) => {
     let shipping = {};
     let paymentVerified = false;
 
-    const BASE_URL = process.env.URL || `https://${event.headers.host}`;
+    // === BASE_URL FIXÉ (priorité à ta variable BASE_URL que tu as créée dans Netlify) ===
+    const BASE_URL = process.env.BASE_URL || process.env.URL || `https://${event.headers.host}`;
+    console.log(`🔗 BASE_URL utilisée : ${BASE_URL}`);
+
     const paymentId = sessionId || orderID;
 
     // ====================== STRIPE ======================
@@ -49,7 +52,6 @@ exports.handler = async (event) => {
       const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, { method: "POST", headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=client_credentials" });
       const { access_token } = await tokenRes.json();
 
-      // Capture + détails
       await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, { method: "POST", headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" } });
       const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
       const orderData = await orderRes.json();
@@ -91,54 +93,71 @@ exports.handler = async (event) => {
 
     console.log(`✅ ${cart.length} item(s) ready for CJ`);
 
-    // ====================== FULFILLMENT SÉQUENTIEL (on attend maintenant) ======================
-    console.log(`Processing ${cart.length} item(s) sequentially...`);
+    // ====================== FULFILLMENT AVEC LOGS ULTRA DÉTAILLÉS ======================
+    console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
 
     for (let i = 0; i < cart.length; i++) {
       const item = cart[i];
       try {
-        console.log(`🔄 Processing item ${i+1}/${cart.length}: ${item.cj_variant_id || 'NO_VARIANT'}`);
+        console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.cj_variant_id || 'NO_VARIANT'}`);
 
         if (!item.cj_variant_id) {
+          console.log("   → Pas de variant_id → save pending");
           await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
           continue;
         }
 
-        // Délai de sécurité entre produits (CJ rate limit)
         if (i > 0) {
-          console.log("⏳ Waiting 8 seconds to respect CJ QPS limit...");
+          console.log("   ⏳ Attente 8s pour respecter le rate limit CJ...");
           await delay(8000);
         }
 
-        const stockRes = await fetch(`${BASE_URL}/.netlify/functions/check-cj-stock`, {
-          method: "POST", headers: { "Content-Type": "application/json" },
+        // === CHECK STOCK ===
+        const stockUrl = `${BASE_URL}/.netlify/functions/check-cj-stock`;
+        console.log(`   📡 Appel check-cj-stock → ${stockUrl}`);
+
+        const stockRes = await fetch(stockUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cj_variant_id: item.cj_variant_id })
         });
+
+        console.log(`   📥 Stock status: ${stockRes.status}`);
         const stockData = await stockRes.json();
+        console.log(`   📊 Stock result → success: ${stockData.success} | inStock: ${stockData.inStock}`);
 
         if (stockData.success && stockData.inStock) {
-          const cjRes = await fetch(`${BASE_URL}/.netlify/functions/create-cj-order`, {
-            method: "POST", headers: { "Content-Type": "application/json" },
+          // === CREATE CJ ORDER ===
+          const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
+          console.log(`   📡 Appel create-cj-order → ${cjUrl}`);
+
+          const cjRes = await fetch(cjUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ cart: [item], shipping })
           });
+
+          console.log(`   📥 CJ Order status: ${cjRes.status}`);
           const cjData = await cjRes.json();
+          console.log(`   📊 CJ Order success: ${cjData.success || false}`);
 
           if (cjData.success) {
-            console.log(`🎉 CJ Order créé pour ${item.cj_variant_id} → ${cjData.cjOrderId}`);
+            console.log(`   🎉 SUCCÈS CJ pour ${item.cj_variant_id}`);
           } else {
-            console.log(`❌ CJ Order failed → saving as pending`);
+            console.log(`   ❌ CJ Order failed → save as pending`);
             await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
           }
         } else {
+          console.log("   ❌ Stock insuffisant → save as pending");
           await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
         }
       } catch (e) {
-        console.error(`Item ${item.cj_variant_id} error:`, e.message);
+        console.error(`   💥 ERREUR ITEM ${item.cj_variant_id}:`, e.message);
         await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
       }
     }
 
-    console.log("🎯 Fulfillment terminé : tous les items traités");
+    console.log("🎯 Fulfillment terminé");
 
     return response(200, {
       success: true,
