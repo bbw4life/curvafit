@@ -1,7 +1,5 @@
-// create-cj-order.js
+// create-cj-order.js (corrigé avec delay augmenté à 310000ms pour rate limit)
 const fetch = require("node-fetch");
-
-// === CACHE GLOBAL DU TOKEN (dure ~2 heures) ===
 let cachedToken = null;
 let tokenExpiry = 0;
 
@@ -100,8 +98,8 @@ exports.handler = async (event) => {
 
       if (data.message && data.message.includes("Too Many Requests")) {
         attempt++;
-        console.log(`[CJ ORDER] Rate limit → attente 10s (tentative ${attempt}/3)`);
-        await delay(10000);
+        console.log(`[CJ ORDER] Rate limit → attente 310s (tentative ${attempt}/3)`);
+        await delay(310000); // Changé à 310s pour respecter la limite de 300s
         continue;
       }
 
