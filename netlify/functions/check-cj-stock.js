@@ -1,127 +1,50 @@
 // check-cj-stock.js
 const fetch = require('node-fetch');
-
-// ===== CACHE TOKEN CJ =====
-let cachedToken = null;
-let tokenExpiry = 0;
-
 async function getAccessToken() {
-
-  const now = Date.now();
-
-  if (cachedToken && now < tokenExpiry) {
-    console.log("[CJ AUTH] Token cache utilisé");
-    return cachedToken;
-  }
-
-  console.log("[CJ AUTH] Nouveau token demandé");
-
   const tokenRes = await fetch(
     "https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ apiKey: process.env.CJ_API_KEY })
-    }
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ apiKey: process.env.CJ_API_KEY }) }
   );
-
   const tokenData = await tokenRes.json();
-
-  if (!tokenRes.ok || tokenData.code !== 200)
-    throw new Error(tokenData.message || "Token failed");
-
-  cachedToken = tokenData.data.accessToken;
-
-  // token valable ~2h
-  tokenExpiry = now + (1000 * 60 * 110);
-
-  return cachedToken;
+  if (!tokenRes.ok || tokenData.code !== 200) throw new Error(tokenData.message || "Token failed");
+  return tokenData.data.accessToken;
 }
-
 exports.handler = async (event) => {
-
   console.log("[CJ STOCK] Function invoked");
-
   try {
-
     const { cj_variant_id } = JSON.parse(event.body || "{}");
-
-    if (!cj_variant_id)
-      throw new Error("Missing cj_variant_id");
-
+    if (!cj_variant_id) throw new Error("Missing cj_variant_id");
     const accessToken = await getAccessToken();
-
-    const url =
-      `https://developers.cjdropshipping.com/api2.0/v1/product/stock/queryBySku?sku=${cj_variant_id}`;
-
-    let attempt = 0;
-
-    while (attempt < 3) {
-
-      const cjResponse = await fetch(url, {
-        method: "GET",
-        headers: { "CJ-Access-Token": accessToken }
-      });
-
-      const text = await cjResponse.text();
-
-      let data;
-
-      try {
-        data = JSON.parse(text);
-      } catch {
-        data = {};
-      }
-
-      if (cjResponse.ok && data.code === 200) {
-
-        const warehouses = Array.isArray(data.data) ? data.data : [];
-
-        const totalStock = warehouses.reduce((sum, w) => {
-
-          return sum + parseInt(
-            w.inventoryNum ||
-            w.totalInventoryNum ||
-            0
-          );
-
-        }, 0);
-
-        console.log(`[CJ STOCK] ${cj_variant_id} → Stock total: ${totalStock}`);
-
-        return response(200, {
-          success: true,
-          stock: totalStock,
-          inStock: totalStock > 0
-        });
-      }
-
-      // ===== RATE LIMIT CJ =====
-      if (data.message && data.message.includes("Too Many Requests")) {
-
-        attempt++;
-
-        if (attempt < 3) {
-
-          console.log(`[CJ STOCK] Rate limit CJ → attente 310s (${attempt}/3)`);
-
-          await delay(310000);
-
-          continue;
-        }
-      }
-
-      throw new Error(data.message || "CJ stock API error");
+    const url = `https://developers.cjdropshipping.com/api2.0/v1/product/stock/queryBySku?sku=${cj_variant_id}`;
+    const cjResponse = await fetch(url, {
+      method: "GET",
+      headers: { "CJ-Access-Token": accessToken }
+    });
+    const text = await cjResponse.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = {}; }
+    let isRateLimit = false;
+    if (data.message && data.message.includes("Too Many Requests")) {
+      isRateLimit = true;
     }
-
+    if (cjResponse.ok && data.code === 200) {
+      const warehouses = Array.isArray(data.data) ? data.data : [];
+      const totalStock = warehouses.reduce((sum, w) => {
+        return sum + parseInt(w.inventoryNum || w.totalInventoryNum || 0);
+      }, 0);
+      console.log(`[CJ STOCK] ${cj_variant_id} → Stock total: ${totalStock}`);
+      return response(200, { success: true, stock: totalStock, inStock: totalStock > 0 });
+    }
+    return response(200, {
+      success: false,
+      error: data.message || "CJ stock API error",
+      isRateLimit,
+      stock: 0,
+      inStock: false
+    });
   } catch (error) {
-
     console.error("[CJ STOCK ERROR]", error.message);
-
-    const isRateLimit =
-      error.message &&
-      error.message.includes("Too Many Requests");
-
+    const isRateLimit = error.message.includes("Too Many Requests");
     return response(200, {
       success: false,
       error: error.message,
@@ -131,16 +54,7 @@ exports.handler = async (event) => {
     });
   }
 };
-
-function delay(ms) {
-  return new Promise(r => setTimeout(r, ms));
-}
-
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 function response(statusCode, body) {
-
-  return {
-    statusCode,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  };
+  return { statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
 }
