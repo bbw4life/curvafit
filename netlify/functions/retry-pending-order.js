@@ -24,7 +24,7 @@ exports.handler = async () => {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const range = "Feuille 1!A:Q";
+    const range = "PendingOrders!A:Q";
     const getRes = await sheets.spreadsheets.values.get({ spreadsheetId, range });
     const rows = getRes.data.values || [];
     if (rows.length <= 1) {
@@ -142,7 +142,7 @@ exports.handler = async () => {
         }
       } // else keep newStatus
     }
-    const activeTab = "Feuille 1";
+    const activeTab = "PendingOrders";
     if (updateTimestamp) {
       const now = new Date().toISOString();
       await sheets.spreadsheets.values.update({

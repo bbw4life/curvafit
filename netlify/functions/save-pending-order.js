@@ -40,7 +40,7 @@ exports.handler = async (event) => {
       "paid",
       now
     ]];
-    const range = "Feuille 1!A:Q";
+    const range = "PendingOrders!A:Q";
     console.log(`[SAVE PENDING] Essai range → ${range}`);
     const appendRes = await sheets.spreadsheets.values.append({
       spreadsheetId,

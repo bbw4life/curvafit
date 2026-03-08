@@ -139,7 +139,7 @@ async function isAlreadyProcessed(paymentId) {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const range = "Feuille 1!C:C";
+    const range = "PendingOrders!C:C";
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId,
       range: range
