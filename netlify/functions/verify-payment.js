@@ -104,7 +104,6 @@ exports.handler = async (event) => {
     console.log("=== DÉBUT FULFILLMENT BATCHÉ ===");
 
     const inStockItems = [];
-    let rateLimitHit = false;
 
     for (let i = 0; i < cart.length; i++) {
       const item = cart[i];
@@ -116,7 +115,9 @@ exports.handler = async (event) => {
         continue;
       }
 
-      // Pas de délai ici pour éviter timeout ; le rate limit sera géré par pending
+      // Petit délai pour éviter rate limit immédiat (sans causer timeout global)
+      if (i > 0) await delay(1000);
+
       const stockUrl = `${BASE_URL}/.netlify/functions/check-cj-stock`;
       console.log(`   📡 Appel check-cj-stock → ${stockUrl}`);
 
@@ -133,7 +134,6 @@ exports.handler = async (event) => {
       if (!stockData.success) {
         const saveStatus = stockData.isRateLimit ? "pending_rate_limit" : "pending_stock";
         console.log(`   ⚠️ Erreur stock (${saveStatus}) → save pending`);
-        rateLimitHit = stockData.isRateLimit;
         await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
         continue;
       }
@@ -146,8 +146,8 @@ exports.handler = async (event) => {
       }
     }
 
-    // === CRÉER UNE SEULE COMMANDE CJ POUR TOUS LES IN-STOCK (si pas de rate limit) ===
-    if (inStockItems.length > 0 && !rateLimitHit) {
+    // === CRÉER UNE SEULE COMMANDE CJ POUR TOUS LES IN-STOCK ===
+    if (inStockItems.length > 0) {
       const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
       console.log(`   📡 Appel create-cj-order (batch ${inStockItems.length} items) → ${cjUrl}`);
 
@@ -167,7 +167,6 @@ exports.handler = async (event) => {
         const errorMsg = cjData.error || '';
         const isRateLimit = errorMsg.includes("Too Many Requests");
         const saveStatus = isRateLimit ? "pending_rate_limit" : "pending_stock";
-        rateLimitHit = isRateLimit;
 
         console.log(`   ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save batch as ${saveStatus}`);
         for (const item of inStockItems) {
@@ -203,15 +202,23 @@ async function isAlreadyProcessed(paymentId) {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
-    const range = "PendingOrders!C:C";  // Standardisé
+    const rangesToTry = ["PendingOrders!C:C", "Sheet1!C:C", "Feuille 1!C:C"];
 
-    const res = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range
-    });
-    const rows = res.data.values || [];
-    return rows.some(row => row[0] === paymentId);
-
+    for (const range of rangesToTry) {
+      try {
+        const res = await sheets.spreadsheets.values.get({
+          spreadsheetId,
+          range
+        });
+        const rows = res.data.values || [];
+        if (rows.some(row => row[0] === paymentId)) {
+          return true;
+        }
+      } catch (e) {
+        // passe au suivant
+      }
+    }
+    return false;
   } catch (e) {
     console.error("[DUPLICATE CHECK ERROR]", e.message);
     return false; // Laisse passer en cas d'erreur
@@ -229,6 +236,10 @@ async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, stat
     const data = await res.json();
     if (!data.success) throw new Error("Save failed");
   } catch (e) { console.error("saveAsPending failed:", e.message); }
+}
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function response(statusCode, body) {
