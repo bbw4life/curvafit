@@ -53,10 +53,11 @@ exports.handler = async (event) => {
 
       throw new Error(data.message || "CJ stock API error");
     }
+    throw new Error("Max retries reached for rate limit");
+
   } catch (error) {
     console.error("[CJ STOCK ERROR]", error.message);
-    // On distingue le rate limit pour le retry futur
-    const isRateLimit = error.message.includes("Too Many Requests");
+    const isRateLimit = error.message.includes("Too Many Requests") || error.message.includes("Max retries");
     return response(200, {
       success: false,
       error: error.message,

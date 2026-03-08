@@ -29,24 +29,9 @@ exports.handler = async () => {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
-    // === PRIORITÉ SUR "Feuille 1" (le seul qui marche dans tes logs) ===
-    const rangesToTry = ["PendingOrders!A:Q", "Sheet1!A:Q", "Feuille 1!A:Q"];
-    let rows = [];
-    let activeTab = "";
-
-    for (const range of rangesToTry) {
-      try {
-        const getRes = await sheets.spreadsheets.values.get({ spreadsheetId, range });
-        rows = getRes.data.values || [];
-        if (rows.length > 1) {
-          activeTab = range.split('!')[0];
-          console.log(`[RETRY PENDING] ✅ Onglet détecté : ${activeTab} (${rows.length} lignes)`);
-          break;
-        }
-      } catch (e) {
-        console.log(`[RETRY PENDING] ${range.split('!')[0]} non trouvé`);
-      }
-    }
+    const range = "PendingOrders!A:Q";  // Standardisé
+    const getRes = await sheets.spreadsheets.values.get({ spreadsheetId, range });
+    const rows = getRes.data.values || [];
 
     if (rows.length <= 1) {
       console.log('[RETRY PENDING] Aucune commande en attente');
@@ -58,70 +43,93 @@ exports.handler = async () => {
     let fulfilled = 0;
     let errors = [];
 
-    for (let i = 0; i < dataRows.length; i++) {
-      const row = dataRows[i];
-      const status = row[14] || "";
-      if (!["pending_stock", "pending_rate_limit"].includes(status)) continue;
+    // Grouper par payment_id pour batcher par commande originale
+    const groupedByPayment = dataRows.reduce((acc, row, index) => {
+      const paymentId = row[2];
+      if (!acc[paymentId]) acc[paymentId] = [];
+      acc[paymentId].push({ row, lineNumber: index + 2 });
+      return acc;
+    }, {});
 
-      processed++;
-      const lineNumber = i + 2;
-      const internalId = row[0];
+    let groupIndex = 0;
+    for (const [paymentId, group] of Object.entries(groupedByPayment)) {
+      if (groupIndex > 0) await delay(310000); // Délai entre groupes
 
+      const pendingItems = group.filter(g => ["pending_stock", "pending_rate_limit"].includes(g.row[14] || ""));
+      if (pendingItems.length === 0) continue;
+
+      processed += pendingItems.length;
+      console.log(`[RETRY PENDING] 🔄 Groupe ${paymentId} (${pendingItems.length} items)`);
+
+      const firstRow = pendingItems[0].row;
       const shipping = {
-        fullName: row[3] || "", email: row[4] || "", phone: row[5] || "",
-        country: row[6] || "US", state: row[7] || "", city: row[8] || "",
-        postalCode: row[9] || "", address: row[10] || ""
+        fullName: firstRow[3] || "", email: firstRow[4] || "", phone: firstRow[5] || "",
+        country: firstRow[6] || "US", state: firstRow[7] || "", city: firstRow[8] || "",
+        postalCode: firstRow[9] || "", address: firstRow[10] || ""
       };
-      const cart = [{
-        cj_product_id: row[11] || "",
-        cj_variant_id: row[12] || "",
-        quantity: parseInt(row[13]) || 1
-      }];
 
-      console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId}`);
+      const inStockItems = [];
+      let rateLimitHit = false;
 
-      try {
-        if (processed > 1) await delay(320000); // rate limit CJ
+      for (let i = 0; i < pendingItems.length; i++) {
+        const { row, lineNumber } = pendingItems[i];
+        const item = {
+          cj_product_id: row[11] || "",
+          cj_variant_id: row[12] || "",
+          quantity: parseInt(row[13]) || 1
+        };
 
-        const accessToken = await getAccessToken();
+        if (i > 0) await delay(310000); // Délai par stock check
 
         // Check stock
         const stockRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/check-cj-stock`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cj_variant_id: cart[0].cj_variant_id })
+          body: JSON.stringify({ cj_variant_id: item.cj_variant_id })
         });
         const stockData = await stockRes.json();
 
-        if (!stockData.success || !stockData.inStock) {
-          errors.push(`Ligne ${lineNumber}: Stock insuffisant`);
+        if (!stockData.success) {
+          rateLimitHit = stockData.isRateLimit;
+          errors.push(`Ligne ${lineNumber}: Erreur stock${rateLimitHit ? ' (rate limit)' : ''}`);
           continue;
         }
 
-        // Create CJ Order
+        if (stockData.inStock) {
+          inStockItems.push(item);
+        } else {
+          errors.push(`Ligne ${lineNumber}: Stock insuffisant`);
+        }
+      }
+
+      // Create batch CJ order
+      if (inStockItems.length > 0 && !rateLimitHit) {
+        await delay(310000); // Délai avant create
+
         const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cart, shipping })
+          body: JSON.stringify({ cart: inStockItems, shipping })
         });
         const createData = await createRes.json();
 
         if (createData.success) {
-          await sheets.spreadsheets.values.update({
-            spreadsheetId,
-            range: `${activeTab}!O${lineNumber}`,
-            valueInputOption: "RAW",
-            resource: { values: [["completed"]] }
-          });
-          console.log(`   🎉 SUCCÈS CJ pour ${internalId} !`);
-          fulfilled++;
+          for (const { lineNumber } of pendingItems) {
+            await sheets.spreadsheets.values.update({
+              spreadsheetId,
+              range: `${range.split('!')[0]}!O${lineNumber}`,
+              valueInputOption: "RAW",
+              resource: { values: [["completed"]] }
+            });
+          }
+          console.log(`   🎉 SUCCÈS CJ pour groupe ${paymentId} !`);
+          fulfilled += pendingItems.length;
         } else {
-          throw new Error(createData.error || "Échec création CJ");
+          errors.push(`Groupe ${paymentId}: ${createData.error || "Échec création CJ"}`);
         }
-      } catch (err) {
-        console.error(`   ❌ Erreur ligne ${lineNumber}:`, err.message);
-        errors.push(`Ligne ${lineNumber}: ${err.message}`);
       }
+
+      groupIndex++;
     }
 
     console.log(`[RETRY PENDING] ✅ FIN - Traités: ${processed} | Réussis: ${fulfilled}`);

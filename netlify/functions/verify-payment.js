@@ -1,7 +1,7 @@
 // netlify/functions/verify-payment.js
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fetch = require('node-fetch');
-const { google } = require('googleapis');   // ← AJOUTÉ pour la protection double webhook
+const { google } = require('googleapis');
 
 exports.handler = async (event) => {
   console.log("=== VERIFY PAYMENT STARTED ===");
@@ -13,13 +13,11 @@ exports.handler = async (event) => {
 
     const paymentId = sessionId || orderID;
 
-    // ====================== PROTECTION DOUBLE WEBHOOK PAYPAL ======================
-    if (provider === "paypal" && paymentId) {
-      const alreadyProcessed = await isAlreadyProcessed(paymentId);
-      if (alreadyProcessed) {
-        console.log(`🚫 DOUBLE WEBHOOK DÉTECTÉ (${paymentId}) → SKIP (déjà traité)`);
-        return response(200, { success: true, message: "Duplicate webhook - already processed" });
-      }
+    // ====================== PROTECTION DOUBLE WEBHOOK (PayPal + Stripe) ======================
+    const alreadyProcessed = await isAlreadyProcessed(paymentId);
+    if (alreadyProcessed) {
+      console.log(`🚫 DOUBLE WEBHOOK DÉTECTÉ (${paymentId}) → SKIP (déjà traité)`);
+      return response(200, { success: true, message: "Duplicate webhook - already processed" });
     }
     // ============================================================================
 
@@ -103,80 +101,89 @@ exports.handler = async (event) => {
 
     console.log(`✅ ${cart.length} item(s) ready for CJ`);
 
-    console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
+    console.log("=== DÉBUT FULFILLMENT BATCHÉ ===");
+
+    const inStockItems = [];
+    let rateLimitHit = false;
 
     for (let i = 0; i < cart.length; i++) {
       const item = cart[i];
-      try {
-        console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.cj_variant_id || 'NO_VARIANT'}`);
+      console.log(`🔄 [ITEM ${i+1}/${cart.length}] Vérification stock pour ${item.cj_variant_id || 'NO_VARIANT'}`);
 
-        if (!item.cj_variant_id) {
-          console.log("   → Pas de variant_id → save pending");
-          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-          continue;
-        }
-
-        if (i > 0) {
-          console.log("   ⏳ Attente 8s pour respecter le rate limit CJ...");
-          await delay(8000);
-        }
-
-        // === CHECK STOCK ===
-        const stockUrl = `${BASE_URL}/.netlify/functions/check-cj-stock`;
-        console.log(`   📡 Appel check-cj-stock → ${stockUrl}`);
-
-        const stockRes = await fetch(stockUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cj_variant_id: item.cj_variant_id })
-        });
-
-        console.log(`   📥 Stock status: ${stockRes.status}`);
-        const stockData = await stockRes.json();
-        console.log(`   📊 Stock result → success: ${stockData.success} | inStock: ${stockData.inStock}`);
-
-        if (!stockData.success) {
-          if (stockData.isRateLimit) {
-            console.log(`   ⚠️ Rate limit CJ (stock) → save en pending_rate_limit`);
-            await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_rate_limit");
-          } else {
-            console.log(`   ❌ Erreur stock → save pending`);
-            await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-          }
-          continue;
-        }
-
-        if (stockData.inStock) {
-          const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
-          console.log(`   📡 Appel create-cj-order → ${cjUrl}`);
-
-          const cjRes = await fetch(cjUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ cart: [item], shipping })
-          });
-
-          console.log(`   📥 CJ Order status: ${cjRes.status}`);
-          const cjData = await cjRes.json();
-          console.log(`   📊 CJ Order success: ${cjData.success || false}`);
-
-          if (cjData.success) {
-            console.log(`   🎉 SUCCÈS CJ pour ${item.cj_variant_id}`);
-          } else {
-            const errorMsg = cjData.error || '';
-            const isRateLimit = errorMsg.includes("Too Many Requests");
-            const saveStatus = isRateLimit ? "pending_rate_limit" : "pending_stock";
-
-            console.log(`   ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save as ${saveStatus}`);
-            await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
-          }
-        } else {
-          console.log("   ❌ Stock insuffisant → save pending");
-          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-        }
-      } catch (e) {
-        console.error(`   💥 ERREUR ITEM ${item.cj_variant_id}:`, e.message);
+      if (!item.cj_variant_id) {
+        console.log("   → Pas de variant_id → save pending");
         await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+        continue;
+      }
+
+      if (i > 0) {
+        console.log("   ⏳ Attente 310s pour rate limit CJ...");
+        await delay(310000);
+      }
+
+      // === CHECK STOCK ===
+      const stockUrl = `${BASE_URL}/.netlify/functions/check-cj-stock`;
+      console.log(`   📡 Appel check-cj-stock → ${stockUrl}`);
+
+      const stockRes = await fetch(stockUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cj_variant_id: item.cj_variant_id })
+      });
+
+      console.log(`   📥 Stock status: ${stockRes.status}`);
+      const stockData = await stockRes.json();
+      console.log(`   📊 Stock result → success: ${stockData.success} | inStock: ${stockData.inStock}`);
+
+      if (!stockData.success) {
+        if (stockData.isRateLimit) {
+          console.log(`   ⚠️ Rate limit CJ (stock) → save en pending_rate_limit`);
+          rateLimitHit = true;
+          await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_rate_limit");
+        } else {
+          console.log(`   ❌ Erreur stock → save pending`);
+          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+        }
+        continue;
+      }
+
+      if (stockData.inStock) {
+        inStockItems.push(item);
+      } else {
+        console.log("   ❌ Stock insuffisant → save pending");
+        await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+      }
+    }
+
+    // === CRÉER UNE SEULE COMMANDE CJ POUR TOUS LES IN-STOCK (si pas de rate limit pendant stock check) ===
+    if (inStockItems.length > 0 && !rateLimitHit) {
+      console.log(`   ⏳ Attente 310s avant create-cj-order...`);
+      await delay(310000);
+
+      const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
+      console.log(`   📡 Appel create-cj-order (batch ${inStockItems.length} items) → ${cjUrl}`);
+
+      const cjRes = await fetch(cjUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart: inStockItems, shipping })
+      });
+
+      console.log(`   📥 CJ Order status: ${cjRes.status}`);
+      const cjData = await cjRes.json();
+      console.log(`   📊 CJ Order success: ${cjData.success || false}`);
+
+      if (cjData.success) {
+        console.log(`   🎉 SUCCÈS CJ pour batch !`);
+      } else {
+        const errorMsg = cjData.error || '';
+        const isRateLimit = errorMsg.includes("Too Many Requests");
+        const saveStatus = isRateLimit ? "pending_rate_limit" : "pending_stock";
+
+        console.log(`   ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save batch as ${saveStatus}`);
+        for (const item of inStockItems) {
+          await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
+        }
       }
     }
 
@@ -207,26 +214,18 @@ async function isAlreadyProcessed(paymentId) {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
-    const rangesToTry = ["PendingOrders!C:C", "Sheet1!C:C", "Feuille 1!C:C"];
+    const range = "PendingOrders!C:C";  // Standardisé
 
-    for (const range of rangesToTry) {
-      try {
-        const res = await sheets.spreadsheets.values.get({
-          spreadsheetId,
-          range: range
-        });
-        const rows = res.data.values || [];
-        if (rows.some(row => row[0] === paymentId)) {
-          return true;
-        }
-      } catch (e) {
-        // on passe au range suivant
-      }
-    }
-    return false;
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range
+    });
+    const rows = res.data.values || [];
+    return rows.some(row => row[0] === paymentId);
+
   } catch (e) {
     console.error("[DUPLICATE CHECK ERROR]", e.message);
-    return false; // en cas d'erreur on laisse passer (mieux que bloquer la commande)
+    return false; // Laisse passer en cas d'erreur
   }
 }
 // ============================================================================
