@@ -1,7 +1,7 @@
-// netlify/functions/verify-payment.js
+// verify-payment-background.js
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fetch = require('node-fetch');
-const { google } = require('googleapis'); // ← AJOUTÉ pour la protection double webhook
+const { google } = require('googleapis');
 exports.handler = async (event) => {
   console.log("=== VERIFY PAYMENT STARTED ===");
   try {
@@ -9,13 +9,11 @@ exports.handler = async (event) => {
     const { provider, sessionId, orderID } = JSON.parse(event.body);
     console.log(`Provider: ${provider} | OrderID: ${orderID || 'N/A'}`);
     const paymentId = sessionId || orderID;
-    // ====================== PROTECTION DOUBLE WEBHOOK PAYPAL ======================
-    if (provider === "paypal" && paymentId) {
-      const alreadyProcessed = await isAlreadyProcessed(paymentId);
-      if (alreadyProcessed) {
-        console.log(`🚫 DOUBLE WEBHOOK DÉTECTÉ (${paymentId}) → SKIP (déjà traité)`);
-        return response(200, { success: true, message: "Duplicate webhook - already processed" });
-      }
+    // ====================== PROTECTION DOUBLE WEBHOOK ======================
+    const alreadyProcessed = await isAlreadyProcessed(paymentId);
+    if (alreadyProcessed) {
+      console.log(`🚫 DOUBLE WEBHOOK DÉTECTÉ (${paymentId}) → SKIP (déjà traité)`);
+      return response(200, { success: true, message: "Duplicate webhook - already processed" });
     }
     // ============================================================================
     let cart = [];
@@ -41,14 +39,17 @@ exports.handler = async (event) => {
       });
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
-    // ====================== PAYPAL ======================
     } else if (provider === "paypal") {
       if (!orderID) throw new Error("Missing PayPal orderID");
       const PAYPAL_BASE = process.env.PAYPAL_ENV === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
       const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString("base64");
       const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, { method: "POST", headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=client_credentials" });
       const { access_token } = await tokenRes.json();
-      await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, { method: "POST", headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" } });
+      const captureRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, { method: "POST", headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" } });
+      if (!captureRes.ok) {
+        const err = await captureRes.text();
+        throw new Error(`PayPal capture failed: ${err}`);
+      }
       const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
       const orderData = await orderRes.json();
       if (orderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
@@ -80,25 +81,77 @@ exports.handler = async (event) => {
       paymentVerified = true;
     }
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
-    console.log(`✅ ${cart.length} item(s) ready for CJ - Saving as pending`);
+    console.log(`✅ ${cart.length} item(s) ready for CJ`);
+    console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
     for (let i = 0; i < cart.length; i++) {
       const item = cart[i];
       try {
-        console.log(`🔄 [ITEM ${i+1}/${cart.length}] Saving ${item.cj_variant_id || 'NO_VARIANT'} as pending`);
+        console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.cj_variant_id || 'NO_VARIANT'}`);
         if (!item.cj_variant_id) {
           console.log(" → Pas de variant_id → save pending");
-          await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending");
+          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
           continue;
         }
-        await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending");
+        if (i > 0) {
+          console.log(" ⏳ Attente 310s pour respecter le rate limit CJ...");
+          await delay(310000);
+        }
+        // === CHECK STOCK ===
+        const stockUrl = `${BASE_URL}/.netlify/functions/check-cj-stock`;
+        console.log(` 📡 Appel check-cj-stock → ${stockUrl}`);
+        const stockRes = await fetch(stockUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cj_variant_id: item.cj_variant_id })
+        });
+        console.log(` 📥 Stock status: ${stockRes.status}`);
+        const stockData = await stockRes.json();
+        console.log(` 📊 Stock result → success: ${stockData.success} | inStock: ${stockData.inStock}`);
+        if (!stockData.success) {
+          if (stockData.isRateLimit) {
+            console.log(` ⚠️ Rate limit CJ (stock) → save en pending_rate_limit`);
+            await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_rate_limit");
+          } else {
+            console.log(` ❌ Erreur stock → save pending`);
+            await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+          }
+          continue;
+        }
+        if (stockData.inStock) {
+          const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
+          console.log(` 📡 Appel create-cj-order → ${cjUrl}`);
+          const cjRes = await fetch(cjUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cart: [item], shipping })
+          });
+          console.log(` 📥 CJ Order status: ${cjRes.status}`);
+          const cjData = await cjRes.json();
+          console.log(` 📊 CJ Order success: ${cjData.success || false}`);
+          if (cjData.success) {
+            console.log(` 🎉 SUCCÈS CJ pour ${item.cj_variant_id}`);
+          } else {
+            const errorMsg = cjData.error || '';
+            const isRateLimit = cjData.isRateLimit || errorMsg.includes("Too Many Requests");
+            const saveStatus = isRateLimit ? "pending_rate_limit" : "pending";
+            console.log(` ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save as ${saveStatus}`);
+            await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
+          }
+        } else {
+          console.log(" ❌ Stock insuffisant → save pending_stock");
+          await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_stock");
+        }
       } catch (e) {
         console.error(` 💥 ERREUR ITEM ${item.cj_variant_id}:`, e.message);
+        const isRateLimit = e.message.includes("Too Many Requests");
+        const saveStatus = isRateLimit ? "pending_rate_limit" : "pending";
+        await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
       }
     }
-    console.log("🎯 All items saved as pending for later fulfillment");
+    console.log("🎯 Fulfillment terminé");
     return response(200, {
       success: true,
-      fulfillmentStatus: "pending"
+      fulfillmentStatus: "processing"
     });
   } catch (error) {
     console.error("=== VERIFY PAYMENT ERROR ===", error.message);
@@ -120,13 +173,20 @@ async function isAlreadyProcessed(paymentId) {
     const rangesToTry = ["PendingOrders!C:C", "Sheet1!C:C", "Feuille 1!C:C"];
     for (const range of rangesToTry) {
       try {
-        const res = await sheets.spreadsheets.values.get({
-          spreadsheetId,
-          range: range
-        });
-        const rows = res.data.values || [];
-        if (rows.some(row => row[0] === paymentId)) {
-          return true;
+        let attempt = 0;
+        while (attempt < 3) {
+          const res = await sheets.spreadsheets.values.get({
+            spreadsheetId,
+            range: range
+          });
+          const rows = res.data.values || [];
+          if (rows.some(row => row[0] === paymentId)) {
+            return true;
+          }
+          attempt++;
+          if (attempt < 3) {
+            await delay(1000); // Wait 1s and retry check
+          }
         }
       } catch (e) {
         // on passe au range suivant
@@ -135,7 +195,7 @@ async function isAlreadyProcessed(paymentId) {
     return false;
   } catch (e) {
     console.error("[DUPLICATE CHECK ERROR]", e.message);
-    return false; // en cas d'erreur on laisse passer (mieux que bloquer la commande)
+    return false; // en cas d'erreur on laisse passer
   }
 }
 // ============================================================================

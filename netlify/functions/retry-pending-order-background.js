@@ -1,4 +1,4 @@
-// retry-pending-order.js
+// retry-pending-order-background.js
 const { google } = require("googleapis");
 const fetch = require("node-fetch");
 async function getAccessToken() {
@@ -24,7 +24,6 @@ exports.handler = async () => {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    // === PRIORITÉ SUR "Feuille 1" (le seul qui marche dans tes logs) ===
     const rangesToTry = ["PendingOrders!A:Q", "Sheet1!A:Q", "Feuille 1!A:Q"];
     let rows = [];
     let activeTab = "";
@@ -52,7 +51,7 @@ exports.handler = async () => {
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
       const status = row[14] || "";
-      if (!["pending", "pending_rate_limit", "pending_stock"].includes(status)) continue;
+      if (!["pending_stock", "pending_rate_limit", "pending"].includes(status)) continue;
       processed++;
       const lineNumber = i + 2;
       const internalId = row[0];
@@ -67,11 +66,11 @@ exports.handler = async () => {
         quantity: parseInt(row[13]) || 1
       }];
       console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId}`);
-      if (processed > 1) {
-        console.log(" ⏳ Attente 320s pour respecter le rate limit CJ...");
-        await delay(320000);
-      }
       try {
+        if (processed > 1) {
+          console.log(" ⏳ Attente 310s pour respecter le rate limit CJ...");
+          await delay(310000);
+        }
         const accessToken = await getAccessToken();
         // === CHECK STOCK ===
         const stockRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/check-cj-stock`, {
@@ -85,19 +84,19 @@ exports.handler = async () => {
             console.log(` ⚠️ Rate limit CJ (stock) → skip pour cette exécution`);
             continue;
           } else {
-            console.log(` ❌ Erreur stock → mark as failed_stock`);
+            console.log(` ❌ Erreur stock → mark as failed`);
             await sheets.spreadsheets.values.update({
               spreadsheetId,
               range: `${activeTab}!O${lineNumber}`,
               valueInputOption: "RAW",
-              resource: { values: [["failed_stock"]] }
+              resource: { values: [["failed"]] }
             });
             errors.push(`Ligne ${lineNumber}: Stock check failed - ${stockData.error}`);
             continue;
           }
         }
         if (!stockData.inStock) {
-          console.log(" ❌ Stock insuffisant → mark as pending_stock");
+          console.log(" ❌ Stock insuffisant → update to pending_stock");
           await sheets.spreadsheets.values.update({
             spreadsheetId,
             range: `${activeTab}!O${lineNumber}`,

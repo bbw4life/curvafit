@@ -1,5 +1,44 @@
 // save-pending-order.js
 const { google } = require('googleapis');
+async function isAlreadyProcessed(paymentId) {
+  try {
+    const auth = new google.auth.GoogleAuth({
+      credentials: {
+        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n")
+      },
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"]
+    });
+    const sheets = google.sheets({ version: "v4", auth });
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+    const rangesToTry = ["PendingOrders!C:C", "Sheet1!C:C", "Feuille 1!C:C"];
+    for (const range of rangesToTry) {
+      try {
+        let attempt = 0;
+        while (attempt < 3) {
+          const res = await sheets.spreadsheets.values.get({
+            spreadsheetId,
+            range: range
+          });
+          const rows = res.data.values || [];
+          if (rows.some(row => row[0] === paymentId)) {
+            return true;
+          }
+          attempt++;
+          if (attempt < 3) {
+            await new Promise(r => setTimeout(r, 1000)); // Wait 1s
+          }
+        }
+      } catch (e) {
+        // next range
+      }
+    }
+    return false;
+  } catch (e) {
+    console.error("[DUPLICATE CHECK ERROR in save]", e.message);
+    return false;
+  }
+}
 exports.handler = async (event) => {
   console.log('[SAVE PENDING] Function invoked');
   try {
@@ -10,6 +49,12 @@ exports.handler = async (event) => {
     const { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
     console.log(`[SAVE PENDING] Tentative pour payment_id: ${payment_id} | status: ${status}`);
+    // Check for duplicate before saving
+    const alreadySaved = await isAlreadyProcessed(payment_id);
+    if (alreadySaved) {
+      console.log(`[SAVE PENDING] Already saved for ${payment_id} → SKIP`);
+      return response(200, { success: true, message: "Already saved" });
+    }
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,

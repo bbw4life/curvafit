@@ -30,18 +30,17 @@ exports.handler = async (event) => {
       }, 0);
       console.log(`[CJ STOCK] ${cj_variant_id} → Stock total: ${totalStock}`);
       return response(200, { success: true, stock: totalStock, inStock: totalStock > 0 });
-    } else {
-      const errorMsg = data.message || "CJ stock API error";
-      const isRateLimit = errorMsg.includes("Too Many Requests");
-      console.error("[CJ STOCK ERROR]", errorMsg);
-      return response(200, {
-        success: false,
-        error: errorMsg,
-        isRateLimit,
-        stock: 0,
-        inStock: false
-      });
     }
+    const errorMsg = data.message || "CJ stock API error";
+    const isRateLimit = errorMsg.includes("Too Many Requests");
+    console.error("[CJ STOCK ERROR]", errorMsg);
+    return response(200, {
+      success: false,
+      error: errorMsg,
+      isRateLimit,
+      stock: 0,
+      inStock: false
+    });
   } catch (error) {
     console.error("[CJ STOCK ERROR]", error.message);
     const isRateLimit = error.message.includes("Too Many Requests");

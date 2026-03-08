@@ -76,12 +76,11 @@ exports.handler = async (event) => {
       const cjResult = data.data?.[0];
       console.log(`[CJ ORDER] 🎉 SUCCÈS - CJ Order ID: ${cjResult.orderId}`);
       return response(200, { success: true, cjOrderId: cjResult.orderId });
-    } else {
-      const errorMsg = data.message || "CJ order creation failed";
-      const isRateLimit = errorMsg.includes("Too Many Requests");
-      console.error("[CJ ORDER ERROR]", errorMsg);
-      return response(200, { success: false, error: errorMsg, isRateLimit });
     }
+    const errorMsg = data.message || "CJ order creation failed";
+    const isRateLimit = errorMsg.includes("Too Many Requests");
+    console.error("[CJ ORDER ERROR]", errorMsg);
+    return response(200, { success: false, error: errorMsg, isRateLimit });
   } catch (error) {
     console.error("[CJ ORDER ERROR]", error.message);
     return response(500, { success: false, error: error.message });
