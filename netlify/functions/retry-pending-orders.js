@@ -18,8 +18,6 @@ exports.handler = async () => {
   console.log('[RETRY PENDING] 🚀 Démarrage - ' + new Date().toISOString());
 
   try {
-    if (!process.env.BASE_URL) throw new Error("Missing BASE_URL env var");
-
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -31,10 +29,10 @@ exports.handler = async () => {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
-    // === ESSAI AUTOMATIQUE DE L'ONGLET (Feuille 1, PendingOrders, Sheet1) ===
+    // === PRIORITÉ SUR "Feuille 1" (le seul qui marche dans tes logs) ===
     const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
     let rows = [];
-    let activeTab = "Feuille 1"; // valeur par défaut
+    let activeTab = "";
 
     for (const range of rangesToTry) {
       try {
@@ -46,13 +44,13 @@ exports.handler = async () => {
           break;
         }
       } catch (e) {
-        console.log(`[RETRY PENDING] Onglet ${range.split('!')[0]} non trouvé`);
+        console.log(`[RETRY PENDING] ${range.split('!')[0]} non trouvé`);
       }
     }
 
     if (rows.length <= 1) {
       console.log('[RETRY PENDING] Aucune commande en attente');
-      return result(0, 0, []);
+      return { statusCode: 200, body: JSON.stringify({ success: true, processed: 0 }) };
     }
 
     const dataRows = rows.slice(1);
@@ -62,43 +60,32 @@ exports.handler = async () => {
 
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
-      const fulfillmentStatus = row[14] || ""; // Colonne O
-
-      if (!["pending_stock", "pending_rate_limit"].includes(fulfillmentStatus)) continue;
+      const status = row[14] || "";
+      if (!["pending_stock", "pending_rate_limit"].includes(status)) continue;
 
       processed++;
-      const internalId = row[0];
       const lineNumber = i + 2;
+      const internalId = row[0];
 
       const shipping = {
-        fullName: row[3] || "",
-        email: row[4] || "",
-        phone: row[5] || "",
-        country: row[6] || "US",
-        state: row[7] || "",
-        city: row[8] || "",
-        postalCode: row[9] || "",
-        address: row[10] || ""
+        fullName: row[3] || "", email: row[4] || "", phone: row[5] || "",
+        country: row[6] || "US", state: row[7] || "", city: row[8] || "",
+        postalCode: row[9] || "", address: row[10] || ""
       };
-
       const cart = [{
         cj_product_id: row[11] || "",
         cj_variant_id: row[12] || "",
         quantity: parseInt(row[13]) || 1
       }];
 
-      console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${fulfillmentStatus}) → ${internalId}`);
+      console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId}`);
 
       try {
-        // Sécurité rate limit CJ (5 min entre chaque commande)
-        if (processed > 1) {
-          console.log(`   ⏳ Attente 320 secondes (rate limit CJ)...`);
-          await delay(320000);
-        }
+        if (processed > 1) await delay(320000); // rate limit CJ
 
         const accessToken = await getAccessToken();
 
-        // 1. Check stock
+        // Check stock
         const stockRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/check-cj-stock`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -111,7 +98,7 @@ exports.handler = async () => {
           continue;
         }
 
-        // 2. Create CJ Order
+        // Create CJ Order
         const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -120,19 +107,17 @@ exports.handler = async () => {
         const createData = await createRes.json();
 
         if (createData.success) {
-          // Mise à jour statut → completed
           await sheets.spreadsheets.values.update({
             spreadsheetId,
             range: `${activeTab}!O${lineNumber}`,
             valueInputOption: "RAW",
             resource: { values: [["completed"]] }
           });
-          console.log(`   🎉 SUCCÈS CJ pour ${internalId}`);
+          console.log(`   🎉 SUCCÈS CJ pour ${internalId} !`);
           fulfilled++;
         } else {
           throw new Error(createData.error || "Échec création CJ");
         }
-
       } catch (err) {
         console.error(`   ❌ Erreur ligne ${lineNumber}:`, err.message);
         errors.push(`Ligne ${lineNumber}: ${err.message}`);
@@ -140,16 +125,12 @@ exports.handler = async () => {
     }
 
     console.log(`[RETRY PENDING] ✅ FIN - Traités: ${processed} | Réussis: ${fulfilled}`);
-    return result(processed, fulfilled, errors);
+    return { statusCode: 200, body: JSON.stringify({ success: true, processed, fulfilled, errors }) };
 
   } catch (error) {
-    console.error("RETRY PENDING ERROR:", error.message);
+    console.error("RETRY ERROR:", error.message);
     return { statusCode: 500, body: JSON.stringify({ success: false, error: error.message }) };
   }
 };
 
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-function result(processed, fulfilled, errors) {
-  return { statusCode: 200, body: JSON.stringify({ success: true, processed, fulfilled, errors }) };
-}
