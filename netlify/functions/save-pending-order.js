@@ -1,6 +1,5 @@
 // save-pending-order.js
 const { google } = require('googleapis');
-
 exports.handler = async (event) => {
   console.log('[SAVE PENDING] Function invoked');
   try {
@@ -10,7 +9,7 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body);
     const { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
-    console.log(`[SAVE PENDING] Tentative pour payment_id: ${payment_id} | status: ${status} | variant: ${item.cj_variant_id || 'NONE'}`);
+    console.log(`[SAVE PENDING] Tentative pour payment_id: ${payment_id} | status: ${status}`);
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -41,8 +40,8 @@ exports.handler = async (event) => {
       "paid",
       now
     ]];
-    // Prioriser "Feuille 1" pour cohérence
-    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
+    // === TEST AUTOMATIQUE DE L'ONGLET ===
+    const rangesToTry = ["PendingOrders!A:Q", "Sheet1!A:Q", "Feuille 1!A:Q"];
     let success = false;
     for (const range of rangesToTry) {
       try {
@@ -58,10 +57,10 @@ exports.handler = async (event) => {
         success = true;
         break;
       } catch (err) {
-        console.error(`[SAVE PENDING] ❌ Échec avec ${range} → ${err.message}`);
+        console.log(`[SAVE PENDING] ❌ Échec avec ${range} → ${err.message}`);
       }
     }
-    if (!success) throw new Error("Aucun nom d'onglet n'a fonctionné. Vérifie le nom exact en bas de ton Google Sheet (ex: 'Feuille 1').");
+    if (!success) throw new Error("Aucun nom d'onglet n'a fonctionné. Vérifie le nom exact en bas de ton Google Sheet.");
     return response(200, { success: true });
   } catch (error) {
     console.error("SAVE PENDING ERROR:", error.message);
@@ -69,7 +68,6 @@ exports.handler = async (event) => {
     return response(500, { success: false, error: error.message });
   }
 };
-
 function response(statusCode, body) {
   return {
     statusCode,
