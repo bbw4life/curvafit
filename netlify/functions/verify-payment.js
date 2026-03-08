@@ -1,6 +1,7 @@
 // netlify/functions/verify-payment.js
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fetch = require('node-fetch');
+const { google } = require('googleapis');   // ← AJOUTÉ pour la protection double webhook
 
 exports.handler = async (event) => {
   console.log("=== VERIFY PAYMENT STARTED ===");
@@ -10,14 +11,24 @@ exports.handler = async (event) => {
     const { provider, sessionId, orderID } = JSON.parse(event.body);
     console.log(`Provider: ${provider} | OrderID: ${orderID || 'N/A'}`);
 
+    const paymentId = sessionId || orderID;
+
+    // ====================== PROTECTION DOUBLE WEBHOOK PAYPAL ======================
+    if (provider === "paypal" && paymentId) {
+      const alreadyProcessed = await isAlreadyProcessed(paymentId);
+      if (alreadyProcessed) {
+        console.log(`🚫 DOUBLE WEBHOOK DÉTECTÉ (${paymentId}) → SKIP (déjà traité)`);
+        return response(200, { success: true, message: "Duplicate webhook - already processed" });
+      }
+    }
+    // ============================================================================
+
     let cart = [];
     let shipping = {};
     let paymentVerified = false;
 
     const BASE_URL = process.env.BASE_URL || process.env.URL || `https://${event.headers.host}`;
     console.log(`🔗 BASE_URL utilisée : ${BASE_URL}`);
-
-    const paymentId = sessionId || orderID;
 
     // ====================== STRIPE ======================
     if (provider === "stripe") {
@@ -136,7 +147,6 @@ exports.handler = async (event) => {
         }
 
         if (stockData.inStock) {
-          // === CREATE CJ ORDER ===
           const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
           console.log(`   📡 Appel create-cj-order → ${cjUrl}`);
 
@@ -153,7 +163,6 @@ exports.handler = async (event) => {
           if (cjData.success) {
             console.log(`   🎉 SUCCÈS CJ pour ${item.cj_variant_id}`);
           } else {
-            // === NOUVELLE DÉTECTION RATE LIMIT SUR CREATE ===
             const errorMsg = cjData.error || '';
             const isRateLimit = errorMsg.includes("Too Many Requests");
             const saveStatus = isRateLimit ? "pending_rate_limit" : "pending_stock";
@@ -183,6 +192,44 @@ exports.handler = async (event) => {
     return response(500, { success: false, error: error.message });
   }
 };
+
+// ====================== FONCTION ANTI-DOUBLE WEBHOOK ======================
+async function isAlreadyProcessed(paymentId) {
+  try {
+    const auth = new google.auth.GoogleAuth({
+      credentials: {
+        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n")
+      },
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"]
+    });
+
+    const sheets = google.sheets({ version: "v4", auth });
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+
+    const rangesToTry = ["PendingOrders!C:C", "Sheet1!C:C", "Feuille 1!C:C"];
+
+    for (const range of rangesToTry) {
+      try {
+        const res = await sheets.spreadsheets.values.get({
+          spreadsheetId,
+          range: range
+        });
+        const rows = res.data.values || [];
+        if (rows.some(row => row[0] === paymentId)) {
+          return true;
+        }
+      } catch (e) {
+        // on passe au range suivant
+      }
+    }
+    return false;
+  } catch (e) {
+    console.error("[DUPLICATE CHECK ERROR]", e.message);
+    return false; // en cas d'erreur on laisse passer (mieux que bloquer la commande)
+  }
+}
+// ============================================================================
 
 async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending_stock") {
   try {
