@@ -64,7 +64,7 @@ exports.handler = async (event) => {
     const retryDelay = 60000; // 60s
     while (attempt < maxAttempts) {
       const cjResponse = await fetch(
-        "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/batchCreateOrder",
+        "https://developers.cjdropshipping.com/api2.0/v1/logistics/order/batchCreateOrder",  // ← CHANGEMENT ICI : "logistics/order" au lieu de "shopping/order"
         {
           method: "POST",
           headers: {
