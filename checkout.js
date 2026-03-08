@@ -105,7 +105,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 input.style.borderColor = '#ccc';
             }
         });
-        if (!valid) alert('Please fill all required fields.');
+        const phone = document.getElementById('phone').value.trim();
+        const phoneRegex = /^\+?\d{10,15}$/;
+        if (!phone || !phoneRegex.test(phone)) {
+            valid = false;
+            document.getElementById('phone').style.borderColor = 'red';
+            alert('Please enter a valid phone number (10-15 digits, optional + prefix).');
+        }
+        const postalCode = document.getElementById('postal-code').value.trim().toUpperCase();
+        const city = document.getElementById('city').value.trim().toLowerCase();
+        if (postalCode.startsWith('M') && city !== 'toronto') {
+            valid = false;
+            alert("City doesn't match postal code. For M* codes, city should be Toronto.");
+        }
+        if (!valid) alert('Please fill all required fields correctly.');
         return valid;
     }
     function getShippingData() {

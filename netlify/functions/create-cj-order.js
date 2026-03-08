@@ -77,6 +77,7 @@ exports.handler = async (event) => {
       const responseText = await cjResponse.text();
       let data;
       try { data = JSON.parse(responseText); } catch { data = {}; }
+      console.log(`[CJ ORDER] API Response: status=${cjResponse.status}, code=${data.code || 'N/A'}, message="${data.message || 'No message'}"`);
       if (cjResponse.ok && data.code === 200) {
         const cjResult = data.data?.[0];
         console.log(`[CJ ORDER] 🎉 SUCCÈS - CJ Order ID: ${cjResult.orderId}`);
