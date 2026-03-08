@@ -26,7 +26,6 @@ exports.handler = async () => {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    // Prioriser "Feuille 1" basé sur tes logs potentiels (français)
     const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
     let rows = [];
     let activeTab = "";
@@ -80,47 +79,85 @@ exports.handler = async () => {
         quantity: parseInt(row[13]) || 1
       }];
       console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId} (variant: ${cj_variant_id})`);
-      try {
-        if (processed > 1) {
-          console.log('[RETRY PENDING] ⏳ Attente 310s pour rate limit CJ...');
-          await delay(310000);
-        }
-        const accessToken = await getAccessToken();
-        // Check stock
-        const stockRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/check-cj-stock`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cj_variant_id: cart[0].cj_variant_id })
-        });
-        const stockData = await stockRes.json();
-        console.log(`[RETRY PENDING] Stock check: success=${stockData.success}, inStock=${stockData.inStock}`);
-        if (!stockData.success || !stockData.inStock) {
-          errors.push(`Ligne ${lineNumber}: Stock check échoué ou insuffisant`);
-          continue;
-        }
-        // Create CJ Order
-        const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cart, shipping })
-        });
-        const createData = await createRes.json();
-        console.log(`[RETRY PENDING] CJ create: success=${createData.success}`);
-        if (createData.success) {
-          await sheets.spreadsheets.values.update({
-            spreadsheetId,
-            range: `${activeTab}!O${lineNumber}`,
-            valueInputOption: "RAW",
-            resource: { values: [["completed"]] }
+      let stockRetryAttempts = 0;
+      let stockData;
+      while (stockRetryAttempts < 3) {
+        try {
+          if (processed > 1 || stockRetryAttempts > 0) {
+            console.log(`[RETRY PENDING] ⏳ Attente 310s pour rate limit CJ... (tentative stock ${stockRetryAttempts + 1})`);
+            await delay(310000);
+          }
+          const accessToken = await getAccessToken();
+          // Check stock
+          const stockRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/check-cj-stock`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cj_variant_id: cart[0].cj_variant_id })
           });
-          console.log(`[RETRY PENDING] 🎉 SUCCÈS CJ pour ${internalId} ! Mise à jour status → completed`);
-          fulfilled++;
-        } else {
-          throw new Error(createData.error || "Échec création CJ");
+          stockData = await stockRes.json();
+          console.log(`[RETRY PENDING] Stock check: success=${stockData.success}, inStock=${stockData.inStock}, isRateLimit=${stockData.isRateLimit || false}`);
+          if (stockData.success) break; // Succès, on sort
+          if (stockData.isRateLimit) {
+            stockRetryAttempts++;
+            continue; // Réessaie après délai
+          } else {
+            throw new Error(stockData.error || "Stock check échoué");
+          }
+        } catch (err) {
+          console.error(`[RETRY PENDING] ❌ Erreur ligne ${lineNumber} pendant stock: ${err.message}`);
+          if (err.message.includes("Too Many Requests")) {
+            stockRetryAttempts++;
+            continue;
+          } else {
+            errors.push(`Ligne ${lineNumber}: ${err.message}`);
+            break; // Erreur non-rate limit, on skip
+          }
         }
-      } catch (err) {
-        console.error(`[RETRY PENDING] ❌ Erreur ligne ${lineNumber}: ${err.message}`);
-        errors.push(`Ligne ${lineNumber}: ${err.message}`);
+      }
+      if (!stockData || !stockData.success || !stockData.inStock) {
+        errors.push(`Ligne ${lineNumber}: Stock check final échoué ou insuffisant`);
+        continue;
+      }
+      // Create CJ Order (avec retry similaire si rate limit)
+      let createRetryAttempts = 0;
+      while (createRetryAttempts < 3) {
+        try {
+          const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cart, shipping })
+          });
+          const createData = await createRes.json();
+          console.log(`[RETRY PENDING] CJ create: success=${createData.success}`);
+          if (createData.success) {
+            await sheets.spreadsheets.values.update({
+              spreadsheetId,
+              range: `${activeTab}!O${lineNumber}`,
+              valueInputOption: "RAW",
+              resource: { values: [["completed"]] }
+            });
+            console.log(`[RETRY PENDING] 🎉 SUCCÈS CJ pour ${internalId} ! Mise à jour status → completed`);
+            fulfilled++;
+            break;
+          } else if (createData.error && createData.error.includes("Too Many Requests")) {
+            createRetryAttempts++;
+            console.log(`[RETRY PENDING] Rate limit sur create → attente 310s (tentative ${createRetryAttempts}/3)`);
+            await delay(310000);
+            continue;
+          } else {
+            throw new Error(createData.error || "Échec création CJ");
+          }
+        } catch (err) {
+          console.error(`[RETRY PENDING] ❌ Erreur ligne ${lineNumber} pendant create: ${err.message}`);
+          if (err.message.includes("Too Many Requests")) {
+            createRetryAttempts++;
+            await delay(310000);
+            continue;
+          } else {
+            errors.push(`Ligne ${lineNumber}: ${err.message}`);
+            break;
+          }
+        }
       }
     }
     const summary = `[RETRY PENDING] ✅ FIN - Traités: ${processed} | Réussis: ${fulfilled} | Erreurs: ${errors.length}`;
