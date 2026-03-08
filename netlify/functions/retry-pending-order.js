@@ -24,9 +24,22 @@ exports.handler = async () => {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const range = "PendingOrders!A:Q";
-    const getRes = await sheets.spreadsheets.values.get({ spreadsheetId, range });
-    const rows = getRes.data.values || [];
+    const rangesToTry = ["PendingOrders!A:Q", "Sheet1!A:Q", "Feuille 1!A:Q"];
+    let rows = [];
+    let activeTab = "";
+    for (const range of rangesToTry) {
+      try {
+        const getRes = await sheets.spreadsheets.values.get({ spreadsheetId, range });
+        rows = getRes.data.values || [];
+        if (rows.length > 1) {
+          activeTab = range.split('!')[0];
+          console.log(`[RETRY PENDING] ✅ Onglet détecté : ${activeTab} (${rows.length} lignes)`);
+          break;
+        }
+      } catch (e) {
+        console.log(`[RETRY PENDING] ${range.split('!')[0]} non trouvé`);
+      }
+    }
     if (rows.length <= 1) {
       console.log('[RETRY PENDING] Aucune commande en attente');
       return { statusCode: 200, body: JSON.stringify({ success: true, processed: 0 }) };
@@ -142,7 +155,6 @@ exports.handler = async () => {
         }
       } // else keep newStatus
     }
-    const activeTab = "PendingOrders";
     if (updateTimestamp) {
       const now = new Date().toISOString();
       await sheets.spreadsheets.values.update({

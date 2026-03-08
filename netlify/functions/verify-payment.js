@@ -139,13 +139,22 @@ async function isAlreadyProcessed(paymentId) {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const range = "PendingOrders!C:C";
-    const res = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: range
-    });
-    const rows = res.data.values || [];
-    return rows.some(row => row[0] === paymentId);
+    const rangesToTry = ["PendingOrders!C:C", "Sheet1!C:C", "Feuille 1!C:C"];
+    for (const range of rangesToTry) {
+      try {
+        const res = await sheets.spreadsheets.values.get({
+          spreadsheetId,
+          range: range
+        });
+        const rows = res.data.values || [];
+        if (rows.some(row => row[0] === paymentId)) {
+          return true;
+        }
+      } catch (e) {
+        // continue to next
+      }
+    }
+    return false;
   } catch (e) {
     console.error("[DUPLICATE CHECK ERROR]", e.message);
     return false;
