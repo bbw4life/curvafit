@@ -1,16 +1,24 @@
 // create-cj-order.js
 const fetch = require("node-fetch");
-// === CACHE GLOBAL DU TOKEN (dure ~2 heures) ===
+
+// ===== CACHE TOKEN CJ =====
 let cachedToken = null;
 let tokenExpiry = 0;
+
 async function getAccessToken() {
+
   const now = Date.now();
+
   if (cachedToken && now < tokenExpiry) {
     console.log("[CJ AUTH] ✅ Token en cache utilisé");
     return cachedToken;
   }
+
   console.log("[CJ AUTH] 🔄 Demande nouveau token...");
-  if (!process.env.CJ_API_KEY) throw new Error("Missing CJ_API_KEY");
+
+  if (!process.env.CJ_API_KEY)
+    throw new Error("Missing CJ_API_KEY");
+
   const tokenRes = await fetch(
     "https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken",
     {
@@ -19,74 +27,156 @@ async function getAccessToken() {
       body: JSON.stringify({ apiKey: process.env.CJ_API_KEY })
     }
   );
+
   const tokenData = await tokenRes.json();
-  if (!tokenRes.ok || tokenData.code !== 200) {
+
+  if (!tokenRes.ok || tokenData.code !== 200)
     throw new Error(tokenData.message || "Failed to get CJ access token");
-  }
+
   cachedToken = tokenData.data.accessToken;
-  tokenExpiry = now + 1000 * 60 * 110; // 110 minutes
+
+  // token valable environ 2h
+  tokenExpiry = now + 1000 * 60 * 110;
+
   console.log("[CJ AUTH] ✅ Nouveau token mis en cache");
+
   return cachedToken;
 }
+
 exports.handler = async (event) => {
+
   console.log("[CJ ORDER] Function invoked");
+
   try {
-    if (!event.body) throw new Error("No data received");
+
+    if (!event.body)
+      throw new Error("No data received");
+
     const { cart, shipping } = JSON.parse(event.body);
+
     console.log("[CJ ORDER] Cart received:", cart);
     console.log("[CJ ORDER] Shipping received:", shipping);
-    if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
+
+    if (!Array.isArray(cart) || cart.length === 0)
+      throw new Error("Invalid cart data");
+
     const accessToken = await getAccessToken();
-    const orderId = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-    const products = cart.map(item => ({
-      productId: item.cj_product_id,
-      variantId: item.cj_variant_id,
-      quantity: parseInt(item.quantity)
-    }));
+
+    const orderId =
+      `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+
+    // ===== PRODUITS VALIDÉS =====
+    const products = cart
+      .filter(item => item.cj_variant_id && item.cj_product_id)
+      .map(item => ({
+        productId: item.cj_product_id,
+        variantId: item.cj_variant_id,
+        quantity: Math.max(1, parseInt(item.quantity) || 1)
+      }));
+
+    if (products.length === 0)
+      throw new Error("No valid CJ products in cart");
+
     const singleOrder = {
+
       orderId: orderId,
+
       products: products,
+
       shippingInfo: {
         countryCode: shipping.country || "US",
         province: shipping.state || "",
         city: shipping.city || "",
-        address: shipping.address,
+        address: shipping.address || "",
         zip: shipping.postalCode || "",
         phone: shipping.phone || "",
-        name: shipping.fullName,
+        name: shipping.fullName || "",
         email: shipping.email || ""
       }
     };
+
     const orderBody = { orders: [singleOrder] };
-    const cjResponse = await fetch(
-      "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/batchCreateOrder",
-      {
-        method: "POST",
-        headers: {
-          "CJ-Access-Token": accessToken,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(orderBody)
+
+    console.log("[CJ ORDER] Payload envoyé:", JSON.stringify(orderBody));
+
+    // ===== RETRY RATE LIMIT =====
+    let attempt = 0;
+
+    while (attempt < 3) {
+
+      const cjResponse = await fetch(
+        "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/batchCreateOrder",
+        {
+          method: "POST",
+          headers: {
+            "CJ-Access-Token": accessToken,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(orderBody)
+        }
+      );
+
+      const responseText = await cjResponse.text();
+
+      let data;
+
+      try {
+        data = JSON.parse(responseText);
+      } catch {
+        data = {};
       }
-    );
-    const responseText = await cjResponse.text();
-    let data;
-    try { data = JSON.parse(responseText); } catch { data = {}; }
-    if (cjResponse.ok && data.code === 200) {
-      const cjResult = data.data?.[0];
-      console.log(`[CJ ORDER] 🎉 SUCCÈS - CJ Order ID: ${cjResult.orderId}`);
-      return response(200, { success: true, cjOrderId: cjResult.orderId });
+
+      if (cjResponse.ok && data.code === 200) {
+
+        const cjResult = data.data?.[0];
+
+        console.log(
+          `[CJ ORDER] 🎉 SUCCÈS - CJ Order ID: ${cjResult?.orderId}`
+        );
+
+        return response(200, {
+          success: true,
+          cjOrderId: cjResult?.orderId
+        });
+      }
+
+      // ===== RATE LIMIT CJ =====
+      if (data.message && data.message.includes("Too Many Requests")) {
+
+        attempt++;
+
+        if (attempt < 3) {
+
+          console.log(
+            `[CJ ORDER] Rate limit CJ → attente 310s (${attempt}/3)`
+          );
+
+          await delay(310000);
+
+          continue;
+        }
+      }
+
+      throw new Error(data.message || "CJ order creation failed");
     }
-    const errorMsg = data.message || "CJ order creation failed";
-    const isRateLimit = errorMsg.includes("Too Many Requests");
-    console.error("[CJ ORDER ERROR]", errorMsg);
-    return response(200, { success: false, error: errorMsg, isRateLimit });
+
   } catch (error) {
+
     console.error("[CJ ORDER ERROR]", error.message);
-    return response(500, { success: false, error: error.message });
+
+    return response(500, {
+      success: false,
+      error: error.message
+    });
   }
 };
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function response(statusCode, body) {
+
   return {
     statusCode,
     headers: { "Content-Type": "application/json" },

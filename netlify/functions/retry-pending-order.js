@@ -1,4 +1,4 @@
-// retry-pending-order-background.js
+// retry-pending-order.js
 const { google } = require("googleapis");
 const fetch = require("node-fetch");
 async function getAccessToken() {
@@ -24,6 +24,7 @@ exports.handler = async () => {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+    // === PRIORITÉ SUR "Feuille 1" (le seul qui marche dans tes logs) ===
     const rangesToTry = ["PendingOrders!A:Q", "Sheet1!A:Q", "Feuille 1!A:Q"];
     let rows = [];
     let activeTab = "";
@@ -51,7 +52,7 @@ exports.handler = async () => {
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
       const status = row[14] || "";
-      if (!["pending_stock", "pending_rate_limit", "pending"].includes(status)) continue;
+      if (!["pending_stock", "pending_rate_limit"].includes(status)) continue;
       processed++;
       const lineNumber = i + 2;
       const internalId = row[0];
@@ -67,45 +68,20 @@ exports.handler = async () => {
       }];
       console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId}`);
       try {
-        if (processed > 1) {
-          console.log(" ⏳ Attente 310s pour respecter le rate limit CJ...");
-          await delay(310000);
-        }
+        if (processed > 1) await delay(320000); // rate limit CJ
         const accessToken = await getAccessToken();
-        // === CHECK STOCK ===
+        // Check stock
         const stockRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/check-cj-stock`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cj_variant_id: cart[0].cj_variant_id })
         });
         const stockData = await stockRes.json();
-        if (!stockData.success) {
-          if (stockData.isRateLimit) {
-            console.log(` ⚠️ Rate limit CJ (stock) → skip pour cette exécution`);
-            continue;
-          } else {
-            console.log(` ❌ Erreur stock → mark as failed`);
-            await sheets.spreadsheets.values.update({
-              spreadsheetId,
-              range: `${activeTab}!O${lineNumber}`,
-              valueInputOption: "RAW",
-              resource: { values: [["failed"]] }
-            });
-            errors.push(`Ligne ${lineNumber}: Stock check failed - ${stockData.error}`);
-            continue;
-          }
-        }
-        if (!stockData.inStock) {
-          console.log(" ❌ Stock insuffisant → update to pending_stock");
-          await sheets.spreadsheets.values.update({
-            spreadsheetId,
-            range: `${activeTab}!O${lineNumber}`,
-            valueInputOption: "RAW",
-            resource: { values: [["pending_stock"]] }
-          });
+        if (!stockData.success || !stockData.inStock) {
+          errors.push(`Ligne ${lineNumber}: Stock insuffisant`);
           continue;
         }
-        // === CREATE CJ ORDER ===
+        // Create CJ Order
         const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -122,32 +98,10 @@ exports.handler = async () => {
           console.log(` 🎉 SUCCÈS CJ pour ${internalId} !`);
           fulfilled++;
         } else {
-          if (createData.isRateLimit) {
-            console.log(` ⚠️ Rate limit CJ (create) → skip pour cette exécution`);
-            continue;
-          } else {
-            console.log(` ❌ CJ Order failed → mark as failed`);
-            await sheets.spreadsheets.values.update({
-              spreadsheetId,
-              range: `${activeTab}!O${lineNumber}`,
-              valueInputOption: "RAW",
-              resource: { values: [["failed"]] }
-            });
-            errors.push(`Ligne ${lineNumber}: ${createData.error}`);
-          }
+          throw new Error(createData.error || "Échec création CJ");
         }
       } catch (err) {
         console.error(` ❌ Erreur ligne ${lineNumber}:`, err.message);
-        if (err.message.includes("Too Many Requests")) {
-          console.log(` ⚠️ Rate limit détecté → skip`);
-          continue;
-        }
-        await sheets.spreadsheets.values.update({
-          spreadsheetId,
-          range: `${activeTab}!O${lineNumber}`,
-          valueInputOption: "RAW",
-          resource: { values: [["failed"]] }
-        });
         errors.push(`Ligne ${lineNumber}: ${err.message}`);
       }
     }
