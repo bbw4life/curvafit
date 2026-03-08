@@ -14,7 +14,6 @@ exports.handler = async (event) => {
     let shipping = {};
     let paymentVerified = false;
 
-    // === BASE_URL FIXÉ (priorité à ta variable BASE_URL que tu as créée dans Netlify) ===
     const BASE_URL = process.env.BASE_URL || process.env.URL || `https://${event.headers.host}`;
     console.log(`🔗 BASE_URL utilisée : ${BASE_URL}`);
 
@@ -93,7 +92,6 @@ exports.handler = async (event) => {
 
     console.log(`✅ ${cart.length} item(s) ready for CJ`);
 
-    // ====================== FULFILLMENT AVEC LOGS ULTRA DÉTAILLÉS ======================
     console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
 
     for (let i = 0; i < cart.length; i++) {
@@ -112,7 +110,7 @@ exports.handler = async (event) => {
           await delay(8000);
         }
 
-        // === CHECK STOCK (VERSION CORRIGÉE) ===
+        // === CHECK STOCK ===
         const stockUrl = `${BASE_URL}/.netlify/functions/check-cj-stock`;
         console.log(`   📡 Appel check-cj-stock → ${stockUrl}`);
 
@@ -126,10 +124,9 @@ exports.handler = async (event) => {
         const stockData = await stockRes.json();
         console.log(`   📊 Stock result → success: ${stockData.success} | inStock: ${stockData.inStock}`);
 
-        // === NOUVELLE LOGIQUE RATE LIMIT ===
         if (!stockData.success) {
           if (stockData.isRateLimit) {
-            console.log(`   ⚠️ Rate limit CJ → save en pending_rate_limit`);
+            console.log(`   ⚠️ Rate limit CJ (stock) → save en pending_rate_limit`);
             await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_rate_limit");
           } else {
             console.log(`   ❌ Erreur stock → save pending`);
@@ -156,8 +153,13 @@ exports.handler = async (event) => {
           if (cjData.success) {
             console.log(`   🎉 SUCCÈS CJ pour ${item.cj_variant_id}`);
           } else {
-            console.log(`   ❌ CJ Order failed → save as pending`);
-            await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+            // === NOUVELLE DÉTECTION RATE LIMIT SUR CREATE ===
+            const errorMsg = cjData.error || '';
+            const isRateLimit = errorMsg.includes("Too Many Requests");
+            const saveStatus = isRateLimit ? "pending_rate_limit" : "pending_stock";
+
+            console.log(`   ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save as ${saveStatus}`);
+            await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
           }
         } else {
           console.log("   ❌ Stock insuffisant → save pending");
