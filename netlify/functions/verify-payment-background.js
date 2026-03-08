@@ -81,81 +81,20 @@ exports.handler = async (event) => {
       paymentVerified = true;
     }
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
-    console.log(`✅ ${cart.length} item(s) ready for CJ`);
-    console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
+    console.log(`✅ ${cart.length} item(s) ready for CJ - Saving as pending`);
     for (let i = 0; i < cart.length; i++) {
       const item = cart[i];
-      try {
-        console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.cj_variant_id || 'NO_VARIANT'}`);
-        if (!item.cj_variant_id) {
-          console.log(" → Pas de variant_id → save pending");
-          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-          continue;
-        }
-        if (i > 0) {
-          console.log(" ⏳ Attente 310s pour respecter le rate limit CJ...");
-          await delay(310000);
-        }
-        // === CHECK STOCK ===
-        const stockUrl = `${BASE_URL}/.netlify/functions/check-cj-stock`;
-        console.log(` 📡 Appel check-cj-stock → ${stockUrl}`);
-        const stockRes = await fetch(stockUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cj_variant_id: item.cj_variant_id })
-        });
-        console.log(` 📥 Stock status: ${stockRes.status}`);
-        const stockData = await stockRes.json();
-        console.log(` 📊 Stock result → success: ${stockData.success} | inStock: ${stockData.inStock}`);
-        if (!stockData.success) {
-          if (stockData.isRateLimit) {
-            console.log(` ⚠️ Rate limit CJ (stock) → save en pending_rate_limit`);
-            await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_rate_limit");
-          } else {
-            console.log(` ❌ Erreur stock → save pending`);
-            await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-          }
-          continue;
-        }
-        if (stockData.inStock) {
-          const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
-          console.log(` 📡 Appel create-cj-order → ${cjUrl}`);
-          const cjRes = await fetch(cjUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ cart: [item], shipping })
-          });
-          console.log(` 📥 CJ Order status: ${cjRes.status}`);
-          const cjData = await cjRes.json();
-          console.log(` 📊 CJ Order success: ${cjData.success || false}`);
-          if (cjData.success) {
-            console.log(` 🎉 SUCCÈS CJ pour ${item.cj_variant_id}`);
-          } else {
-            const errorMsg = cjData.error || '';
-            const isRateLimit = cjData.isRateLimit || errorMsg.includes("Too Many Requests");
-            const saveStatus = isRateLimit ? "pending_rate_limit" : "pending";
-            console.log(` ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save as ${saveStatus}`);
-            await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
-          }
-        } else {
-          console.log(" ❌ Stock insuffisant → save pending_stock");
-          await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_stock");
-        }
-      } catch (e) {
-        console.error(` 💥 ERREUR ITEM ${item.cj_variant_id}:`, e.message);
-        const isRateLimit = e.message.includes("Too Many Requests");
-        const saveStatus = isRateLimit ? "pending_rate_limit" : "pending";
-        await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
-      }
+      console.log(`🔄 [ITEM ${i+1}/${cart.length}] Saving ${item.cj_variant_id || 'NO_VARIANT'} as pending`);
+      await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending");
     }
-    console.log("🎯 Fulfillment terminé");
+    console.log("🎯 All items saved as pending for later fulfillment");
     return response(200, {
       success: true,
-      fulfillmentStatus: "processing"
+      fulfillmentStatus: "pending"
     });
   } catch (error) {
     console.error("=== VERIFY PAYMENT ERROR ===", error.message);
-    return response(500, { success: false, error: error.message });
+    return response(200, { success: true, message: "Order received, fulfillment pending due to error: " + error.message });
   }
 };
 // ====================== FONCTION ANTI-DOUBLE WEBHOOK ======================
