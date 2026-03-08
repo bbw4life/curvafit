@@ -24,32 +24,19 @@ exports.handler = async () => {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    // === PRIORITÉ SUR "Feuille 1" (le seul qui marche dans tes logs) ===
-    const rangesToTry = ["PendingOrders!A:Q", "Sheet1!A:Q", "Feuille 1!A:Q"];
-    let rows = [];
-    let activeTab = "";
-    for (const range of rangesToTry) {
-      try {
-        const getRes = await sheets.spreadsheets.values.get({ spreadsheetId, range });
-        rows = getRes.data.values || [];
-        if (rows.length > 1) {
-          activeTab = range.split('!')[0];
-          console.log(`[RETRY PENDING] ✅ Onglet détecté : ${activeTab} (${rows.length} lignes)`);
-          break;
-        }
-      } catch (e) {
-        console.log(`[RETRY PENDING] ${range.split('!')[0]} non trouvé`);
-      }
-    }
+    const range = "Feuille 1!A:Q";
+    const getRes = await sheets.spreadsheets.values.get({ spreadsheetId, range });
+    const rows = getRes.data.values || [];
     if (rows.length <= 1) {
       console.log('[RETRY PENDING] Aucune commande en attente');
       return { statusCode: 200, body: JSON.stringify({ success: true, processed: 0 }) };
     }
     const dataRows = rows.slice(1);
     const retryDelays = {
-      "pending_create": 0 * 60 * 1000, // immediate (asap, within schedule)
-      "pending_rate_limit": 5 * 60 * 1000, // 5 min
-      "pending_stock": 24 * 60 * 60 * 1000 // 24h
+      "pending_stock": 24 * 60 * 60 * 1000, // 24h
+      "pending_create": 5 * 60 * 1000, // 5 min
+      "pending_rate_check": 5 * 60 * 1000, // 5 min
+      "pending_rate_create": 5 * 60 * 1000 // 5 min
     };
     const nowMs = Date.now();
     let eligible = [];
@@ -57,14 +44,17 @@ exports.handler = async () => {
       const row = dataRows[i];
       const status = row[14] || "";
       const timestamp = row[16] || "";
-      if (!retryDelays[status]) continue;
-      const ageMs = nowMs - Date.parse(timestamp);
-      if (ageMs > retryDelays[status]) {
+      const delay = retryDelays[status];
+      if (delay === undefined) continue;
+      const timestampMs = Date.parse(timestamp);
+      if (isNaN(timestampMs)) continue;
+      const ageMs = nowMs - timestampMs;
+      if (ageMs > delay) {
         eligible.push({
           lineNumber: i + 2,
           row,
           ageMs,
-          timestampMs: Date.parse(timestamp)
+          timestampMs
         });
       }
     }
@@ -72,7 +62,6 @@ exports.handler = async () => {
       console.log('[RETRY PENDING] Aucune commande éligible pour retry');
       return { statusCode: 200, body: JSON.stringify({ success: true, processed: 0 }) };
     }
-    // Sort by oldest first
     eligible.sort((a, b) => a.timestampMs - b.timestampMs);
     const toProcess = eligible[0];
     const lineNumber = toProcess.lineNumber;
@@ -90,20 +79,11 @@ exports.handler = async () => {
       quantity: parseInt(row[13]) || 1
     }];
     console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId}`);
-    // Update timestamp to now first (mark as attempted)
-    const now = new Date().toISOString();
-    await sheets.spreadsheets.values.update({
-      spreadsheetId,
-      range: `${activeTab}!Q${lineNumber}`,
-      valueInputOption: "RAW",
-      resource: { values: [[now]] }
-    });
-    let newStatus = status; // default keep
+    let newStatus = status;
+    let updateTimestamp = true;
     try {
-      await getAccessToken(); // ensure token
-      let shouldCreate = false;
-      if (status === "pending_stock") {
-        // Check stock first
+      await getAccessToken();
+      if (["pending_stock", "pending_rate_check"].includes(status)) {
         const stockRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/check-cj-stock`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -111,23 +91,23 @@ exports.handler = async () => {
         });
         const stockData = await stockRes.json();
         if (stockData.isRateLimit) {
-          console.log(` ⚠️ Rate limit sur stock check → set pending_rate_limit`);
-          newStatus = "pending_rate_limit";
+          console.log(` ⚠️ Rate limit sur stock check → set pending_rate_check`);
+          newStatus = "pending_rate_check";
+          updateTimestamp = true;
         } else if (!stockData.success) {
-          console.log(` ❌ Erreur stock check → keep pending_stock (retry later)`);
-          // timestamp already updated
+          console.log(` ❌ Erreur stock check → set pending_stock`);
+          newStatus = "pending_stock";
+          updateTimestamp = true;
         } else if (stockData.inStock) {
-          console.log(` ✅ Stock disponible → proceed to create`);
-          shouldCreate = true;
+          console.log(` ✅ Stock disponible → set pending_create`);
+          newStatus = "pending_create";
+          updateTimestamp = true;
         } else {
-          console.log(` ❌ Toujours out of stock → keep pending_stock (retry in 24h)`);
-          // timestamp updated
+          console.log(` ❌ Toujours out of stock → keep pending_stock, no timestamp update`);
+          newStatus = "pending_stock";
+          updateTimestamp = false;
         }
-      } else {
-        // For pending_create or pending_rate_limit, directly create
-        shouldCreate = true;
-      }
-      if (shouldCreate) {
+      } else if (["pending_create", "pending_rate_create"].includes(status)) {
         const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -137,24 +117,41 @@ exports.handler = async () => {
         if (createData.success) {
           console.log(` 🎉 SUCCÈS CJ pour ${internalId} !`);
           newStatus = "completed";
+          updateTimestamp = false; // no need
         } else {
           const errorMsg = createData.error || '';
           if (errorMsg.includes("Too Many Requests")) {
-            console.log(` ⚠️ Rate limit sur create → set pending_rate_limit`);
-            newStatus = "pending_rate_limit";
+            console.log(` ⚠️ Rate limit sur create → set pending_rate_create`);
+            newStatus = "pending_rate_create";
+            updateTimestamp = true;
           } else {
-            console.log(` ❌ Erreur create: ${errorMsg} → keep ${status} (retry later)`);
-            // timestamp updated
+            console.log(` ❌ Erreur create: ${errorMsg} → keep pending_create`);
+            newStatus = "pending_create";
+            updateTimestamp = true;
           }
         }
       }
     } catch (err) {
       console.error(` ❌ Erreur ligne ${lineNumber}:`, err.message);
+      updateTimestamp = true;
       if (err.message.includes("Too Many Requests")) {
-        newStatus = "pending_rate_limit";
-      } // else keep status, timestamp updated, retry later
+        if (["pending_stock", "pending_rate_check"].includes(status)) {
+          newStatus = "pending_rate_check";
+        } else {
+          newStatus = "pending_rate_create";
+        }
+      } // else keep newStatus
     }
-    // Update status if changed
+    const activeTab = "Feuille 1";
+    if (updateTimestamp) {
+      const now = new Date().toISOString();
+      await sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range: `${activeTab}!Q${lineNumber}`,
+        valueInputOption: "RAW",
+        resource: { values: [[now]] }
+      });
+    }
     if (newStatus !== status) {
       await sheets.spreadsheets.values.update({
         spreadsheetId,

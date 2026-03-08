@@ -1,6 +1,5 @@
 // create-cj-order.js
 const fetch = require("node-fetch");
-// === CACHE GLOBAL DU TOKEN (dure ~2 heures) ===
 let cachedToken = null;
 let tokenExpiry = 0;
 async function getAccessToken() {
@@ -24,7 +23,7 @@ async function getAccessToken() {
     throw new Error(tokenData.message || "Failed to get CJ access token");
   }
   cachedToken = tokenData.data.accessToken;
-  tokenExpiry = now + 1000 * 60 * 110; // 110 minutes
+  tokenExpiry = now + 1000 * 60 * 110;
   console.log("[CJ AUTH] ✅ Nouveau token mis en cache");
   return cachedToken;
 }

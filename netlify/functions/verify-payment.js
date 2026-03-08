@@ -1,7 +1,7 @@
 // netlify/functions/verify-payment.js
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fetch = require('node-fetch');
-const { google } = require('googleapis'); // ← AJOUTÉ pour la protection double webhook
+const { google } = require('googleapis');
 exports.handler = async (event) => {
   console.log("=== VERIFY PAYMENT STARTED ===");
   try {
@@ -9,7 +9,6 @@ exports.handler = async (event) => {
     const { provider, sessionId, orderID } = JSON.parse(event.body);
     console.log(`Provider: ${provider} | OrderID: ${orderID || 'N/A'}`);
     const paymentId = sessionId || orderID;
-    // ====================== PROTECTION DOUBLE WEBHOOK PAYPAL ======================
     if (provider === "paypal" && paymentId) {
       const alreadyProcessed = await isAlreadyProcessed(paymentId);
       if (alreadyProcessed) {
@@ -17,13 +16,11 @@ exports.handler = async (event) => {
         return response(200, { success: true, message: "Duplicate webhook - already processed" });
       }
     }
-    // ============================================================================
     let cart = [];
     let shipping = {};
     let paymentVerified = false;
     const BASE_URL = process.env.BASE_URL || process.env.URL || `https://${event.headers.host}`;
     console.log(`🔗 BASE_URL utilisée : ${BASE_URL}`);
-    // ====================== STRIPE ======================
     if (provider === "stripe") {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
       if (session.payment_status !== "paid") throw new Error("Stripe not paid");
@@ -41,7 +38,6 @@ exports.handler = async (event) => {
       });
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
-    // ====================== PAYPAL ======================
     } else if (provider === "paypal") {
       if (!orderID) throw new Error("Missing PayPal orderID");
       const PAYPAL_BASE = process.env.PAYPAL_ENV === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
@@ -88,11 +84,14 @@ exports.handler = async (event) => {
         console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.cj_variant_id || 'NO_VARIANT'}`);
         let saveStatus = "pending_stock";
         if (!item.cj_variant_id) {
-          console.log(" → Pas de variant_id → save pending");
+          console.log(" → Pas de variant_id → save pending_stock");
           await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
           continue;
         }
-        // === CHECK STOCK ===
+        if (i > 0) {
+          console.log(" ⏳ Attente 310s pour respecter le rate limit CJ...");
+          await delay(310000);
+        }
         const stockUrl = `${BASE_URL}/.netlify/functions/check-cj-stock`;
         console.log(` 📡 Appel check-cj-stock → ${stockUrl}`);
         const stockRes = await fetch(stockUrl, {
@@ -104,8 +103,8 @@ exports.handler = async (event) => {
         const stockData = await stockRes.json();
         console.log(` 📊 Stock result → success: ${stockData.success} | inStock: ${stockData.inStock}`);
         if (stockData.isRateLimit) {
-          console.log(` ⚠️ Rate limit CJ (stock) → save en pending_rate_limit`);
-          saveStatus = "pending_rate_limit";
+          console.log(` ⚠️ Rate limit CJ (stock) → save en pending_rate_check`);
+          saveStatus = "pending_rate_check";
         } else if (stockData.success && stockData.inStock) {
           console.log(` ✅ Stock disponible → save en pending_create`);
           saveStatus = "pending_create";
@@ -116,7 +115,7 @@ exports.handler = async (event) => {
         await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
       } catch (e) {
         console.error(` 💥 ERREUR ITEM ${item.cj_variant_id}:`, e.message);
-        await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_stock");
+        await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_rate_check");
       }
     }
     console.log("🎯 Fulfillment terminé");
@@ -129,7 +128,6 @@ exports.handler = async (event) => {
     return response(500, { success: false, error: error.message });
   }
 };
-// ====================== FONCTION ANTI-DOUBLE WEBHOOK ======================
 async function isAlreadyProcessed(paymentId) {
   try {
     const auth = new google.auth.GoogleAuth({
@@ -141,28 +139,18 @@ async function isAlreadyProcessed(paymentId) {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const rangesToTry = ["PendingOrders!C:C", "Sheet1!C:C", "Feuille 1!C:C"];
-    for (const range of rangesToTry) {
-      try {
-        const res = await sheets.spreadsheets.values.get({
-          spreadsheetId,
-          range: range
-        });
-        const rows = res.data.values || [];
-        if (rows.some(row => row[0] === paymentId)) {
-          return true;
-        }
-      } catch (e) {
-        // on passe au range suivant
-      }
-    }
-    return false;
+    const range = "Feuille 1!C:C";
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: range
+    });
+    const rows = res.data.values || [];
+    return rows.some(row => row[0] === paymentId);
   } catch (e) {
     console.error("[DUPLICATE CHECK ERROR]", e.message);
-    return false; // en cas d'erreur on laisse passer (mieux que bloquer la commande)
+    return false;
   }
 }
-// ============================================================================
 async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending_stock") {
   try {
     await fetch(`${BASE_URL}/.netlify/functions/save-pending-order`, {
@@ -171,6 +159,9 @@ async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, stat
       body: JSON.stringify({ shipping, item, payment_provider: provider, payment_id: paymentId || "auto", status })
     });
   } catch (e) { console.error("saveAsPending failed:", e.message); }
+}
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 function response(statusCode, body) {
   return { statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };

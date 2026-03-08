@@ -31,11 +31,9 @@ exports.handler = async (event) => {
       console.log(`[CJ STOCK] ${cj_variant_id} → Stock total: ${totalStock}`);
       return response(200, { success: true, stock: totalStock, inStock: totalStock > 0 });
     }
-    const isRateLimit = data.message && data.message.includes("Too Many Requests");
     throw new Error(data.message || "CJ stock API error");
   } catch (error) {
     console.error("[CJ STOCK ERROR]", error.message);
-    // On distingue le rate limit pour le retry futur
     const isRateLimit = error.message.includes("Too Many Requests");
     return response(200, {
       success: false,
