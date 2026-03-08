@@ -1,2 +1,8 @@
 [functions]
   directory = "netlify/functions"
+
+
+
+  [functions.retry-pending-order]
+  schedule = "*/10 * * * *"
+  background = true  # Permet jusqu'à 15min

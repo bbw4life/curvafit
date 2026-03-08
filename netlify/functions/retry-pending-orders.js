@@ -53,7 +53,10 @@ exports.handler = async () => {
 
     let groupIndex = 0;
     for (const [paymentId, group] of Object.entries(groupedByPayment)) {
-      if (groupIndex > 0) await delay(310000); // Délai entre groupes
+      if (groupIndex > 0) {
+        console.log(`[RETRY] ⏳ Délai 310s entre groupes...`);
+        await delay(310000);
+      }
 
       const pendingItems = group.filter(g => ["pending_stock", "pending_rate_limit"].includes(g.row[14] || ""));
       if (pendingItems.length === 0) continue;
@@ -72,14 +75,17 @@ exports.handler = async () => {
       let rateLimitHit = false;
 
       for (let i = 0; i < pendingItems.length; i++) {
+        if (i > 0) {
+          console.log(`[RETRY] ⏳ Délai 310s entre stock checks...`);
+          await delay(310000);
+        }
+
         const { row, lineNumber } = pendingItems[i];
         const item = {
           cj_product_id: row[11] || "",
           cj_variant_id: row[12] || "",
           quantity: parseInt(row[13]) || 1
         };
-
-        if (i > 0) await delay(310000); // Délai par stock check
 
         // Check stock
         const stockRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/check-cj-stock`, {
@@ -104,7 +110,8 @@ exports.handler = async () => {
 
       // Create batch CJ order
       if (inStockItems.length > 0 && !rateLimitHit) {
-        await delay(310000); // Délai avant create
+        console.log(`[RETRY] ⏳ Délai 310s avant create...`);
+        await delay(310000);
 
         const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
           method: "POST",

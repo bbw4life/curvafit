@@ -21,43 +21,32 @@ exports.handler = async (event) => {
     const accessToken = await getAccessToken();
     const url = `https://developers.cjdropshipping.com/api2.0/v1/product/stock/queryBySku?sku=${cj_variant_id}`;
 
-    let attempt = 0;
-    while (attempt < 3) {
-      const cjResponse = await fetch(url, {
-        method: "GET",
-        headers: { "CJ-Access-Token": accessToken }
-      });
+    const cjResponse = await fetch(url, {
+      method: "GET",
+      headers: { "CJ-Access-Token": accessToken }
+    });
 
-      const text = await cjResponse.text();
-      let data;
-      try { data = JSON.parse(text); } catch { data = {}; }
+    const text = await cjResponse.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = {}; }
 
-      if (cjResponse.ok && data.code === 200) {
-        const warehouses = Array.isArray(data.data) ? data.data : [];
-        const totalStock = warehouses.reduce((sum, w) => {
-          return sum + parseInt(w.inventoryNum || w.totalInventoryNum || 0);
-        }, 0);
+    if (cjResponse.ok && data.code === 200) {
+      const warehouses = Array.isArray(data.data) ? data.data : [];
+      const totalStock = warehouses.reduce((sum, w) => {
+        return sum + parseInt(w.inventoryNum || w.totalInventoryNum || 0);
+      }, 0);
 
-        console.log(`[CJ STOCK] ${cj_variant_id} → Stock total: ${totalStock}`);
-        return response(200, { success: true, stock: totalStock, inStock: totalStock > 0 });
-      }
-
-      if (data.message && data.message.includes("Too Many Requests")) {
-        attempt++;
-        if (attempt < 3) {
-          console.log(`[CJ STOCK] Rate limit → attente 310s (tentative ${attempt}/3)`);
-          await delay(310000);
-          continue;
-        }
-      }
-
-      throw new Error(data.message || "CJ stock API error");
+      console.log(`[CJ STOCK] ${cj_variant_id} → Stock total: ${totalStock}`);
+      return response(200, { success: true, stock: totalStock, inStock: totalStock > 0 });
     }
-    throw new Error("Max retries reached for rate limit");
+
+    const errorMsg = data.message || "CJ stock API error";
+    const isRateLimit = errorMsg.includes("Too Many Requests");
+    throw new Error(errorMsg);
 
   } catch (error) {
     console.error("[CJ STOCK ERROR]", error.message);
-    const isRateLimit = error.message.includes("Too Many Requests") || error.message.includes("Max retries");
+    const isRateLimit = error.message.includes("Too Many Requests");
     return response(200, {
       success: false,
       error: error.message,
@@ -68,7 +57,6 @@ exports.handler = async (event) => {
   }
 };
 
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 function response(statusCode, body) {
   return { statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
 }

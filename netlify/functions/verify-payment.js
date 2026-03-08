@@ -116,12 +116,7 @@ exports.handler = async (event) => {
         continue;
       }
 
-      if (i > 0) {
-        console.log("   ⏳ Attente 310s pour rate limit CJ...");
-        await delay(310000);
-      }
-
-      // === CHECK STOCK ===
+      // Pas de délai ici pour éviter timeout ; le rate limit sera géré par pending
       const stockUrl = `${BASE_URL}/.netlify/functions/check-cj-stock`;
       console.log(`   📡 Appel check-cj-stock → ${stockUrl}`);
 
@@ -136,14 +131,10 @@ exports.handler = async (event) => {
       console.log(`   📊 Stock result → success: ${stockData.success} | inStock: ${stockData.inStock}`);
 
       if (!stockData.success) {
-        if (stockData.isRateLimit) {
-          console.log(`   ⚠️ Rate limit CJ (stock) → save en pending_rate_limit`);
-          rateLimitHit = true;
-          await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_rate_limit");
-        } else {
-          console.log(`   ❌ Erreur stock → save pending`);
-          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-        }
+        const saveStatus = stockData.isRateLimit ? "pending_rate_limit" : "pending_stock";
+        console.log(`   ⚠️ Erreur stock (${saveStatus}) → save pending`);
+        rateLimitHit = stockData.isRateLimit;
+        await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
         continue;
       }
 
@@ -155,11 +146,8 @@ exports.handler = async (event) => {
       }
     }
 
-    // === CRÉER UNE SEULE COMMANDE CJ POUR TOUS LES IN-STOCK (si pas de rate limit pendant stock check) ===
+    // === CRÉER UNE SEULE COMMANDE CJ POUR TOUS LES IN-STOCK (si pas de rate limit) ===
     if (inStockItems.length > 0 && !rateLimitHit) {
-      console.log(`   ⏳ Attente 310s avant create-cj-order...`);
-      await delay(310000);
-
       const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
       console.log(`   📡 Appel create-cj-order (batch ${inStockItems.length} items) → ${cjUrl}`);
 
@@ -179,6 +167,7 @@ exports.handler = async (event) => {
         const errorMsg = cjData.error || '';
         const isRateLimit = errorMsg.includes("Too Many Requests");
         const saveStatus = isRateLimit ? "pending_rate_limit" : "pending_stock";
+        rateLimitHit = isRateLimit;
 
         console.log(`   ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save batch as ${saveStatus}`);
         for (const item of inStockItems) {
@@ -232,16 +221,14 @@ async function isAlreadyProcessed(paymentId) {
 
 async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending_stock") {
   try {
-    await fetch(`${BASE_URL}/.netlify/functions/save-pending-order`, {
+    const res = await fetch(`${BASE_URL}/.netlify/functions/save-pending-order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ shipping, item, payment_provider: provider, payment_id: paymentId || "auto", status })
     });
+    const data = await res.json();
+    if (!data.success) throw new Error("Save failed");
   } catch (e) { console.error("saveAsPending failed:", e.message); }
-}
-
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function response(statusCode, body) {

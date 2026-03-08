@@ -73,51 +73,35 @@ exports.handler = async (event) => {
 
     const orderBody = { orders: [singleOrder] };
 
-    // === Retry sur rate limit ===
-    let attempt = 0;
-    while (attempt < 3) {
-      const cjResponse = await fetch(
-        "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/batchCreateOrder",
-        {
-          method: "POST",
-          headers: {
-            "CJ-Access-Token": accessToken,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(orderBody)
-        }
-      );
-
-      const responseText = await cjResponse.text();
-      let data;
-      try { data = JSON.parse(responseText); } catch { data = {}; }
-
-      if (cjResponse.ok && data.code === 200) {
-        const cjResult = data.data?.[0];
-        console.log(`[CJ ORDER] 🎉 SUCCÈS - CJ Order ID: ${cjResult.orderId}`);
-        return response(200, { success: true, cjOrderId: cjResult.orderId });
+    const cjResponse = await fetch(
+      "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/batchCreateOrder",
+      {
+        method: "POST",
+        headers: {
+          "CJ-Access-Token": accessToken,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(orderBody)
       }
+    );
 
-      if (data.message && data.message.includes("Too Many Requests")) {
-        attempt++;
-        console.log(`[CJ ORDER] Rate limit → attente 310s (tentative ${attempt}/3)`);
-        await delay(310000);
-        continue;
-      }
+    const responseText = await cjResponse.text();
+    let data;
+    try { data = JSON.parse(responseText); } catch { data = {}; }
 
-      throw new Error(data.message || "CJ order creation failed");
+    if (cjResponse.ok && data.code === 200) {
+      const cjResult = data.data?.[0];
+      console.log(`[CJ ORDER] 🎉 SUCCÈS - CJ Order ID: ${cjResult.orderId}`);
+      return response(200, { success: true, cjOrderId: cjResult.orderId });
     }
-    throw new Error("Max retries reached for rate limit");
+
+    throw new Error(data.message || "CJ order creation failed");
 
   } catch (error) {
     console.error("[CJ ORDER ERROR]", error.message);
     return response(500, { success: false, error: error.message });
   }
 };
-
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 function response(statusCode, body) {
   return {
