@@ -1,4 +1,4 @@
-// verify-payment.js
+// netlify/functions/verify-payment.js
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fetch = require('node-fetch');
 const { google } = require('googleapis'); // ← AJOUTÉ pour la protection double webhook
@@ -86,9 +86,10 @@ exports.handler = async (event) => {
       const item = cart[i];
       try {
         console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.cj_variant_id || 'NO_VARIANT'}`);
+        let saveStatus = "pending_stock";
         if (!item.cj_variant_id) {
           console.log(" → Pas de variant_id → save pending");
-          await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_no_variant");
+          await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
           continue;
         }
         // === CHECK STOCK ===
@@ -102,15 +103,15 @@ exports.handler = async (event) => {
         console.log(` 📥 Stock status: ${stockRes.status}`);
         const stockData = await stockRes.json();
         console.log(` 📊 Stock result → success: ${stockData.success} | inStock: ${stockData.inStock}`);
-        let saveStatus = "pending_stock";
-        if (stockData.success && stockData.inStock) {
-          saveStatus = "pending_create";
-          console.log(` ✅ Stock OK → save as ${saveStatus}`);
-        } else if (stockData.isRateLimit) {
+        if (stockData.isRateLimit) {
+          console.log(` ⚠️ Rate limit CJ (stock) → save en pending_rate_limit`);
           saveStatus = "pending_rate_limit";
-          console.log(` ⚠️ Rate limit CJ (stock) → save as ${saveStatus}`);
+        } else if (stockData.success && stockData.inStock) {
+          console.log(` ✅ Stock disponible → save en pending_create`);
+          saveStatus = "pending_create";
         } else {
-          console.log(` ❌ Erreur stock → save as ${saveStatus}`);
+          console.log(` ❌ Stock insuffisant ou erreur → save pending_stock`);
+          saveStatus = "pending_stock";
         }
         await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
       } catch (e) {
@@ -170,9 +171,6 @@ async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, stat
       body: JSON.stringify({ shipping, item, payment_provider: provider, payment_id: paymentId || "auto", status })
     });
   } catch (e) { console.error("saveAsPending failed:", e.message); }
-}
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 function response(statusCode, body) {
   return { statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };

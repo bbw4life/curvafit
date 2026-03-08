@@ -46,132 +46,127 @@ exports.handler = async () => {
       return { statusCode: 200, body: JSON.stringify({ success: true, processed: 0 }) };
     }
     const dataRows = rows.slice(1);
-    const now = new Date();
+    const retryDelays = {
+      "pending_create": 0 * 60 * 1000, // immediate (asap, within schedule)
+      "pending_rate_limit": 5 * 60 * 1000, // 5 min
+      "pending_stock": 24 * 60 * 60 * 1000 // 24h
+    };
+    const nowMs = Date.now();
     let eligible = [];
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
-      const status = row[14] || ""; // O
-      if (!["pending_create", "pending_rate_limit", "pending_stock", "pending_no_variant"].includes(status)) continue;
-      if (!row[12]) continue; // M: cj_variant_id must exist
-      const savedTimeStr = row[16]; // Q
-      const savedTime = new Date(savedTimeStr);
-      if (isNaN(savedTime.getTime())) continue; // invalid date
-      let delayMs;
-      if (status === "pending_create" || status === "pending_rate_limit") {
-        delayMs = 1 * 60 * 1000; // 1 min
-      } else if (status === "pending_stock") {
-        delayMs = 24 * 60 * 60 * 1000; // 24h
-      } else {
-        continue; // skip pending_no_variant
-      }
-      if (now.getTime() - savedTime.getTime() >= delayMs) {
+      const status = row[14] || "";
+      const timestamp = row[16] || "";
+      if (!retryDelays[status]) continue;
+      const ageMs = nowMs - Date.parse(timestamp);
+      if (ageMs > retryDelays[status]) {
         eligible.push({
           lineNumber: i + 2,
-          savedTime: savedTime.getTime(),
-          status,
-          internalId: row[0],
-          shipping: {
-            fullName: row[3] || "", email: row[4] || "", phone: row[5] || "",
-            country: row[6] || "US", state: row[7] || "", city: row[8] || "",
-            postalCode: row[9] || "", address: row[10] || ""
-          },
-          cart: [{
-            cj_product_id: row[11] || "",
-            cj_variant_id: row[12] || "",
-            quantity: parseInt(row[13]) || 1
-          }]
+          row,
+          ageMs,
+          timestampMs: Date.parse(timestamp)
         });
       }
     }
     if (eligible.length === 0) {
-      console.log('[RETRY PENDING] Aucune commande éligible');
+      console.log('[RETRY PENDING] Aucune commande éligible pour retry');
       return { statusCode: 200, body: JSON.stringify({ success: true, processed: 0 }) };
     }
     // Sort by oldest first
-    eligible.sort((a, b) => a.savedTime - b.savedTime);
-    // Process only the oldest one
+    eligible.sort((a, b) => a.timestampMs - b.timestampMs);
     const toProcess = eligible[0];
-    const { lineNumber, status, internalId, shipping, cart } = toProcess;
-    console.log(`[RETRY PENDING] 🔄 Traitement de la plus ancienne éligible ligne ${lineNumber} (${status}) → ${internalId}`);
-    let needStockCheck = (status === "pending_stock" || status === "pending_rate_limit");
+    const lineNumber = toProcess.lineNumber;
+    const row = toProcess.row;
+    const status = row[14];
+    const internalId = row[0];
+    const shipping = {
+      fullName: row[3] || "", email: row[4] || "", phone: row[5] || "",
+      country: row[6] || "US", state: row[7] || "", city: row[8] || "",
+      postalCode: row[9] || "", address: row[10] || ""
+    };
+    const cart = [{
+      cj_product_id: row[11] || "",
+      cj_variant_id: row[12] || "",
+      quantity: parseInt(row[13]) || 1
+    }];
+    console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId}`);
+    // Update timestamp to now first (mark as attempted)
+    const now = new Date().toISOString();
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${activeTab}!Q${lineNumber}`,
+      valueInputOption: "RAW",
+      resource: { values: [[now]] }
+    });
+    let newStatus = status; // default keep
     try {
-      const accessToken = await getAccessToken();
-      let inStock = true;
-      if (needStockCheck) {
-        // Check stock
+      await getAccessToken(); // ensure token
+      let shouldCreate = false;
+      if (status === "pending_stock") {
+        // Check stock first
         const stockRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/check-cj-stock`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cj_variant_id: cart[0].cj_variant_id })
         });
         const stockData = await stockRes.json();
-        if (stockData.isRateLimit || !stockData.success) {
-          console.log(` ❌ ${stockData.isRateLimit ? 'Rate limit' : 'Erreur'} sur check stock → reset saved_time`);
-          await updateSavedTime(sheets, spreadsheetId, activeTab, lineNumber, now.toISOString());
-          return { statusCode: 200, body: JSON.stringify({ success: true, processed: 1, fulfilled: 0 }) };
+        if (stockData.isRateLimit) {
+          console.log(` ⚠️ Rate limit sur stock check → set pending_rate_limit`);
+          newStatus = "pending_rate_limit";
+        } else if (!stockData.success) {
+          console.log(` ❌ Erreur stock check → keep pending_stock (retry later)`);
+          // timestamp already updated
+        } else if (stockData.inStock) {
+          console.log(` ✅ Stock disponible → proceed to create`);
+          shouldCreate = true;
+        } else {
+          console.log(` ❌ Toujours out of stock → keep pending_stock (retry in 24h)`);
+          // timestamp updated
         }
-        inStock = stockData.inStock;
-      }
-      if (!inStock) {
-        console.log(` ❌ Stock insuffisant → reset saved_time pour retry plus tard`);
-        await updateSavedTime(sheets, spreadsheetId, activeTab, lineNumber, now.toISOString());
-        return { statusCode: 200, body: JSON.stringify({ success: true, processed: 1, fulfilled: 0 }) };
-      }
-      // Create CJ Order
-      const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart, shipping })
-      });
-      const createData = await createRes.json();
-      if (createData.success) {
-        await sheets.spreadsheets.values.update({
-          spreadsheetId,
-          range: `${activeTab}!O${lineNumber}`,
-          valueInputOption: "RAW",
-          resource: { values: [["completed"]] }
-        });
-        console.log(` 🎉 SUCCÈS CJ pour ${internalId} !`);
-        return { statusCode: 200, body: JSON.stringify({ success: true, processed: 1, fulfilled: 1 }) };
       } else {
-        const isRateLimit = createData.error.includes("Too Many Requests");
-        console.log(` ❌ Échec création CJ ${isRateLimit ? '(rate limit)' : ''} → reset saved_time`);
-        if (isRateLimit) {
-          await sheets.spreadsheets.values.update({
-            spreadsheetId,
-            range: `${activeTab}!O${lineNumber}`,
-            valueInputOption: "RAW",
-            resource: { values: [["pending_rate_limit"]] }
-          });
+        // For pending_create or pending_rate_limit, directly create
+        shouldCreate = true;
+      }
+      if (shouldCreate) {
+        const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cart, shipping })
+        });
+        const createData = await createRes.json();
+        if (createData.success) {
+          console.log(` 🎉 SUCCÈS CJ pour ${internalId} !`);
+          newStatus = "completed";
+        } else {
+          const errorMsg = createData.error || '';
+          if (errorMsg.includes("Too Many Requests")) {
+            console.log(` ⚠️ Rate limit sur create → set pending_rate_limit`);
+            newStatus = "pending_rate_limit";
+          } else {
+            console.log(` ❌ Erreur create: ${errorMsg} → keep ${status} (retry later)`);
+            // timestamp updated
+          }
         }
-        await updateSavedTime(sheets, spreadsheetId, activeTab, lineNumber, now.toISOString());
-        return { statusCode: 200, body: JSON.stringify({ success: true, processed: 1, fulfilled: 0 }) };
       }
     } catch (err) {
       console.error(` ❌ Erreur ligne ${lineNumber}:`, err.message);
-      const isRateLimit = err.message.includes("Too Many Requests");
-      if (isRateLimit) {
-        await sheets.spreadsheets.values.update({
-          spreadsheetId,
-          range: `${activeTab}!O${lineNumber}`,
-          valueInputOption: "RAW",
-          resource: { values: [["pending_rate_limit"]] }
-        });
-      }
-      await updateSavedTime(sheets, spreadsheetId, activeTab, lineNumber, now.toISOString());
-      return { statusCode: 200, body: JSON.stringify({ success: true, processed: 1, fulfilled: 0 }) };
+      if (err.message.includes("Too Many Requests")) {
+        newStatus = "pending_rate_limit";
+      } // else keep status, timestamp updated, retry later
     }
+    // Update status if changed
+    if (newStatus !== status) {
+      await sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range: `${activeTab}!O${lineNumber}`,
+        valueInputOption: "RAW",
+        resource: { values: [[newStatus]] }
+      });
+    }
+    console.log(`[RETRY PENDING] ✅ FIN - Traités: 1 | Status final: ${newStatus}`);
+    return { statusCode: 200, body: JSON.stringify({ success: true, processed: 1 }) };
   } catch (error) {
     console.error("RETRY ERROR:", error.message);
     return { statusCode: 500, body: JSON.stringify({ success: false, error: error.message }) };
   }
 };
-async function updateSavedTime(sheets, spreadsheetId, activeTab, lineNumber, newTime) {
-  await sheets.spreadsheets.values.update({
-    spreadsheetId,
-    range: `${activeTab}!Q${lineNumber}`,
-    valueInputOption: "RAW",
-    resource: { values: [[newTime]] }
-  });
-}
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }

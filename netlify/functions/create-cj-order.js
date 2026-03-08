@@ -72,9 +72,6 @@ exports.handler = async (event) => {
     const responseText = await cjResponse.text();
     let data;
     try { data = JSON.parse(responseText); } catch { data = {}; }
-    if (data.message && data.message.includes("Too Many Requests")) {
-      throw new Error("Too Many Requests");
-    }
     if (cjResponse.ok && data.code === 200) {
       const cjResult = data.data?.[0];
       console.log(`[CJ ORDER] 🎉 SUCCÈS - CJ Order ID: ${cjResult.orderId}`);
@@ -86,9 +83,6 @@ exports.handler = async (event) => {
     return response(500, { success: false, error: error.message });
   }
 };
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 function response(statusCode, body) {
   return {
     statusCode,

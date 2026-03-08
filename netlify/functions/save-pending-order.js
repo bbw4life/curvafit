@@ -36,7 +36,7 @@ exports.handler = async (event) => {
       item.cj_product_id || "",
       item.cj_variant_id || "",
       item.quantity || 1,
-      status, // pending_stock, pending_create, pending_rate_limit, pending_no_variant
+      status, // pending_stock, pending_create, pending_rate_limit
       "paid",
       now
     ]];

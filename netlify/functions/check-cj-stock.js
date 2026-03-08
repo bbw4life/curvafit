@@ -23,10 +23,6 @@ exports.handler = async (event) => {
     const text = await cjResponse.text();
     let data;
     try { data = JSON.parse(text); } catch { data = {}; }
-    let isRateLimit = false;
-    if (data.message && data.message.includes("Too Many Requests")) {
-      isRateLimit = true;
-    }
     if (cjResponse.ok && data.code === 200) {
       const warehouses = Array.isArray(data.data) ? data.data : [];
       const totalStock = warehouses.reduce((sum, w) => {
@@ -35,15 +31,11 @@ exports.handler = async (event) => {
       console.log(`[CJ STOCK] ${cj_variant_id} → Stock total: ${totalStock}`);
       return response(200, { success: true, stock: totalStock, inStock: totalStock > 0 });
     }
-    return response(200, {
-      success: false,
-      error: data.message || "CJ stock API error",
-      isRateLimit,
-      stock: 0,
-      inStock: false
-    });
+    const isRateLimit = data.message && data.message.includes("Too Many Requests");
+    throw new Error(data.message || "CJ stock API error");
   } catch (error) {
     console.error("[CJ STOCK ERROR]", error.message);
+    // On distingue le rate limit pour le retry futur
     const isRateLimit = error.message.includes("Too Many Requests");
     return response(200, {
       success: false,
@@ -54,7 +46,6 @@ exports.handler = async (event) => {
     });
   }
 };
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 function response(statusCode, body) {
   return { statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
 }
