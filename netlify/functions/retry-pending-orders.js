@@ -16,7 +16,6 @@ async function getAccessToken() {
 
 exports.handler = async () => {
   console.log('[RETRY PENDING] 🚀 Démarrage - ' + new Date().toISOString());
-
   try {
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -25,141 +24,110 @@ exports.handler = async () => {
       },
       scopes: ["https://www.googleapis.com/auth/spreadsheets"]
     });
-
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-
-    const rangesToTry = ["PendingOrders!A:Q", "Sheet1!A:Q", "Feuille 1!A:Q"];
+    // Prioriser "Feuille 1" basé sur tes logs potentiels (français)
+    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
     let rows = [];
     let activeTab = "";
-
     for (const range of rangesToTry) {
       try {
-        console.log(`[RETRY] Essai range → ${range}`);
         const getRes = await sheets.spreadsheets.values.get({ spreadsheetId, range });
         rows = getRes.data.values || [];
         if (rows.length > 1) {
           activeTab = range.split('!')[0];
-          console.log(`[RETRY] ✅ Onglet détecté : ${activeTab} (${rows.length} lignes)`);
+          console.log(`[RETRY PENDING] ✅ Onglet détecté : ${activeTab} (${rows.length - 1} commandes potentielles)`);
           break;
+        } else {
+          console.log(`[RETRY PENDING] Onglet ${range.split('!')[0]} vide ou sans données`);
         }
       } catch (e) {
-        console.log(`[RETRY] ❌ ${range.split('!')[0]} non trouvé → ${e.message}`);
+        console.error(`[RETRY PENDING] Erreur accès onglet ${range.split('!')[0]}: ${e.message}`);
       }
     }
-
     if (rows.length <= 1) {
-      console.log('[RETRY] Aucune commande en attente');
-      return { statusCode: 200, body: JSON.stringify({ success: true, processed: 0 }) };
+      console.log('[RETRY PENDING] Aucune commande en attente trouvée dans aucun onglet');
+      return { statusCode: 200, body: JSON.stringify({ success: true, processed: 0, message: "Aucune pending" }) };
     }
-
-    const dataRows = rows.slice(1);
+    const dataRows = rows.slice(1).filter(row => row.length >= 15); // Filtrer lignes incomplètes
     let processed = 0;
     let fulfilled = 0;
     let errors = [];
-
-    // Grouper par payment_id pour batcher par commande originale
-    const groupedByPayment = dataRows.reduce((acc, row, index) => {
-      const paymentId = row[2];
-      if (!acc[paymentId]) acc[paymentId] = [];
-      acc[paymentId].push({ row, lineNumber: index + 2 });
-      return acc;
-    }, {});
-
-    let groupIndex = 0;
-    for (const [paymentId, group] of Object.entries(groupedByPayment)) {
-      if (groupIndex > 0) {
-        console.log(`[RETRY] ⏳ Délai 310s entre groupes...`);
-        await delay(310000);
+    for (let i = 0; i < dataRows.length; i++) {
+      const row = dataRows[i];
+      const status = row[14] || "";
+      if (!["pending_stock", "pending_rate_limit"].includes(status)) {
+        console.log(`[RETRY PENDING] Ligne ${i+2} sautée (status: ${status})`);
+        continue;
       }
-
-      const pendingItems = group.filter(g => ["pending_stock", "pending_rate_limit"].includes(g.row[14] || ""));
-      if (pendingItems.length === 0) continue;
-
-      processed += pendingItems.length;
-      console.log(`[RETRY] 🔄 Groupe ${paymentId} (${pendingItems.length} items)`);
-
-      const firstRow = pendingItems[0].row;
+      processed++;
+      const lineNumber = i + 2;
+      const internalId = row[0] || "UNKNOWN";
+      const cj_variant_id = row[12] || "";
+      if (!cj_variant_id) {
+        console.log(`[RETRY PENDING] Ligne ${lineNumber} sautée: Pas de cj_variant_id`);
+        errors.push(`Ligne ${lineNumber}: Pas de variant_id`);
+        continue;
+      }
       const shipping = {
-        fullName: firstRow[3] || "", email: firstRow[4] || "", phone: firstRow[5] || "",
-        country: firstRow[6] || "US", state: firstRow[7] || "", city: firstRow[8] || "",
-        postalCode: firstRow[9] || "", address: firstRow[10] || ""
+        fullName: row[3] || "", email: row[4] || "", phone: row[5] || "",
+        country: row[6] || "US", state: row[7] || "", city: row[8] || "",
+        postalCode: row[9] || "", address: row[10] || ""
       };
-
-      const inStockItems = [];
-
-      for (let i = 0; i < pendingItems.length; i++) {
-        if (i > 0) {
-          console.log(`[RETRY] ⏳ Délai 310s entre stock checks...`);
+      const cart = [{
+        cj_product_id: row[11] || "",
+        cj_variant_id: cj_variant_id,
+        quantity: parseInt(row[13]) || 1
+      }];
+      console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId} (variant: ${cj_variant_id})`);
+      try {
+        if (processed > 1) {
+          console.log('[RETRY PENDING] ⏳ Attente 310s pour rate limit CJ...');
           await delay(310000);
         }
-
-        const { row, lineNumber } = pendingItems[i];
-        const item = {
-          cj_product_id: row[11] || "",
-          cj_variant_id: row[12] || "",
-          quantity: parseInt(row[13]) || 1
-        };
-
+        const accessToken = await getAccessToken();
         // Check stock
         const stockRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/check-cj-stock`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cj_variant_id: item.cj_variant_id })
+          body: JSON.stringify({ cj_variant_id: cart[0].cj_variant_id })
         });
         const stockData = await stockRes.json();
-
-        if (!stockData.success) {
-          const isRateLimit = stockData.isRateLimit;
-          errors.push(`Ligne ${lineNumber}: Erreur stock${isRateLimit ? ' (rate limit)' : ''}`);
+        console.log(`[RETRY PENDING] Stock check: success=${stockData.success}, inStock=${stockData.inStock}`);
+        if (!stockData.success || !stockData.inStock) {
+          errors.push(`Ligne ${lineNumber}: Stock check échoué ou insuffisant`);
           continue;
         }
-
-        if (stockData.inStock) {
-          inStockItems.push(item);
-        } else {
-          errors.push(`Ligne ${lineNumber}: Stock insuffisant`);
-        }
-      }
-
-      // Create batch CJ order
-      if (inStockItems.length > 0) {
-        console.log(`[RETRY] ⏳ Délai 310s avant create...`);
-        await delay(310000);
-
+        // Create CJ Order
         const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cart: inStockItems, shipping })
+          body: JSON.stringify({ cart, shipping })
         });
         const createData = await createRes.json();
-
+        console.log(`[RETRY PENDING] CJ create: success=${createData.success}`);
         if (createData.success) {
-          for (const { lineNumber } of pendingItems) {
-            await sheets.spreadsheets.values.update({
-              spreadsheetId,
-              range: `${activeTab}!O${lineNumber}`,
-              valueInputOption: "RAW",
-              resource: { values: [["completed"]] }
-            });
-          }
-          console.log(`   🎉 SUCCÈS CJ pour groupe ${paymentId} !`);
-          fulfilled += pendingItems.length;
+          await sheets.spreadsheets.values.update({
+            spreadsheetId,
+            range: `${activeTab}!O${lineNumber}`,
+            valueInputOption: "RAW",
+            resource: { values: [["completed"]] }
+          });
+          console.log(`[RETRY PENDING] 🎉 SUCCÈS CJ pour ${internalId} ! Mise à jour status → completed`);
+          fulfilled++;
         } else {
-          const errorMsg = createData.error || "";
-          const isRateLimit = errorMsg.includes("Too Many Requests");
-          errors.push(`Groupe ${paymentId}: ${errorMsg} ${isRateLimit ? '(rate limit)' : ''}`);
+          throw new Error(createData.error || "Échec création CJ");
         }
+      } catch (err) {
+        console.error(`[RETRY PENDING] ❌ Erreur ligne ${lineNumber}: ${err.message}`);
+        errors.push(`Ligne ${lineNumber}: ${err.message}`);
       }
-
-      groupIndex++;
     }
-
-    console.log(`[RETRY PENDING] ✅ FIN - Traités: ${processed} | Réussis: ${fulfilled} | Erreurs: ${errors.length}`);
+    const summary = `[RETRY PENDING] ✅ FIN - Traités: ${processed} | Réussis: ${fulfilled} | Erreurs: ${errors.length}`;
+    console.log(summary);
     return { statusCode: 200, body: JSON.stringify({ success: true, processed, fulfilled, errors }) };
-
   } catch (error) {
-    console.error("RETRY ERROR:", error.message);
+    console.error("[RETRY PENDING] ERREUR GLOBALE:", error.message);
     return { statusCode: 500, body: JSON.stringify({ success: false, error: error.message }) };
   }
 };

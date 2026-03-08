@@ -82,15 +82,12 @@ exports.handler = async (event) => {
       }
       if (data.message && data.message.includes("Too Many Requests")) {
         attempt++;
-        if (attempt < 3) {
-          console.log(`[CJ ORDER] Rate limit → attente 310s (tentative ${attempt}/3)`);  // CHANGEMENT: 310s au lieu de 10s
-          await delay(310000);
-          continue;
-        }
+        console.log(`[CJ ORDER] Rate limit → attente 10s (tentative ${attempt}/3)`);
+        await delay(310000);
+        continue;
       }
       throw new Error(data.message || "CJ order creation failed");
     }
-    throw new Error("Max retries reached for rate limit");
   } catch (error) {
     console.error("[CJ ORDER ERROR]", error.message);
     return response(500, { success: false, error: error.message });
