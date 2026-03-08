@@ -30,7 +30,7 @@ exports.handler = async () => {
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
     // === PRIORITÉ SUR "Feuille 1" (le seul qui marche dans tes logs) ===
-    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
+    const rangesToTry = ["PendingOrders!A:Q", "Sheet1!A:Q", "Feuille 1!A:Q"];
     let rows = [];
     let activeTab = "";
 
