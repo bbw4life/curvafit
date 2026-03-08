@@ -112,7 +112,7 @@ exports.handler = async (event) => {
           await delay(8000);
         }
 
-        // === CHECK STOCK ===
+        // === CHECK STOCK (VERSION CORRIGÉE) ===
         const stockUrl = `${BASE_URL}/.netlify/functions/check-cj-stock`;
         console.log(`   📡 Appel check-cj-stock → ${stockUrl}`);
 
@@ -126,7 +126,19 @@ exports.handler = async (event) => {
         const stockData = await stockRes.json();
         console.log(`   📊 Stock result → success: ${stockData.success} | inStock: ${stockData.inStock}`);
 
-        if (stockData.success && stockData.inStock) {
+        // === NOUVELLE LOGIQUE RATE LIMIT ===
+        if (!stockData.success) {
+          if (stockData.isRateLimit) {
+            console.log(`   ⚠️ Rate limit CJ → save en pending_rate_limit`);
+            await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_rate_limit");
+          } else {
+            console.log(`   ❌ Erreur stock → save pending`);
+            await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+          }
+          continue;
+        }
+
+        if (stockData.inStock) {
           // === CREATE CJ ORDER ===
           const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
           console.log(`   📡 Appel create-cj-order → ${cjUrl}`);
@@ -148,7 +160,7 @@ exports.handler = async (event) => {
             await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
           }
         } else {
-          console.log("   ❌ Stock insuffisant → save as pending");
+          console.log("   ❌ Stock insuffisant → save pending");
           await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
         }
       } catch (e) {
@@ -170,12 +182,12 @@ exports.handler = async (event) => {
   }
 };
 
-async function saveAsPending(item, shipping, BASE_URL, provider, paymentId) {
+async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending_stock") {
   try {
     await fetch(`${BASE_URL}/.netlify/functions/save-pending-order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ shipping, item, payment_provider: provider, payment_id: paymentId || "auto" })
+      body: JSON.stringify({ shipping, item, payment_provider: provider, payment_id: paymentId || "auto", status })
     });
   } catch (e) { console.error("saveAsPending failed:", e.message); }
 }
