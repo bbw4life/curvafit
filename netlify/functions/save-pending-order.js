@@ -19,6 +19,37 @@ exports.handler = async (event) => {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+    // Find the correct sheet
+    const rangesToTry = ["PendingOrders!A:Q", "Sheet1!A:Q", "Feuille 1!A:Q"];
+    let activeRange = null;
+    for (const range of rangesToTry) {
+      try {
+        await sheets.spreadsheets.values.get({
+          spreadsheetId,
+          range: range
+        });
+        activeRange = range;
+        console.log(`[SAVE PENDING] Onglet actif détecté: ${range}`);
+        break;
+      } catch (e) {
+        console.log(`[SAVE PENDING] Range ${range} non trouvé: ${e.message}`);
+      }
+    }
+    if (!activeRange) throw new Error("Aucun onglet valide trouvé.");
+    // Check if already exists for this payment_id and cj_variant_id
+    const fullRange = activeRange.replace('A:Q', 'A:R'); // to be safe
+    const getRes = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: fullRange
+    });
+    const rows = getRes.data.values || [];
+    const variantId = item.cj_variant_id || '';
+    const exists = rows.some(row => row[2] === payment_id && row[12] === variantId);
+    if (exists) {
+      console.log(`[SAVE PENDING] Entrée déjà existante pour ${payment_id} et ${variantId} → SKIP`);
+      return response(200, { success: true, message: "Already exists" });
+    }
+    // Proceed to append
     const now = new Date().toISOString();
     const internalOrderId = `PENDING_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const values = [[
@@ -40,26 +71,14 @@ exports.handler = async (event) => {
       "paid",
       now
     ]];
-    const rangesToTry = ["PendingOrders!A:Q", "Sheet1!A:Q", "Feuille 1!A:Q"];
-    let success = false;
-    for (const range of rangesToTry) {
-      try {
-        console.log(`[SAVE PENDING] Essai range → ${range}`);
-        const appendRes = await sheets.spreadsheets.values.append({
-          spreadsheetId,
-          range: range,
-          valueInputOption: "RAW",
-          insertDataOption: "INSERT_ROWS",
-          resource: { values }
-        });
-        console.log(`[SAVE PENDING] ✅ SAUVEGARDE OK dans ${range} | ID: ${internalOrderId}`);
-        success = true;
-        break;
-      } catch (err) {
-        console.log(`[SAVE PENDING] ❌ Échec avec ${range} → ${err.message}`);
-      }
-    }
-    if (!success) throw new Error("Aucun nom d'onglet n'a fonctionné. Vérifie le nom exact en bas de ton Google Sheet.");
+    const appendRes = await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: activeRange,
+      valueInputOption: "RAW",
+      insertDataOption: "INSERT_ROWS",
+      resource: { values }
+    });
+    console.log(`[SAVE PENDING] ✅ SAUVEGARDE OK dans ${activeRange} | ID: ${internalOrderId}`);
     return response(200, { success: true });
   } catch (error) {
     console.error("SAVE PENDING ERROR:", error.message);
