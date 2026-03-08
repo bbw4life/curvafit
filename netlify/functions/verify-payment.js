@@ -116,7 +116,6 @@ exports.handler = async (event) => {
         } else {
           const errorMsg = cjData.error || '';
           const code = cjData.code || 0;
-          console.log(`[CJ ORDER FAILED] Code: ${code}, Error: ${errorMsg}`);
           const isRateLimit = [1600200, 1600201].includes(code) || errorMsg.includes("Too much") || errorMsg.includes("Quota") || errorMsg.includes("Many Requests");
           const saveStatus = isRateLimit ? "pending_rate_limit" : "pending_stock";
           console.log(` ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save as ${saveStatus}`);
