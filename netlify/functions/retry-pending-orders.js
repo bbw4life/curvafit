@@ -52,7 +52,7 @@ exports.handler = async () => {
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
       const status = row[14] || "";
-      if (!["pending_stock", "pending_rate_limit"].includes(status)) continue;
+      if (!["pending", "pending_rate_limit", "pending_stock"].includes(status)) continue;
       processed++;
       const lineNumber = i + 2;
       const internalId = row[0];
@@ -67,21 +67,46 @@ exports.handler = async () => {
         quantity: parseInt(row[13]) || 1
       }];
       console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId}`);
+      if (processed > 1) {
+        console.log(" ⏳ Attente 320s pour respecter le rate limit CJ...");
+        await delay(320000);
+      }
       try {
-        if (processed > 1) await delay(320000); // rate limit CJ
         const accessToken = await getAccessToken();
-        // Check stock
+        // === CHECK STOCK ===
         const stockRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/check-cj-stock`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cj_variant_id: cart[0].cj_variant_id })
         });
         const stockData = await stockRes.json();
-        if (!stockData.success || !stockData.inStock) {
-          errors.push(`Ligne ${lineNumber}: Stock insuffisant`);
+        if (!stockData.success) {
+          if (stockData.isRateLimit) {
+            console.log(` ⚠️ Rate limit CJ (stock) → skip pour cette exécution`);
+            continue;
+          } else {
+            console.log(` ❌ Erreur stock → mark as failed_stock`);
+            await sheets.spreadsheets.values.update({
+              spreadsheetId,
+              range: `${activeTab}!O${lineNumber}`,
+              valueInputOption: "RAW",
+              resource: { values: [["failed_stock"]] }
+            });
+            errors.push(`Ligne ${lineNumber}: Stock check failed - ${stockData.error}`);
+            continue;
+          }
+        }
+        if (!stockData.inStock) {
+          console.log(" ❌ Stock insuffisant → mark as pending_stock");
+          await sheets.spreadsheets.values.update({
+            spreadsheetId,
+            range: `${activeTab}!O${lineNumber}`,
+            valueInputOption: "RAW",
+            resource: { values: [["pending_stock"]] }
+          });
           continue;
         }
-        // Create CJ Order
+        // === CREATE CJ ORDER ===
         const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -98,10 +123,32 @@ exports.handler = async () => {
           console.log(` 🎉 SUCCÈS CJ pour ${internalId} !`);
           fulfilled++;
         } else {
-          throw new Error(createData.error || "Échec création CJ");
+          if (createData.isRateLimit) {
+            console.log(` ⚠️ Rate limit CJ (create) → skip pour cette exécution`);
+            continue;
+          } else {
+            console.log(` ❌ CJ Order failed → mark as failed`);
+            await sheets.spreadsheets.values.update({
+              spreadsheetId,
+              range: `${activeTab}!O${lineNumber}`,
+              valueInputOption: "RAW",
+              resource: { values: [["failed"]] }
+            });
+            errors.push(`Ligne ${lineNumber}: ${createData.error}`);
+          }
         }
       } catch (err) {
         console.error(` ❌ Erreur ligne ${lineNumber}:`, err.message);
+        if (err.message.includes("Too Many Requests")) {
+          console.log(` ⚠️ Rate limit détecté → skip`);
+          continue;
+        }
+        await sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${activeTab}!O${lineNumber}`,
+          valueInputOption: "RAW",
+          resource: { values: [["failed"]] }
+        });
         errors.push(`Ligne ${lineNumber}: ${err.message}`);
       }
     }

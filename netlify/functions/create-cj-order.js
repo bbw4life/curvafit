@@ -58,44 +58,35 @@ exports.handler = async (event) => {
       }
     };
     const orderBody = { orders: [singleOrder] };
-    // === Retry sur rate limit ===
-    let attempt = 0;
-    while (attempt < 3) {
-      const cjResponse = await fetch(
-        "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/batchCreateOrder",
-        {
-          method: "POST",
-          headers: {
-            "CJ-Access-Token": accessToken,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(orderBody)
-        }
-      );
-      const responseText = await cjResponse.text();
-      let data;
-      try { data = JSON.parse(responseText); } catch { data = {}; }
-      if (cjResponse.ok && data.code === 200) {
-        const cjResult = data.data?.[0];
-        console.log(`[CJ ORDER] 🎉 SUCCÈS - CJ Order ID: ${cjResult.orderId}`);
-        return response(200, { success: true, cjOrderId: cjResult.orderId });
+    const cjResponse = await fetch(
+      "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/batchCreateOrder",
+      {
+        method: "POST",
+        headers: {
+          "CJ-Access-Token": accessToken,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(orderBody)
       }
-      if (data.message && data.message.includes("Too Many Requests")) {
-        attempt++;
-        console.log(`[CJ ORDER] Rate limit → attente 10s (tentative ${attempt}/3)`);
-        await delay(310000);
-        continue;
-      }
-      throw new Error(data.message || "CJ order creation failed");
+    );
+    const responseText = await cjResponse.text();
+    let data;
+    try { data = JSON.parse(responseText); } catch { data = {}; }
+    if (cjResponse.ok && data.code === 200) {
+      const cjResult = data.data?.[0];
+      console.log(`[CJ ORDER] 🎉 SUCCÈS - CJ Order ID: ${cjResult.orderId}`);
+      return response(200, { success: true, cjOrderId: cjResult.orderId });
+    } else {
+      const errorMsg = data.message || "CJ order creation failed";
+      const isRateLimit = errorMsg.includes("Too Many Requests");
+      console.error("[CJ ORDER ERROR]", errorMsg);
+      return response(200, { success: false, error: errorMsg, isRateLimit });
     }
   } catch (error) {
     console.error("[CJ ORDER ERROR]", error.message);
     return response(500, { success: false, error: error.message });
   }
 };
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 function response(statusCode, body) {
   return {
     statusCode,
