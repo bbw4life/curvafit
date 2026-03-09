@@ -1,15 +1,39 @@
-// retry-pending-orders.js
+// retry-pending-order.js
 const { google } = require("googleapis");
 const fetch = require("node-fetch");
-// === CACHE GLOBAL DU TOKEN ===
-let cachedToken = null;
-let tokenExpiry = 0;
-async function getAccessToken() {
+
+// Fonction pour obtenir le token depuis Google Sheet (même que dans create-cj-order)
+async function getAccessTokenFromSheet() {
+  const auth = new google.auth.GoogleAuth({
+    credentials: {
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n")
+    },
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"]
+  });
+  const sheets = google.sheets({ version: "v4", auth });
+  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
   const now = Date.now();
-  if (cachedToken && now < tokenExpiry) {
-    console.log("[CJ AUTH] ✅ Token en cache utilisé");
-    return cachedToken;
+
+  let token;
+  let expiry;
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: 'Config!A1:A2'
+    });
+    const values = res.data.values || [];
+    token = values[0] ? values[0][0] : null;
+    expiry = values[1] ? parseInt(values[1][0]) : 0;
+  } catch (e) {
+    console.log("[CJ AUTH] Pas de Config sheet ou erreur lecture:", e.message);
   }
+
+  if (token && now < expiry) {
+    console.log("[CJ AUTH] ✅ Token en cache (sheet) utilisé");
+    return token;
+  }
+
   console.log("[CJ AUTH] 🔄 Demande nouveau token...");
   if (!process.env.CJ_API_KEY) throw new Error("Missing CJ_API_KEY");
   const tokenRes = await fetch(
@@ -21,12 +45,28 @@ async function getAccessToken() {
     }
   );
   const tokenData = await tokenRes.json();
-  if (!tokenRes.ok || tokenData.code !== 200) throw new Error(tokenData.message || 'Token failed');
-  cachedToken = tokenData.data.accessToken;
-  tokenExpiry = now + 1000 * 60 * 110;
-  console.log("[CJ AUTH] ✅ Nouveau token mis en cache");
-  return cachedToken;
+  if (!tokenRes.ok || tokenData.code !== 200) {
+    throw new Error(tokenData.message || "Failed to get CJ access token");
+  }
+  const newToken = tokenData.data.accessToken;
+  const newExpiry = now + 1000 * 60 * 110; // 110 minutes
+
+  // Sauvegarder dans sheet, mais skip si erreur (fallback to no save)
+  try {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: 'Config!A1:A2',
+      valueInputOption: "RAW",
+      resource: { values: [[newToken], [newExpiry]] }
+    });
+    console.log("[CJ AUTH] ✅ Nouveau token sauvé dans sheet");
+  } catch (e) {
+    console.error("[CJ AUTH] Erreur sauvegarde token dans sheet (skip):", e.message);
+  }
+
+  return newToken;
 }
+
 exports.handler = async () => {
   console.log('[RETRY PENDING] 🚀 Démarrage - ' + new Date().toISOString());
   try {
@@ -39,7 +79,7 @@ exports.handler = async () => {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];  // Priorisé Feuille 1
+    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
     let rows = [];
     let activeTab = "";
     for (const range of rangesToTry) {
@@ -63,10 +103,12 @@ exports.handler = async () => {
     let processed = 0;
     let fulfilled = 0;
     let errors = [];
+    let found = false;
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
       const status = row[14] || "";
       if (!["pending_stock", "pending_rate_limit"].includes(status)) continue;
+      found = true;
       processed++;
       const lineNumber = i + 2;
       const internalId = row[0];
@@ -82,12 +124,7 @@ exports.handler = async () => {
       }];
       console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId}`);
       try {
-        if (processed > 1) {
-          console.log(" ⏳ Attente 310s pour rate limit CJ...");
-          await delay(310000);  // 5min + buffer
-        }
-        await getAccessToken(); // Ensure token is fresh
-        // Directly create CJ Order
+        await getAccessTokenFromSheet(); // Assure token frais
         const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -110,6 +147,10 @@ exports.handler = async () => {
         console.error(` ❌ Erreur ligne ${lineNumber}:`, err.message);
         errors.push(`Ligne ${lineNumber}: ${err.message}`);
       }
+      break; // Traite seulement un par run
+    }
+    if (!found) {
+      console.log('[RETRY PENDING] Aucune pending à traiter');
     }
     console.log(`[RETRY PENDING] ✅ FIN - Traités: ${processed} | Réussis: ${fulfilled}`);
     return { statusCode: 200, body: JSON.stringify({ success: true, processed, fulfilled, errors }) };

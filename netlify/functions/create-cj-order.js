@@ -1,14 +1,39 @@
 // create-cj-order.js
 const fetch = require("node-fetch");
-// === CACHE GLOBAL DU TOKEN (dure ~2 heures) ===
-let cachedToken = null;
-let tokenExpiry = 0;
-async function getAccessToken() {
+const { google } = require('googleapis');
+
+// Fonction pour obtenir le token depuis Google Sheet
+async function getAccessTokenFromSheet() {
+  const auth = new google.auth.GoogleAuth({
+    credentials: {
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n")
+    },
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"]
+  });
+  const sheets = google.sheets({ version: "v4", auth });
+  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
   const now = Date.now();
-  if (cachedToken && now < tokenExpiry) {
-    console.log("[CJ AUTH] ✅ Token en cache utilisé");
-    return cachedToken;
+
+  let token;
+  let expiry;
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: 'Config!A1:A2'
+    });
+    const values = res.data.values || [];
+    token = values[0] ? values[0][0] : null;
+    expiry = values[1] ? parseInt(values[1][0]) : 0;
+  } catch (e) {
+    console.log("[CJ AUTH] Pas de Config sheet ou erreur lecture:", e.message);
   }
+
+  if (token && now < expiry) {
+    console.log("[CJ AUTH] ✅ Token en cache (sheet) utilisé");
+    return token;
+  }
+
   console.log("[CJ AUTH] 🔄 Demande nouveau token...");
   if (!process.env.CJ_API_KEY) throw new Error("Missing CJ_API_KEY");
   const tokenRes = await fetch(
@@ -23,11 +48,25 @@ async function getAccessToken() {
   if (!tokenRes.ok || tokenData.code !== 200) {
     throw new Error(tokenData.message || "Failed to get CJ access token");
   }
-  cachedToken = tokenData.data.accessToken;
-  tokenExpiry = now + 1000 * 60 * 110; // 110 minutes
-  console.log("[CJ AUTH] ✅ Nouveau token mis en cache");
-  return cachedToken;
+  const newToken = tokenData.data.accessToken;
+  const newExpiry = now + 1000 * 60 * 110; // 110 minutes
+
+  // Sauvegarder dans sheet, mais skip si erreur (fallback to no save)
+  try {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: 'Config!A1:A2',
+      valueInputOption: "RAW",
+      resource: { values: [[newToken], [newExpiry]] }
+    });
+    console.log("[CJ AUTH] ✅ Nouveau token sauvé dans sheet");
+  } catch (e) {
+    console.error("[CJ AUTH] Erreur sauvegarde token dans sheet (skip):", e.message);
+  }
+
+  return newToken;
 }
+
 exports.handler = async (event) => {
   console.log("[CJ ORDER] Function invoked");
   try {
@@ -36,7 +75,16 @@ exports.handler = async (event) => {
     console.log("[CJ ORDER] Cart received:", cart);
     console.log("[CJ ORDER] Shipping received:", shipping);
     if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
-    const accessToken = await getAccessToken();
+
+    // Validation des données d'expédition
+    if (!shipping.country || shipping.country.length !== 2) {
+      throw new Error("Invalid country code: must be ISO2 (e.g., 'US')");
+    }
+    if (!shipping.fullName || !shipping.address || !shipping.city || !shipping.postalCode) {
+      throw new Error("Missing required shipping fields");
+    }
+
+    const accessToken = await getAccessTokenFromSheet();
     const orderId = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const products = cart.map(item => ({
       vid: item.cj_variant_id,
@@ -51,60 +99,42 @@ exports.handler = async (event) => {
         city: shipping.city || "",
         address: shipping.address,
         zip: shipping.postalCode || "",
-        phone: shipping.phone || "",  // Vide si pas fourni ; édite Sheet si besoin
+        phone: shipping.phone || "",
         shippingCustomerName: shipping.fullName,
         email: shipping.email || ""
       }
     };
     const orderBody = { orders: [singleOrder] };
-    // === Retry sur rate limit ===
-    let attempt = 0;
-    const maxAttempts = 3;
-    const retryDelay = 310000; // 5min + buffer pour quota CJ (1/300s)
-    while (attempt < maxAttempts) {
-      const cjResponse = await fetch(
-        "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrder",
-        {
-          method: "POST",
-          headers: {
-            "CJ-Access-Token": accessToken,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(orderBody)
-        }
-      );
-      const responseText = await cjResponse.text();
-      console.log(`[CJ RESPONSE] Status HTTP: ${cjResponse.status}`);
-      console.log(`[CJ RESPONSE] Body brut: ${responseText}`);
-      let data;
-      try { data = JSON.parse(responseText); } catch { data = {}; }
-      if (data.code) console.log(`[CJ RESPONSE] Code d'erreur: ${data.code}`);
-      if (data.message) console.log(`[CJ RESPONSE] Message d'erreur: ${data.message}`);
-      if (cjResponse.ok && data.code === 200) {
-        const cjResult = data.data?.[0];
-        console.log(`[CJ ORDER] 🎉 SUCCÈS - CJ Order ID: ${cjResult.orderId}`);
-        return response(200, { success: true, cjOrderId: cjResult.orderId });
+    const cjResponse = await fetch(
+      "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrder",
+      {
+        method: "POST",
+        headers: {
+          "CJ-Access-Token": accessToken,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(orderBody)
       }
-      const isRateLimit = data.code === 1600200 || data.code === 1600201 || (data.message && (data.message.includes("Too Many") || data.message.includes("QPS") || data.message.includes("limit"))) || cjResponse.status === 429;
-      if (isRateLimit) {
-        attempt++;
-        if (attempt < maxAttempts) {
-          console.log(`[CJ ORDER] Rate limit détecté → attente ${retryDelay/1000}s (tentative ${attempt}/${maxAttempts})`);
-          await delay(retryDelay);
-          continue;
-        }
-      }
-      return response(200, { success: false, error: data.message || "CJ order creation failed", code: data.code });
+    );
+    const responseText = await cjResponse.text();
+    console.log(`[CJ RESPONSE] Status HTTP: ${cjResponse.status}`);
+    console.log(`[CJ RESPONSE] Body brut: ${responseText}`);
+    let data;
+    try { data = JSON.parse(responseText); } catch { data = {}; }
+    if (data.code) console.log(`[CJ RESPONSE] Code d'erreur: ${data.code}`);
+    if (data.message) console.log(`[CJ RESPONSE] Message d'erreur: ${data.message}`);
+    if (cjResponse.ok && data.code === 200) {
+      const cjResult = data.data?.[0];
+      console.log(`[CJ ORDER] 🎉 SUCCÈS - CJ Order ID: ${cjResult.orderId}`);
+      return response(200, { success: true, cjOrderId: cjResult.orderId });
     }
-    return response(200, { success: false, error: "Max retries reached for rate limit", code: 1600200 });
+    const isRateLimit = data.code === 1600200 || data.code === 1600201 || (data.message && (data.message.includes("Too much") || data.message.includes("Quota") || data.message.includes("Many Requests"))) || cjResponse.status === 429;
+    return response(200, { success: false, error: data.message || "CJ order creation failed", code: data.code, isRateLimit });
   } catch (error) {
     console.error("[CJ ORDER ERROR]", error.message);
     return response(500, { success: false, error: error.message });
   }
 };
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 function response(statusCode, body) {
   return {
     statusCode,
