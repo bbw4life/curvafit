@@ -93,11 +93,11 @@ exports.handler = async (event) => {
       shippingAddress: {
         firstName: firstName,
         lastName: lastName,
-        phone: shipping.phone || "",
+        phone: shipping.phone || "0000000000",
         countryCode: shipping.country || "US",
         province: shipping.state || "",
         city: shipping.city || "",
-        address: shipping.address || "",
+        address: (shipping.address || "").split(",")[0],
         zip: shipping.postalCode || ""
       }
 
