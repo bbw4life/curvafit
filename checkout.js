@@ -120,9 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: fullPhone,
-            // === CORRECTION : country reste string (nom complet) + countryCode ajouté ===
-            country: selectedOption.value.trim(),                    // nom complet (compatibilité PayPal/Stripe)
-            countryCode: selectedOption.dataset.cca2 || '',          // code ISO (pour CJ)
+            // === CORRECTION PAYPAL : country = CODE ISO (PayPal exige ça) ===
+            country: selectedOption.dataset.cca2 || 'US',           // ISO pour PayPal + Stripe
+            countryName: selectedOption.value.trim(),               // Nom complet pour CJ
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
@@ -150,9 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({ cart, shipping: shippingData })
                 });
                 data = await response.json();
-                if (!response.ok || !data.sessionId) {
-                    throw new Error(data.error || 'Stripe session failed');
-                }
+                if (!response.ok || !data.sessionId) throw new Error(data.error || 'Stripe session failed');
                 localStorage.setItem("pendingOrder", "stripe");
                 await stripe.redirectToCheckout({ sessionId: data.sessionId });
             } else {
@@ -161,8 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const preDiscount = getSubtotal();
                     const ratio = (preDiscount - discountAmount) / preDiscount;
                     paypalCart = cart.map(item => ({
-                    ...item,
-                    price: (Number(item.price) * ratio).toFixed(2)
+                        ...item,
+                        price: (Number(item.price) * ratio).toFixed(2)
                     }));
                 }
                 const taxes = getSubtotal() * TAX_RATE;
@@ -178,9 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(bodyData)
                 });
                 data = await response.json();
-                if (!response.ok || !data.orderID) {
-                    throw new Error(data.error || 'PayPal order failed');
-                }
+                if (!response.ok || !data.orderID) throw new Error(data.error || 'PayPal order failed');
                 const paypalDomain = data.paypalDomain || 'https://www.sandbox.paypal.com';
                 localStorage.setItem("pendingOrder", "paypal");
                 window.location.href = `${paypalDomain}/checkoutnow?token=${data.orderID}`;
@@ -192,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // === Le reste du fichier est IDENTIQUE à ton original ===
+    // === TOUT LE RESTE IDENTIQUE À TON ORIGINAL ===
     const refundLink = document.getElementById('refund-policy-link');
     const shippingLink = document.getElementById('shipping-policy-link');
     const refundModal = document.getElementById('refund-modal');
@@ -259,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadCountries();
 
-    function updatePromoDisplay() { /* identique à ton original */ 
+    function updatePromoDisplay() {
         const hasBundle = cart.some(item => item.fromBundle);
         const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
         const suggested = promos.find(p => p.items === totalQuantity);
@@ -292,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         return subtotal;
     }
-    function updateTotals() { /* identique */ 
+    function updateTotals() {
         const subtotal = getSubtotal();
         let bundleSavings = 0;
         let hasBundle = false;
