@@ -108,19 +108,28 @@ document.addEventListener('DOMContentLoaded', () => {
         return valid;
     }
     function getShippingData() {
-        const countrySelect = document.getElementById('country');
-        const selectedOption = countrySelect.options[countrySelect.selectedIndex];
-        return {
-            fullName: document.getElementById('full-name').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            country: selectedOption.dataset.cca2 || selectedOption.value.trim(), // ← Utilise ISO code si disponible
-            city: document.getElementById('city').value.trim(),
-            state: document.getElementById('state').value.trim(),
-            postalCode: document.getElementById('postal-code').value.trim(),
-            address: document.getElementById('address').value.trim()
-        };
-    }
+    const countrySelect = document.getElementById('country');
+    const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+    
+    // Téléphone complet (code + numéro) – utile pour le sheet et CJ
+    const phoneCode = document.getElementById('phone-code').value.trim();
+    const phoneNumber = document.getElementById('phone').value.trim();
+    
+    return {
+        fullName: document.getElementById('full-name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: (phoneCode + phoneNumber).replace(/\s+/g, ''),
+        country: {
+            name: selectedOption.value.trim(),  
+            iso: selectedOption.dataset.cca2 || '' 
+        },
+        
+        city: document.getElementById('city').value.trim(),
+        state: document.getElementById('state').value.trim(),
+        postalCode: document.getElementById('postal-code').value.trim(),
+        address: document.getElementById('address').value.trim()
+    };
+}
     payButton.addEventListener('click', async () => {
         if (!validateForm()) return;
         if (!cart.length) return alert('Your cart is empty.');

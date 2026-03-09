@@ -29,74 +29,60 @@ async function getAccessToken() {
   console.log("[CJ AUTH] ✅ Nouveau token mis en cache");
   return cachedToken;
 }
-async function getCountryInfo(received) {
-  try {
-    let url;
-    if (received.length === 2) {
-      // Assume it's code, fetch name
-      url = `https://restcountries.com/v3.1/alpha/${received.toUpperCase()}`;
-    } else {
-      // Assume it's name, fetch code
-      url = `https://restcountries.com/v3.1/name/${encodeURIComponent(received)}?fullText=true`;
-    }
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
-    const data = await res.json();
-    if (received.length === 2) {
-      return { code: received.toUpperCase(), name: data[0]?.name?.common || "Unknown Country" };
-    } else {
-      return { code: data[0]?.cca2 || "US", name: received };
-    }
-  } catch (e) {
-    console.error("[COUNTRY INFO ERROR]", e.message);
-    return { code: "US", name: "United States" }; // Fallback
-  }
-}
-exports.handler = async (event) => {
+{
   console.log("[CJ ORDER] Function invoked");
   try {
     if (!event.body) throw new Error("No data received");
     const { cart, shipping } = JSON.parse(event.body);
     console.log("[CJ ORDER] Cart received:", JSON.stringify(cart));
     console.log("[CJ ORDER] Shipping received:", JSON.stringify(shipping));
+
     if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
+
     const accessToken = await getAccessToken();
     const orderNumber = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const products = cart.map(item => ({
       vid: item.cj_variant_id || '',
       quantity: parseInt(item.quantity) || 1
     }));
-    // Extract shipping data
+
+    // ====================== RÉCUPÉRATION NOM COMPLET + CODE ISO ======================
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';
-    let phone = shipping.phone || "0000000000"; // Fallback if empty
-    console.log("PHONE RECEIVED:", phone);
-    const address = shipping.address || '';
-    const city = shipping.city || '';
-    const state = shipping.state || '';
-    const postalCode = shipping.postalCode || '';
-    const receivedCountry = shipping.country || 'United States';
-    const countryInfo = await getCountryInfo(receivedCountry);
-    const countryCode = countryInfo.code;
-    const countryName = countryInfo.name;
-    // Transform to CJ format (flat fields)
+    let phone = shipping.phone || "0000000000";
+
+    let countryCode = 'US';
+    let countryName = 'United States';
+
+    if (typeof shipping.country === 'object' && shipping.country !== null) {
+      countryCode = shipping.country.iso || 'US';
+      countryName = shipping.country.name || 'United States';
+    } else {
+      countryCode = shipping.country || 'US';
+      countryName = shipping.country || 'United States';
+    }
+    console.log(`[CJ ORDER] Country → "${countryName}" (${countryCode}) | Phone: ${phone}`);
+    // =================================================================================
+
     const orderBody = {
       orderNumber: orderNumber,
       shippingCountryCode: countryCode,
       shippingCountry: countryName,
-      shippingProvince: state,
-      shippingCity: city,
+      shippingProvince: shipping.state || '',
+      shippingCity: shipping.city || '',
       shippingCustomerName: fullName,
-      shippingAddress: address,
+      shippingAddress: shipping.address || '',
       email: email,
-      logisticName: "CJPacket", // Hardcoded as per example
+      logisticName: "CJPacket",
       fromCountryCode: "CN",
       products: products,
-      payType: 2, // Balance payment
-      shippingZip: postalCode,
+      payType: 2,
+      shippingZip: shipping.postalCode || '',
       shippingPhone: phone
     };
+
     console.log("SENDING TO CJ:", orderBody);
+
     const cjResponse = await fetch(
       "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrderV2",
       {
