@@ -1,6 +1,7 @@
 // create-cj-order.js
 const fetch = require("node-fetch");
 
+// === CACHE GLOBAL DU TOKEN ===
 let cachedToken = null;
 let tokenExpiry = 0;
 
@@ -25,15 +26,19 @@ exports.handler = async (event) => {
   try {
     if (!event.body) throw new Error("No data received");
     const { cart, shipping } = JSON.parse(event.body);
+
     if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
 
     const accessToken = await getAccessToken();
     const orderNumber = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-    const products = cart.map(item => ({ vid: item.cj_variant_id || '', quantity: parseInt(item.quantity) || 1 }));
+    const products = cart.map(item => ({
+      vid: item.cj_variant_id || '',
+      quantity: parseInt(item.quantity) || 1
+    }));
 
-    // === UTILISATION DES DEUX CHAMPS ===
-    const countryCode = shipping.country || 'US';           // ISO
-    const countryName = shipping.countryName || 'United States';  // Nom complet
+    // === CORRECTION : récupération nom + code ISO sans casser le reste ===
+    const countryCode = shipping.countryCode || 'US';
+    const countryName = shipping.country || 'United States';
 
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';

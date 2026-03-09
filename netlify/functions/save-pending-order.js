@@ -13,7 +13,7 @@ exports.handler = async (event) => {
     shipping.fullName = normalize(shipping.fullName);
     shipping.email = normalize(shipping.email);
     shipping.phone = normalize(shipping.phone);
-    shipping.country = normalize(shipping.countryName || shipping.country || "US");  // ← nom complet si disponible
+    shipping.country = normalize(shipping.country || "US");           // string (nom complet)
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
@@ -55,14 +55,14 @@ exports.handler = async (event) => {
     let success = false;
     for (const range of rangesToTry) {
       try {
-        await sheets.spreadsheets.values.append({
+        const appendRes = await sheets.spreadsheets.values.append({
           spreadsheetId, range, valueInputOption: "RAW", insertDataOption: "INSERT_ROWS", resource: { values }
         });
-        console.log(`[SAVE PENDING] ✅ OK dans ${range}`);
+        console.log(`[SAVE PENDING] ✅ SAUVEGARDE OK dans ${range}`);
         success = true;
         break;
       } catch (err) {
-        console.log(`[SAVE PENDING] Échec ${range}`);
+        console.log(`[SAVE PENDING] Échec avec ${range}`);
       }
     }
     if (!success) throw new Error("Aucun onglet n'a fonctionné");
