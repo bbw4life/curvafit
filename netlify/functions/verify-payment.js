@@ -77,49 +77,55 @@ exports.handler = async (event) => {
       shipping = {
         fullName: ship.name?.full_name || `${payer.name?.given_name || ''} ${payer.name?.surname || ''}`.trim(),
         email: payer.email_address || "",
-        phone: payer.phone?.phone_number?.national_number || "",
+        phone: payer.phone?.phone_number?.national_number || "",  // Extraction PayPal ; reste vide si pas fourni
         address: ship.address?.address_line_1 || "",
         city: ship.address?.admin_area_2 || "",
         state: ship.address?.admin_area_1 || "",
         postalCode: ship.address?.postal_code || "",
         country: ship.address?.country_code || "US"
       };
+      console.log("Shipping extracted:", shipping);  // Log ajouté pour déboguer phone
       paymentVerified = true;
     }
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
     console.log(`✅ ${cart.length} item(s) ready for CJ`);
-    // Séparer les items prêts et pending
-    const readyItems = cart.filter(item => item.cj_variant_id);
-    const pendingItems = cart.filter(item => !item.cj_variant_id);
-    // Sauvegarder les pending sans variant
-    for (const item of pendingItems) {
-      console.log(" → Pas de variant_id → save pending");
-      await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-    }
-    // Traiter les ready en groupe
-    if (readyItems.length > 0) {
-      console.log("=== DÉBUT FULFILLMENT GROUPÉ ===");
-      const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
-      console.log(` 📡 Appel create-cj-order → ${cjUrl}`);
-      const cjRes = await fetch(cjUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: readyItems, shipping })
-      });
-      console.log(` 📥 CJ Order status: ${cjRes.status}`);
-      const cjData = await cjRes.json();
-      console.log(` 📊 CJ Order success: ${cjData.success || false}`);
-      if (cjData.success) {
-        console.log(` 🎉 SUCCÈS CJ pour l'ordre groupé`);
-      } else {
-        const errorMsg = cjData.error || '';
-        const code = cjData.code || 0;
-        const isRateLimit = [1600200, 1600201].includes(code) || errorMsg.includes("Too much") || errorMsg.includes("Quota") || errorMsg.includes("Many Requests");
-        const saveStatus = isRateLimit ? "pending_rate_limit" : "pending_stock";
-        console.log(` ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save each as ${saveStatus}`);
-        for (const item of readyItems) {
+    console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
+    for (let i = 0; i < cart.length; i++) {
+      const item = cart[i];
+      try {
+        console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.cj_variant_id || 'NO_VARIANT'}`);
+        if (!item.cj_variant_id) {
+          console.log(" → Pas de variant_id → save pending");
+          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+          continue;
+        }
+        if (i > 0) {
+          console.log(" ⏳ Attente 310s pour respecter le rate limit CJ...");
+          await delay(310000);  // 5min + buffer pour quota
+        }
+        const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
+        console.log(` 📡 Appel create-cj-order → ${cjUrl}`);
+        const cjRes = await fetch(cjUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cart: [item], shipping })
+        });
+        console.log(` 📥 CJ Order status: ${cjRes.status}`);
+        const cjData = await cjRes.json();
+        console.log(` 📊 CJ Order success: ${cjData.success || false}`);
+        if (cjData.success) {
+          console.log(` 🎉 SUCCÈS CJ pour ${item.cj_variant_id}`);
+        } else {
+          const errorMsg = cjData.error || '';
+          const code = cjData.code || 0;
+          const isRateLimit = [1600200, 1600201].includes(code) || errorMsg.includes("Too Many") || errorMsg.includes("QPS") || errorMsg.includes("limit");
+          const saveStatus = isRateLimit ? "pending_rate_limit" : "pending_stock";
+          console.log(` ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save as ${saveStatus}`);
           await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
         }
+      } catch (e) {
+        console.error(` 💥 ERREUR ITEM ${item.cj_variant_id}:`, e.message);
+        await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
       }
     }
     console.log("🎯 Fulfillment terminé");
@@ -144,7 +150,7 @@ async function isAlreadyProcessed(paymentId) {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const rangesToTry = ["PendingOrders!C:C", "Sheet1!C:C", "Feuille 1!C:C"];
+    const rangesToTry = ["Feuille 1!C:C", "PendingOrders!C:C", "Sheet1!C:C"];  // Priorisé Feuille 1
     for (const range of rangesToTry) {
       try {
         const res = await sheets.spreadsheets.values.get({
