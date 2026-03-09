@@ -1,8 +1,10 @@
 // create-cj-order.js
 const fetch = require("node-fetch");
+
 // === CACHE GLOBAL DU TOKEN (dure ~2 heures) ===
 let cachedToken = null;
 let tokenExpiry = 0;
+
 async function getAccessToken() {
   const now = Date.now();
   if (cachedToken && now < tokenExpiry) {
@@ -29,6 +31,7 @@ async function getAccessToken() {
   console.log("[CJ AUTH] ✅ Nouveau token mis en cache");
   return cachedToken;
 }
+
 exports.handler = async (event) => {
   console.log("[CJ ORDER] Function invoked");
   try {
@@ -37,30 +40,41 @@ exports.handler = async (event) => {
     console.log("[CJ ORDER] Cart received:", JSON.stringify(cart));
     console.log("[CJ ORDER] Shipping received:", JSON.stringify(shipping));
     if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
+
     const accessToken = await getAccessToken();
-    const orderId = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+
+    const orderNumber = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+
     const products = cart.map(item => ({
-      vid: item.cj_variant_id || '',  // Assure string
+      vid: item.cj_variant_id || '',
       quantity: parseInt(item.quantity) || 1
     }));
+
+    // Split fullName into firstName and lastName
+    const nameParts = shipping.fullName ? shipping.fullName.trim().split(/\s+/) : ['', ''];
+    const firstName = nameParts.slice(0, -1).join(' ') || '';
+    const lastName = nameParts[nameParts.length - 1] || '';
+
     const singleOrder = {
-      orderNumber: orderId,
+      orderNumber: orderNumber,
       products: products,
-      shippingInfo: {
+      shippingAddress: {
+        firstName: firstName,
+        lastName: lastName,
+        phone: shipping.phone || "",
         countryCode: shipping.country || "US",
         province: shipping.state || "",
         city: shipping.city || "",
         address: shipping.address || "",
-        zip: shipping.postalCode || "",
-        phone: shipping.phone || "",
-        shippingCustomerName: shipping.fullName || "",
-        email: shipping.email || ""
+        zip: shipping.postalCode || ""
       }
     };
+
     const orderBody = { orders: [singleOrder] };
-    console.log("[CJ ORDER] Body envoyé à CJ:", JSON.stringify(orderBody));
+    console.log("[CJ ORDER] Request payload to CJ:", JSON.stringify(orderBody));
+
     const cjResponse = await fetch(
-      "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrder",
+      "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/batchCreateOrder",
       {
         method: "POST",
         headers: {
@@ -70,27 +84,50 @@ exports.handler = async (event) => {
         body: JSON.stringify(orderBody)
       }
     );
+
     const responseText = await cjResponse.text();
-    console.log(`[CJ RESPONSE] Status HTTP: ${cjResponse.status}`);
-    console.log(`[CJ RESPONSE] Body brut: ${responseText}`);
+    console.log(`[CJ RESPONSE] HTTP Status: ${cjResponse.status}`);
+    console.log(`[CJ RESPONSE] Raw Body: ${responseText}`);
+
     let data;
-    try { data = JSON.parse(responseText); } catch { data = {}; }
-    if (data.code) console.log(`[CJ RESPONSE] Code d'erreur: ${data.code}`);
-    if (data.message) console.log(`[CJ RESPONSE] Message d'erreur: ${data.message}`);
-    if (cjResponse.ok && data.code === 200) {
-      const cjResult = data.data?.[0];
-      console.log(`[CJ ORDER] 🎉 SUCCÈS - CJ Order ID: ${cjResult.orderId}`);
-      return response(200, { success: true, cjOrderId: cjResult.orderId });
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      data = {};
     }
-    let error = data.message || responseText.trim() || "CJ order creation failed";
-    let code = data.code || 0;
-    if (cjResponse.status === 429) code = 429;
-    return response(200, { success: false, error, code });
+
+    if (data.code) console.log(`[CJ RESPONSE] Error Code: ${data.code}`);
+    if (data.message) console.log(`[CJ RESPONSE] Error Message: ${data.message}`);
+
+    if (cjResponse.ok && data.code === 200) {
+      const cjResult = data.data?.[0] || {};
+      console.log(`[CJ ORDER] 🎉 SUCCESS - CJ Order ID: ${cjResult.orderId}`);
+      return response(200, {
+        success: true,
+        cjOrderId: cjResult.orderId || '',
+        message: "Order sent to CJ successfully"
+      });
+    } else {
+      const errorMsg = data.message || responseText.trim() || "CJ order creation failed";
+      const errorCode = data.code || cjResponse.status;
+      console.log(`[CJ ORDER] ❌ FAILURE - Code: ${errorCode} | Error: ${errorMsg}`);
+      return response(200, {
+        success: false,
+        error: errorMsg,
+        details: responseText,
+        code: errorCode
+      });
+    }
   } catch (error) {
     console.error("[CJ ORDER ERROR]", error.message);
-    return response(500, { success: false, error: error.message });
+    return response(500, {
+      success: false,
+      error: error.message,
+      details: error.stack || ''
+    });
   }
 };
+
 function response(statusCode, body) {
   return {
     statusCode,
