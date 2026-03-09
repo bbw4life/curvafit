@@ -7,9 +7,19 @@ exports.handler = async (event) => {
       return response(400, { success: false, error: "No data received" });
     }
     const body = JSON.parse(event.body);
-    const { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
+    let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
     console.log(`[SAVE PENDING] Tentative pour payment_id: ${payment_id} | status: ${status}`);
+    // Normalize strings to remove accents
+    const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
+    shipping.fullName = normalize(shipping.fullName);
+    shipping.email = normalize(shipping.email); // though email shouldn't have accents
+    shipping.phone = normalize(shipping.phone);
+    shipping.country = normalize(shipping.country);
+    shipping.state = normalize(shipping.state);
+    shipping.city = normalize(shipping.city);
+    shipping.postalCode = normalize(shipping.postalCode);
+    shipping.address = normalize(shipping.address);
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,

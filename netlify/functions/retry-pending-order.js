@@ -100,26 +100,13 @@ exports.handler = async () => {
           console.log(` 🎉 SUCCÈS CJ pour ${internalId} !`);
           fulfilled++;
         } else {
-          const errorMsg = createData.error || "Échec création CJ";
-          const code = createData.code || 0;
-          const isRateLimit = [1600200, 1600201, 429].includes(code) || errorMsg.includes("Too much") || errorMsg.includes("Quota") || errorMsg.includes("Many Requests") || errorMsg.includes("QPS limit");
-          if (!isRateLimit) {
-            // Update to failed if not rate limit (e.g., stock issue, don't retry forever)
-            await sheets.spreadsheets.values.update({
-              spreadsheetId,
-              range: `${activeTab}!O${lineNumber}`,
-              valueInputOption: "RAW",
-              resource: { values: [["failed"]] }
-            });
-            console.log(` ❌ Échec définitif pour ${internalId} (non rate limit)`);
-          } // else keep pending for next retry
-          throw new Error(errorMsg);
+          throw new Error(createData.error || "Échec création CJ");
         }
       } catch (err) {
         console.error(` ❌ Erreur ligne ${lineNumber}:`, err.message);
         errors.push(`Ligne ${lineNumber}: ${err.message}`);
       }
-      break; // Process only one per invocation
+      break; // Process only one per invocation to respect rate limits
     }
     console.log(`[RETRY PENDING] ✅ FIN - Traités: ${processed} | Réussis: ${fulfilled}`);
     return { statusCode: 200, body: JSON.stringify({ success: true, processed, fulfilled, errors }) };
