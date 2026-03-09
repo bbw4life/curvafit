@@ -1,4 +1,3 @@
-// ============================================
 document.addEventListener('DOMContentLoaded', () => {
     let cart = [];
     try {
@@ -7,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {
         cart = [];
     }
-
     const cartItemsContainer = document.querySelector('.cart-items');
     const subtotalElement = document.getElementById('subtotal');
     const taxesElement = document.getElementById('taxes');
@@ -16,14 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const shippingForm = document.getElementById('shipping-form');
     const payButton = document.getElementById('pay-button');
     const paymentOptions = document.querySelectorAll('input[name="payment"]');
-
     let productsData = [];
     let TAX_RATE = 0.1; // Fallback si pas dans JSON
     let SHIPPING_COST = 10.00; // Fallback si pas dans JSON
     let promos = [];
     let appliedPromo = null;
     let discountAmount = 0;
-
     fetch('/products.data.json')
       .then(response => response.json())
       .then(data => {
@@ -41,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Erreur de chargement de /products.data.json:', error);
         renderCart(); // Continuer avec fallbacks si erreur
       });
-
     function renderCart() {
         if (!cart.length) {
             cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
@@ -90,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePromoDisplay();
         updateTotals();
     }
-
     paymentOptions.forEach(option => {
         option.addEventListener('change', () => {
             payButton.textContent =
@@ -99,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     : 'Pay with PayPal';
         });
     });
-
     function validateForm() {
         const inputs = shippingForm.querySelectorAll('input, textarea');
         let valid = true;
@@ -114,33 +107,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!valid) alert('Please fill all required fields.');
         return valid;
     }
-
-    // ====================== FONCTION CORRIGÉE (NOM PAYS + CODE ISO) ======================
     function getShippingData() {
         const countrySelect = document.getElementById('country');
         const selectedOption = countrySelect.options[countrySelect.selectedIndex];
-        
-        const phoneCode = document.getElementById('phone-code').value.trim();
-        const phoneNumber = document.getElementById('phone').value.trim();
-        
         return {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
-            phone: (phoneCode + phoneNumber).replace(/\s+/g, ''),
-            
-            // === NOM COMPLET DU PAYS + CODE ISO (PayPal + Stripe + CJ compatibles) ===
-            country: selectedOption.value.trim(),           // ex: "France" ou "République Dominicaine"
-            countryIso: selectedOption.dataset.cca2 || '',  // ex: "FR" ou "DO"
-            // =======================================================================
-            
+            phone: document.getElementById('phone').value.trim(),
+            country: selectedOption.dataset.cca2 || selectedOption.value.trim(), // ← Utilise ISO code si disponible
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
             address: document.getElementById('address').value.trim()
         };
     }
-    // =================================================================================
-
     payButton.addEventListener('click', async () => {
         if (!validateForm()) return;
         if (!cart.length) return alert('Your cart is empty.');
@@ -148,7 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
         payButton.textContent = "Processing...";
         const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
         const shippingData = getShippingData();
-
+        if (discountAmount > 0) {
+        }
         try {
             let response;
             let data;
@@ -205,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
             payButton.textContent = "Pay Now";
         }
     });
-
     const refundLink = document.getElementById('refund-policy-link');
     const shippingLink = document.getElementById('shipping-policy-link');
     const refundModal = document.getElementById('refund-modal');
@@ -221,7 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === refundModal) refundModal.style.display = 'none';
         if (e.target === shippingModal) shippingModal.style.display = 'none';
     });
-
     /* ===========================
    COUNTRY / CITY AUTO SYSTEM
 =========================== */
@@ -229,7 +208,6 @@ const countrySelect = document.getElementById('country');
 const citySelect = document.getElementById('city');
 const phoneCodeInput = document.getElementById('phone-code');
 const postalInput = document.getElementById('postal-code');
-
 /* Load Countries */
 async function loadCountries() {
     try {
@@ -252,7 +230,6 @@ async function loadCountries() {
         console.error("Country load error", err);
     }
 }
-
 /* When country selected */
 countrySelect.addEventListener('change', async function () {
     const selectedOption = this.options[this.selectedIndex];
@@ -281,10 +258,8 @@ countrySelect.addEventListener('change', async function () {
         citySelect.innerHTML = '<option value="">No cities found</option>';
     }
 });
-
 /* Init */
 loadCountries();
-
 function updatePromoDisplay() {
     const hasBundle = cart.some(item => item.fromBundle);
     const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -310,7 +285,6 @@ function updatePromoDisplay() {
         promoMessage.textContent = '';
     }
 }
-
 function getSubtotal() {
     let subtotal = 0;
     cart.forEach(item => {
@@ -320,7 +294,6 @@ function getSubtotal() {
     });
     return subtotal;
 }
-
 function updateTotals() {
     const subtotal = getSubtotal();
     let bundleSavings = 0;
@@ -347,7 +320,6 @@ function updateTotals() {
         promoLine.style.display = 'none';
     }
 }
-
 // Copy bouton
 document.getElementById('copy-suggested')?.addEventListener('click', () => {
     const code = document.getElementById('suggested-code').textContent;
@@ -355,7 +327,6 @@ document.getElementById('copy-suggested')?.addEventListener('click', () => {
         alert('Code copied: ' + code);
     });
 });
-
 // Apply promo
 document.getElementById('apply-promo')?.addEventListener('click', () => {
     const input = document.getElementById('promo-input').value.trim().toUpperCase();
