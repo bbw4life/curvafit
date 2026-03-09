@@ -1,8 +1,10 @@
 // create-cj-order.js
 const fetch = require("node-fetch");
+
 // === CACHE GLOBAL DU TOKEN (dure ~2 heures) ===
 let cachedToken = null;
 let tokenExpiry = 0;
+
 async function getAccessToken() {
   const now = Date.now();
   if (cachedToken && now < tokenExpiry) {
@@ -25,11 +27,12 @@ async function getAccessToken() {
     throw new Error(tokenData.message || "Failed to get CJ access token");
   }
   cachedToken = tokenData.data.accessToken;
-  tokenExpiry = now + 1000 * 60 * 110; // 110 minutes
+  tokenExpiry = now + 1000 * 60 * 110;
   console.log("[CJ AUTH] ✅ Nouveau token mis en cache");
   return cachedToken;
 }
-{
+
+exports.handler = async (event) => {
   console.log("[CJ ORDER] Function invoked");
   try {
     if (!event.body) throw new Error("No data received");
@@ -46,7 +49,7 @@ async function getAccessToken() {
       quantity: parseInt(item.quantity) || 1
     }));
 
-    // ====================== RÉCUPÉRATION NOM COMPLET + CODE ISO ======================
+    // ====================== RÉCUPÉRATION NOM + CODE ISO ======================
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';
     let phone = shipping.phone || "0000000000";
@@ -54,15 +57,16 @@ async function getAccessToken() {
     let countryCode = 'US';
     let countryName = 'United States';
 
-    if (typeof shipping.country === 'object' && shipping.country !== null) {
-      countryCode = shipping.country.iso || 'US';
-      countryName = shipping.country.name || 'United States';
-    } else {
-      countryCode = shipping.country || 'US';
+    if (shipping.countryIso) {
+      countryCode = shipping.countryIso;
       countryName = shipping.country || 'United States';
+    } else if (shipping.country) {
+      countryName = shipping.country;
+      countryCode = 'US'; // fallback
     }
+
     console.log(`[CJ ORDER] Country → "${countryName}" (${countryCode}) | Phone: ${phone}`);
-    // =================================================================================
+    // ========================================================================
 
     const orderBody = {
       orderNumber: orderNumber,
@@ -94,17 +98,14 @@ async function getAccessToken() {
         body: JSON.stringify(orderBody)
       }
     );
+
     const responseText = await cjResponse.text();
     console.log(`[CJ RESPONSE] HTTP Status: ${cjResponse.status}`);
     console.log(`[CJ RESPONSE] Raw Body: ${responseText}`);
+
     let data;
-    try {
-      data = JSON.parse(responseText);
-    } catch {
-      data = {};
-    }
-    if (data.code) console.log(`[CJ RESPONSE] Error Code: ${data.code}`);
-    if (data.message) console.log(`[CJ RESPONSE] Error Message: ${data.message}`);
+    try { data = JSON.parse(responseText); } catch { data = {}; }
+
     if (cjResponse.ok && data.code === 200) {
       const cjResult = data.data?.[0] || {};
       console.log(`[CJ ORDER] 🎉 SUCCESS - CJ Order ID: ${cjResult.orderId}`);
@@ -133,6 +134,7 @@ async function getAccessToken() {
     });
   }
 };
+
 function response(statusCode, body) {
   return {
     statusCode,
