@@ -7,7 +7,7 @@ exports.handler = async (event) => {
       return response(400, { success: false, error: "No data received" });
     }
     const body = JSON.parse(event.body);
-    let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
+        let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
     console.log(`[SAVE PENDING] Tentative pour payment_id: ${payment_id} | status: ${status}`);
 
@@ -63,6 +63,7 @@ exports.handler = async (event) => {
       "paid",
       now
     ]];
+
     // === TEST AUTOMATIQUE DE L'ONGLET ===
     const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
     let success = false;
