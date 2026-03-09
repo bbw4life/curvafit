@@ -41,7 +41,7 @@ exports.handler = async (event) => {
       now
     ]];
     // === TEST AUTOMATIQUE DE L'ONGLET ===
-    const rangesToTry = ["PendingOrders!A:Q", "Sheet1!A:Q", "Feuille 1!A:Q"];
+    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
     let success = false;
     for (const range of rangesToTry) {
       try {

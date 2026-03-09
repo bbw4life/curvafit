@@ -77,6 +77,11 @@ exports.handler = async (event) => {
       // ← AJOUTS LOGS DÉBUT : Pour déboguer le rejet
       console.log(`[CJ RESPONSE] Status HTTP: ${cjResponse.status}`);
       console.log(`[CJ RESPONSE] Body brut: ${responseText}`);
+      console.log(`[CJ RESPONSE] Status HTTP: ${cjResponse.status}`);
+      
+        console.log(`[CJ RESPONSE] Body brut: ${responseText}`);
+        if (data.code) console.log(`[CJ RESPONSE] Code d'erreur: ${data.code}`);
+        if (data.message) console.log(`[CJ RESPONSE] Message d'erreur: ${data.message}`);
       // ← AJOUTS LOGS FIN
       let data;
       try { data = JSON.parse(responseText); } catch { data = {}; }
