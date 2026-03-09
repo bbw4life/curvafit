@@ -4,16 +4,25 @@ const { google } = require('googleapis');
 exports.handler = async (event) => {
   console.log('[SAVE PENDING] Function invoked');
   try {
-    if (!event.body) return response(400, { success: false, error: "No data received" });
+    if (!event.body) {
+      return response(400, { success: false, error: "No data received" });
+    }
     const body = JSON.parse(event.body);
     let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
+    console.log(`[SAVE PENDING] Tentative pour payment_id: ${payment_id} | status: ${status}`);
 
+    // Normalize strings to remove accents
     const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
     shipping.fullName = normalize(shipping.fullName);
     shipping.email = normalize(shipping.email);
-    shipping.phone = normalize(shipping.phone);
-    shipping.country = normalize(shipping.country || "US");           // string (nom complet)
+    shipping.phone = normalize(shipping.phone);           // ← téléphone complet (code + numéro)
+    // === nom complet du pays depuis l'objet ===
+    const countryName = (typeof shipping.country === 'object' && shipping.country !== null) 
+      ? shipping.country.name 
+      : shipping.country || "US";
+    shipping.country = normalize(countryName);
+
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
@@ -36,8 +45,8 @@ exports.handler = async (event) => {
       payment_provider,
       payment_id,
       shipping.fullName || "",
-      shipping.email || "",
-      shipping.phone || "",
+      shipping.email || "",                    // ← colonne E : email (espace respecté)
+      shipping.phone || "",                    // ← colonne F : téléphone complet
       shipping.country || "US",
       shipping.state || "",
       shipping.city || "",
@@ -55,24 +64,34 @@ exports.handler = async (event) => {
     let success = false;
     for (const range of rangesToTry) {
       try {
+        console.log(`[SAVE PENDING] Essai range → ${range}`);
         const appendRes = await sheets.spreadsheets.values.append({
-          spreadsheetId, range, valueInputOption: "RAW", insertDataOption: "INSERT_ROWS", resource: { values }
+          spreadsheetId,
+          range: range,
+          valueInputOption: "RAW",
+          insertDataOption: "INSERT_ROWS",
+          resource: { values }
         });
-        console.log(`[SAVE PENDING] ✅ SAUVEGARDE OK dans ${range}`);
+        console.log(`[SAVE PENDING] ✅ SAUVEGARDE OK dans ${range} | ID: ${internalOrderId}`);
         success = true;
         break;
       } catch (err) {
-        console.log(`[SAVE PENDING] Échec avec ${range}`);
+        console.log(`[SAVE PENDING] ❌ Échec avec ${range} → ${err.message}`);
       }
     }
-    if (!success) throw new Error("Aucun onglet n'a fonctionné");
+    if (!success) throw new Error("Aucun nom d'onglet n'a fonctionné. Vérifie le nom exact en bas de ton Google Sheet.");
     return response(200, { success: true });
   } catch (error) {
     console.error("SAVE PENDING ERROR:", error.message);
+    console.error("Stack:", error.stack);
     return response(500, { success: false, error: error.message });
   }
 };
 
 function response(statusCode, body) {
-  return { statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+  return {
+    statusCode,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  };
 }
