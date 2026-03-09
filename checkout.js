@@ -1,4 +1,3 @@
-// checkout.js (modified)
 document.addEventListener('DOMContentLoaded', () => {
     let cart = [];
     try {
@@ -115,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: document.getElementById('phone').value.trim(),
-            country: selectedOption.value.trim(),
+            country: selectedOption.dataset.cca2 || selectedOption.value.trim(), // ← Utilise ISO code si disponible
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
