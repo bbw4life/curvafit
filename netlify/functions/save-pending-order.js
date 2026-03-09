@@ -20,15 +20,13 @@ exports.handler = async (event) => {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
     const now = new Date().toISOString();
-    const internalOrderId = `PENDING_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const values = [[
-      internalOrderId,
       payment_provider,
       payment_id,
       shipping.fullName || "",
       shipping.email || "",
       shipping.phone || "",
-      shipping.country || "US",
+      shipping.countryCode || shipping.country || "US",
       shipping.state || "",
       shipping.city || "",
       shipping.postalCode || "",
@@ -41,7 +39,7 @@ exports.handler = async (event) => {
       now
     ]];
     // === TEST AUTOMATIQUE DE L'ONGLET ===
-    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
+    const rangesToTry = ["Feuille 1!A:P", "PendingOrders!A:P", "Sheet1!A:P"]; // Changé à A:P (16 colonnes)
     let success = false;
     for (const range of rangesToTry) {
       try {
@@ -53,7 +51,7 @@ exports.handler = async (event) => {
           insertDataOption: "INSERT_ROWS",
           resource: { values }
         });
-        console.log(`[SAVE PENDING] ✅ SAUVEGARDE OK dans ${range} | ID: ${internalOrderId}`);
+        console.log(`[SAVE PENDING] ✅ SAUVEGARDE OK dans ${range} | ID: ${payment_id}`);
         success = true;
         break;
       } catch (err) {

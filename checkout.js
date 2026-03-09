@@ -115,7 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: document.getElementById('phone').value.trim(),
-            country: selectedOption.dataset.cca2 || selectedOption.value.trim(),  // ← Utilise ISO code si disponible
+            countryCode: selectedOption.dataset.cca2 || selectedOption.value.trim(),  // ISO2
+            countryName: selectedOption.value.trim(), // Nom complet
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
@@ -129,17 +130,11 @@ document.addEventListener('DOMContentLoaded', () => {
         payButton.textContent = "Processing...";
         const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
         const shippingData = getShippingData();
-        if (discountAmount > 0) {
-        }
         try {
             let response;
             let data;
-                       if (paymentMethod === 'stripe') {
-                const STRIPE_PUBLIC_KEY = "pk_test_51PMDwoF9QAVBUyaUqwc7ekbAhyZdI9oA3ubZT8b7TtWGrykoPLvsql4mexEwEoS5pggyssqN6jpj2w5VQMHOSftf00q97Rbt1f";
-
-                console.log("🔑 STRIPE PUBLIC KEY loaded successfully");
-
-                const stripe = Stripe(STRIPE_PUBLIC_KEY);
+            if (paymentMethod === 'stripe') {
+                const stripe = Stripe(window.STRIPE_PUBLIC_KEY);
 
                 response = await fetch('/.netlify/functions/create-stripe-session', {
                     method: 'POST',
@@ -155,42 +150,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 localStorage.setItem("pendingOrder", "stripe");
                 await stripe.redirectToCheckout({ sessionId: data.sessionId });
-            }else {
-            let paypalCart = [...cart];
-            if (discountAmount > 0) {
-                const preDiscount = getSubtotal();
-                const ratio = (preDiscount - discountAmount) / preDiscount;
-                paypalCart = cart.map(item => ({
-                ...item,
-                price: (Number(item.price) * ratio).toFixed(2)
-                }));
-            }
+            } else {
+                let paypalCart = [...cart];
+                if (discountAmount > 0) {
+                    const preDiscount = getSubtotal();
+                    const ratio = (preDiscount - discountAmount) / preDiscount;
+                    paypalCart = cart.map(item => ({
+                        ...item,
+                        price: (Number(item.price) * ratio).toFixed(2)
+                    }));
+                }
 
-            const taxes = getSubtotal() * TAX_RATE;
+                const taxes = getSubtotal() * TAX_RATE;
 
-            const bodyData = {
-                cart: paypalCart,
-                shipping: shippingData,
-                shipping_cost: SHIPPING_COST.toFixed(2),
-                tax: taxes.toFixed(2)
-            };
+                const bodyData = {
+                    cart: paypalCart,
+                    shipping: shippingData,
+                    shipping_cost: SHIPPING_COST.toFixed(2),
+                    tax: taxes.toFixed(2)
+                };
 
-            response = await fetch('/.netlify/functions/paypal-create-order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(bodyData)
-            });
+                response = await fetch('/.netlify/functions/paypal-create-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bodyData)
+                });
 
-            data = await response.json();
+                data = await response.json();
 
-            if (!response.ok || !data.orderID) {
-                throw new Error(data.error || 'PayPal order failed');
-            }
+                if (!response.ok || !data.orderID) {
+                    throw new Error(data.error || 'PayPal order failed');
+                }
 
-            // === REDIRECT DYNAMIQUE (sandbox OU live) ===
-            const paypalDomain = data.paypalDomain || 'https://www.sandbox.paypal.com';
-            localStorage.setItem("pendingOrder", "paypal");
-            window.location.href = `${paypalDomain}/checkoutnow?token=${data.orderID}`;
+                // === REDIRECT DYNAMIQUE (sandbox OU live) ===
+                const paypalDomain = data.paypalDomain || 'https://www.sandbox.paypal.com';
+                localStorage.setItem("pendingOrder", "paypal");
+                window.location.href = `${paypalDomain}/checkoutnow?token=${data.orderID}`;
             }
         } catch (error) {
             alert("Payment error: " + error.message);
@@ -212,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('click', (e) => {
         if (e.target === refundModal) refundModal.style.display = 'none';
         if (e.target === shippingModal) shippingModal.style.display = 'none';
-    });
+    }));
 
 
 
@@ -231,7 +226,7 @@ async function loadCountries() {
         const res = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,cca2');  // ← Ajout de cca2 pour ISO code
         const data = await res.json();
 
-        const countries = data.sort((a, b) =>
+        const countries = data.sort((a, b) => 
             a.name.common.localeCompare(b.name.common)
         );
 
@@ -239,8 +234,8 @@ async function loadCountries() {
             const option = document.createElement('option');
             option.value = country.name.common;
             option.textContent = country.name.common;
-            option.dataset.code = country.idd?.root
-                ? country.idd.root + (country.idd.suffixes?.[0] || '')
+            option.dataset.code = country.idd?.root 
+                ? country.idd.root + (country.idd.suffixes?.[0] || '') 
                 : '';
             option.dataset.cca2 = country.cca2;  // ← Stocke le code ISO
             countrySelect.appendChild(option);
@@ -332,16 +327,6 @@ function getSubtotal() {
 
 function updateTotals() {
     const subtotal = getSubtotal();
-    let bundleSavings = 0;
-    let hasBundle = false;
-
-    cart.forEach(item => {
-        if (item.fromBundle) {
-            hasBundle = true;
-            bundleSavings += (item.compare_price ? (item.compare_price - item.price) * item.quantity : 0);
-        }
-    });
-
     const taxes = subtotal * TAX_RATE;
     const finalTotal = subtotal + taxes + SHIPPING_COST - discountAmount;
 

@@ -2,6 +2,15 @@
 const fetch = require("node-fetch");
 const { google } = require('googleapis');
 
+// Map pour country name fallback
+const countryMap = {
+  'US': 'United States',
+  'CA': 'Canada',
+  'DO': 'Dominican Republic',
+  'BO': 'Bolivia',
+  // Ajoute d'autres si besoin
+};
+
 // Fonction pour obtenir le token depuis Google Sheet
 async function getAccessTokenFromSheet() {
   const auth = new google.auth.GoogleAuth({
@@ -77,11 +86,11 @@ exports.handler = async (event) => {
     if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
 
     // Validation des données d'expédition
-    if (!shipping.country || shipping.country.length !== 2) {
+    if (!shipping.countryCode || shipping.countryCode.length !== 2) {
       throw new Error("Invalid country code: must be ISO2 (e.g., 'US')");
     }
-    if (!shipping.fullName || !shipping.address || !shipping.city || !shipping.postalCode) {
-      throw new Error("Missing required shipping fields");
+    if (!shipping.fullName || !shipping.address || !shipping.city || !shipping.state) {
+      throw new Error("Missing required shipping fields: fullName, address, city, state");
     }
 
     const accessToken = await getAccessTokenFromSheet();
@@ -94,14 +103,17 @@ exports.handler = async (event) => {
       orderNumber: orderId,
       products: products,
       shippingInfo: {
-        countryCode: shipping.country || "US",
-        province: shipping.state || "",
-        city: shipping.city || "",
-        address: shipping.address,
-        zip: shipping.postalCode || "",
-        phone: shipping.phone || "",
-        shippingCustomerName: shipping.fullName,
-        email: shipping.email || ""
+        shippingCountryCode: shipping.countryCode || "US",
+        shippingCountry: shipping.countryName || countryMap[shipping.countryCode] || shipping.countryCode,
+        shippingProvince: shipping.state || "",
+        shippingCity: shipping.city || "",
+        shippingAddress: shipping.address || "",
+        shippingZip: shipping.postalCode || "",
+        shippingPhone: shipping.phone || "",
+        shippingCustomerName: shipping.fullName || "",
+        shippingEmail: shipping.email || "",
+        shippingAddress2: "",
+        shippingCounty: ""
       }
     };
     const orderBody = { orders: [singleOrder] };

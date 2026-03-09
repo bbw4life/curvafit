@@ -2,6 +2,15 @@
 const { google } = require("googleapis");
 const fetch = require("node-fetch");
 
+// Map pour country name
+const countryMap = {
+  'US': 'United States',
+  'CA': 'Canada',
+  'DO': 'Dominican Republic',
+  'BO': 'Bolivia',
+  // Ajoute d'autres
+};
+
 // Fonction pour obtenir le token depuis Google Sheet (même que dans create-cj-order)
 async function getAccessTokenFromSheet() {
   const auth = new google.auth.GoogleAuth({
@@ -79,7 +88,7 @@ exports.handler = async () => {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
+    const rangesToTry = ["Feuille 1!A:P", "PendingOrders!A:P", "Sheet1!A:P"]; // A:P
     let rows = [];
     let activeTab = "";
     for (const range of rangesToTry) {
@@ -106,21 +115,27 @@ exports.handler = async () => {
     let found = false;
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
-      const status = row[14] || "";
+      const status = row[13] || ""; // N: status
       if (!["pending_stock", "pending_rate_limit"].includes(status)) continue;
       found = true;
       processed++;
       const lineNumber = i + 2;
-      const internalId = row[0];
+      const internalId = row[1] || 'unknown'; // B: payment_id
       const shipping = {
-        fullName: row[3] || "", email: row[4] || "", phone: row[5] || "",
-        country: row[6] || "US", state: row[7] || "", city: row[8] || "",
-        postalCode: row[9] || "", address: row[10] || ""
+        fullName: row[2] || "", // C
+        email: row[3] || "", // D
+        phone: row[4] || "", // E
+        countryCode: row[5] || "US", // F
+        countryName: countryMap[row[5]] || row[5],
+        state: row[6] || "", // G
+        city: row[7] || "", // H
+        postalCode: row[8] || "", // I
+        address: row[9] || "" // J
       };
       const cart = [{
-        cj_product_id: row[11] || "",
-        cj_variant_id: row[12] || "",
-        quantity: parseInt(row[13]) || 1
+        cj_product_id: row[10] || "", // K
+        cj_variant_id: row[11] || "", // L
+        quantity: parseInt(row[12]) || 1 // M
       }];
       console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId}`);
       try {
@@ -134,7 +149,7 @@ exports.handler = async () => {
         if (createData.success) {
           await sheets.spreadsheets.values.update({
             spreadsheetId,
-            range: `${activeTab}!O${lineNumber}`,
+            range: `${activeTab}!N${lineNumber}`, // N for status
             valueInputOption: "RAW",
             resource: { values: [["completed"]] }
           });

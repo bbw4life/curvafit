@@ -83,7 +83,8 @@ exports.handler = async (event) => {
         city: ship.address?.admin_area_2 || "",
         state: ship.address?.admin_area_1 || "",
         postalCode: ship.address?.postal_code || "",
-        country: ship.address?.country_code || "US"
+        countryCode: ship.address?.country_code || "US",
+        countryName: ship.address?.country_code || "United States" // Fallback, but ideally from frontend
       };
       paymentVerified = true;
     }
