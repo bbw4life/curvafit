@@ -29,6 +29,29 @@ async function getAccessToken() {
   console.log("[CJ AUTH] ✅ Nouveau token mis en cache");
   return cachedToken;
 }
+async function getCountryInfo(received) {
+  try {
+    let url;
+    if (received.length === 2) {
+      // Assume it's code, fetch name
+      url = `https://restcountries.com/v3.1/alpha/${received.toUpperCase()}`;
+    } else {
+      // Assume it's name, fetch code
+      url = `https://restcountries.com/v3.1/name/${encodeURIComponent(received)}?fullText=true`;
+    }
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+    const data = await res.json();
+    if (received.length === 2) {
+      return { code: received.toUpperCase(), name: data[0]?.name?.common || "Unknown Country" };
+    } else {
+      return { code: data[0]?.cca2 || "US", name: received };
+    }
+  } catch (e) {
+    console.error("[COUNTRY INFO ERROR]", e.message);
+    return { code: "US", name: "United States" }; // Fallback
+  }
+}
 exports.handler = async (event) => {
   console.log("[CJ ORDER] Function invoked");
   try {
@@ -52,12 +75,15 @@ exports.handler = async (event) => {
     const city = shipping.city || '';
     const state = shipping.state || '';
     const postalCode = shipping.postalCode || '';
-    const countryCode = shipping.country || 'US';
+    const receivedCountry = shipping.country || 'United States';
+    const countryInfo = await getCountryInfo(receivedCountry);
+    const countryCode = countryInfo.code;
+    const countryName = countryInfo.name;
     // Transform to CJ format (flat fields)
     const orderBody = {
       orderNumber: orderNumber,
       shippingCountryCode: countryCode,
-      shippingCountry: countryMap[countryCode] || "Unknown Country", // Assuming countryMap is defined elsewhere or add it
+      shippingCountry: countryName,
       shippingProvince: state,
       shippingCity: city,
       shippingCustomerName: fullName,

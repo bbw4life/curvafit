@@ -1,4 +1,4 @@
-// save-pending-order.js
+// save-pending-order.js (modified)
 const { google } = require('googleapis');
 exports.handler = async (event) => {
   console.log('[SAVE PENDING] Function invoked');
@@ -10,10 +10,10 @@ exports.handler = async (event) => {
     let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
     console.log(`[SAVE PENDING] Tentative pour payment_id: ${payment_id} | status: ${status}`);
-    // Normalize strings to remove accents
+    // Normalize strings to remove accents (but keep spaces intact for email and other fields)
     const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
     shipping.fullName = normalize(shipping.fullName);
-    shipping.email = normalize(shipping.email); // though email shouldn't have accents
+    shipping.email = shipping.email || ""; // Do not normalize email to preserve any potential spaces (though emails typically have none)
     shipping.phone = normalize(shipping.phone);
     shipping.country = normalize(shipping.country);
     shipping.state = normalize(shipping.state);
