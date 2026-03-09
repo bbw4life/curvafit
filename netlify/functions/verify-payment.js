@@ -49,11 +49,10 @@ exports.handler = async (event) => {
       const captureRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, { method: "POST", headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" } });
       if (!captureRes.ok) {
         const errData = await captureRes.json();
-        console.log("PayPal capture error details:", JSON.stringify(errData)); // Ajout de log détaillé
-        if (errData.name === "RESOURCE_CONFLICT" && errData.details?.[0]?.issue === "DUPLICATE_INVOICE_ID") {
+        if (errData.name === "RESOURCE_CONFLICT" && errData.details[0].issue === "DUPLICATE_INVOICE_ID") {
           console.log("PayPal already captured - treating as completed");
         } else {
-          throw new Error("PayPal capture failed: " + JSON.stringify(errData));
+          throw new Error("PayPal capture failed");
         }
       }
       const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
@@ -83,44 +82,51 @@ exports.handler = async (event) => {
         city: ship.address?.admin_area_2 || "",
         state: ship.address?.admin_area_1 || "",
         postalCode: ship.address?.postal_code || "",
-        countryCode: ship.address?.country_code || "US",
-        countryName: ship.address?.country_code || "United States" // Fallback, but ideally from frontend
+        country: ship.address?.country_code || "US"
       };
       paymentVerified = true;
     }
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
-    console.log(`✅ ${cart.length} item(s) ready for CJ`);
-    // Séparer les items prêts et pending
-    const readyItems = cart.filter(item => item.cj_variant_id);
-    const pendingItems = cart.filter(item => !item.cj_variant_id);
-    // Sauvegarder les pending sans variant
-    for (const item of pendingItems) {
-      console.log(" → Pas de variant_id → save pending");
-      await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+    console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
+    let readyForCj = [];
+    for (let i = 0; i < cart.length; i++) {
+      const item = cart[i];
+      console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.cj_variant_id || 'NO_VARIANT'}`);
+      if (!item.cj_variant_id) {
+        await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+        continue;
+      }
+      readyForCj.push(item);
     }
-    // Traiter les ready en groupe
-    if (readyItems.length > 0) {
-      console.log("=== DÉBUT FULFILLMENT GROUPÉ ===");
-      const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
-      console.log(` 📡 Appel create-cj-order → ${cjUrl}`);
-      const cjRes = await fetch(cjUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: readyItems, shipping })
-      });
-      console.log(` 📥 CJ Order status: ${cjRes.status}`);
-      const cjData = await cjRes.json();
-      console.log(` 📊 CJ Order success: ${cjData.success || false}`);
-      if (cjData.success) {
-        console.log(` 🎉 SUCCÈS CJ pour l'ordre groupé`);
-      } else {
-        const errorMsg = cjData.error || '';
-        const code = cjData.code || 0;
-        const isRateLimit = [1600200, 1600201].includes(code) || errorMsg.includes("Too much") || errorMsg.includes("Quota") || errorMsg.includes("Many Requests");
-        const saveStatus = isRateLimit ? "pending_rate_limit" : "pending_stock";
-        console.log(` ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save each as ${saveStatus}`);
-        for (const item of readyItems) {
-          await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
+    if (readyForCj.length > 0) {
+      console.log(`✅ ${readyForCj.length} item(s) ready for CJ`);
+      try {
+        const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
+        console.log(` 📡 Appel create-cj-order → ${cjUrl}`);
+        const cjRes = await fetch(cjUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cart: readyForCj, shipping })
+        });
+        console.log(` 📥 CJ Order status: ${cjRes.status}`);
+        const cjData = await cjRes.json();
+        console.log(` 📊 CJ Order success: ${cjData.success || false}`);
+        if (cjData.success) {
+          console.log(` 🎉 SUCCÈS CJ pour les ${readyForCj.length} items`);
+        } else {
+          const errorMsg = cjData.error || '';
+          const code = cjData.code || 0;
+          const isRateLimit = [1600200, 1600201, 429].includes(code) || errorMsg.includes("Too much") || errorMsg.includes("Quota") || errorMsg.includes("Many Requests") || errorMsg.includes("QPS limit");
+          const saveStatus = isRateLimit ? "pending_rate_limit" : "pending_stock";
+          console.log(` ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save each as ${saveStatus}`);
+          for (const item of readyForCj) {
+            await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
+          }
+        }
+      } catch (e) {
+        console.error(` 💥 ERREUR CJ: ${e.message}`);
+        for (const item of readyForCj) {
+          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
         }
       }
     }

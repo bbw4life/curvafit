@@ -15,12 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const payButton = document.getElementById('pay-button');
     const paymentOptions = document.querySelectorAll('input[name="payment"]');
     let productsData = [];
-    let TAX_RATE = 0.1;  // Fallback si pas dans JSON
-    let SHIPPING_COST = 10.00;  // Fallback si pas dans JSON
+    let TAX_RATE = 0.1; // Fallback si pas dans JSON
+    let SHIPPING_COST = 10.00; // Fallback si pas dans JSON
     let promos = [];
     let appliedPromo = null;
     let discountAmount = 0;
-
     fetch('/products.data.json')
       .then(response => response.json())
       .then(data => {
@@ -32,11 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
           SHIPPING_COST = settings.shipping_cost || 10.00;
           promos = settings.promos || [];
         }
-        renderCart();  // Appeler renderCart après chargement pour appliquer les nouvelles valeurs
+        renderCart(); // Appeler renderCart après chargement pour appliquer les nouvelles valeurs
       })
       .catch(error => {
         console.error('Erreur de chargement de /products.data.json:', error);
-        renderCart();  // Continuer avec fallbacks si erreur
+        renderCart(); // Continuer avec fallbacks si erreur
       });
     function renderCart() {
         if (!cart.length) {
@@ -115,8 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: document.getElementById('phone').value.trim(),
-            countryCode: selectedOption.dataset.cca2 || selectedOption.value.trim(),  // ISO2
-            countryName: selectedOption.value.trim(), // Nom complet
+            country: selectedOption.dataset.cca2 || selectedOption.value.trim(), // ← Utilise ISO code si disponible
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
@@ -130,62 +128,57 @@ document.addEventListener('DOMContentLoaded', () => {
         payButton.textContent = "Processing...";
         const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
         const shippingData = getShippingData();
+        if (discountAmount > 0) {
+        }
         try {
             let response;
             let data;
-            if (paymentMethod === 'stripe') {
-                const stripe = Stripe(window.STRIPE_PUBLIC_KEY);
-
+                       if (paymentMethod === 'stripe') {
+                const STRIPE_PUBLIC_KEY = "pk_test_51PMDwoF9QAVBUyaUqwc7ekbAhyZdI9oA3ubZT8b7TtWGrykoPLvsql4mexEwEoS5pggyssqN6jpj2w5VQMHOSftf00q97Rbt1f";
+                console.log("🔑 STRIPE PUBLIC KEY loaded successfully");
+                const stripe = Stripe(STRIPE_PUBLIC_KEY);
                 response = await fetch('/.netlify/functions/create-stripe-session', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ cart, shipping: shippingData })
                 });
                 data = await response.json();
-
                 if (!response.ok || !data.sessionId) {
                     console.error("Stripe session error:", data);
                     throw new Error(data.error || 'Stripe session failed');
                 }
-
                 localStorage.setItem("pendingOrder", "stripe");
                 await stripe.redirectToCheckout({ sessionId: data.sessionId });
-            } else {
-                let paypalCart = [...cart];
-                if (discountAmount > 0) {
-                    const preDiscount = getSubtotal();
-                    const ratio = (preDiscount - discountAmount) / preDiscount;
-                    paypalCart = cart.map(item => ({
-                        ...item,
-                        price: (Number(item.price) * ratio).toFixed(2)
-                    }));
-                }
-
-                const taxes = getSubtotal() * TAX_RATE;
-
-                const bodyData = {
-                    cart: paypalCart,
-                    shipping: shippingData,
-                    shipping_cost: SHIPPING_COST.toFixed(2),
-                    tax: taxes.toFixed(2)
-                };
-
-                response = await fetch('/.netlify/functions/paypal-create-order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(bodyData)
-                });
-
-                data = await response.json();
-
-                if (!response.ok || !data.orderID) {
-                    throw new Error(data.error || 'PayPal order failed');
-                }
-
-                // === REDIRECT DYNAMIQUE (sandbox OU live) ===
-                const paypalDomain = data.paypalDomain || 'https://www.sandbox.paypal.com';
-                localStorage.setItem("pendingOrder", "paypal");
-                window.location.href = `${paypalDomain}/checkoutnow?token=${data.orderID}`;
+            }else {
+            let paypalCart = [...cart];
+            if (discountAmount > 0) {
+                const preDiscount = getSubtotal();
+                const ratio = (preDiscount - discountAmount) / preDiscount;
+                paypalCart = cart.map(item => ({
+                ...item,
+                price: (Number(item.price) * ratio).toFixed(2)
+                }));
+            }
+            const taxes = getSubtotal() * TAX_RATE;
+            const bodyData = {
+                cart: paypalCart,
+                shipping: shippingData,
+                shipping_cost: SHIPPING_COST.toFixed(2),
+                tax: taxes.toFixed(2)
+            };
+            response = await fetch('/.netlify/functions/paypal-create-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bodyData)
+            });
+            data = await response.json();
+            if (!response.ok || !data.orderID) {
+                throw new Error(data.error || 'PayPal order failed');
+            }
+            // === REDIRECT DYNAMIQUE (sandbox OU live) ===
+            const paypalDomain = data.paypalDomain || 'https://www.sandbox.paypal.com';
+            localStorage.setItem("pendingOrder", "paypal");
+            window.location.href = `${paypalDomain}/checkoutnow?token=${data.orderID}`;
             }
         } catch (error) {
             alert("Payment error: " + error.message);
@@ -207,66 +200,51 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('click', (e) => {
         if (e.target === refundModal) refundModal.style.display = 'none';
         if (e.target === shippingModal) shippingModal.style.display = 'none';
-    }));
-
-
-
+    });
     /* ===========================
    COUNTRY / CITY AUTO SYSTEM
 =========================== */
-
 const countrySelect = document.getElementById('country');
 const citySelect = document.getElementById('city');
 const phoneCodeInput = document.getElementById('phone-code');
 const postalInput = document.getElementById('postal-code');
-
 /* Load Countries */
 async function loadCountries() {
     try {
-        const res = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,cca2');  // ← Ajout de cca2 pour ISO code
+        const res = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,cca2'); // ← Ajout de cca2 pour ISO code
         const data = await res.json();
-
-        const countries = data.sort((a, b) => 
+        const countries = data.sort((a, b) =>
             a.name.common.localeCompare(b.name.common)
         );
-
         countries.forEach(country => {
             const option = document.createElement('option');
             option.value = country.name.common;
             option.textContent = country.name.common;
-            option.dataset.code = country.idd?.root 
-                ? country.idd.root + (country.idd.suffixes?.[0] || '') 
+            option.dataset.code = country.idd?.root
+                ? country.idd.root + (country.idd.suffixes?.[0] || '')
                 : '';
-            option.dataset.cca2 = country.cca2;  // ← Stocke le code ISO
+            option.dataset.cca2 = country.cca2; // ← Stocke le code ISO
             countrySelect.appendChild(option);
         });
-
     } catch (err) {
         console.error("Country load error", err);
     }
 }
-
 /* When country selected */
 countrySelect.addEventListener('change', async function () {
     const selectedOption = this.options[this.selectedIndex];
-
     // Phone code
     phoneCodeInput.value = selectedOption.dataset.code || '';
-
     // Reset cities
     citySelect.innerHTML = '<option value="">Loading cities...</option>';
-
     try {
         const res = await fetch('https://countriesnow.space/api/v0.1/countries/cities', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ country: selectedOption.value })  // ← Utilise le nom complet pour l'API des villes
+            body: JSON.stringify({ country: selectedOption.value }) // ← Utilise le nom complet pour l'API des villes
         });
-
         const data = await res.json();
-
         citySelect.innerHTML = '<option value="">Select your city</option>';
-
         if (data.data) {
             data.data.forEach(city => {
                 const option = document.createElement('option');
@@ -275,29 +253,23 @@ countrySelect.addEventListener('change', async function () {
                 citySelect.appendChild(option);
             });
         }
-
     } catch (err) {
         console.error("City load error", err);
         citySelect.innerHTML = '<option value="">No cities found</option>';
     }
 });
-
 /* Init */
 loadCountries();
-
 function updatePromoDisplay() {
     const hasBundle = cart.some(item => item.fromBundle);
     const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
     const suggested = promos.find(p => p.items === totalQuantity);
-
     const suggestedDiv = document.getElementById('suggested-promo');
     const suggestedCodeEl = document.getElementById('suggested-code');
     const itemCountDisplay = document.getElementById('item-count-display');
     const promoMessage = document.getElementById('promo-message');
-
     if (suggestedDiv && suggestedCodeEl && itemCountDisplay) {
         itemCountDisplay.textContent = totalQuantity;
-
         if (!hasBundle && suggested) {
             suggestedDiv.style.display = 'block';
             suggestedCodeEl.textContent = suggested.code;
@@ -305,7 +277,6 @@ function updatePromoDisplay() {
             suggestedDiv.style.display = 'none';
         }
     }
-
     // Réinitialise message si bundle
     if (hasBundle) {
         promoMessage.textContent = "Promo codes are not available with bundle purchases.";
@@ -314,7 +285,6 @@ function updatePromoDisplay() {
         promoMessage.textContent = '';
     }
 }
-
 function getSubtotal() {
     let subtotal = 0;
     cart.forEach(item => {
@@ -324,17 +294,22 @@ function getSubtotal() {
     });
     return subtotal;
 }
-
 function updateTotals() {
     const subtotal = getSubtotal();
+    let bundleSavings = 0;
+    let hasBundle = false;
+    cart.forEach(item => {
+        if (item.fromBundle) {
+            hasBundle = true;
+            bundleSavings += (item.compare_price ? (item.compare_price - item.price) * item.quantity : 0);
+        }
+    });
     const taxes = subtotal * TAX_RATE;
     const finalTotal = subtotal + taxes + SHIPPING_COST - discountAmount;
-
     document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
     document.getElementById('taxes').textContent = `$${taxes.toFixed(2)}`;
     document.getElementById('shipping').textContent = `$${SHIPPING_COST.toFixed(2)}`;
     document.getElementById('total').textContent = `$${finalTotal.toFixed(2)}`;
-
     // Affichage discount
     const promoLine = document.getElementById('promo-line');
     const discountEl = document.getElementById('discount-amount');
@@ -345,7 +320,6 @@ function updateTotals() {
         promoLine.style.display = 'none';
     }
 }
-
 // Copy bouton
 document.getElementById('copy-suggested')?.addEventListener('click', () => {
     const code = document.getElementById('suggested-code').textContent;
@@ -353,28 +327,23 @@ document.getElementById('copy-suggested')?.addEventListener('click', () => {
         alert('Code copied: ' + code);
     });
 });
-
 // Apply promo
 document.getElementById('apply-promo')?.addEventListener('click', () => {
     const input = document.getElementById('promo-input').value.trim().toUpperCase();
     const promoMessage = document.getElementById('promo-message');
     const hasBundle = cart.some(item => item.fromBundle);
     const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-
     if (hasBundle) {
         promoMessage.textContent = "Promo codes cannot be used with bundles.";
         promoMessage.style.color = 'red';
         return;
     }
-
     if (!input) {
         promoMessage.textContent = "Please enter a code.";
         promoMessage.style.color = 'red';
         return;
     }
-
     const promo = promos.find(p => p.code.toUpperCase() === input);
-
     if (promo && promo.items === totalQuantity) {
         appliedPromo = promo;
         const subtotal = getSubtotal();
@@ -390,5 +359,4 @@ document.getElementById('apply-promo')?.addEventListener('click', () => {
         updateTotals();
     }
 });
-
 });
