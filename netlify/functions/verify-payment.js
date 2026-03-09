@@ -77,6 +77,7 @@ exports.handler = async (event) => {
       shipping = {
         fullName: ship.name?.full_name || `${payer.name?.given_name || ''} ${payer.name?.surname || ''}`.trim(),
         email: payer.email_address || "",
+        phone: payer.phone?.phone_number?.national_number || "",
         address: ship.address?.address_line_1 || "",
         city: ship.address?.admin_area_2 || "",
         state: ship.address?.admin_area_1 || "",

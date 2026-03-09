@@ -52,7 +52,7 @@ exports.handler = async (event) => {
         address: shipping.address,
         zip: shipping.postalCode || "",
         phone: shipping.phone || "",
-        name: shipping.fullName,
+        shippingCustomerName: shipping.fullName,  // ← Correction : 'name' → 'shippingCustomerName' (requis par docs CJ)
         email: shipping.email || ""
       }
     };
@@ -74,8 +74,19 @@ exports.handler = async (event) => {
         }
       );
       const responseText = await cjResponse.text();
+      // ← AJOUTS LOGS DÉBUT : Pour déboguer le rejet
+      console.log(`[CJ RESPONSE] Status HTTP: ${cjResponse.status}`);
+      console.log(`[CJ RESPONSE] Body brut: ${responseText}`);
+      // ← AJOUTS LOGS FIN
       let data;
       try { data = JSON.parse(responseText); } catch { data = {}; }
+      // ← AJOUT LOGS : Si parsé, log code et message
+      if (data.code) {
+        console.log(`[CJ RESPONSE] Code d'erreur: ${data.code}`);
+      }
+      if (data.message) {
+        console.log(`[CJ RESPONSE] Message d'erreur: ${data.message}`);
+      }
       if (cjResponse.ok && data.code === 200) {
         const cjResult = data.data?.[0];
         console.log(`[CJ ORDER] 🎉 SUCCÈS - CJ Order ID: ${cjResult.orderId}`);
