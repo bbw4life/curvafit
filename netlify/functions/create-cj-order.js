@@ -21,6 +21,7 @@ async function getAccessToken() {
   );
   const tokenData = await tokenRes.json();
   if (!tokenRes.ok || tokenData.code !== 200) {
+    console.error(`[CJ AUTH ERROR] Code: ${tokenData.code} | Message: ${tokenData.message}`);
     throw new Error(tokenData.message || "Failed to get CJ access token");
   }
   cachedToken = tokenData.data.accessToken;
@@ -33,14 +34,14 @@ exports.handler = async (event) => {
   try {
     if (!event.body) throw new Error("No data received");
     const { cart, shipping } = JSON.parse(event.body);
-    console.log("[CJ ORDER] Cart received:", cart);
-    console.log("[CJ ORDER] Shipping received:", shipping);
+    console.log("[CJ ORDER] Cart received:", JSON.stringify(cart));
+    console.log("[CJ ORDER] Shipping received:", JSON.stringify(shipping));
     if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
     const accessToken = await getAccessToken();
     const orderId = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const products = cart.map(item => ({
-      vid: item.cj_variant_id,
-      quantity: parseInt(item.quantity)
+      vid: item.cj_variant_id || '',  // Assure string
+      quantity: parseInt(item.quantity) || 1
     }));
     const singleOrder = {
       orderNumber: orderId,
@@ -49,14 +50,15 @@ exports.handler = async (event) => {
         countryCode: shipping.country || "US",
         province: shipping.state || "",
         city: shipping.city || "",
-        address: shipping.address,
+        address: shipping.address || "",
         zip: shipping.postalCode || "",
         phone: shipping.phone || "",
-        shippingCustomerName: shipping.fullName,
+        shippingCustomerName: shipping.fullName || "",
         email: shipping.email || ""
       }
     };
     const orderBody = { orders: [singleOrder] };
+    console.log("[CJ ORDER] Body envoyé à CJ:", JSON.stringify(orderBody));
     const cjResponse = await fetch(
       "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrder",
       {

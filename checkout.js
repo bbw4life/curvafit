@@ -42,6 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
             cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
             return;
         }
+        // Vérifie si tous les items ont cj ids (pour debug CJ)
+        const missingCj = cart.some(item => !item.cj_variant_id || !item.cj_product_id);
+        if (missingCj) {
+            alert("Attention: Certains produits n'ont pas d'ID CJ. La commande ne passera pas à CJ Dropshipping.");
+        }
         cartItemsContainer.innerHTML = '';
         let subtotal = 0;
         let bundleSavings = 0;
@@ -262,7 +267,7 @@ countrySelect.addEventListener('change', async function () {
 loadCountries();
 function updatePromoDisplay() {
     const hasBundle = cart.some(item => item.fromBundle);
-    const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const totalQuantity = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
     const suggested = promos.find(p => p.items === totalQuantity);
     const suggestedDiv = document.getElementById('suggested-promo');
     const suggestedCodeEl = document.getElementById('suggested-code');
@@ -301,7 +306,7 @@ function updateTotals() {
     cart.forEach(item => {
         if (item.fromBundle) {
             hasBundle = true;
-            bundleSavings += (item.compare_price ? (item.compare_price - item.price) * item.quantity : 0);
+            bundleSavings += (item.compare_price ? (item.compare_price - item.price) * (item.quantity || 0) : 0);
         }
     });
     const taxes = subtotal * TAX_RATE;
@@ -332,7 +337,7 @@ document.getElementById('apply-promo')?.addEventListener('click', () => {
     const input = document.getElementById('promo-input').value.trim().toUpperCase();
     const promoMessage = document.getElementById('promo-message');
     const hasBundle = cart.some(item => item.fromBundle);
-    const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const totalQuantity = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
     if (hasBundle) {
         promoMessage.textContent = "Promo codes cannot be used with bundles.";
         promoMessage.style.color = 'red';

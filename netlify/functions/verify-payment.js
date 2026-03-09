@@ -93,6 +93,7 @@ exports.handler = async (event) => {
       const item = cart[i];
       console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.cj_variant_id || 'NO_VARIANT'}`);
       if (!item.cj_variant_id) {
+        console.log(`⚠️ Item sans cj_variant_id → Sauvegarde en pending`);
         await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
         continue;
       }
@@ -102,7 +103,7 @@ exports.handler = async (event) => {
       console.log(`✅ ${readyForCj.length} item(s) ready for CJ`);
       try {
         const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
-        console.log(` 📡 Appel create-cj-order → ${cjUrl}`);
+        console.log(` 📡 Appel create-cj-order → ${cjUrl} avec cart: ${JSON.stringify(readyForCj)}`);
         const cjRes = await fetch(cjUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -110,7 +111,7 @@ exports.handler = async (event) => {
         });
         console.log(` 📥 CJ Order status: ${cjRes.status}`);
         const cjData = await cjRes.json();
-        console.log(` 📊 CJ Order success: ${cjData.success || false}`);
+        console.log(` 📊 CJ Order success: ${cjData.success || false} | Data: ${JSON.stringify(cjData)}`);
         if (cjData.success) {
           console.log(` 🎉 SUCCÈS CJ pour les ${readyForCj.length} items`);
         } else {
@@ -176,6 +177,7 @@ async function isAlreadyProcessed(paymentId) {
 // ============================================================================
 async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending_stock") {
   try {
+    console.log(`Sauvegarde pending pour item: ${JSON.stringify(item)} | status: ${status}`);
     await fetch(`${BASE_URL}/.netlify/functions/save-pending-order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

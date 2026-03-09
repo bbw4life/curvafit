@@ -39,7 +39,7 @@ exports.handler = async () => {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
+    const rangesToTry = ["PendingOrders!A:Q", "Sheet1!A:Q", "Feuille 1!A:Q"];
     let rows = [];
     let activeTab = "";
     for (const range of rangesToTry) {
@@ -63,7 +63,8 @@ exports.handler = async () => {
     let processed = 0;
     let fulfilled = 0;
     let errors = [];
-    for (let i = 0; i < dataRows.length; i++) {
+    const maxProcess = 5; // Limite à 5 par invocation pour rate limits
+    for (let i = 0; i < dataRows.length && processed < maxProcess; i++) {
       const row = dataRows[i];
       const status = row[14] || "";
       if (!["pending_stock", "pending_rate_limit"].includes(status)) continue;
@@ -106,7 +107,7 @@ exports.handler = async () => {
         console.error(` ❌ Erreur ligne ${lineNumber}:`, err.message);
         errors.push(`Ligne ${lineNumber}: ${err.message}`);
       }
-      break; // Process only one per invocation to respect rate limits
+      await delay(2000); // Delay 2s entre chaque pour rate limits CJ
     }
     console.log(`[RETRY PENDING] ✅ FIN - Traités: ${processed} | Réussis: ${fulfilled}`);
     return { statusCode: 200, body: JSON.stringify({ success: true, processed, fulfilled, errors }) };

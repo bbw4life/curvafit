@@ -10,15 +10,15 @@ exports.handler = async (event) => {
     let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
     console.log(`[SAVE PENDING] Tentative pour payment_id: ${payment_id} | status: ${status}`);
-    // Normalize strings to remove accents
-    const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
+    // Normalize strings to remove accents (mais seulement si nécessaire, pour éviter pertes)
+    const normalize = (str) => str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
     shipping.fullName = normalize(shipping.fullName);
-    shipping.email = normalize(shipping.email); // though email shouldn't have accents
-    shipping.phone = normalize(shipping.phone);
-    shipping.country = normalize(shipping.country);
-    shipping.state = normalize(shipping.state);
-    shipping.city = normalize(shipping.city);
-    shipping.postalCode = normalize(shipping.postalCode);
+    shipping.email = shipping.email || ""; // Pas de normalize pour email
+    shipping.phone = shipping.phone || "";
+    shipping.country = shipping.country || "US";
+    shipping.state = shipping.state || "";
+    shipping.city = shipping.city || "";
+    shipping.postalCode = shipping.postalCode || "";
     shipping.address = normalize(shipping.address);
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -32,27 +32,43 @@ exports.handler = async (event) => {
     const now = new Date().toISOString();
     const internalOrderId = `PENDING_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const values = [[
-      internalOrderId,
-      payment_provider,
-      payment_id,
-      shipping.fullName || "",
-      shipping.email || "",
-      shipping.phone || "",
-      shipping.country || "US",
-      shipping.state || "",
-      shipping.city || "",
-      shipping.postalCode || "",
-      shipping.address || "",
-      item.cj_product_id || "",
-      item.cj_variant_id || "",
-      item.quantity || 1,
-      status, // pending_stock ou pending_rate_limit
-      "paid",
-      now
+      internalOrderId,         // A
+      payment_provider,        // B
+      payment_id,              // C
+      shipping.fullName,       // D
+      shipping.email,          // E
+      shipping.phone,          // F
+      shipping.country,        // G
+      shipping.state,          // H
+      shipping.city,           // I
+      shipping.postalCode,     // J
+      shipping.address,        // K
+      item.cj_product_id || "",// L
+      item.cj_variant_id || "",// M
+      item.quantity || 1,      // N
+      status,                  // O
+      "paid",                  // P
+      now                      // Q
     ]];
-    // === TEST AUTOMATIQUE DE L'ONGLET ===
-    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
+    // === PRIORITÉ À PendingOrders, ET CRÉATION SI ABSENT ===
+    const preferredTab = "PendingOrders";
+    const rangesToTry = [`${preferredTab}!A:Q`, "Sheet1!A:Q", "Feuille 1!A:Q"];
     let success = false;
+    let activeRange = rangesToTry[0]; // Par défaut PendingOrders
+    try {
+      // Vérifie si l'onglet existe, sinon crée-le
+      const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
+      const sheetExists = spreadsheet.data.sheets.some(s => s.properties.title === preferredTab);
+      if (!sheetExists) {
+        console.log(`[SAVE PENDING] Création de l'onglet ${preferredTab}`);
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId,
+          resource: { requests: [{ addSheet: { properties: { title: preferredTab } } }] }
+        });
+      }
+    } catch (err) {
+      console.error(`[SAVE PENDING] Erreur création onglet: ${err.message}`);
+    }
     for (const range of rangesToTry) {
       try {
         console.log(`[SAVE PENDING] Essai range → ${range}`);
