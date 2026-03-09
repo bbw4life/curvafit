@@ -1,8 +1,10 @@
 // create-cj-order.js
 const fetch = require("node-fetch");
+
 // === CACHE GLOBAL DU TOKEN (dure ~2 heures) ===
 let cachedToken = null;
 let tokenExpiry = 0;
+
 async function getAccessToken() {
   const now = Date.now();
   if (cachedToken && now < tokenExpiry) {
@@ -25,10 +27,11 @@ async function getAccessToken() {
     throw new Error(tokenData.message || "Failed to get CJ access token");
   }
   cachedToken = tokenData.data.accessToken;
-  tokenExpiry = now + 1000 * 60 * 110; // 110 minutes
+  tokenExpiry = now + 1000 * 60 * 110;
   console.log("[CJ AUTH] ✅ Nouveau token mis en cache");
   return cachedToken;
 }
+
 exports.handler = async (event) => {
   console.log("[CJ ORDER] Function invoked");
   try {
@@ -46,43 +49,42 @@ exports.handler = async (event) => {
       quantity: parseInt(item.quantity) || 1
     }));
 
-    // ====================== RÉCUPÉRATION NOM COMPLET + CODE ISO ======================
+    // === MODIFICATION 2 : récupération nom complet + code ISO ===
+    const countryObj = typeof shipping.country === 'object' && shipping.country !== null 
+      ? shipping.country 
+      : { name: shipping.country || 'US', code: shipping.country || 'US' };
+
+    const countryCode = countryObj.code || 'US';
+    const countryName = countryObj.name || 'United States';
+
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';
     let phone = shipping.phone || "0000000000";
+    console.log("PHONE RECEIVED (complet):", phone);
 
-    let countryCode = 'US';
-    let countryName = 'United States';
-
-    if (typeof shipping.country === 'object' && shipping.country !== null) {
-      countryCode = shipping.country.iso || 'US';
-      countryName = shipping.country.name || 'United States';
-    } else {
-      countryCode = shipping.country || 'US';
-      countryName = shipping.country || 'United States';
-    }
-    console.log(`[CJ ORDER] Country → "${countryName}" (${countryCode}) | Phone: ${phone}`);
-    // =================================================================================
+    const address = shipping.address || '';
+    const city = shipping.city || '';
+    const state = shipping.state || '';
+    const postalCode = shipping.postalCode || '';
 
     const orderBody = {
       orderNumber: orderNumber,
       shippingCountryCode: countryCode,
-      shippingCountry: countryName,
-      shippingProvince: shipping.state || '',
-      shippingCity: shipping.city || '',
+      shippingCountry: countryName,                    // nom complet
+      shippingProvince: state,
+      shippingCity: city,
       shippingCustomerName: fullName,
-      shippingAddress: shipping.address || '',
+      shippingAddress: address,
       email: email,
       logisticName: "CJPacket",
       fromCountryCode: "CN",
       products: products,
       payType: 2,
-      shippingZip: shipping.postalCode || '',
+      shippingZip: postalCode,
       shippingPhone: phone
     };
 
     console.log("SENDING TO CJ:", orderBody);
-
     const cjResponse = await fetch(
       "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrderV2",
       {
@@ -94,17 +96,14 @@ exports.handler = async (event) => {
         body: JSON.stringify(orderBody)
       }
     );
+
     const responseText = await cjResponse.text();
     console.log(`[CJ RESPONSE] HTTP Status: ${cjResponse.status}`);
     console.log(`[CJ RESPONSE] Raw Body: ${responseText}`);
+
     let data;
-    try {
-      data = JSON.parse(responseText);
-    } catch {
-      data = {};
-    }
-    if (data.code) console.log(`[CJ RESPONSE] Error Code: ${data.code}`);
-    if (data.message) console.log(`[CJ RESPONSE] Error Message: ${data.message}`);
+    try { data = JSON.parse(responseText); } catch { data = {}; }
+
     if (cjResponse.ok && data.code === 200) {
       const cjResult = data.data?.[0] || {};
       console.log(`[CJ ORDER] 🎉 SUCCESS - CJ Order ID: ${cjResult.orderId}`);
@@ -133,6 +132,7 @@ exports.handler = async (event) => {
     });
   }
 };
+
 function response(statusCode, body) {
   return {
     statusCode,

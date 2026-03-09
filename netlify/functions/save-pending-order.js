@@ -1,5 +1,6 @@
 // save-pending-order.js
 const { google } = require('googleapis');
+
 exports.handler = async (event) => {
   console.log('[SAVE PENDING] Function invoked');
   try {
@@ -7,30 +8,21 @@ exports.handler = async (event) => {
       return response(400, { success: false, error: "No data received" });
     }
     const body = JSON.parse(event.body);
-        let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
+    let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
+
     console.log(`[SAVE PENDING] Tentative pour payment_id: ${payment_id} | status: ${status}`);
 
-    // ====================== TÉLÉPHONE + CORRECTION EMAIL ======================
-    let phone = shipping.phone || "";
-
-    // Normalize (accents)
+    // Normalize strings to remove accents
     const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
-
     shipping.fullName = normalize(shipping.fullName);
     shipping.email = normalize(shipping.email);
-    shipping.phone = phone;                              // ← Téléphone bien récupéré
-    // Pays : on prend le nom complet même s'il arrive en objet
-    shipping.country = normalize(
-      typeof shipping.country === 'object' && shipping.country !== null
-        ? shipping.country.name || "US"
-        : shipping.country || "US"
-    );
+    shipping.phone = normalize(shipping.phone);        // téléphone complet maintenant
+    shipping.country = normalize(shipping.country?.name || shipping.country || "US");
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
     shipping.address = normalize(shipping.address);
-    // ========================================================================
 
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -48,10 +40,10 @@ exports.handler = async (event) => {
       internalOrderId,
       payment_provider,
       payment_id,
-      shipping.fullName || "",      // D
-      shipping.email || "",         // E ← Email bien à sa place (espace corrigé)
-      shipping.phone || "",         // F ← Téléphone complet
-      shipping.country || "US",     // G
+      shipping.fullName || "",
+      shipping.email || "",                    // ← Colonne E : email (espace respecté)
+      shipping.phone || "",                    // ← Colonne F : téléphone complet (code + numéro)
+      shipping.country || "US",
       shipping.state || "",
       shipping.city || "",
       shipping.postalCode || "",
@@ -64,7 +56,6 @@ exports.handler = async (event) => {
       now
     ]];
 
-    // === TEST AUTOMATIQUE DE L'ONGLET ===
     const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
     let success = false;
     for (const range of rangesToTry) {
@@ -92,6 +83,7 @@ exports.handler = async (event) => {
     return response(500, { success: false, error: error.message });
   }
 };
+
 function response(statusCode, body) {
   return {
     statusCode,

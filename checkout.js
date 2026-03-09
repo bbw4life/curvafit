@@ -1,7 +1,3 @@
-// ============================================
-// CHECKOUT.JS COMPLET & CORRIGÉ (PayPal + Stripe 100% fonctionnels)
-// Remplace TOUT le contenu de ton fichier checkout.js par ce code
-// ============================================
 document.addEventListener('DOMContentLoaded', () => {
     let cart = [];
     try {
@@ -10,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {
         cart = [];
     }
-
     const cartItemsContainer = document.querySelector('.cart-items');
     const subtotalElement = document.getElementById('subtotal');
     const taxesElement = document.getElementById('taxes');
@@ -19,10 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const shippingForm = document.getElementById('shipping-form');
     const payButton = document.getElementById('pay-button');
     const paymentOptions = document.querySelectorAll('input[name="payment"]');
-
     let productsData = [];
-    let TAX_RATE = 0.1;
-    let SHIPPING_COST = 10.00;
+    let TAX_RATE = 0.1; // Fallback si pas dans JSON
+    let SHIPPING_COST = 10.00; // Fallback si pas dans JSON
     let promos = [];
     let appliedPromo = null;
     let discountAmount = 0;
@@ -39,7 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         renderCart();
       })
-      .catch(() => renderCart());
+      .catch(error => {
+        console.error('Erreur de chargement de /products.data.json:', error);
+        renderCart();
+      });
 
     function renderCart() {
         if (!cart.length) {
@@ -92,7 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     paymentOptions.forEach(option => {
         option.addEventListener('change', () => {
-            payButton.textContent = option.value === 'stripe' ? 'Pay with Card' : 'Pay with PayPal';
+            payButton.textContent =
+                option.value === 'stripe'
+                    ? 'Pay with Card'
+                    : 'Pay with PayPal';
         });
     });
 
@@ -111,69 +111,63 @@ document.addEventListener('DOMContentLoaded', () => {
         return valid;
     }
 
-    // ====================== FONCTION CORRIGÉE (PayPal MARCHE À NOUVEAU) ======================
     function getShippingData() {
         const countrySelect = document.getElementById('country');
         const selectedOption = countrySelect.options[countrySelect.selectedIndex];
         
         const phoneCode = document.getElementById('phone-code').value.trim();
         const phoneNumber = document.getElementById('phone').value.trim();
-        
+        const fullPhone = (phoneCode + phoneNumber).replace(/\s+/g, '');
+
         return {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
-            phone: (phoneCode + phoneNumber).replace(/\s+/g, ''),
-            
-            // === PAYPAL SAUVÉ : country reste une STRING (comme avant) ===
-            country: selectedOption.value.trim(),           // ← STRING obligatoire pour PayPal
-            countryIso: selectedOption.dataset.cca2 || '',  // ← ISO pour CJ et save-pending
-            // ===================================================================
-            
+            phone: fullPhone,
+            // === MODIFICATION 1 : nom complet + code ISO dans shipping.country ===
+            country: {
+                name: selectedOption.value.trim(),
+                code: selectedOption.dataset.cca2 || ''
+            },
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
             address: document.getElementById('address').value.trim()
         };
     }
-    // =================================================================================
 
     payButton.addEventListener('click', async () => {
         if (!validateForm()) return;
         if (!cart.length) return alert('Your cart is empty.');
-        
         payButton.disabled = true;
         payButton.textContent = "Processing...";
-
         const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
         const shippingData = getShippingData();
 
         try {
-            let response, data;
-
+            let response;
+            let data;
             if (paymentMethod === 'stripe') {
                 const STRIPE_PUBLIC_KEY = "pk_test_51PMDwoF9QAVBUyaUqwc7ekbAhyZdI9oA3ubZT8b7TtWGrykoPLvsql4mexEwEoS5pggyssqN6jpj2w5VQMHOSftf00q97Rbt1f";
                 const stripe = Stripe(STRIPE_PUBLIC_KEY);
-
                 response = await fetch('/.netlify/functions/create-stripe-session', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ cart, shipping: shippingData })
                 });
                 data = await response.json();
-
-                if (!response.ok || !data.sessionId) throw new Error(data.error || 'Stripe session failed');
-
+                if (!response.ok || !data.sessionId) {
+                    throw new Error(data.error || 'Stripe session failed');
+                }
                 localStorage.setItem("pendingOrder", "stripe");
                 await stripe.redirectToCheckout({ sessionId: data.sessionId });
             } else {
-                // === PAYPAL (corrigé et testé) ===
                 let paypalCart = [...cart];
                 if (discountAmount > 0) {
                     const preDiscount = getSubtotal();
                     const ratio = (preDiscount - discountAmount) / preDiscount;
                     paypalCart = cart.map(item => ({
-                        ...item,
-                        price: (Number(item.price) * ratio).toFixed(2)
+                    ...item,
+                    price: (Number(item.price) * ratio).toFixed(2)
                     }));
                 }
                 const taxes = getSubtotal() * TAX_RATE;
@@ -183,16 +177,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     shipping_cost: SHIPPING_COST.toFixed(2),
                     tax: taxes.toFixed(2)
                 };
-
                 response = await fetch('/.netlify/functions/paypal-create-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(bodyData)
                 });
                 data = await response.json();
-
-                if (!response.ok || !data.orderID) throw new Error(data.error || 'PayPal order failed');
-
+                if (!response.ok || !data.orderID) {
+                    throw new Error(data.error || 'PayPal order failed');
+                }
                 const paypalDomain = data.paypalDomain || 'https://www.sandbox.paypal.com';
                 localStorage.setItem("pendingOrder", "paypal");
                 window.location.href = `${paypalDomain}/checkoutnow?token=${data.orderID}`;
@@ -204,7 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ==================== TOUT LE RESTE (identique à ton original) ====================
     const refundLink = document.getElementById('refund-policy-link');
     const shippingLink = document.getElementById('shipping-policy-link');
     const refundModal = document.getElementById('refund-modal');
@@ -221,21 +213,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === shippingModal) shippingModal.style.display = 'none';
     });
 
-    /* =========================== COUNTRY / CITY AUTO SYSTEM =========================== */
+    /* ===========================
+   COUNTRY / CITY AUTO SYSTEM
+=========================== */
     const countrySelect = document.getElementById('country');
     const citySelect = document.getElementById('city');
     const phoneCodeInput = document.getElementById('phone-code');
+    const postalInput = document.getElementById('postal-code');
 
     async function loadCountries() {
         try {
             const res = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,cca2');
             const data = await res.json();
-            const countries = data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+            const countries = data.sort((a, b) =>
+                a.name.common.localeCompare(b.name.common)
+            );
             countries.forEach(country => {
                 const option = document.createElement('option');
                 option.value = country.name.common;
                 option.textContent = country.name.common;
-                option.dataset.code = country.idd?.root ? country.idd.root + (country.idd.suffixes?.[0] || '') : '';
+                option.dataset.code = country.idd?.root
+                    ? country.idd.root + (country.idd.suffixes?.[0] || '')
+                    : '';
                 option.dataset.cca2 = country.cca2;
                 countrySelect.appendChild(option);
             });
@@ -296,15 +295,15 @@ document.addEventListener('DOMContentLoaded', () => {
             promoMessage.textContent = '';
         }
     }
-
     function getSubtotal() {
         let subtotal = 0;
         cart.forEach(item => {
-            subtotal += (Number(item.price) || 0) * (Number(item.quantity) || 0);
+            const price = Number(item.price) || 0;
+            const quantity = Number(item.quantity) || 0;
+            subtotal += price * quantity;
         });
         return subtotal;
     }
-
     function updateTotals() {
         const subtotal = getSubtotal();
         let bundleSavings = 0;
@@ -333,7 +332,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('copy-suggested')?.addEventListener('click', () => {
         const code = document.getElementById('suggested-code').textContent;
-        navigator.clipboard.writeText(code).then(() => alert('Code copied: ' + code));
+        navigator.clipboard.writeText(code).then(() => {
+            alert('Code copied: ' + code);
+        });
     });
 
     document.getElementById('apply-promo')?.addEventListener('click', () => {
@@ -360,6 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
             promoMessage.style.color = 'green';
             updateTotals();
         } else {
+            appliedPromo = null;
             discountAmount = 0;
             promoMessage.textContent = "Invalid or inapplicable promo code.";
             promoMessage.style.color = 'red';
