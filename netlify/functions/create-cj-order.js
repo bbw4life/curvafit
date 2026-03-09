@@ -1,10 +1,8 @@
 // create-cj-order.js
 const fetch = require("node-fetch");
-
 // === CACHE GLOBAL DU TOKEN (dure ~2 heures) ===
 let cachedToken = null;
 let tokenExpiry = 0;
-
 async function getAccessToken() {
   const now = Date.now();
   if (cachedToken && now < tokenExpiry) {
@@ -31,7 +29,6 @@ async function getAccessToken() {
   console.log("[CJ AUTH] ✅ Nouveau token mis en cache");
   return cachedToken;
 }
-
 exports.handler = async (event) => {
   console.log("[CJ ORDER] Function invoked");
   try {
@@ -40,40 +37,42 @@ exports.handler = async (event) => {
     console.log("[CJ ORDER] Cart received:", JSON.stringify(cart));
     console.log("[CJ ORDER] Shipping received:", JSON.stringify(shipping));
     if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
-
     const accessToken = await getAccessToken();
-
     const orderNumber = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-
     const products = cart.map(item => ({
       vid: item.cj_variant_id || '',
       quantity: parseInt(item.quantity) || 1
     }));
-
-    let phone = (shipping.phone || "").trim();
-    if (!phone) phone = "0000000000";
+    // Extract shipping data
+    const fullName = shipping.fullName || '';
+    const email = shipping.email || '';
+    let phone = shipping.phone || "0000000000"; // Fallback if empty
     console.log("PHONE RECEIVED:", phone);
-
+    const address = shipping.address || '';
+    const city = shipping.city || '';
+    const state = shipping.state || '';
+    const postalCode = shipping.postalCode || '';
+    const countryCode = shipping.country || 'US';
+    // Transform to CJ format (flat fields)
     const orderBody = {
       orderNumber: orderNumber,
-      shippingZip: shipping.postalCode || "",
-      shippingCountry: shipping.countryName || "",
-      shippingCountryCode: shipping.countryCode || "US",
-      shippingProvince: shipping.state || "",
-      shippingCity: shipping.city || "",
-      shippingPhone: phone,
-      shippingCustomerName: shipping.fullName || "",
-      shippingAddress: shipping.address || "",
-      email: shipping.email || "",
-      logisticName: "CJPacket",
+      shippingCountryCode: countryCode,
+      shippingCountry: countryMap[countryCode] || "Unknown Country", // Assuming countryMap is defined elsewhere or add it
+      shippingProvince: state,
+      shippingCity: city,
+      shippingCustomerName: fullName,
+      shippingAddress: address,
+      email: email,
+      logisticName: "CJPacket", // Hardcoded as per example
       fromCountryCode: "CN",
-      products: products
+      products: products,
+      payType: 2, // Balance payment
+      shippingZip: postalCode,
+      shippingPhone: phone
     };
-
-    console.log("[CJ ORDER] SENDING TO CJ:", JSON.stringify(orderBody));
-
+    console.log("SENDING TO CJ:", orderBody);
     const cjResponse = await fetch(
-     "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrder",
+      "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrderV2",
       {
         method: "POST",
         headers: {
@@ -83,23 +82,19 @@ exports.handler = async (event) => {
         body: JSON.stringify(orderBody)
       }
     );
-
     const responseText = await cjResponse.text();
     console.log(`[CJ RESPONSE] HTTP Status: ${cjResponse.status}`);
     console.log(`[CJ RESPONSE] Raw Body: ${responseText}`);
-
     let data;
     try {
       data = JSON.parse(responseText);
     } catch {
       data = {};
     }
-
     if (data.code) console.log(`[CJ RESPONSE] Error Code: ${data.code}`);
     if (data.message) console.log(`[CJ RESPONSE] Error Message: ${data.message}`);
-
     if (cjResponse.ok && data.code === 200) {
-      const cjResult = data.data || {};
+      const cjResult = data.data?.[0] || {};
       console.log(`[CJ ORDER] 🎉 SUCCESS - CJ Order ID: ${cjResult.orderId}`);
       return response(200, {
         success: true,
@@ -126,7 +121,6 @@ exports.handler = async (event) => {
     });
   }
 };
-
 function response(statusCode, body) {
   return {
     statusCode,

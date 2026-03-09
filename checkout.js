@@ -110,13 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function getShippingData() {
         const countrySelect = document.getElementById('country');
         const selectedOption = countrySelect.options[countrySelect.selectedIndex];
-        const phoneCodeInput = document.getElementById('phone-code');
         return {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
-            phone: (phoneCodeInput.value.trim() + document.getElementById('phone').value.trim()),
-            countryCode: selectedOption.dataset.cca2 || "US",
-            countryName: selectedOption.value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            country: selectedOption.dataset.cca2 || selectedOption.value.trim(), // ← Utilise ISO code si disponible
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),

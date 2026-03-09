@@ -7,9 +7,8 @@ exports.handler = async (event) => {
       return response(400, { success: false, error: "No data received" });
     }
     const body = JSON.parse(event.body);
-    let { shipping, cart, payment_provider, payment_id, status = "pending_stock" } = body;
+    let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
-    if (!cart || !Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
     console.log(`[SAVE PENDING] Tentative pour payment_id: ${payment_id} | status: ${status}`);
     // Normalize strings to remove accents
     const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
@@ -32,49 +31,46 @@ exports.handler = async (event) => {
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
     const now = new Date().toISOString();
     const internalOrderId = `PENDING_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+    const values = [[
+      internalOrderId,
+      payment_provider,
+      payment_id,
+      shipping.fullName || "",
+      shipping.email || "",
+      shipping.phone || "",
+      shipping.country || "US",
+      shipping.state || "",
+      shipping.city || "",
+      shipping.postalCode || "",
+      shipping.address || "",
+      item.cj_product_id || "",
+      item.cj_variant_id || "",
+      item.quantity || 1,
+      status, // pending_stock ou pending_rate_limit
+      "paid",
+      now
+    ]];
     // === TEST AUTOMATIQUE DE L'ONGLET ===
     const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
     let success = false;
-    for (const item of cart) {
-      const values = [[
-        internalOrderId,
-        payment_provider,
-        payment_id,
-        shipping.fullName || "",
-        shipping.email || "",
-        shipping.phone || "",
-        shipping.country || "US",
-        shipping.state || "",
-        shipping.city || "",
-        shipping.postalCode || "",
-        shipping.address || "",
-        item.cj_product_id || "",
-        item.cj_variant_id || "",
-        item.quantity || 1,
-        status, // pending_stock ou pending_rate_limit
-        "paid",
-        now
-      ]];
-      for (const range of rangesToTry) {
-        try {
-          console.log(`[SAVE PENDING] Essai range → ${range}`);
-          const appendRes = await sheets.spreadsheets.values.append({
-            spreadsheetId,
-            range: range,
-            valueInputOption: "RAW",
-            insertDataOption: "INSERT_ROWS",
-            resource: { values }
-          });
-          console.log(`[SAVE PENDING] ✅ SAUVEGARDE OK dans ${range} | ID: ${internalOrderId}`);
-          success = true;
-          break;
-        } catch (err) {
-          console.log(`[SAVE PENDING] ❌ Échec avec ${range} → ${err.message}`);
-        }
+    for (const range of rangesToTry) {
+      try {
+        console.log(`[SAVE PENDING] Essai range → ${range}`);
+        const appendRes = await sheets.spreadsheets.values.append({
+          spreadsheetId,
+          range: range,
+          valueInputOption: "RAW",
+          insertDataOption: "INSERT_ROWS",
+          resource: { values }
+        });
+        console.log(`[SAVE PENDING] ✅ SAUVEGARDE OK dans ${range} | ID: ${internalOrderId}`);
+        success = true;
+        break;
+      } catch (err) {
+        console.log(`[SAVE PENDING] ❌ Échec avec ${range} → ${err.message}`);
       }
-      if (!success) throw new Error("Aucun nom d'onglet n'a fonctionné. Vérifie le nom exact en bas de ton Google Sheet.");
-      success = false; // Reset for next item
     }
+    if (!success) throw new Error("Aucun nom d'onglet n'a fonctionné. Vérifie le nom exact en bas de ton Google Sheet.");
     return response(200, { success: true });
   } catch (error) {
     console.error("SAVE PENDING ERROR:", error.message);
