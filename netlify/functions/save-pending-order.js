@@ -1,5 +1,4 @@
 const { google } = require('googleapis');
-const fetch = require('node-fetch');
 exports.handler = async (event) => {
   console.log('[SAVE PENDING] Function invoked');
   try {
@@ -11,23 +10,11 @@ exports.handler = async (event) => {
     shipping.fullName = normalize(shipping.fullName);
     shipping.email = normalize(shipping.email);
     shipping.phone = normalize(shipping.phone);
+    shipping.country = normalize(shipping.countryName || "United States"); // string (nom complet)
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
     shipping.address = normalize(shipping.address);
-    if (!shipping.countryName && shipping.country) {
-      try {
-        const res = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.country}?fields=name`);
-        if (res.ok) {
-          const data = await res.json();
-          shipping.countryName = data[0]?.name?.common || '';
-        }
-      } catch (err) {
-        console.error("Country name fetch error:", err);
-        shipping.countryName = '';
-      }
-    }
-    shipping.country = normalize(shipping.countryName || '');
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -46,7 +33,7 @@ exports.handler = async (event) => {
       shipping.fullName || "",
       shipping.email || "",
       shipping.phone || "",
-      shipping.country || "",
+      shipping.country || "United States",
       shipping.state || "",
       shipping.city || "",
       shipping.postalCode || "",

@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function getShippingData() {
         const countrySelect = document.getElementById('country');
         const selectedOption = countrySelect.options[countrySelect.selectedIndex];
-       
+      
         const phoneCode = document.getElementById('phone-code').value.trim();
         const phoneNumber = document.getElementById('phone').value.trim();
         const fullPhone = (phoneCode + phoneNumber).replace(/\s+/g, '');
@@ -114,8 +114,9 @@ document.addEventListener('DOMContentLoaded', () => {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: fullPhone,
-            country: selectedOption.dataset.cca2 || '', // code ISO (compatibilité PayPal/Stripe)
-            countryName: selectedOption.value.trim(), // nom complet (pour CJ)
+            // === CORRECTION : country = code ISO (compatibilité PayPal/Stripe) + countryName = nom complet (pour CJ) ===
+            country: selectedOption.dataset.cca2 || '', // code ISO
+            countryName: selectedOption.value.trim(), // nom complet
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
