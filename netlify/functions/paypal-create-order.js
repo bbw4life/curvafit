@@ -91,6 +91,7 @@ exports.handler = async (event) => {
         payer.phone = {
           phone_type: "MOBILE",
           phone_number: {
+            country_code: callingCode,
             national_number: nationalNumber
           }
         };
