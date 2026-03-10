@@ -15,7 +15,6 @@ exports.handler = async (event) => {
       ? "https://api-m.paypal.com"
       : "https://api-m.sandbox.paypal.com";
 
-    // ====================== ACCESS TOKEN ======================
     const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
     const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, {
       method: 'POST',
@@ -27,7 +26,6 @@ exports.handler = async (event) => {
     });
     const { access_token } = await tokenRes.json();
 
-    // ====================== CALCULS ======================
     let subtotal = 0;
     const items = cart.map(item => {
       const price = parseFloat(item.price);
@@ -46,7 +44,6 @@ exports.handler = async (event) => {
 
     const custom_id = cart.map(item => `${item.cj_product_id || ''}:${item.cj_variant_id || ''}`).join('|');
 
-    // ====================== CREATE ORDER ======================
     const orderBody = {
       intent: "CAPTURE",
       purchase_units: [{
@@ -78,7 +75,6 @@ exports.handler = async (event) => {
       }
     };
 
-    // Prefill payer (email)
     if (shipping.email) {
       orderBody.payer = { email_address: shipping.email };
     }
@@ -98,30 +94,10 @@ exports.handler = async (event) => {
     }
 
     const orderData = await orderRes.json();
-    const orderID = orderData.id;
-
-    // ====================== CORRECTION PRINCIPALE ======================
-    // On sauvegarde IMMÉDIATEMENT le pending order avec le shipping complet reçu depuis checkout.js
-    try {
-      await fetch(`${process.env.BASE_URL}/.netlify/functions/save-pending-order`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          shipping: shipping,           // ← nom complet du pays + countryCode + téléphone exact
-          item: cart[0] || {},
-          payment_provider: "paypal",
-          payment_id: orderID,
-          status: "pending_stock"
-        })
-      });
-      console.log(`[PayPal] ✅ Pending order saved with FULL shipping (country + phone)`);
-    } catch (saveErr) {
-      console.error("[PayPal] Save pending non-blocking error:", saveErr.message);
-    }
 
     return response(200, {
       success: true,
-      orderID: orderID,
+      orderID: orderData.id,
       paypalDomain: PAYPAL_BASE.includes("sandbox") ? "https://www.sandbox.paypal.com" : "https://www.paypal.com"
     });
 
