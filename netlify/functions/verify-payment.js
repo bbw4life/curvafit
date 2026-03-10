@@ -86,8 +86,12 @@ exports.handler = async (event) => {
       } catch (err) {
         console.error("Failed to fetch country name:", err.message);
       }
-      let phone = "";
-      if (payer.phone && payer.phone.phone_number) {
+     let phone =
+        payer.phone?.phone_number?.national_number ||
+        purchaseUnit?.shipping?.phone_number ||
+        "";
+
+      if (payer.phone?.phone_number) {
         phone = `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}`;
       }
       shipping = {

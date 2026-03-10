@@ -38,10 +38,9 @@ exports.handler = async (event) => {
     const taxAmount = parseFloat(tax);
     const finalTotal = (subtotal + shippingCost + taxAmount).toFixed(2);
     // ====================== COMPACT CUSTOM_ID WITH CJ IDS ======================
-    const custom_id = JSON.stringify({
-  cj: cart.map(item => `${item.cj_product_id || ''}:${item.cj_variant_id || ''}`),
-  shipping: shipping
-});
+    const custom_id = cart
+  .map(item => `${item.cj_product_id || ''}:${item.cj_variant_id || ''}`)
+  .join('|');
     // ====================== CREATE ORDER ======================
     const orderBody = {
       intent: "CAPTURE",
