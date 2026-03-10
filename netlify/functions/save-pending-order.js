@@ -18,12 +18,7 @@ exports.handler = async (event) => {
     shipping.fullName = normalize(shipping.fullName);
     shipping.email = normalize(shipping.email);
     shipping.phone = normalize(shipping.phone);        // téléphone complet maintenant
-
-    // === CORRECTION : Sauvegarder nom complet + code ISO dans la colonne country ===
-    const countryName = normalize(shipping.countryName || "United States");
-    const countryCode = normalize(shipping.country || "US");
-    shipping.country = `${countryName} (${countryCode})`;
-
+    shipping.country = normalize(shipping.country?.name || shipping.country || "US");
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
@@ -48,7 +43,7 @@ exports.handler = async (event) => {
       shipping.fullName || "",
       shipping.email || "",                    // ← Colonne E : email (espace respecté)
       shipping.phone || "",                    // ← Colonne F : téléphone complet (code + numéro)
-      shipping.country || "United States (US)",
+      shipping.country || "US",
       shipping.state || "",
       shipping.city || "",
       shipping.postalCode || "",
