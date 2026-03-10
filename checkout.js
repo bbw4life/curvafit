@@ -103,13 +103,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!valid) alert('Please fill all required fields.');
         return valid;
     }
-    function getShippingData() {
+        function getShippingData() {
         const countrySelect = document.getElementById('country');
         const selectedOption = countrySelect.options[countrySelect.selectedIndex];
         const phoneCode = document.getElementById('phone-code').value.trim();
         const phoneNumber = document.getElementById('phone').value.trim();
 
-        // === NETTOYAGE ULTRA-ROBUSTE DU TÉLÉPHONE ===
+        // === NETTOYAGE ULTRA-ROBUSTE DU TÉLÉPHONE (supprime \n, espaces, tirets, etc.) ===
         let fullPhone = (phoneCode + phoneNumber)
             .replace(/[\s\n\r\t\-\(\)\.]+/g, '')
             .replace(/^00/, '+');
@@ -168,15 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     shipping_cost: SHIPPING_COST.toFixed(2),
                     tax: taxes.toFixed(2)
                 };
-
-                // === SAUVEGARDE COMPLÈTE POUR THANKYOU (PayPal) ===
-                localStorage.setItem("pendingPayPalOrder", JSON.stringify({
-                    cart: paypalCart,
-                    shipping: shippingData,
-                    shipping_cost: SHIPPING_COST.toFixed(2),
-                    tax: taxes.toFixed(2)
-                }));
-
                 response = await fetch('/.netlify/functions/paypal-create-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -196,6 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
             payButton.textContent = "Pay Now";
         }
     });
+    // === Le reste du fichier est IDENTIQUE à ton original ===
     const refundLink = document.getElementById('refund-policy-link');
     const shippingLink = document.getElementById('shipping-policy-link');
     const refundModal = document.getElementById('refund-modal');
@@ -257,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     loadCountries();
-    function updatePromoDisplay() {
+    function updatePromoDisplay() { /* identique à ton original */
         const hasBundle = cart.some(item => item.fromBundle);
         const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
         const suggested = promos.find(p => p.items === totalQuantity);
@@ -290,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         return subtotal;
     }
-    function updateTotals() {
+    function updateTotals() { /* identique */
         const subtotal = getSubtotal();
         let bundleSavings = 0;
         let hasBundle = false;
