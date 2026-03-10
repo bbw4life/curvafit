@@ -70,6 +70,36 @@ exports.handler = async (event) => {
         cancel_url: `${process.env.BASE_URL}/checkout.html`
       }
     };
+    // ====================== PREFILL PAYER FOR PHONE AND EMAIL ======================
+    let payer = {};
+    if (shipping.email) {
+      payer.email_address = shipping.email;
+    }
+    if (shipping.fullName) {
+      const [givenName, ...surnameParts] = shipping.fullName.split(' ');
+      payer.name = {
+        given_name: givenName || '',
+        surname: surnameParts.join(' ') || ''
+      };
+    }
+    if (shipping.phone && shipping.countryCode) {
+      try {
+        const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.countryCode}?fields=idd`);
+        const countryData = await countryRes.json();
+        let callingCode = countryData.idd.root.replace('+', '') + (countryData.idd.suffixes ? countryData.idd.suffixes[0] : '');
+        let nationalNumber = shipping.phone.replace(`+${callingCode}`, '').replace(/\D/g, '');
+        payer.phone = {
+          phone_type: "MOBILE",
+          phone_number: {
+            country_code: callingCode,
+            national_number: nationalNumber
+          }
+        };
+      } catch (err) {
+        console.error("Failed to prefill phone:", err);
+      }
+    }
+    orderBody.payer = payer;
     const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders`, {
       method: "POST",
       headers: {
