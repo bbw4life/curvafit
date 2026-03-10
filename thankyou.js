@@ -19,9 +19,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log("🔄 sessionStorage cleared (forceReset)");
     }
 
-    let payload = null;
-    if (sessionId) payload = { provider: 'stripe', sessionId };
-    else if (orderID) payload = { provider: 'paypal', orderID };
+        let payload = null;
+    if (sessionId) {
+        payload = { provider: 'stripe', sessionId };
+    } 
+    else if (orderID) {
+        // === RÉCUPÉRATION DU SHIPPING COMPLET QUI A ÉTÉ SAUVEGARDÉ ===
+        const savedShipping = localStorage.getItem(`pendingPaypalShipping_${orderID}`);
+        const shippingData = savedShipping ? JSON.parse(savedShipping) : null;
+        
+        payload = { 
+            provider: 'paypal', 
+            orderID,
+            shipping: shippingData   // ← maintenant verify-payment reçoit le vrai pays + countryCode + téléphone
+        };
+    }
 
     if (!payload) {
         displayError("We're sorry, but we couldn't find your payment information. Please contact CurvaFit support for assistance.");
