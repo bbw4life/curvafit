@@ -2,19 +2,6 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fetch = require('node-fetch');
 const { google } = require('googleapis');
-
-// Helper function to get full country name from code
-async function getFullCountryName(countryCode) {
-  try {
-    const res = await fetch(`https://restcountries.com/v3.1/alpha/${countryCode}?fields=name`);
-    const data = await res.json();
-    return data.name.common || countryCode; // Fallback au code si échec
-  } catch (err) {
-    console.error("Failed to get country name:", err);
-    return countryCode; // Fallback
-  }
-}
-
 exports.handler = async (event) => {
   console.log("=== VERIFY PAYMENT STARTED ===");
   try {
@@ -87,17 +74,32 @@ exports.handler = async (event) => {
       }
       const payer = orderData.payer || {};
       const ship = purchaseUnit.shipping || {};
+      // === CORRECTIONS POUR COUNTRY ET PHONE ===
+      const countryCodeFromPayPal = ship.address?.country_code || "US";
+      let countryName = "United States"; // Default fallback
+      try {
+        const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${countryCodeFromPayPal}?fields=name`);
+        if (countryRes.ok) {
+          const countryData = await countryRes.json();
+          countryName = countryData.name.common || countryName;
+        }
+      } catch (err) {
+        console.error("Failed to fetch country name:", err.message);
+      }
+      let phone = "";
+      if (payer.phone && payer.phone.phone_number) {
+        phone = `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}`;
+      }
       shipping = {
         fullName: ship.name?.full_name || `${payer.name?.given_name || ''} ${payer.name?.surname || ''}`.trim(),
         email: payer.email_address || "",
-        phone: payer.phone?.phone_number ? 
-          `${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : "0000000000",  // CORRECTION: Numéro complet (country_code + national_number), fallback à "0000000000"
+        phone: phone,
         address: ship.address?.address_line_1 || "",
         city: ship.address?.admin_area_2 || "",
         state: ship.address?.admin_area_1 || "",
         postalCode: ship.address?.postal_code || "",
-        countryCode: ship.address?.country_code || "US",  // NOUVEAU: Code ISO pour shippingCountryCode
-        country: await getFullCountryName(ship.address?.country_code || "US")  // CORRECTION: Nom complet pour shippingCountry
+        country: countryName,  // Nom complet (ex: 'Canada')
+        countryCode: countryCodeFromPayPal  // Code ISO (ex: 'CA')
       };
       paymentVerified = true;
     }
