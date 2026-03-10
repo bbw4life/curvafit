@@ -10,19 +10,15 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body);
     let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
+
     console.log(`[SAVE PENDING] Tentative pour payment_id: ${payment_id} | status: ${status}`);
 
     // Normalize strings to remove accents
     const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
     shipping.fullName = normalize(shipping.fullName);
     shipping.email = normalize(shipping.email);
-    shipping.phone = normalize(shipping.phone);           // ← téléphone complet (code + numéro)
-    // === nom complet du pays depuis l'objet ===
-    const countryName = (typeof shipping.country === 'object' && shipping.country !== null) 
-      ? shipping.country.name 
-      : shipping.country || "US";
-    shipping.country = normalize(countryName);
-
+    shipping.phone = normalize(shipping.phone);        // téléphone complet maintenant
+    shipping.country = normalize(shipping.country?.name || shipping.country || "US");
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
@@ -45,8 +41,8 @@ exports.handler = async (event) => {
       payment_provider,
       payment_id,
       shipping.fullName || "",
-      shipping.email || "",                    // ← colonne E : email (espace respecté)
-      shipping.phone || "",                    // ← colonne F : téléphone complet
+      shipping.email || "",                    // ← Colonne E : email (espace respecté)
+      shipping.phone || "",                    // ← Colonne F : téléphone complet (code + numéro)
       shipping.country || "US",
       shipping.state || "",
       shipping.city || "",

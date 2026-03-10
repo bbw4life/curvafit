@@ -120,11 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: fullPhone,
-            // === EXACTEMENT CE QUE TU AS DEMANDÉ ===
-            country: {
-                name: selectedOption.value.trim(),          // nom complet du pays
-                code: selectedOption.dataset.cca2 || 'US'   // code ISO
-            },
+            // === CORRECTION PAYPAL : country = CODE ISO (PayPal exige ça) ===
+            country: selectedOption.dataset.cca2 || 'US',           // ISO pour PayPal + Stripe
+            countryName: selectedOption.value.trim(),               // Nom complet pour CJ
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
@@ -132,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // === TOUT LE RESTE IDENTIQUE À TON CODE ORIGINAL ===
     payButton.addEventListener('click', async () => {
         if (!validateForm()) return;
         if (!cart.length) return alert('Your cart is empty.');
@@ -191,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // (le reste du fichier : refund/shipping modals, loadCountries, updatePromoDisplay, getSubtotal, updateTotals, copy & apply promo → IDENTIQUE à ton original)
+    // === TOUT LE RESTE IDENTIQUE À TON ORIGINAL ===
     const refundLink = document.getElementById('refund-policy-link');
     const shippingLink = document.getElementById('shipping-policy-link');
     const refundModal = document.getElementById('refund-modal');

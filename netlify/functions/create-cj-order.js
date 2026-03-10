@@ -1,6 +1,7 @@
 // create-cj-order.js
 const fetch = require("node-fetch");
 
+// === CACHE GLOBAL DU TOKEN (dure ~2 heures) ===
 let cachedToken = null;
 let tokenExpiry = 0;
 
@@ -48,15 +49,18 @@ exports.handler = async (event) => {
       quantity: parseInt(item.quantity) || 1
     }));
 
-    // === EXACTEMENT CE QUE TU AS DEMANDÉ : récupération nom complet + code ISO ===
-    const countryObj = shipping.country || {};
-    const countryCode = countryObj.code || shipping.country || 'US';
+    // === MODIFICATION 2 : récupération nom complet + code ISO ===
+    const countryObj = typeof shipping.country === 'object' && shipping.country !== null 
+      ? shipping.country 
+      : { name: shipping.country || 'US', code: shipping.country || 'US' };
+
+    const countryCode = countryObj.code || 'US';
     const countryName = countryObj.name || 'United States';
 
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';
     let phone = shipping.phone || "0000000000";
-    console.log("PHONE RECEIVED:", phone);
+    console.log("PHONE RECEIVED (complet):", phone);
 
     const address = shipping.address || '';
     const city = shipping.city || '';
@@ -66,7 +70,7 @@ exports.handler = async (event) => {
     const orderBody = {
       orderNumber: orderNumber,
       shippingCountryCode: countryCode,
-      shippingCountry: countryName,
+      shippingCountry: countryName,                    // nom complet
       shippingProvince: state,
       shippingCity: city,
       shippingCustomerName: fullName,
