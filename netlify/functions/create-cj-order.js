@@ -31,12 +31,11 @@ exports.handler = async (event) => {
       quantity: parseInt(item.quantity) || 1
     }));
     // === CORRECTION : récupération nom + code ISO sans casser le reste ===
-        const countryCode = shipping.countryCode || 'US';
+    const countryCode = shipping.countryCode || 'US';
     const countryName = shipping.country || 'United States';
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';
-    let phone = String(shipping.phone || '').trim().replace(/\s+/g, '');
-    if (!phone || phone.length < 8) phone = "0000000000";
+    let phone = shipping.phone || "0000000000";
     const address = shipping.address || '';
     const city = shipping.city || '';
     const state = shipping.state || '';

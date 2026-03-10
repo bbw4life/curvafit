@@ -1,14 +1,5 @@
-// thankyou.js - VERSION COMPLÈTE ET OPTIMISÉE (anti-double + shipping complet PayPal)
+// thankyou.js
 document.addEventListener('DOMContentLoaded', async () => {
-    
-    // === PROTECTION ANTI-DOUBLE APPEL (résout le rate limit CJ) ===
-    if (window.verifyPaymentAlreadyRunning) {
-        console.log("🚫 Double appel à verify-payment bloqué");
-        return;
-    }
-    window.verifyPaymentAlreadyRunning = true;
-    // ============================================================
-
     console.log("🚀 thankyou.html LOADED - Starting verification...");
 
     const spinner = document.getElementById('spinner');
@@ -22,44 +13,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     console.log(`📌 sessionId: ${sessionId} | orderID: ${orderID} | forceReset: ${forceReset}`);
 
+    // Force reset pour ce test
     if (forceReset) {
         sessionStorage.clear();
         console.log("🔄 sessionStorage cleared (forceReset)");
     }
 
     let payload = null;
-
-    if (sessionId) {
-        // === STRIPE ===
-        payload = { provider: 'stripe', sessionId };
-        console.log("🔵 Mode Stripe détecté");
-    } 
-    else if (orderID) {
-        // === PAYPAL - Récupération du shipping complet (pays + countryCode + téléphone) ===
-        const savedShippingKey = `pendingPaypalShipping_${orderID}`;
-        const savedShipping = localStorage.getItem(savedShippingKey);
-        const shippingData = savedShipping ? JSON.parse(savedShipping) : null;
-
-        if (shippingData) {
-            console.log("✅ Shipping COMPLET récupéré pour PayPal :", {
-                fullName: shippingData.fullName,
-                country: shippingData.country,
-                countryCode: shippingData.countryCode,
-                phone: shippingData.phone
-            });
-        } else {
-            console.warn("⚠️ Aucun shipping sauvegardé pour cet orderID PayPal");
-        }
-
-        payload = { 
-            provider: 'paypal', 
-            orderID,
-            shipping: shippingData   // ← Transmission du vrai pays + code ISO + téléphone
-        };
-        
-        // Nettoyage (on supprime après utilisation)
-        localStorage.removeItem(savedShippingKey);
-    }
+    if (sessionId) payload = { provider: 'stripe', sessionId };
+    else if (orderID) payload = { provider: 'paypal', orderID };
 
     if (!payload) {
         displayError("We're sorry, but we couldn't find your payment information. Please contact CurvaFit support for assistance.");
@@ -67,11 +29,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Vérification anti-double désactivée pour le test (on la remettra après)
     console.log("🔄 Bypassing alreadyVerified check for debugging");
 
     try {
         const functionUrl = `${window.location.origin}/.netlify/functions/verify-payment`;
-        console.log(`📡 Calling verify-payment: ${functionUrl}`);
+        console.log(`📡 Calling: ${functionUrl}`);
 
         const response = await fetch(functionUrl, {
             method: 'POST',
@@ -82,23 +45,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log(`📡 Response status: ${response.status}`);
 
         if (response.status === 404) {
-            throw new Error("We're experiencing a temporary issue with order verification. Please try again later.");
+            throw new Error("We're experiencing a temporary issue with order verification. Please try again later or contact CurvaFit support.");
         }
 
         const data = await response.json();
-        console.log("📦 Data received from verify-payment:", data);
+        console.log("📦 Data received:", data);
 
         if (!response.ok || !data.success) {
-            throw new Error(data.error || "There was an issue verifying your order.");
+            throw new Error(data.error || "There was an issue verifying your order. Please contact CurvaFit support.");
         }
 
+        // On sauvegarde seulement après succès
         sessionStorage.setItem("paymentVerified", sessionId || orderID);
+
         showSuccess();
-        console.log("🎉 VERIFICATION COMPLETED SUCCESSFULLY");
+        console.log("🎉 VERIFICATION COMPLETED - Check your CJ account now!");
 
     } catch (error) {
         console.error("❌ ERREUR COMPLETE:", error);
-        displayError(error.message || "An unexpected error occurred. Please contact CurvaFit support.");
+        displayError(error.message || "An unexpected error occurred. Please contact CurvaFit support for help.");
     } finally {
         spinner.style.display = "none";
     }
