@@ -119,38 +119,13 @@ exports.handler = async (event) => {
       }
       readyForCj.push(item);
     }
-    if (readyForCj.length > 0) {
-      console.log(`✅ ${readyForCj.length} item(s) ready for CJ`);
-      try {
-        const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
-        console.log(` 📡 Appel create-cj-order → ${cjUrl}`);
-        const cjRes = await fetch(cjUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cart: readyForCj, shipping })
-        });
-        console.log(` 📥 CJ Order status: ${cjRes.status}`);
-        const cjData = await cjRes.json();
-        console.log(` 📊 CJ Order success: ${cjData.success || false}`);
-        if (cjData.success) {
-          console.log(` 🎉 SUCCÈS CJ pour les ${readyForCj.length} items`);
-        } else {
-          const errorMsg = cjData.error || '';
-          const code = cjData.code || 0;
-          const isRateLimit = [1600200, 1600201, 429].includes(code) || errorMsg.includes("Too much") || errorMsg.includes("Quota") || errorMsg.includes("Many Requests") || errorMsg.includes("QPS limit");
-          const saveStatus = isRateLimit ? "pending_rate_limit" : "pending_stock";
-          console.log(` ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save each as ${saveStatus}`);
-          for (const item of readyForCj) {
-            await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
-          }
-        }
-      } catch (e) {
-        console.error(` 💥 ERREUR CJ: ${e.message}`);
-        for (const item of readyForCj) {
-          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-        }
-      }
-    }
+   if (readyForCj.length > 0) {
+  console.log(`📦 Saving ${readyForCj.length} item(s) to pending queue`);
+
+  for (const item of readyForCj) {
+    await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_cj_queue");
+  }
+}
     console.log("🎯 Fulfillment terminé");
     return response(200, {
       success: true,

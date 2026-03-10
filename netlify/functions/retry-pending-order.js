@@ -66,7 +66,7 @@ exports.handler = async () => {
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
       const status = row[14] || "";
-      if (!["pending_stock", "pending_rate_limit"].includes(status)) continue;
+      if (!["pending_stock", "pending_rate_limit", "pending_cj_queue"].includes(status)) continue;
       processed++;
       const lineNumber = i + 2;
       const internalId = row[0];
@@ -83,6 +83,7 @@ exports.handler = async () => {
       console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId}`);
       try {
         await getAccessToken(); // Ensure token is fresh
+        await delay(2000); // petite pause sécurité
         // Directly create CJ Order
         const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
           method: "POST",
