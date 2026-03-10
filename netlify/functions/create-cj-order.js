@@ -30,11 +30,11 @@ exports.handler = async (event) => {
       quantity: parseInt(item.quantity) || 1
     }));
     // === CORRECTION : récupération code ISO + nom complet sans casser le reste ===
-    const countryCode = shipping.country || 'US';
-    const countryName = shipping.countryName || 'United States';
+    const countryCode = shipping.country || '';
+    const countryName = shipping.countryName || '';
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';
-    let phone = shipping.phone || "0000000000";
+    let phone = shipping.phone || '';
     const address = shipping.address || '';
     const city = shipping.city || '';
     const state = shipping.state || '';

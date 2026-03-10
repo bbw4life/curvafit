@@ -10,7 +10,7 @@ exports.handler = async (event) => {
     shipping.fullName = normalize(shipping.fullName);
     shipping.email = normalize(shipping.email);
     shipping.phone = normalize(shipping.phone);
-    shipping.country = normalize(shipping.countryName || "United States"); // string (nom complet)
+    shipping.country = normalize(shipping.countryName || ""); // string (nom complet)
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
@@ -33,7 +33,7 @@ exports.handler = async (event) => {
       shipping.fullName || "",
       shipping.email || "",
       shipping.phone || "",
-      shipping.country || "United States",
+      shipping.country || "",
       shipping.state || "",
       shipping.city || "",
       shipping.postalCode || "",
