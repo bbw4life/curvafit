@@ -66,15 +66,28 @@ exports.handler = async () => {
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
       const status = row[14] || "";
-      if (!["pending_stock", "pending_rate_limit"].includes(status)) continue;
+      if (status !== "pending") continue;
       processed++;
       const lineNumber = i + 2;
       const internalId = row[0];
       const shipping = {
         fullName: row[3] || "", email: row[4] || "", phone: row[5] || "",
-        country: row[6] || "US", state: row[7] || "", city: row[8] || "",
+        country: row[6] || "United States", state: row[7] || "", city: row[8] || "",
         postalCode: row[9] || "", address: row[10] || ""
       };
+      // Fetch countryCode if not present
+      try {
+        const countryRes = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(shipping.country)}?fullText=true&fields=cca2`);
+        if (countryRes.ok) {
+          const countryData = await countryRes.json();
+          shipping.countryCode = countryData[0]?.cca2 || 'US';
+        } else {
+          shipping.countryCode = 'US';
+        }
+      } catch (err) {
+        console.error("Failed to fetch country code:", err.message);
+        shipping.countryCode = 'US';
+      }
       const cart = [{
         cj_product_id: row[11] || "",
         cj_variant_id: row[12] || "",
@@ -95,7 +108,7 @@ exports.handler = async () => {
             spreadsheetId,
             range: `${activeTab}!O${lineNumber}`,
             valueInputOption: "RAW",
-            resource: { values: [["completed"]] }
+            resource: { values: [["order_sent"]] }
           });
           console.log(` 🎉 SUCCÈS CJ pour ${internalId} !`);
           fulfilled++;
@@ -104,6 +117,12 @@ exports.handler = async () => {
         }
       } catch (err) {
         console.error(` ❌ Erreur ligne ${lineNumber}:`, err.message);
+        await sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${activeTab}!O${lineNumber}`,
+          valueInputOption: "RAW",
+          resource: { values: [["failed"]] }
+        });
         errors.push(`Ligne ${lineNumber}: ${err.message}`);
       }
       break; // Process only one per invocation to respect rate limits

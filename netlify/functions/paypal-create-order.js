@@ -45,6 +45,7 @@ exports.handler = async (event) => {
     const orderBody = {
       intent: "CAPTURE",
       purchase_units: [{
+        reference_id: shipping.phone || '', // Store frontend phone here for fallback
         amount: {
           currency_code: "USD",
           value: finalTotal,

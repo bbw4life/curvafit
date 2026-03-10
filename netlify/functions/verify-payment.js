@@ -94,6 +94,10 @@ exports.handler = async (event) => {
       if (payer.phone?.phone_number) {
         phone = `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}`;
       }
+      // Fallback to frontend phone stored in reference_id if phone is empty
+      if (!phone) {
+        phone = purchaseUnit.reference_id || '';
+      }
       shipping = {
         fullName: ship.name?.full_name || `${payer.name?.given_name || ''} ${payer.name?.surname || ''}`.trim(),
         email: payer.email_address || "",
@@ -121,34 +125,8 @@ exports.handler = async (event) => {
     }
     if (readyForCj.length > 0) {
       console.log(`✅ ${readyForCj.length} item(s) ready for CJ`);
-      try {
-        const cjUrl = `${BASE_URL}/.netlify/functions/create-cj-order`;
-        console.log(` 📡 Appel create-cj-order → ${cjUrl}`);
-        const cjRes = await fetch(cjUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cart: readyForCj, shipping })
-        });
-        console.log(` 📥 CJ Order status: ${cjRes.status}`);
-        const cjData = await cjRes.json();
-        console.log(` 📊 CJ Order success: ${cjData.success || false}`);
-        if (cjData.success) {
-          console.log(` 🎉 SUCCÈS CJ pour les ${readyForCj.length} items`);
-        } else {
-          const errorMsg = cjData.error || '';
-          const code = cjData.code || 0;
-          const isRateLimit = [1600200, 1600201, 429].includes(code) || errorMsg.includes("Too much") || errorMsg.includes("Quota") || errorMsg.includes("Many Requests") || errorMsg.includes("QPS limit");
-          const saveStatus = isRateLimit ? "pending_rate_limit" : "pending_stock";
-          console.log(` ❌ CJ Order failed ${isRateLimit ? '(RATE LIMIT)' : ''} → save each as ${saveStatus}`);
-          for (const item of readyForCj) {
-            await saveAsPending(item, shipping, BASE_URL, provider, paymentId, saveStatus);
-          }
-        }
-      } catch (e) {
-        console.error(` 💥 ERREUR CJ: ${e.message}`);
-        for (const item of readyForCj) {
-          await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-        }
+      for (const item of readyForCj) {
+        await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending");
       }
     }
     console.log("🎯 Fulfillment terminé");
