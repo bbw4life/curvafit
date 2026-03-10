@@ -1,16 +1,5 @@
 // save-pending-order.js
 const { google } = require('googleapis');
-
-const normalize = (str) => str ? str.toString().trim().normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
-
-const normalizePhone = (str) => {
-  if (!str) return "";
-  return str.toString()
-    .trim()
-    .replace(/[\s\n\r\t\-\(\)\.\,\\\/]+/g, '')
-    .replace(/^00/, '+');
-};
-
 exports.handler = async (event) => {
   console.log('[SAVE PENDING] Function invoked');
   try {
@@ -18,21 +7,15 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body);
     let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
-
-    // Normalisation normale
+    const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
     shipping.fullName = normalize(shipping.fullName);
     shipping.email = normalize(shipping.email);
-    shipping.country = normalize(shipping.country || "US");
+    shipping.phone = normalize(shipping.phone);
+    shipping.country = normalize(shipping.country || "US"); // string (nom complet)
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
     shipping.address = normalize(shipping.address);
-
-    // === PHONE SPÉCIAL ===
-    shipping.phone = normalizePhone(shipping.phone);
-
-    console.log(`[SAVE PENDING] Phone final saved: ${shipping.phone || 'EMPTY'}`);
-
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -84,7 +67,6 @@ exports.handler = async (event) => {
     return response(500, { success: false, error: error.message });
   }
 };
-
 function response(statusCode, body) {
   return { statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
 }

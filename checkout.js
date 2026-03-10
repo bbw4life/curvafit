@@ -103,24 +103,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!valid) alert('Please fill all required fields.');
         return valid;
     }
-        function getShippingData() {
+    function getShippingData() {
         const countrySelect = document.getElementById('country');
         const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+ 
         const phoneCode = document.getElementById('phone-code').value.trim();
         const phoneNumber = document.getElementById('phone').value.trim();
-
-        // === NETTOYAGE ULTRA-ROBUSTE DU TÉLÉPHONE (supprime \n, espaces, tirets, etc.) ===
-        let fullPhone = (phoneCode + phoneNumber)
-            .replace(/[\s\n\r\t\-\(\)\.]+/g, '')
-            .replace(/^00/, '+');
-        if (fullPhone && !fullPhone.startsWith('+')) fullPhone = '+' + fullPhone;
-
+        const fullPhone = (phoneCode + phoneNumber).replace(/\s+/g, '');
         return {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: fullPhone,
-            country: selectedOption.value.trim(),
-            countryCode: selectedOption.dataset.cca2 || '',
+            // === CORRECTION : country reste string (nom complet) + countryCode ajouté ===
+            country: selectedOption.value.trim(), // nom complet (compatibilité PayPal/Stripe)
+            countryCode: selectedOption.dataset.cca2 || '', // code ISO (pour CJ)
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
