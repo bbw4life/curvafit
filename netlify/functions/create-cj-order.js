@@ -41,7 +41,7 @@ exports.handler = async (event) => {
 
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';
-    let phone = shipping.phone || "0000000000";
+    const phone = shipping.phone || '';
     const address = shipping.address || '';
     const city = shipping.city || '';
     const state = shipping.state || '';
