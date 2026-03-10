@@ -1,3 +1,4 @@
+// create-cj-order.js
 const fetch = require("node-fetch");
 // === CACHE GLOBAL DU TOKEN ===
 let cachedToken = null;
@@ -29,12 +30,12 @@ exports.handler = async (event) => {
       vid: item.cj_variant_id || '',
       quantity: parseInt(item.quantity) || 1
     }));
-    // === CORRECTION : récupération code ISO + nom complet sans casser le reste ===
-    const countryCode = shipping.country || '';
-    const countryName = shipping.countryName || '';
+    // === CORRECTION : récupération nom + code ISO sans casser le reste ===
+    const countryCode = shipping.countryCode || 'US';
+    const countryName = shipping.country || 'United States';
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';
-    let phone = shipping.phone || '';
+    let phone = shipping.phone || "0000000000";
     const address = shipping.address || '';
     const city = shipping.city || '';
     const state = shipping.state || '';

@@ -60,7 +60,7 @@ exports.handler = async (event) => {
             admin_area_2: shipping.city || "",
             admin_area_1: shipping.state || "",
             postal_code: shipping.postalCode || "",
-            country_code: shipping.country || "US"
+            country_code: shipping.countryCode || "US"
           }
         },
         custom_id: custom_id

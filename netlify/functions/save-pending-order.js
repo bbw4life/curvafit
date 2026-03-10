@@ -1,3 +1,4 @@
+// save-pending-order.js
 const { google } = require('googleapis');
 exports.handler = async (event) => {
   console.log('[SAVE PENDING] Function invoked');
@@ -10,7 +11,7 @@ exports.handler = async (event) => {
     shipping.fullName = normalize(shipping.fullName);
     shipping.email = normalize(shipping.email);
     shipping.phone = normalize(shipping.phone);
-    shipping.country = normalize(shipping.countryName || ""); // string (nom complet)
+    shipping.country = normalize(shipping.country || "US"); // string (nom complet)
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
@@ -33,7 +34,7 @@ exports.handler = async (event) => {
       shipping.fullName || "",
       shipping.email || "",
       shipping.phone || "",
-      shipping.country || "",
+      shipping.country || "US",
       shipping.state || "",
       shipping.city || "",
       shipping.postalCode || "",
