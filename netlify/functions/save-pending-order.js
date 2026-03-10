@@ -1,5 +1,6 @@
 // save-pending-order.js
 const { google } = require('googleapis');
+const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
   console.log('[SAVE PENDING] Function invoked');
@@ -10,14 +11,36 @@ exports.handler = async (event) => {
     if (!payment_id) throw new Error("Missing payment_id");
 
     const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
+
     shipping.fullName = normalize(shipping.fullName);
     shipping.email = normalize(shipping.email);
     shipping.phone = normalize(shipping.phone);
-    shipping.country = normalize(shipping.countryName || "United States");  // nom complet
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
     shipping.address = normalize(shipping.address);
+
+    let country = '';
+    if (shipping.countryName) {
+      country = normalize(shipping.countryName);
+    } else if (shipping.country && shipping.country.length === 2) {
+      // Assume shipping.country is ISO code, fetch full name
+      try {
+        const res = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.country}`);
+        const data = await res.json();
+        if (data && data[0] && data[0].name && data[0].name.common) {
+          country = normalize(data[0].name.common);
+        } else {
+          console.log('Failed to fetch country name, using code as fallback');
+          country = shipping.country;
+        }
+      } catch (err) {
+        console.error('Error fetching country name:', err);
+        country = shipping.country;
+      }
+    } else {
+      country = normalize(shipping.country || '');
+    }
 
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -38,7 +61,7 @@ exports.handler = async (event) => {
       shipping.fullName || "",
       shipping.email || "",
       shipping.phone || "",
-      shipping.country || "United States",
+      country,
       shipping.state || "",
       shipping.city || "",
       shipping.postalCode || "",

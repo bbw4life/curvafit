@@ -36,7 +36,6 @@ exports.handler = async (event) => {
       quantity: parseInt(item.quantity) || 1
     }));
 
-    // === CORRECTION : récupération code ISO + nom complet sans casser le reste ===
     const countryCode = shipping.country || 'US';
     const countryName = shipping.countryName || 'United States';
 
