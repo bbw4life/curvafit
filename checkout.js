@@ -161,16 +161,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem("pendingOrder", "stripe");
                 await stripe.redirectToCheckout({ sessionId: data.sessionId });
             } else {
+                let preDiscount = getSubtotal();
                 let paypalCart = [...cart];
                 if (discountAmount > 0) {
-                    const preDiscount = getSubtotal();
                     const ratio = (preDiscount - discountAmount) / preDiscount;
                     paypalCart = cart.map(item => ({
                     ...item,
                     price: (Number(item.price) * ratio).toFixed(2)
                     }));
                 }
-                const taxes = getSubtotal() * TAX_RATE;
+                const paypalSubtotal = paypalCart.reduce((sum, item) => sum + (Number(item.price) * (Number(item.quantity) || 0)), 0);
+                const taxes = paypalSubtotal * TAX_RATE;
                 const bodyData = {
                     cart: paypalCart,
                     shipping: shippingData,
