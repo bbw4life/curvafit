@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function getShippingData() {
         const countrySelect = document.getElementById('country');
         const selectedOption = countrySelect.options[countrySelect.selectedIndex];
-    
+   
         const phoneCode = document.getElementById('phone-code').value.trim();
         const phoneNumber = document.getElementById('phone').value.trim();
         const fullPhone = (phoneCode + phoneNumber).replace(/\s+/g, '');
@@ -175,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const paypalDomain = data.paypalDomain || 'https://www.sandbox.paypal.com';
                 localStorage.setItem("pendingOrder", "paypal");
+                localStorage.setItem("shippingData", JSON.stringify(shippingData));
                 window.location.href = `${paypalDomain}/checkoutnow?token=${data.orderID}`;
             }
         } catch (error) {
