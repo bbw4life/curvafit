@@ -13,10 +13,9 @@ exports.handler = async (event) => {
     // Normalize strings to remove accents
     const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
     shipping.fullName = normalize(shipping.fullName);
-    // Ne pas normaliser email car il ne devrait pas avoir d'accents et pour respecter les espaces/formats
-    shipping.email = shipping.email || "";
+    shipping.email = normalize(shipping.email); // though email shouldn't have accents
     shipping.phone = normalize(shipping.phone);
-    shipping.country = typeof shipping.country === 'object' ? (shipping.country.code || shipping.country || "US") : (shipping.country || "US");
+    shipping.country = normalize(shipping.country);
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);

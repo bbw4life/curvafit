@@ -52,8 +52,8 @@ exports.handler = async (event) => {
     const city = shipping.city || '';
     const state = shipping.state || '';
     const postalCode = shipping.postalCode || '';
-    const countryCode = typeof shipping.country === 'object' ? (shipping.country.code || 'US') : (shipping.country || 'US');
-    const countryName = typeof shipping.country === 'object' ? (shipping.country.name || countryMap[countryCode] || "Unknown Country") : (countryMap[countryCode] || "Unknown Country");
+    const countryCode = shipping.countryCode || 'US';
+    const countryName = shipping.country || 'Unknown Country';
     // Transform to CJ format (flat fields)
     const orderBody = {
       orderNumber: orderNumber,
