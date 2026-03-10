@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const payButton = document.getElementById('pay-button');
     const paymentOptions = document.querySelectorAll('input[name="payment"]');
     let productsData = [];
-    let TAX_RATE = 0.1;
-    let SHIPPING_COST = 10.00;
+    let TAX_RATE = 0.1; // Fallback si pas dans JSON
+    let SHIPPING_COST = 10.00; // Fallback si pas dans JSON
     let promos = [];
     let appliedPromo = null;
     let discountAmount = 0;
@@ -89,7 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     paymentOptions.forEach(option => {
         option.addEventListener('change', () => {
-            payButton.textContent = option.value === 'stripe' ? 'Pay with Card' : 'Pay with PayPal';
+            payButton.textContent =
+                option.value === 'stripe'
+                    ? 'Pay with Card'
+                    : 'Pay with PayPal';
         });
     });
 
@@ -120,9 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: fullPhone,
-            // === CORRECTION : country = code ISO (compatibilité PayPal/Stripe), countryName ajouté pour nom complet (pour CJ/save pending) ===
-            country: selectedOption.dataset.cca2 || '',          // code ISO
-            countryName: selectedOption.value.trim(),            // nom complet
+            // === MODIFICATION 1 : nom complet + code ISO dans shipping.country ===
+            country: {
+                name: selectedOption.value.trim(),
+                code: selectedOption.dataset.cca2 || ''
+            },
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
@@ -192,7 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // === Le reste du fichier est IDENTIQUE à ton original ===
     const refundLink = document.getElementById('refund-policy-link');
     const shippingLink = document.getElementById('shipping-policy-link');
     const refundModal = document.getElementById('refund-modal');
@@ -209,20 +213,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === shippingModal) shippingModal.style.display = 'none';
     });
 
+    /* ===========================
+   COUNTRY / CITY AUTO SYSTEM
+=========================== */
     const countrySelect = document.getElementById('country');
     const citySelect = document.getElementById('city');
     const phoneCodeInput = document.getElementById('phone-code');
+    const postalInput = document.getElementById('postal-code');
 
     async function loadCountries() {
         try {
             const res = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,cca2');
             const data = await res.json();
-            const countries = data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+            const countries = data.sort((a, b) =>
+                a.name.common.localeCompare(b.name.common)
+            );
             countries.forEach(country => {
                 const option = document.createElement('option');
                 option.value = country.name.common;
                 option.textContent = country.name.common;
-                option.dataset.code = country.idd?.root ? country.idd.root + (country.idd.suffixes?.[0] || '') : '';
+                option.dataset.code = country.idd?.root
+                    ? country.idd.root + (country.idd.suffixes?.[0] || '')
+                    : '';
                 option.dataset.cca2 = country.cca2;
                 countrySelect.appendChild(option);
             });
@@ -259,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadCountries();
 
-    function updatePromoDisplay() { /* identique à ton original */ 
+    function updatePromoDisplay() {
         const hasBundle = cart.some(item => item.fromBundle);
         const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
         const suggested = promos.find(p => p.items === totalQuantity);
@@ -292,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         return subtotal;
     }
-    function updateTotals() { /* identique */ 
+    function updateTotals() {
         const subtotal = getSubtotal();
         let bundleSavings = 0;
         let hasBundle = false;
@@ -320,7 +332,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('copy-suggested')?.addEventListener('click', () => {
         const code = document.getElementById('suggested-code').textContent;
-        navigator.clipboard.writeText(code).then(() => alert('Code copied: ' + code));
+        navigator.clipboard.writeText(code).then(() => {
+            alert('Code copied: ' + code);
+        });
     });
 
     document.getElementById('apply-promo')?.addEventListener('click', () => {
