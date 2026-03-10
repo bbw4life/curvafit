@@ -120,9 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: fullPhone,
-            // === CORRECTION : country reste string (nom complet) + countryCode ajouté ===
-            country: selectedOption.value.trim(),                    // nom complet (compatibilité PayPal/Stripe)
-            countryCode: selectedOption.dataset.cca2 || '',          // code ISO (pour CJ)
+            // === CORRECTION : country = code ISO (pour PayPal/Stripe) + countryName = nom complet (pour CJ/save-pending) ===
+            country: selectedOption.dataset.cca2 || '',              // code ISO (compatibilité PayPal/Stripe)
+            countryName: selectedOption.value.trim(),                // nom complet (pour CJ)
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
