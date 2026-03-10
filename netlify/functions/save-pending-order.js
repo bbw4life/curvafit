@@ -1,6 +1,5 @@
 // save-pending-order.js
 const { google } = require('googleapis');
-
 exports.handler = async (event) => {
   console.log('[SAVE PENDING] Function invoked');
   try {
@@ -10,20 +9,18 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body);
     let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
-
     console.log(`[SAVE PENDING] Tentative pour payment_id: ${payment_id} | status: ${status}`);
-
     // Normalize strings to remove accents
     const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
     shipping.fullName = normalize(shipping.fullName);
-    shipping.email = normalize(shipping.email);
-    shipping.phone = normalize(shipping.phone);        // téléphone complet maintenant
-    shipping.country = normalize(shipping.country?.name || shipping.country || "US");
+    // Ne pas normaliser email car il ne devrait pas avoir d'accents et pour respecter les espaces/formats
+    shipping.email = shipping.email || "";
+    shipping.phone = normalize(shipping.phone);
+    shipping.country = typeof shipping.country === 'object' ? (shipping.country.code || shipping.country || "US") : (shipping.country || "US");
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
     shipping.address = normalize(shipping.address);
-
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -35,14 +32,13 @@ exports.handler = async (event) => {
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
     const now = new Date().toISOString();
     const internalOrderId = `PENDING_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-
     const values = [[
       internalOrderId,
       payment_provider,
       payment_id,
       shipping.fullName || "",
-      shipping.email || "",                    // ← Colonne E : email (espace respecté)
-      shipping.phone || "",                    // ← Colonne F : téléphone complet (code + numéro)
+      shipping.email || "",
+      shipping.phone || "",
       shipping.country || "US",
       shipping.state || "",
       shipping.city || "",
@@ -51,11 +47,11 @@ exports.handler = async (event) => {
       item.cj_product_id || "",
       item.cj_variant_id || "",
       item.quantity || 1,
-      status,
+      status, // pending_stock ou pending_rate_limit
       "paid",
       now
     ]];
-
+    // === TEST AUTOMATIQUE DE L'ONGLET ===
     const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
     let success = false;
     for (const range of rangesToTry) {
@@ -83,7 +79,6 @@ exports.handler = async (event) => {
     return response(500, { success: false, error: error.message });
   }
 };
-
 function response(statusCode, body) {
   return {
     statusCode,
