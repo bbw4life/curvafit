@@ -36,12 +36,25 @@ exports.handler = async (event) => {
       quantity: parseInt(item.quantity) || 1
     }));
 
-    const countryCode = shipping.country || 'US';
-    const countryName = shipping.countryName || 'United States';
+    let countryCode = shipping.country || 'US';
+    let countryName = shipping.countryName || '';
+    if (!countryName && countryCode) {
+      try {
+        const res = await fetch(`https://restcountries.com/v3.1/alpha/${countryCode}`);
+        const data = await res.json();
+        if (data && data[0] && data[0].name && data[0].name.common) {
+          countryName = data[0].name.common;
+        }
+      } catch (err) {
+        console.error("Error fetching country name:", err);
+      }
+    }
+    if (!countryName) throw new Error("Missing country name");
 
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';
     const phone = shipping.phone || '';
+    if (!phone) throw new Error("Missing phone number");
     const address = shipping.address || '';
     const city = shipping.city || '';
     const state = shipping.state || '';

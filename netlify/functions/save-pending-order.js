@@ -13,12 +13,25 @@ exports.handler = async (event) => {
     shipping.fullName = normalize(shipping.fullName);
     shipping.email = normalize(shipping.email);
     shipping.phone = normalize(shipping.phone);
+    if (!shipping.phone) throw new Error("Missing phone number");
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
     shipping.address = normalize(shipping.address);
 
-    const country = normalize(shipping.countryName || "United States");
+    let country = normalize(shipping.countryName || '');
+    if (!country && shipping.country) {
+      try {
+        const res = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.country}`);
+        const data = await res.json();
+        if (data && data[0] && data[0].name && data[0].name.common) {
+          country = normalize(data[0].name.common);
+        }
+      } catch (err) {
+        console.error("Error fetching country name:", err);
+      }
+    }
+    if (!country) throw new Error("Missing country");
 
     const auth = new google.auth.GoogleAuth({
       credentials: {
