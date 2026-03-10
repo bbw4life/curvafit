@@ -120,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: fullPhone,
-            // === CORRECTION : country = code ISO (compatibilité PayPal/Stripe), countryName ajouté pour nom complet (pour CJ/save pending) ===
             country: selectedOption.dataset.cca2 || '',          // code ISO
             countryName: selectedOption.value.trim(),            // nom complet
             city: document.getElementById('city').value.trim(),

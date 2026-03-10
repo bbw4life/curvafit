@@ -55,7 +55,7 @@ exports.handler = async (event) => {
 
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';
-    let phone = shipping.phone || "0000000000";
+    let phone = shipping.phone || '';  // Pas de default "0000000000", envoie vide si absent
     console.log("PHONE RECEIVED (complet):", phone);
 
     const address = shipping.address || '';
