@@ -1,6 +1,4 @@
-// save-pending-order.js
 const { google } = require('googleapis');
-
 exports.handler = async (event) => {
   console.log('[SAVE PENDING] Function invoked');
   try {
@@ -8,31 +6,15 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body);
     let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
-
     const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
     shipping.fullName = normalize(shipping.fullName);
     shipping.email = normalize(shipping.email);
     shipping.phone = normalize(shipping.phone);
-    if (!shipping.phone) throw new Error("Missing phone number");
+    shipping.country = normalize(shipping.countryName || "United States"); // string (nom complet)
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
     shipping.address = normalize(shipping.address);
-
-    let country = normalize(shipping.countryName || '');
-    if (!country && shipping.country) {
-      try {
-        const res = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.country}`);
-        const data = await res.json();
-        if (data && data[0] && data[0].name && data[0].name.common) {
-          country = normalize(data[0].name.common);
-        }
-      } catch (err) {
-        console.error("Error fetching country name:", err);
-      }
-    }
-    if (!country) throw new Error("Missing country");
-
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -44,7 +26,6 @@ exports.handler = async (event) => {
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
     const now = new Date().toISOString();
     const internalOrderId = `PENDING_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-
     const values = [[
       internalOrderId,
       payment_provider,
@@ -52,7 +33,7 @@ exports.handler = async (event) => {
       shipping.fullName || "",
       shipping.email || "",
       shipping.phone || "",
-      country,
+      shipping.country || "United States",
       shipping.state || "",
       shipping.city || "",
       shipping.postalCode || "",
@@ -64,7 +45,6 @@ exports.handler = async (event) => {
       "paid",
       now
     ]];
-
     const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
     let success = false;
     for (const range of rangesToTry) {
@@ -86,7 +66,6 @@ exports.handler = async (event) => {
     return response(500, { success: false, error: error.message });
   }
 };
-
 function response(statusCode, body) {
   return { statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
 }

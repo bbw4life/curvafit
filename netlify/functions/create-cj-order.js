@@ -1,10 +1,7 @@
-// create-cj-order.js
 const fetch = require("node-fetch");
-
 // === CACHE GLOBAL DU TOKEN ===
 let cachedToken = null;
 let tokenExpiry = 0;
-
 async function getAccessToken() {
   const now = Date.now();
   if (cachedToken && now < tokenExpiry) return cachedToken;
@@ -20,46 +17,28 @@ async function getAccessToken() {
   tokenExpiry = now + 1000 * 60 * 110;
   return cachedToken;
 }
-
 exports.handler = async (event) => {
   console.log("[CJ ORDER] Function invoked");
   try {
     if (!event.body) throw new Error("No data received");
     const { cart, shipping } = JSON.parse(event.body);
-
     if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
-
     const accessToken = await getAccessToken();
     const orderNumber = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const products = cart.map(item => ({
       vid: item.cj_variant_id || '',
       quantity: parseInt(item.quantity) || 1
     }));
-
-    let countryCode = shipping.country || 'US';
-    let countryName = shipping.countryName || '';
-    if (!countryName && countryCode) {
-      try {
-        const res = await fetch(`https://restcountries.com/v3.1/alpha/${countryCode}`);
-        const data = await res.json();
-        if (data && data[0] && data[0].name && data[0].name.common) {
-          countryName = data[0].name.common;
-        }
-      } catch (err) {
-        console.error("Error fetching country name:", err);
-      }
-    }
-    if (!countryName) throw new Error("Missing country name");
-
+    // === CORRECTION : récupération nom + code ISO sans casser le reste ===
+    const countryCode = shipping.country || 'US';
+    const countryName = shipping.countryName || 'United States';
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';
-    const phone = shipping.phone || '';
-    if (!phone) throw new Error("Missing phone number");
+    let phone = shipping.phone || "0000000000";
     const address = shipping.address || '';
     const city = shipping.city || '';
     const state = shipping.state || '';
     const postalCode = shipping.postalCode || '';
-
     const orderBody = {
       orderNumber: orderNumber,
       shippingCountryCode: countryCode,
@@ -76,18 +55,15 @@ exports.handler = async (event) => {
       shippingZip: postalCode,
       shippingPhone: phone
     };
-
     console.log("SENDING TO CJ:", orderBody);
     const cjResponse = await fetch("https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrderV2", {
       method: "POST",
       headers: { "CJ-Access-Token": accessToken, "Content-Type": "application/json" },
       body: JSON.stringify(orderBody)
     });
-
     const responseText = await cjResponse.text();
     let data;
     try { data = JSON.parse(responseText); } catch { data = {}; }
-
     if (cjResponse.ok && data.code === 200) {
       const cjResult = data.data?.[0] || {};
       return response(200, { success: true, cjOrderId: cjResult.orderId || '', message: "Order sent to CJ successfully" });
@@ -100,7 +76,6 @@ exports.handler = async (event) => {
     return response(500, { success: false, error: error.message });
   }
 };
-
 function response(statusCode, body) {
   return { statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
 }

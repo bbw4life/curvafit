@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let promos = [];
     let appliedPromo = null;
     let discountAmount = 0;
-
     fetch('/products.data.json')
       .then(response => response.json())
       .then(data => {
@@ -37,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Erreur de chargement de /products.data.json:', error);
         renderCart();
       });
-
     function renderCart() {
         if (!cart.length) {
             cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
@@ -86,13 +84,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePromoDisplay();
         updateTotals();
     }
-
     paymentOptions.forEach(option => {
         option.addEventListener('change', () => {
             payButton.textContent = option.value === 'stripe' ? 'Pay with Card' : 'Pay with PayPal';
         });
     });
-
     function validateForm() {
         const inputs = shippingForm.querySelectorAll('input, textarea');
         let valid = true;
@@ -107,28 +103,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!valid) alert('Please fill all required fields.');
         return valid;
     }
-
     function getShippingData() {
         const countrySelect = document.getElementById('country');
         const selectedOption = countrySelect.options[countrySelect.selectedIndex];
-        
+       
         const phoneCode = document.getElementById('phone-code').value.trim();
         const phoneNumber = document.getElementById('phone').value.trim();
         const fullPhone = (phoneCode + phoneNumber).replace(/\s+/g, '');
-
         return {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: fullPhone,
-            country: selectedOption.dataset.cca2 || '',
-            countryName: selectedOption.value.trim(),
+            country: selectedOption.dataset.cca2 || '', // code ISO (compatibilité PayPal/Stripe)
+            countryName: selectedOption.value.trim(), // nom complet (pour CJ)
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
             address: document.getElementById('address').value.trim()
         };
     }
-
     payButton.addEventListener('click', async () => {
         if (!validateForm()) return;
         if (!cart.length) return alert('Your cart is empty.');
@@ -136,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
         payButton.textContent = "Processing...";
         const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
         const shippingData = getShippingData();
-
         try {
             let response;
             let data;
@@ -190,7 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
             payButton.textContent = "Pay Now";
         }
     });
-
     // === Le reste du fichier est IDENTIQUE à ton original ===
     const refundLink = document.getElementById('refund-policy-link');
     const shippingLink = document.getElementById('shipping-policy-link');
@@ -207,11 +198,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === refundModal) refundModal.style.display = 'none';
         if (e.target === shippingModal) shippingModal.style.display = 'none';
     });
-
     const countrySelect = document.getElementById('country');
     const citySelect = document.getElementById('city');
     const phoneCodeInput = document.getElementById('phone-code');
-
     async function loadCountries() {
         try {
             const res = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,cca2');
@@ -229,7 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Country load error", err);
         }
     }
-
     countrySelect.addEventListener('change', async function () {
         const selectedOption = this.options[this.selectedIndex];
         phoneCodeInput.value = selectedOption.dataset.code || '';
@@ -255,10 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
             citySelect.innerHTML = '<option value="">No cities found</option>';
         }
     });
-
     loadCountries();
-
-    function updatePromoDisplay() { /* identique à ton original */ 
+    function updatePromoDisplay() { /* identique à ton original */
         const hasBundle = cart.some(item => item.fromBundle);
         const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
         const suggested = promos.find(p => p.items === totalQuantity);
@@ -291,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         return subtotal;
     }
-    function updateTotals() { /* identique */ 
+    function updateTotals() { /* identique */
         const subtotal = getSubtotal();
         let bundleSavings = 0;
         let hasBundle = false;
@@ -316,12 +302,10 @@ document.addEventListener('DOMContentLoaded', () => {
             promoLine.style.display = 'none';
         }
     }
-
     document.getElementById('copy-suggested')?.addEventListener('click', () => {
         const code = document.getElementById('suggested-code').textContent;
         navigator.clipboard.writeText(code).then(() => alert('Code copied: ' + code));
     });
-
     document.getElementById('apply-promo')?.addEventListener('click', () => {
         const input = document.getElementById('promo-input').value.trim().toUpperCase();
         const promoMessage = document.getElementById('promo-message');
