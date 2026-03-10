@@ -106,17 +106,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function getShippingData() {
         const countrySelect = document.getElementById('country');
         const selectedOption = countrySelect.options[countrySelect.selectedIndex];
-   
         const phoneCode = document.getElementById('phone-code').value.trim();
         const phoneNumber = document.getElementById('phone').value.trim();
-        const fullPhone = (phoneCode + phoneNumber).replace(/\s+/g, '');
+
+        // === NETTOYAGE ULTRA-ROBUSTE DU TÉLÉPHONE ===
+        let fullPhone = (phoneCode + phoneNumber)
+            .replace(/[\s\n\r\t\-\(\)\.]+/g, '')
+            .replace(/^00/, '+');
+        if (fullPhone && !fullPhone.startsWith('+')) fullPhone = '+' + fullPhone;
+
         return {
             fullName: document.getElementById('full-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: fullPhone,
-            // === CORRECTION : country reste string (nom complet) + countryCode ajouté ===
-            country: selectedOption.value.trim(), // nom complet (compatibilité PayPal/Stripe)
-            countryCode: selectedOption.dataset.cca2 || '', // code ISO (pour CJ)
+            country: selectedOption.value.trim(),
+            countryCode: selectedOption.dataset.cca2 || '',
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
@@ -164,6 +168,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     shipping_cost: SHIPPING_COST.toFixed(2),
                     tax: taxes.toFixed(2)
                 };
+
+                // === SAUVEGARDE COMPLÈTE POUR THANKYOU (PayPal) ===
+                localStorage.setItem("pendingPayPalOrder", JSON.stringify({
+                    cart: paypalCart,
+                    shipping: shippingData,
+                    shipping_cost: SHIPPING_COST.toFixed(2),
+                    tax: taxes.toFixed(2)
+                }));
+
                 response = await fetch('/.netlify/functions/paypal-create-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -175,7 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const paypalDomain = data.paypalDomain || 'https://www.sandbox.paypal.com';
                 localStorage.setItem("pendingOrder", "paypal");
-                localStorage.setItem("shippingData", JSON.stringify(shippingData));
                 window.location.href = `${paypalDomain}/checkoutnow?token=${data.orderID}`;
             }
         } catch (error) {
@@ -184,7 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
             payButton.textContent = "Pay Now";
         }
     });
-    // === Le reste du fichier est IDENTIQUE à ton original ===
     const refundLink = document.getElementById('refund-policy-link');
     const shippingLink = document.getElementById('shipping-policy-link');
     const refundModal = document.getElementById('refund-modal');
@@ -246,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     loadCountries();
-    function updatePromoDisplay() { /* identique à ton original */
+    function updatePromoDisplay() {
         const hasBundle = cart.some(item => item.fromBundle);
         const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
         const suggested = promos.find(p => p.items === totalQuantity);
@@ -279,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         return subtotal;
     }
-    function updateTotals() { /* identique */
+    function updateTotals() {
         const subtotal = getSubtotal();
         let bundleSavings = 0;
         let hasBundle = false;
