@@ -36,7 +36,6 @@ exports.handler = async (event) => {
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';
     let phone = shipping.phone || "0000000000";
-    console.log(`[CJ] Shipping details: countryName=${countryName}, countryCode=${countryCode}, phone=${phone}`);
     const address = shipping.address || '';
     const city = shipping.city || '';
     const state = shipping.state || '';

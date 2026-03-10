@@ -147,14 +147,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 localStorage.setItem("pendingOrder", "stripe");
                 await stripe.redirectToCheckout({ sessionId: data.sessionId });
-                        } else {
+            } else {
                 let paypalCart = [...cart];
                 if (discountAmount > 0) {
                     const preDiscount = getSubtotal();
                     const ratio = (preDiscount - discountAmount) / preDiscount;
                     paypalCart = cart.map(item => ({
-                        ...item,
-                        price: (Number(item.price) * ratio).toFixed(2)
+                    ...item,
+                    price: (Number(item.price) * ratio).toFixed(2)
                     }));
                 }
                 const taxes = getSubtotal() * TAX_RATE;
@@ -164,28 +164,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     shipping_cost: SHIPPING_COST.toFixed(2),
                     tax: taxes.toFixed(2)
                 };
-
                 response = await fetch('/.netlify/functions/paypal-create-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(bodyData)
                 });
                 data = await response.json();
-
                 if (!response.ok || !data.orderID) {
                     throw new Error(data.error || 'PayPal order failed');
                 }
-
                 const paypalDomain = data.paypalDomain || 'https://www.sandbox.paypal.com';
-
-                // ====================== FIX PRINCIPAL ======================
-                // On sauvegarde les vraies données (nom complet pays + countryCode + téléphone exact)
-                localStorage.setItem(`paypal_pending_${data.orderID}`, JSON.stringify({
-                    cart: paypalCart,
-                    shipping: shippingData,           // ← exactement les mêmes données que Stripe
-                    payment_provider: "paypal"
-                }));
-
                 localStorage.setItem("pendingOrder", "paypal");
                 window.location.href = `${paypalDomain}/checkoutnow?token=${data.orderID}`;
             }
