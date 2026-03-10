@@ -49,13 +49,9 @@ exports.handler = async (event) => {
       quantity: parseInt(item.quantity) || 1
     }));
 
-    // === MODIFICATION 2 : récupération nom complet + code ISO ===
-    const countryObj = typeof shipping.country === 'object' && shipping.country !== null 
-      ? shipping.country 
-      : { name: shipping.country || 'US', code: shipping.country || 'US' };
-
-    const countryCode = countryObj.code || 'US';
-    const countryName = countryObj.name || 'United States';
+    // === CORRECTION : Utiliser country (ISO) et countryName (nom complet) ===
+    const countryCode = shipping.country || 'US';
+    const countryName = shipping.countryName || 'United States';
 
     const fullName = shipping.fullName || '';
     const email = shipping.email || '';
