@@ -1,3 +1,4 @@
+// checkout.js
 document.addEventListener('DOMContentLoaded', () => {
     let cart = [];
     try {
@@ -111,12 +112,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const phoneNumber = document.getElementById('phone').value.trim();
         const fullPhone = (phoneCode + phoneNumber).replace(/\s+/g, '');
         return {
-            fullName: document.getElementById('full-name').value.trim(),
+            firstName: document.getElementById('first-name').value.trim(),
+            lastName: document.getElementById('last-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: fullPhone,
             // === CORRECTION : country reste string (nom complet) + countryCode ajouté ===
             country: selectedOption.value.trim(), // nom complet (compatibilité PayPal/Stripe)
-            countryCode: selectedOption.dataset.cca2 || '', // code ISO (pour CJ)
+            countryCode: selectedOption.dataset.cca2 || '', // code ISO (pour EPROLO)
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
