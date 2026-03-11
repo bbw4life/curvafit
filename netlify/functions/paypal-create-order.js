@@ -37,10 +37,10 @@ exports.handler = async (event) => {
     const shippingCost = parseFloat(shipping_cost);
     const taxAmount = parseFloat(tax);
     const finalTotal = (subtotal + shippingCost + taxAmount).toFixed(2);
-    // ====================== COMPACT CUSTOM_ID WITH CJ IDS ======================
+    // ====================== COMPACT CUSTOM_ID WITH EPROLO IDS ======================
     const custom_id = cart
-  .map(item => `${item.cj_product_id || ''}:${item.cj_variant_id || ''}`)
-  .join('|');
+      .map(item => item.eprolo_variant_id || '')
+      .join('|');
     // ====================== CREATE ORDER ======================
     const orderBody = {
       intent: "CAPTURE",

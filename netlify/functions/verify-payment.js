@@ -27,16 +27,17 @@ exports.handler = async (event) => {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
       if (session.payment_status !== "paid") throw new Error("Stripe not paid");
       const lineItems = await stripe.checkout.sessions.listLineItems(sessionId, { limit: 100 });
-      const storedCj = JSON.parse(session.metadata.cj_data || "[]");
-      cart = lineItems.data.map((li, i) => {
-        const cjItem = storedCj[i] || {};
-        return {
+      const storedEprolo = JSON.parse(session.metadata.eprolo_data || "[]");
+      cart = [];
+      lineItems.data.forEach((li, i) => {
+        if (li.description === 'Shipping' || li.description === 'Taxes') return;
+        const eproloItem = storedEprolo[i] || {};
+        cart.push({
           title: li.description,
           price: (li.amount_total / 100) / li.quantity,
           quantity: li.quantity,
-          cj_product_id: cjItem.cj_product_id || null,
-          cj_variant_id: cjItem.cj_variant_id || null
-        };
+          eprolo_variant_id: eproloItem.eprolo_variant_id || null
+        });
       });
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
@@ -59,17 +60,16 @@ exports.handler = async (event) => {
       const orderData = await orderRes.json();
       if (orderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
       const purchaseUnit = orderData.purchase_units?.[0];
-      const storedCj = purchaseUnit?.custom_id ? purchaseUnit.custom_id.split('|') : [];
-      console.log("Stored CJ data:", storedCj);
+      const storedEprolo = purchaseUnit?.custom_id ? purchaseUnit.custom_id.split('|') : [];
+      console.log("Stored EPROLO data:", storedEprolo);
       const itemsArray = purchaseUnit?.items || [];
       cart = itemsArray.map((item, i) => {
-        const [cj_product_id, cj_variant_id] = storedCj[i] ? storedCj[i].split(':') : ['', ''];
-        return { title: item.name, price: parseFloat(item.unit_amount.value), quantity: parseInt(item.quantity), cj_product_id: cj_product_id || null, cj_variant_id: cj_variant_id || null };
+        const eprolo_variant_id = storedEprolo[i] || '';
+        return { title: item.name, price: parseFloat(item.unit_amount.value), quantity: parseInt(item.quantity), eprolo_variant_id: eprolo_variant_id || null };
       });
-      if (cart.length === 0 && storedCj.length > 0) {
-        cart = storedCj.map((str, i) => {
-          const [p, v] = str.split(':');
-          return { title: `Product ${i+1}`, price: 0, quantity: 1, cj_product_id: p || null, cj_variant_id: v || null };
+      if (cart.length === 0 && storedEprolo.length > 0) {
+        cart = storedEprolo.map((str, i) => {
+          return { title: `Product ${i+1}`, price: 0, quantity: 1, eprolo_variant_id: str || null };
         });
       }
       const payer = orderData.payer || {};
@@ -113,19 +113,19 @@ exports.handler = async (event) => {
     }
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
     console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
-    let readyForCj = [];
+    let readyForEprolo = [];
     for (let i = 0; i < cart.length; i++) {
       const item = cart[i];
-      console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.cj_variant_id || 'NO_VARIANT'}`);
-      if (!item.cj_variant_id) {
-        await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+      console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.eprolo_variant_id || 'NO_VARIANT'}`);
+      if (!item.eprolo_variant_id) {
+        await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_stock");
         continue;
       }
-      readyForCj.push(item);
+      readyForEprolo.push(item);
     }
-    if (readyForCj.length > 0) {
-      console.log(`✅ ${readyForCj.length} item(s) ready for CJ`);
-      for (const item of readyForCj) {
+    if (readyForEprolo.length > 0) {
+      console.log(`✅ ${readyForEprolo.length} item(s) ready for EPROLO`);
+      for (const item of readyForEprolo) {
         await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending");
       }
     }

@@ -1,32 +1,7 @@
-// retry-pending-order.js
+// retry-pending-orders.js
 const { google } = require("googleapis");
 const fetch = require("node-fetch");
-// === CACHE GLOBAL DU TOKEN ===
-let cachedToken = null;
-let tokenExpiry = 0;
-async function getAccessToken() {
-  const now = Date.now();
-  if (cachedToken && now < tokenExpiry) {
-    console.log("[CJ AUTH] ✅ Token en cache utilisé");
-    return cachedToken;
-  }
-  console.log("[CJ AUTH] 🔄 Demande nouveau token...");
-  if (!process.env.CJ_API_KEY) throw new Error("Missing CJ_API_KEY");
-  const tokenRes = await fetch(
-    "https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ apiKey: process.env.CJ_API_KEY })
-    }
-  );
-  const tokenData = await tokenRes.json();
-  if (!tokenRes.ok || tokenData.code !== 200) throw new Error(tokenData.message || 'Token failed');
-  cachedToken = tokenData.data.accessToken;
-  tokenExpiry = now + 1000 * 60 * 110;
-  console.log("[CJ AUTH] ✅ Nouveau token mis en cache");
-  return cachedToken;
-}
+
 exports.handler = async () => {
   console.log('[RETRY PENDING] 🚀 Démarrage - ' + new Date().toISOString());
   try {
@@ -39,7 +14,7 @@ exports.handler = async () => {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
+    const rangesToTry = ["Feuille 1!A:P", "PendingOrders!A:P", "Sheet1!A:P"];
     let rows = [];
     let activeTab = "";
     for (const range of rangesToTry) {
@@ -65,8 +40,8 @@ exports.handler = async () => {
     let errors = [];
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
-      const status = row[14] || "";
-      if (status !== "pending") continue;
+      const status = row[13] || "";
+      if (status !== "pending" && status !== "failed") continue;
       processed++;
       const lineNumber = i + 2;
       const internalId = row[0];
@@ -88,16 +63,28 @@ exports.handler = async () => {
         console.error("Failed to fetch country code:", err.message);
         shipping.countryCode = 'US';
       }
+      // Add province_code for US
+      const usStateMap = {
+        'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
+        'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA',
+        'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA',
+        'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
+        'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS', 'Missouri': 'MO',
+        'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV', 'New Hampshire': 'NH', 'New Jersey': 'NJ',
+        'New Mexico': 'NM', 'New York': 'NY', 'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH',
+        'Oklahoma': 'OK', 'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
+        'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
+        'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY'
+      };
+      shipping.province_code = (shipping.countryCode === 'US') ? usStateMap[shipping.state] || shipping.state : shipping.state;
       const cart = [{
-        cj_product_id: row[11] || "",
-        cj_variant_id: row[12] || "",
-        quantity: parseInt(row[13]) || 1
+        eprolo_variant_id: row[11] || "",
+        quantity: parseInt(row[12]) || 1
       }];
       console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId}`);
       try {
-        await getAccessToken(); // Ensure token is fresh
-        // Directly create CJ Order
-        const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-cj-order`, {
+        // Directly create EPROLO Order
+        const createRes = await fetch(`${process.env.BASE_URL}/.netlify/functions/create-eprolo-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cart, shipping })
@@ -106,20 +93,20 @@ exports.handler = async () => {
         if (createData.success) {
           await sheets.spreadsheets.values.update({
             spreadsheetId,
-            range: `${activeTab}!O${lineNumber}`,
+            range: `${activeTab}!N${lineNumber}`,
             valueInputOption: "RAW",
-            resource: { values: [["order_sent"]] }
+            resource: { values: [["successful"]] }
           });
-          console.log(` 🎉 SUCCÈS CJ pour ${internalId} !`);
+          console.log(` 🎉 SUCCÈS EPROLO pour ${internalId} !`);
           fulfilled++;
         } else {
-          throw new Error(createData.error || "Échec création CJ");
+          throw new Error(createData.error || "Échec création EPROLO");
         }
       } catch (err) {
         console.error(` ❌ Erreur ligne ${lineNumber}:`, err.message);
         await sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${activeTab}!O${lineNumber}`,
+          range: `${activeTab}!N${lineNumber}`,
           valueInputOption: "RAW",
           resource: { values: [["failed"]] }
         });

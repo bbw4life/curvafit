@@ -1,82 +1,75 @@
-// create-cj-order.js
-const fetch = require("node-fetch");
-// === CACHE GLOBAL DU TOKEN ===
-let cachedToken = null;
-let tokenExpiry = 0;
-async function getAccessToken() {
-  const now = Date.now();
-  if (cachedToken && now < tokenExpiry) return cachedToken;
-  if (!process.env.CJ_API_KEY) throw new Error("Missing CJ_API_KEY");
-  const tokenRes = await fetch("https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ apiKey: process.env.CJ_API_KEY })
-  });
-  const tokenData = await tokenRes.json();
-  if (!tokenRes.ok || tokenData.code !== 200) throw new Error(tokenData.message || "Failed to get CJ access token");
-  cachedToken = tokenData.data.accessToken;
-  tokenExpiry = now + 1000 * 60 * 110;
-  return cachedToken;
-}
+// create-stripe-session.js
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 exports.handler = async (event) => {
-  console.log("[CJ ORDER] Function invoked");
+  console.log("[STRIPE SESSION] Function invoked");
   try {
     if (!event.body) throw new Error("No data received");
     const { cart, shipping } = JSON.parse(event.body);
     if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
-    const accessToken = await getAccessToken();
-    const orderNumber = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-    const products = cart.map(item => ({
-      vid: item.cj_variant_id || '',
-      quantity: parseInt(item.quantity) || 1
-    }));
-    // === CORRECTION : récupération nom + code ISO sans casser le reste ===
-    const countryCode = shipping.countryCode || 'US';
-    const countryName = shipping.country || 'United States';
-    const fullName = shipping.fullName || '';
-    const email = shipping.email || '';
-    let phone = shipping.phone || "0000000000";
-    const address = shipping.address || '';
-    const city = shipping.city || '';
-    const state = shipping.state || '';
-    const postalCode = shipping.postalCode || '';
-    const orderBody = {
-      orderNumber: orderNumber,
-      shippingCountryCode: countryCode,
-      shippingCountry: countryName,
-      shippingProvince: state,
-      shippingCity: city,
-      shippingCustomerName: fullName,
-      shippingAddress: address,
-      email: email,
-      logisticName: "CJPacket",
-      fromCountryCode: "CN",
-      products: products,
-      payType: 2,
-      shippingZip: postalCode,
-      shippingPhone: phone
-    };
-    console.log("SENDING TO CJ:", orderBody);
-    const cjResponse = await fetch("https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrderV2", {
-      method: "POST",
-      headers: { "CJ-Access-Token": accessToken, "Content-Type": "application/json" },
-      body: JSON.stringify(orderBody)
+
+    let subtotal = 0;
+    cart.forEach(item => {
+      subtotal += item.price * item.quantity;
     });
-    const responseText = await cjResponse.text();
-    let data;
-    try { data = JSON.parse(responseText); } catch { data = {}; }
-    if (cjResponse.ok && data.code === 200) {
-      const cjResult = data.data?.[0] || {};
-      return response(200, { success: true, cjOrderId: cjResult.orderId || '', message: "Order sent to CJ successfully" });
-    } else {
-      const errorMsg = data.message || responseText.trim() || "CJ order creation failed";
-      return response(200, { success: false, error: errorMsg, code: data.code || cjResponse.status });
-    }
+    const TAX_RATE = 0.1;
+    const SHIPPING_COST = 10.00;
+    const taxes = subtotal * TAX_RATE;
+
+    const line_items = [
+      ...cart.map(item => ({
+        price_data: {
+          currency: 'usd',
+          product_data: { name: item.title },
+          unit_amount: Math.round(item.price * 100),
+        },
+        quantity: item.quantity,
+      })),
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: { name: 'Shipping' },
+          unit_amount: Math.round(SHIPPING_COST * 100),
+        },
+        quantity: 1,
+      },
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: { name: 'Taxes' },
+          unit_amount: Math.round(taxes * 100),
+        },
+        quantity: 1,
+      },
+    ];
+
+    const eproloData = cart.map(item => ({
+      eprolo_variant_id: item.eprolo_variant_id || ''
+    }));
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: line_items,
+      mode: 'payment',
+      success_url: `${process.env.BASE_URL}/thankyou.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.BASE_URL}/checkout.html`,
+      metadata: {
+        eprolo_data: JSON.stringify(eproloData),
+        shipping: JSON.stringify(shipping)
+      }
+    });
+
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: session.id })
+    };
   } catch (error) {
-    console.error("[CJ ORDER ERROR]", error.message);
-    return response(500, { success: false, error: error.message });
+    console.error("[STRIPE SESSION ERROR]", error.message);
+    return {
+      statusCode: 500,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ success: false, error: error.message })
+    };
   }
 };
-function response(statusCode, body) {
-  return { statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
-}
