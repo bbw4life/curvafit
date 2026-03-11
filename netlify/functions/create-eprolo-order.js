@@ -12,6 +12,13 @@ exports.handler = async (event) => {
     const apiSecret = process.env.EPROLO_API_SECRET;
     const timestamp = Date.now();
     const sign = crypto.createHash('md5').update(apiKey + timestamp + apiSecret).digest('hex');
+
+    // Ajoute logs pour debug
+    console.log("[EPROLO] apiKey set:", !!apiKey);
+    console.log("[EPROLO] apiSecret set:", !!apiSecret);
+    console.log("[EPROLO] Generated timestamp:", timestamp);
+    console.log("[EPROLO] Generated sign:", sign);
+
     const uniqueOrderId = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const orderNumber = uniqueOrderId;
     const orderBody = {
@@ -35,17 +42,21 @@ exports.handler = async (event) => {
       }))
     };
     console.log("SENDING TO EPROLO:", orderBody);
-    const eproloResponse = await fetch("https://openapi.eprolo.com/add_order.html", {
+
+    // MODIFICATION : Auth en query params
+    const url = `https://openapi.eprolo.com/add_order.html?apiKey=${encodeURIComponent(apiKey)}&timestamp=${timestamp}&sign=${encodeURIComponent(sign)}`;
+
+    const eproloResponse = await fetch(url, {
       method: "POST",
       headers: {
-        "apiKey": apiKey,
-        "timestamp": timestamp.toString(),
-        "sign": sign,
         "Content-Type": "application/json"
       },
       body: JSON.stringify(orderBody)
     });
     const responseText = await eproloResponse.text();
+    console.log("[EPROLO] Response status:", eproloResponse.status); // Log ajouté
+    console.log("[EPROLO] Response text:", responseText); // Log ajouté pour voir la réponse exacte
+
     let data;
     try { data = JSON.parse(responseText); } catch { data = {}; }
     if (eproloResponse.ok && data.code === 0) {
