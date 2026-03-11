@@ -1,34 +1,28 @@
 [
-  {
-  "cj_id": "CJYD1954211",
-  "sku_internal": "CJYD1954211",
+{
+  "cj_id": "31216361",
+  "sku_internal": "EPROLO-31216361",
   "id": "resistance-bands",
   "active": true,
-  "stock_managed_by": "cj",
-  "currency": "$",
-  "last_updated": "2026-02-28",
+  "stock_managed_by": "eprolo",
+  "currency": "USD",
+  "last_updated": "2026-03-11",
   "start_date": "2026-03-07",
   "end_date": "2026-03-10",
   "single_discount": 7,
   "duo_discount": 10,
   "trio_discount": 20,
-  "title": "Neck Memory Home Sleep Pillow",
-  "description": "Ergonomic memory foam neck pillow with 3D contour design. Provides perfect neck and shoulder support, relieves pressure points and improves sleep quality. Ideal for side, back and stomach sleepers.",
+  "title": "Butterfly Sleep Memory Neck Pillow Slow Rebound ",
+  "description": "Ergonomic butterfly-shaped memory foam pillow with slow rebound technology. Features two sides: Horn side aligns head, shoulders and back in neutral position to relieve neck pain; Roll side with scientific natural curve design suits most sleepers. Provides cervical orthopedic support, neck massage, relieves pressure points, improves sleep quality and posture. Perfect for side, back, stomach and combination sleepers.",
   "price": 29.26,
   "compare_price": 56.95,
   "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_12_3eda61ad-07b1-49f1-882c-220e14a421fc.webp?v=1754486479",
   "sizes": [],
   "colors": [
     {
-      "name": "Gray",
+      "name": "Light Gray",
       "hex": "#9E9E9E",
       "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_1_aeda37b4-a4ab-4731-a053-cb94dfb9ac3b.webp?v=1754486478",
-      "active": true
-    },
-    {
-      "name": "Black",
-      "hex": "#000000",
-      "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_9.webp",
       "active": true
     },
     {
@@ -38,17 +32,34 @@
       "active": true
     },
     {
-      "name": "Black Pillowcase",
-      "hex": "#1C1C1C",
-      "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Sf557550825534dea9083e446ec6cbba4C.webp",
+      "name": "Black",
+      "hex": "#000000",
+      "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_9.webp",
       "active": true
     }
   ],
   "variants": [
-    { "vid": "CJYD195421101AZ", "color": "Gray", "size": "", "price": 27.26, "active": true },
-    { "vid": "CJYD195421102BY", "color": "Black", "size": "", "price": 32.26, "active": true },
-    { "vid": "CJYD195421103CX", "color": "White", "size": "", "price": 29.26, "active": true },
-    { "vid": "CJYD195421104DW", "color": "Black Pillowcase", "size": "", "price": 2.63, "active": true }
+    {
+      "vid": "709711364",
+      "color": "Light Gray",
+      "size": "",
+      "price": 29.26,
+      "active": true
+    },
+    {
+      "vid": "709711365",
+      "color": "White",
+      "size": "",
+      "price": 29.26,
+      "active": true
+    },
+    {
+      "vid": "709711366",
+      "color": "Black",
+      "size": "",
+      "price": 29.26,
+      "active": true
+    }
   ],
   "media": [
     "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Sd3bfdf0074e743968ee398c542640734b.webp?v=1754486496",
