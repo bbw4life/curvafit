@@ -11,7 +11,7 @@ exports.handler = async (event) => {
     const apiKey = process.env.EPROLO_API_KEY;
     const apiSecret = process.env.EPROLO_API_SECRET;
     const timestamp = Date.now();
-    const sign = crypto.createHash('md5').update(apiKey + timestamp + apiSecret).digest('hex');
+    const sign = crypto.createHash('md5').update(apiKey + apiSecret + timestamp).digest('hex');
     const uniqueOrderId = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const orderNumber = uniqueOrderId;
     const orderBody = {
