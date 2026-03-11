@@ -111,18 +111,30 @@ exports.handler = async (event) => {
     }
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
     console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
-    let readyForEprolo = [];
-    for (let i = 0; i < cart.length; i++) {
-      const item = cart[i];
-      console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.variantsid || 'NO_VARIANT'}`);
-      if (!item.variantsid) {
-        await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-        continue;
+    // Group cart by variantsid
+    const cartMap = {};
+    cart.forEach(item => {
+      const vid = item.variantsid || null;
+      if (vid) {
+        if (!cartMap[vid]) {
+          cartMap[vid] = {
+            title: item.title,
+            price: item.price,
+            quantity: 0,
+            variantsid: vid
+          };
+        }
+        cartMap[vid].quantity += item.quantity;
       }
-      readyForEprolo.push(item);
+    });
+    const groupedCart = Object.values(cartMap);
+    let readyForEprolo = groupedCart.filter(item => item.variantsid);
+    const notReady = cart.filter(item => !item.variantsid);
+    for (const item of notReady) {
+      await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
     }
     if (readyForEprolo.length > 0) {
-      console.log(`✅ ${readyForEprolo.length} item(s) ready for Eprolo`);
+      console.log(`✅ ${readyForEprolo.length} unique item(s) ready for Eprolo`);
       for (const item of readyForEprolo) {
         await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending");
       }
