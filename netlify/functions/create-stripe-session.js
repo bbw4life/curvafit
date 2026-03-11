@@ -4,20 +4,43 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 exports.handler = async (event) => {
   try {
     if (!event.body) throw new Error("No data received");
-    const { cart, shipping } = JSON.parse(event.body);
+    const { cart, shipping, shipping_cost = "10.00", tax = "0.00" } = JSON.parse(event.body);
     if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
-
-    const lineItems = cart.map(item => ({
+    let subtotal = 0;
+    const lineItems = cart.map(item => {
+      const price = parseFloat(item.price);
+      const qty = parseInt(item.quantity);
+      if (!price || !qty || price <= 0) throw new Error("Invalid item");
+      subtotal += price * qty;
+      return {
+        price_data: {
+          currency: 'usd',
+          product_data: { name: item.title },
+          unit_amount: Math.round(price * 100)
+        },
+        quantity: qty
+      };
+    });
+    // Add shipping and tax as line items
+    lineItems.push({
       price_data: {
         currency: 'usd',
-        product_data: { name: item.title || 'Product' },
-        unit_amount: Math.round((parseFloat(item.price) || 0) * 100),
+        product_data: { name: 'Shipping' },
+        unit_amount: Math.round(parseFloat(shipping_cost) * 100)
       },
-      quantity: parseInt(item.quantity) || 1,
+      quantity: 1
+    });
+    lineItems.push({
+      price_data: {
+        currency: 'usd',
+        product_data: { name: 'Taxes' },
+        unit_amount: Math.round(parseFloat(tax) * 100)
+      },
+      quantity: 1
+    });
+    const eproloData = cart.map(item => ({
+      variantsid: item.variantsid || ''
     }));
-
-    const eprolo_data = cart.map(item => item.variantsid || '');
-
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
@@ -25,15 +48,14 @@ exports.handler = async (event) => {
       success_url: `${process.env.BASE_URL}/thankyou.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.BASE_URL}/checkout.html`,
       metadata: {
-        eprolo_data: JSON.stringify(eprolo_data),
-        shipping: JSON.stringify(shipping),
-      },
+        eprolo_data: JSON.stringify(eproloData),
+        shipping: JSON.stringify(shipping)
+      }
     });
-
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionId: session.id })
+      body: JSON.stringify({ success: true, sessionId: session.id })
     };
   } catch (error) {
     console.error("[STRIPE SESSION ERROR]", error.message);

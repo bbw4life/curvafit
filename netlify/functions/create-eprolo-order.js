@@ -1,5 +1,5 @@
 // create-eprolo-order.js
-const fetch = require("node-fetch");
+const fetch = require('node-fetch');
 const crypto = require('crypto');
 
 exports.handler = async (event) => {
@@ -10,66 +10,36 @@ exports.handler = async (event) => {
     if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
     const apiKey = process.env.EPROLO_API_KEY;
     const apiSecret = process.env.EPROLO_API_SECRET;
-    if (!apiKey || !apiSecret) throw new Error("Missing EPROLO credentials");
-    const timestamp = Date.now().toString();
+    const timestamp = Date.now();
     const sign = crypto.createHash('md5').update(apiKey + timestamp + apiSecret).digest('hex');
-    const orderNumber = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-    const orderItemlist = cart.map(item => ({
-      variantsid: item.variantsid || '',
-      quantity: parseInt(item.quantity) || 1
-    }));
-    // === CORRECTION : récupération nom + code ISO sans casser le reste ===
-    const countryCode = shipping.countryCode || 'US';
-    const countryName = shipping.country || 'United States';
-    const fullName = shipping.fullName || '';
-    let phone = shipping.phone || "0000000000";
-    const address = shipping.address || '';
-    const city = shipping.city || '';
-    const state = shipping.state || '';
-    const postalCode = shipping.postalCode || '';
-    // US state code map
-    const usStates = {
-      'Alabama': 'AL', 'Alaska': 'AK', 'American Samoa': 'AS', 'Arizona': 'AZ', 'Arkansas': 'AR',
-      'California': 'CA', 'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'District of Columbia': 'DC',
-      'Florida': 'FL', 'Georgia': 'GA', 'Guam': 'GU', 'Hawaii': 'HI', 'Idaho': 'ID',
-      'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA', 'Kansas': 'KS', 'Kentucky': 'KY',
-      'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD', 'Massachusetts': 'MA', 'Michigan': 'MI',
-      'Minnesota': 'MN', 'Mississippi': 'MS', 'Missouri': 'MO', 'Montana': 'MT', 'Nebraska': 'NE',
-      'Nevada': 'NV', 'New Hampshire': 'NH', 'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY',
-      'North Carolina': 'NC', 'North Dakota': 'ND', 'Northern Mariana Islands': 'MP', 'Ohio': 'OH', 'Oklahoma': 'OK',
-      'Oregon': 'OR', 'Palau': 'PW', 'Pennsylvania': 'PA', 'Puerto Rico': 'PR', 'Rhode Island': 'RI',
-      'South Carolina': 'SC', 'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Trust Territories': 'TT',
-      'Utah': 'UT', 'Vermont': 'VT', 'Virgin Islands': 'VI', 'Virginia': 'VA', 'Washington': 'WA',
-      'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY'
-    };
-    let provinceCode = '';
-    if (countryCode === 'US') {
-      const normalizedState = state.charAt(0).toUpperCase() + state.slice(1).toLowerCase();
-      provinceCode = usStates[normalizedState] || '';
-    }
+    const uniqueOrderId = `ORDER_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+    const orderNumber = uniqueOrderId;
     const orderBody = {
-      order_id: orderNumber,
+      order_id: uniqueOrderId,
       order_number: orderNumber,
       note: "website order",
-      shipping_name: fullName,
-      shipping_phone: phone,
-      shipping_country: countryName,
-      shipping_country_code: countryCode,
-      shipping_address: address,
+      shipping_name: shipping.fullName || '',
+      shipping_phone: shipping.phone || "0000000000",
+      shipping_country: shipping.country || 'United States',
+      shipping_country_code: shipping.countryCode || 'US',
+      shipping_address: shipping.address || '',
       shipping_address2: "",
-      shipping_city: city,
-      shipping_province: state,
-      shipping_province_code: provinceCode,
-      shipping_zip: postalCode,
+      shipping_city: shipping.city || '',
+      shipping_province: shipping.state || '',
+      shipping_province_code: shipping.provinceCode || '',
+      shipping_zip: shipping.postalCode || '',
       logistics_id: 10,
-      orderItemlist: orderItemlist
+      orderItemlist: cart.map(item => ({
+        variantsid: item.variantsid || '',
+        quantity: parseInt(item.quantity) || 1
+      }))
     };
     console.log("SENDING TO EPROLO:", orderBody);
     const eproloResponse = await fetch("https://openapi.eprolo.com/add_order.html", {
       method: "POST",
       headers: {
         "apiKey": apiKey,
-        "timestamp": timestamp,
+        "timestamp": timestamp.toString(),
         "sign": sign,
         "Content-Type": "application/json"
       },
@@ -78,10 +48,10 @@ exports.handler = async (event) => {
     const responseText = await eproloResponse.text();
     let data;
     try { data = JSON.parse(responseText); } catch { data = {}; }
-    if (eproloResponse.ok && data.code === 0 && data.msg === "order created successfully") {
-      return response(200, { success: true, message: "Order sent to EPROLO successfully" });
+    if (eproloResponse.ok && data.code === 0) {
+      return response(200, { success: true, message: data.msg || "Order sent to Eprolo successfully" });
     } else {
-      const errorMsg = data.msg || responseText.trim() || "EPROLO order creation failed";
+      const errorMsg = data.msg || responseText.trim() || "Eprolo order creation failed";
       return response(200, { success: false, error: errorMsg, code: data.code || eproloResponse.status });
     }
   } catch (error) {

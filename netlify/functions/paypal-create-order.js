@@ -39,7 +39,7 @@ exports.handler = async (event) => {
     const finalTotal = (subtotal + shippingCost + taxAmount).toFixed(2);
     // ====================== COMPACT CUSTOM_ID WITH VARIANTS IDS ======================
     const custom_id = cart
-      .map(item => `${item.variantsid || ''}`)
+      .map(item => item.variantsid || '')
       .join('|');
     // ====================== CREATE ORDER ======================
     const orderBody = {
@@ -78,10 +78,12 @@ exports.handler = async (event) => {
     if (shipping.email) {
       payer.email_address = shipping.email;
     }
-    payer.name = {
-      given_name: shipping.firstName || '',
-      surname: shipping.lastName || ''
-    };
+    if (shipping.firstName || shipping.lastName) {
+      payer.name = {
+        given_name: shipping.firstName || '',
+        surname: shipping.lastName || ''
+      };
+    }
     if (shipping.phone && shipping.countryCode) {
       try {
         const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.countryCode}?fields=idd`);

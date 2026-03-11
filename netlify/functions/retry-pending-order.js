@@ -13,7 +13,7 @@ exports.handler = async () => {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const rangesToTry = ["Feuille 1!A:P", "PendingOrders!A:P", "Sheet1!A:P"];
+    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
     let rows = [];
     let activeTab = "";
     for (const range of rangesToTry) {
@@ -39,7 +39,7 @@ exports.handler = async () => {
     let errors = [];
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
-      const status = row[13] || "";
+      const status = row[14] || "";
       if (status !== "pending" && status !== "failed") continue;
       processed++;
       const lineNumber = i + 2;
@@ -50,21 +50,23 @@ exports.handler = async () => {
         postalCode: row[9] || "", address: row[10] || ""
       };
       // Fetch countryCode if not present
+      let countryCode = 'US';
       try {
         const countryRes = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(shipping.country)}?fullText=true&fields=cca2`);
         if (countryRes.ok) {
           const countryData = await countryRes.json();
-          shipping.countryCode = countryData[0]?.cca2 || 'US';
-        } else {
-          shipping.countryCode = 'US';
+          countryCode = countryData[0]?.cca2 || 'US';
         }
       } catch (err) {
         console.error("Failed to fetch country code:", err.message);
-        shipping.countryCode = 'US';
       }
+      shipping.countryCode = countryCode;
+      // Derive province_code from checkout state input (first two letters uppercase)
+      let provinceCode = shipping.state.substring(0, 2).toUpperCase() || '';
+      shipping.provinceCode = provinceCode;
       const cart = [{
-        variantsid: row[11] || "",
-        quantity: parseInt(row[12]) || 1
+        variantsid: row[12] || "",
+        quantity: parseInt(row[13]) || 1
       }];
       console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId}`);
       try {
@@ -78,7 +80,7 @@ exports.handler = async () => {
         if (createData.success) {
           await sheets.spreadsheets.values.update({
             spreadsheetId,
-            range: `${activeTab}!N${lineNumber}`,
+            range: `${activeTab}!O${lineNumber}`,
             valueInputOption: "RAW",
             resource: { values: [["successful"]] }
           });
@@ -91,7 +93,7 @@ exports.handler = async () => {
         console.error(` ❌ Erreur ligne ${lineNumber}:`, err.message);
         await sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${activeTab}!N${lineNumber}`,
+          range: `${activeTab}!O${lineNumber}`,
           valueInputOption: "RAW",
           resource: { values: [["failed"]] }
         });

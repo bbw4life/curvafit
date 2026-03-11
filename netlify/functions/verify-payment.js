@@ -27,17 +27,17 @@ exports.handler = async (event) => {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
       if (session.payment_status !== "paid") throw new Error("Stripe not paid");
       const lineItems = await stripe.checkout.sessions.listLineItems(sessionId, { limit: 100 });
-      const storedVariants = JSON.parse(session.metadata.eprolo_data || "[]");
-      shipping = JSON.parse(session.metadata.shipping || "{}");
-      shipping.fullName = `${shipping.firstName || ''} ${shipping.lastName || ''}`.trim();
+      const storedEprolo = JSON.parse(session.metadata.eprolo_data || "[]");
       cart = lineItems.data.map((li, i) => {
+        const eproloItem = storedEprolo[i] || {};
         return {
           title: li.description,
           price: (li.amount_total / 100) / li.quantity,
           quantity: li.quantity,
-          variantsid: storedVariants[i] || null
+          variantsid: eproloItem.variantsid || null
         };
       });
+      shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
     // ====================== PAYPAL ======================
     } else if (provider === "paypal") {
@@ -62,8 +62,7 @@ exports.handler = async (event) => {
       console.log("Stored variants data:", storedVariants);
       const itemsArray = purchaseUnit?.items || [];
       cart = itemsArray.map((item, i) => {
-        const variantsid = storedVariants[i] || '';
-        return { title: item.name, price: parseFloat(item.unit_amount.value), quantity: parseInt(item.quantity), variantsid: variantsid || null };
+        return { title: item.name, price: parseFloat(item.unit_amount.value), quantity: parseInt(item.quantity), variantsid: storedVariants[i] || null };
       });
       if (cart.length === 0 && storedVariants.length > 0) {
         cart = storedVariants.map((str, i) => {
@@ -97,7 +96,8 @@ exports.handler = async (event) => {
         phone = purchaseUnit.reference_id || '';
       }
       shipping = {
-        fullName: ship.name?.full_name || `${payer.name?.given_name || ''} ${payer.name?.surname || ''}`.trim(),
+        firstName: payer.name?.given_name || '',
+        lastName: payer.name?.surname || '',
         email: payer.email_address || "",
         phone: phone,
         address: ship.address?.address_line_1 || "",
@@ -111,10 +111,21 @@ exports.handler = async (event) => {
     }
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
     console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
+    let readyForEprolo = [];
     for (let i = 0; i < cart.length; i++) {
       const item = cart[i];
       console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.variantsid || 'NO_VARIANT'}`);
-      await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending");
+      if (!item.variantsid) {
+        await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+        continue;
+      }
+      readyForEprolo.push(item);
+    }
+    if (readyForEprolo.length > 0) {
+      console.log(`✅ ${readyForEprolo.length} item(s) ready for Eprolo`);
+      for (const item of readyForEprolo) {
+        await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending");
+      }
     }
     console.log("🎯 Fulfillment terminé");
     return response(200, {
@@ -160,7 +171,7 @@ async function isAlreadyProcessed(paymentId) {
   }
 }
 // ============================================================================
-async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending") {
+async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending_stock") {
   try {
     await fetch(`${BASE_URL}/.netlify/functions/save-pending-order`, {
       method: "POST",

@@ -5,13 +5,14 @@ exports.handler = async (event) => {
   try {
     if (!event.body) return response(400, { success: false, error: "No data received" });
     const body = JSON.parse(event.body);
-    let { shipping, item, payment_provider, payment_id, status = "pending" } = body;
+    let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
     const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
-    shipping.fullName = normalize(shipping.fullName);
+    const fullName = shipping.fullName || `${shipping.firstName || ''} ${shipping.lastName || ''}`.trim();
+    shipping.fullName = normalize(fullName);
     shipping.email = normalize(shipping.email);
     shipping.phone = normalize(shipping.phone);
-    shipping.country = normalize(shipping.country || "US"); // string (nom complet)
+    shipping.country = normalize(shipping.country || "United States"); // string (nom complet)
     shipping.state = normalize(shipping.state);
     shipping.city = normalize(shipping.city);
     shipping.postalCode = normalize(shipping.postalCode);
@@ -34,18 +35,19 @@ exports.handler = async (event) => {
       shipping.fullName || "",
       shipping.email || "",
       shipping.phone || "",
-      shipping.country || "US",
+      shipping.country || "United States",
       shipping.state || "",
       shipping.city || "",
       shipping.postalCode || "",
       shipping.address || "",
+      "", // Removed cj_product_id
       item.variantsid || "",
       item.quantity || 1,
       status,
       "paid",
       now
     ]];
-    const rangesToTry = ["Feuille 1!A:P", "PendingOrders!A:P", "Sheet1!A:P"];
+    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
     let success = false;
     for (const range of rangesToTry) {
       try {
