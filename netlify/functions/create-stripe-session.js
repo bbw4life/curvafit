@@ -39,7 +39,7 @@ exports.handler = async (event) => {
       quantity: 1
     });
     const eproloData = cart.map(item => ({
-      variantsid: item.variantsid || ''
+      variantsid: item.cj_variant_id || ''
     }));
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],

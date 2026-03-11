@@ -39,7 +39,7 @@ exports.handler = async (event) => {
     const finalTotal = (subtotal + shippingCost + taxAmount).toFixed(2);
     // ====================== COMPACT CUSTOM_ID WITH VARIANTS IDS ======================
     const custom_id = cart
-      .map(item => item.variantsid || '')
+      .map(item => item.cj_variant_id || '')
       .join('|');
     // ====================== CREATE ORDER ======================
     const orderBody = {

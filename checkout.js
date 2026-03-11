@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
             phone: fullPhone,
             // === CORRECTION : country reste string (nom complet) + countryCode ajouté ===
             country: selectedOption.value.trim(), // nom complet (compatibilité PayPal/Stripe)
-            countryCode: selectedOption.dataset.cca2 || '', // code ISO (pour EPROLO)
+            countryCode: selectedOption.dataset.cca2 || '', // code ISO (pour CJ)
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
