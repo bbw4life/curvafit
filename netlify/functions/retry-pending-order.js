@@ -1,7 +1,6 @@
-// retry-pending-orders.js
+// retry-pending-order.js
 const { google } = require("googleapis");
 const fetch = require("node-fetch");
-
 exports.handler = async () => {
   console.log('[RETRY PENDING] 🚀 Démarrage - ' + new Date().toISOString());
   try {
@@ -63,22 +62,8 @@ exports.handler = async () => {
         console.error("Failed to fetch country code:", err.message);
         shipping.countryCode = 'US';
       }
-      // Add province_code for US
-      const usStateMap = {
-        'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
-        'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA',
-        'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA',
-        'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
-        'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS', 'Missouri': 'MO',
-        'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV', 'New Hampshire': 'NH', 'New Jersey': 'NJ',
-        'New Mexico': 'NM', 'New York': 'NY', 'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH',
-        'Oklahoma': 'OK', 'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
-        'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
-        'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY'
-      };
-      shipping.province_code = (shipping.countryCode === 'US') ? usStateMap[shipping.state] || shipping.state : shipping.state;
       const cart = [{
-        eprolo_variant_id: row[11] || "",
+        variantsid: row[11] || "",
         quantity: parseInt(row[12]) || 1
       }];
       console.log(`[RETRY PENDING] 🔄 Traitement ligne ${lineNumber} (${status}) → ${internalId}`);

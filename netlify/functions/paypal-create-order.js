@@ -37,9 +37,9 @@ exports.handler = async (event) => {
     const shippingCost = parseFloat(shipping_cost);
     const taxAmount = parseFloat(tax);
     const finalTotal = (subtotal + shippingCost + taxAmount).toFixed(2);
-    // ====================== COMPACT CUSTOM_ID WITH EPROLO IDS ======================
+    // ====================== COMPACT CUSTOM_ID WITH VARIANTS IDS ======================
     const custom_id = cart
-      .map(item => item.eprolo_variant_id || '')
+      .map(item => `${item.variantsid || ''}`)
       .join('|');
     // ====================== CREATE ORDER ======================
     const orderBody = {
@@ -57,7 +57,7 @@ exports.handler = async (event) => {
         },
         items: items,
         shipping: {
-          name: { full_name: shipping.fullName },
+          name: { full_name: `${shipping.firstName || ''} ${shipping.lastName || ''}`.trim() },
           address: {
             address_line_1: shipping.address,
             admin_area_2: shipping.city || "",
@@ -78,13 +78,10 @@ exports.handler = async (event) => {
     if (shipping.email) {
       payer.email_address = shipping.email;
     }
-    if (shipping.fullName) {
-      const [givenName, ...surnameParts] = shipping.fullName.split(' ');
-      payer.name = {
-        given_name: givenName || '',
-        surname: surnameParts.join(' ') || ''
-      };
-    }
+    payer.name = {
+      given_name: shipping.firstName || '',
+      surname: shipping.lastName || ''
+    };
     if (shipping.phone && shipping.countryCode) {
       try {
         const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.countryCode}?fields=idd`);

@@ -5,7 +5,7 @@ exports.handler = async (event) => {
   try {
     if (!event.body) return response(400, { success: false, error: "No data received" });
     const body = JSON.parse(event.body);
-    let { shipping, item, payment_provider, payment_id, status = "pending_stock" } = body;
+    let { shipping, item, payment_provider, payment_id, status = "pending" } = body;
     if (!payment_id) throw new Error("Missing payment_id");
     const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "") : "";
     shipping.fullName = normalize(shipping.fullName);
@@ -39,7 +39,7 @@ exports.handler = async (event) => {
       shipping.city || "",
       shipping.postalCode || "",
       shipping.address || "",
-      item.eprolo_variant_id || "",
+      item.variantsid || "",
       item.quantity || 1,
       status,
       "paid",

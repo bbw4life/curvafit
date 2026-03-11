@@ -27,19 +27,17 @@ exports.handler = async (event) => {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
       if (session.payment_status !== "paid") throw new Error("Stripe not paid");
       const lineItems = await stripe.checkout.sessions.listLineItems(sessionId, { limit: 100 });
-      const storedEprolo = JSON.parse(session.metadata.eprolo_data || "[]");
-      cart = [];
-      lineItems.data.forEach((li, i) => {
-        if (li.description === 'Shipping' || li.description === 'Taxes') return;
-        const eproloItem = storedEprolo[i] || {};
-        cart.push({
+      const storedVariants = JSON.parse(session.metadata.eprolo_data || "[]");
+      shipping = JSON.parse(session.metadata.shipping || "{}");
+      shipping.fullName = `${shipping.firstName || ''} ${shipping.lastName || ''}`.trim();
+      cart = lineItems.data.map((li, i) => {
+        return {
           title: li.description,
           price: (li.amount_total / 100) / li.quantity,
           quantity: li.quantity,
-          eprolo_variant_id: eproloItem.eprolo_variant_id || null
-        });
+          variantsid: storedVariants[i] || null
+        };
       });
-      shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
     // ====================== PAYPAL ======================
     } else if (provider === "paypal") {
@@ -60,16 +58,16 @@ exports.handler = async (event) => {
       const orderData = await orderRes.json();
       if (orderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
       const purchaseUnit = orderData.purchase_units?.[0];
-      const storedEprolo = purchaseUnit?.custom_id ? purchaseUnit.custom_id.split('|') : [];
-      console.log("Stored EPROLO data:", storedEprolo);
+      const storedVariants = purchaseUnit?.custom_id ? purchaseUnit.custom_id.split('|') : [];
+      console.log("Stored variants data:", storedVariants);
       const itemsArray = purchaseUnit?.items || [];
       cart = itemsArray.map((item, i) => {
-        const eprolo_variant_id = storedEprolo[i] || '';
-        return { title: item.name, price: parseFloat(item.unit_amount.value), quantity: parseInt(item.quantity), eprolo_variant_id: eprolo_variant_id || null };
+        const variantsid = storedVariants[i] || '';
+        return { title: item.name, price: parseFloat(item.unit_amount.value), quantity: parseInt(item.quantity), variantsid: variantsid || null };
       });
-      if (cart.length === 0 && storedEprolo.length > 0) {
-        cart = storedEprolo.map((str, i) => {
-          return { title: `Product ${i+1}`, price: 0, quantity: 1, eprolo_variant_id: str || null };
+      if (cart.length === 0 && storedVariants.length > 0) {
+        cart = storedVariants.map((str, i) => {
+          return { title: `Product ${i+1}`, price: 0, quantity: 1, variantsid: str || null };
         });
       }
       const payer = orderData.payer || {};
@@ -113,21 +111,10 @@ exports.handler = async (event) => {
     }
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
     console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
-    let readyForEprolo = [];
     for (let i = 0; i < cart.length; i++) {
       const item = cart[i];
-      console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.eprolo_variant_id || 'NO_VARIANT'}`);
-      if (!item.eprolo_variant_id) {
-        await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending_stock");
-        continue;
-      }
-      readyForEprolo.push(item);
-    }
-    if (readyForEprolo.length > 0) {
-      console.log(`✅ ${readyForEprolo.length} item(s) ready for EPROLO`);
-      for (const item of readyForEprolo) {
-        await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending");
-      }
+      console.log(`🔄 [ITEM ${i+1}/${cart.length}] Traitement de ${item.variantsid || 'NO_VARIANT'}`);
+      await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending");
     }
     console.log("🎯 Fulfillment terminé");
     return response(200, {
@@ -173,7 +160,7 @@ async function isAlreadyProcessed(paymentId) {
   }
 }
 // ============================================================================
-async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending_stock") {
+async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending") {
   try {
     await fetch(`${BASE_URL}/.netlify/functions/save-pending-order`, {
       method: "POST",
