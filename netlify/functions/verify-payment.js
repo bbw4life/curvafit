@@ -28,15 +28,17 @@ exports.handler = async (event) => {
       if (session.payment_status !== "paid") throw new Error("Stripe not paid");
       const lineItems = await stripe.checkout.sessions.listLineItems(sessionId, { limit: 100 });
       const storedEprolo = JSON.parse(session.metadata.eprolo_data || "[]");
-      cart = lineItems.data.map((li, i) => {
-        const eproloItem = storedEprolo[i] || {};
-        return {
-          title: li.description,
-          price: (li.amount_total / 100) / li.quantity,
-          quantity: li.quantity,
-          variantsid: eproloItem.variantsid || null
-        };
-      });
+      cart = lineItems.data
+        .filter(li => li.description !== 'Shipping' && li.description !== 'Taxes')
+        .map((li, i) => {
+          const eproloItem = storedEprolo[i] || {};
+          return {
+            title: li.description,
+            price: (li.amount_total / 100) / li.quantity,
+            quantity: li.quantity,
+            variantsid: eproloItem.variantsid || null
+          };
+        });
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
     // ====================== PAYPAL ======================
