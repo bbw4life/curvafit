@@ -8,12 +8,14 @@ exports.handler = async (event) => {
     let productId;
     if (event.body) {
       const body = JSON.parse(event.body);
-      productId = body.productid || body.productId;
+      productId = body.productid || body.productId || body.id;
     } else if (event.queryStringParameters) {
-      productId = event.queryStringParameters.productid || event.queryStringParameters.productId;
+      productId = event.queryStringParameters.productid || 
+                  event.queryStringParameters.productId || 
+                  event.queryStringParameters.id;
     }
 
-    if (!productId) throw new Error("Missing productid in body or ?productid=xxx");
+    if (!productId) throw new Error("Missing id in body or ?id=xxx");
 
     const apiKey = process.env.EPROLO_API_KEY;
     const apiSecret = process.env.EPROLO_API_SECRET;
@@ -22,9 +24,10 @@ exports.handler = async (event) => {
     const timestamp = Date.now();
     const sign = crypto.createHash('md5').update(apiKey + timestamp + apiSecret).digest('hex');
 
-    const url = `https://openapi.eprolo.com/getproduct.html?sign=${sign}&timestamp=${timestamp}&productid=${productId}`;
+    // 🔥 FIX : on utilise "id=" comme Eprolo l'attend
+    const url = `https://openapi.eprolo.com/getproduct.html?sign=${sign}&timestamp=${timestamp}&id=${productId}`;
 
-    console.log(`[EPROLO] Fetching productid: ${productId}`);
+    console.log(`[EPROLO] Fetching product id: ${productId}`);
     console.log(`[EPROLO] URL: ${url}`);
 
     const res = await fetch(url, {
@@ -34,17 +37,22 @@ exports.handler = async (event) => {
 
     const text = await res.text();
     let data;
-    try { data = JSON.parse(text); } catch { throw new Error("Invalid JSON"); }
+    try { 
+      data = JSON.parse(text); 
+    } catch { 
+      throw new Error("Invalid JSON from Eprolo"); 
+    }
 
     console.log(`[EPROLO] Status: ${res.status}`);
+    console.log(`[EPROLO] Response (first 300 chars): ${text.substring(0, 300)}...`);
 
     if (data.code !== "0") {
       throw new Error(data.msg || "Eprolo error");
     }
 
     const product = data.data;
-    console.log(`\n=== PRODUIT ${product.title} (ID: ${product.id}) ===`);
-    console.log("VARIANTSID À UTILISER (copie-colle ces numéros) :");
+    console.log(`\n=== PRODUIT TROUVÉ : ${product.title} (ID: ${product.id}) ===`);
+    console.log("✅ VARIANTSID À UTILISER (copie-colle ces numéros dans products.data.json) :");
 
     product.variantlist.forEach(v => {
       console.log(`   → variantsid: ${v.id} | ${v.title} | Cost: $${v.cost} | Stock: ${v.inventory_quantity}`);
@@ -58,7 +66,7 @@ exports.handler = async (event) => {
         productId: product.id,
         title: product.title,
         variantsCount: product.variantlist.length,
-        message: "Check the logs above for the correct variantsid"
+        message: "Check logs for correct variantsid"
       })
     };
 
