@@ -1,6 +1,6 @@
 [
 {
-  "cj_id": "31216361",
+  "cj_id": "31213143",
   "sku_internal": "EPROLO-31216361",
   "id": "resistance-bands",
   "active": true,
@@ -40,21 +40,21 @@
   ],
   "variants": [
     {
-      "vid": "709711364",
+      "vid": "709677234",
       "color": "Light Gray",
       "size": "",
       "price": 29.26,
       "active": true
     },
     {
-      "vid": "709711365",
+      "vid": "709677232",
       "color": "White",
       "size": "",
       "price": 29.26,
       "active": true
     },
     {
-      "vid": "709711366",
+      "vid": "709677231",
       "color": "Black",
       "size": "",
       "price": 29.26,
