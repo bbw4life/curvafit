@@ -47,40 +47,19 @@ exports.handler = async (event) => {
       const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString("base64");
       const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, { method: "POST", headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=client_credentials" });
       const { access_token } = await tokenRes.json();
-      
-      // D'abord fetch l'ordre pour check status
-      const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
-      if (!orderRes.ok) {
-        const orderErr = await orderRes.text();
-        console.error("[PAYPAL] Fetch order error:", orderErr);
-        throw new Error("PayPal order fetch failed");
-      }
-      const orderData = await orderRes.json();
-      console.log("[PAYPAL] Order status:", orderData.status);
-      
-      if (orderData.status === "COMPLETED") {
-        console.log("[PAYPAL] Already completed - no need to capture");
-      } else if (orderData.status === "APPROVED") {
-        const captureRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, { method: "POST", headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" } });
-        if (!captureRes.ok) {
-          const captureErr = await captureRes.json();
-          console.error("[PAYPAL] Capture error full:", JSON.stringify(captureErr));
-          if (captureErr.name === "RESOURCE_CONFLICT" && captureErr.details[0].issue === "DUPLICATE_INVOICE_ID") {
-            console.log("[PAYPAL] Already captured - treating as completed");
-          } else {
-            throw new Error("PayPal capture failed: " + JSON.stringify(captureErr));
-          }
+      const captureRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, { method: "POST", headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" } });
+      if (!captureRes.ok) {
+        const errData = await captureRes.json();
+        if (errData.name === "RESOURCE_CONFLICT" && errData.details[0].issue === "DUPLICATE_INVOICE_ID") {
+          console.log("PayPal already captured - treating as completed");
+        } else {
+          throw new Error("PayPal capture failed");
         }
-      } else {
-        throw new Error(`PayPal invalid status: ${orderData.status}`);
       }
-      
-      // Re-fetch pour confirmer COMPLETED
-      const finalOrderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
-      const finalOrderData = await finalOrderRes.json();
-      if (finalOrderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
-      
-      const purchaseUnit = finalOrderData.purchase_units?.[0];
+      const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
+      const orderData = await orderRes.json();
+      if (orderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
+      const purchaseUnit = orderData.purchase_units?.[0];
       const storedVariants = purchaseUnit?.custom_id ? purchaseUnit.custom_id.split('|') : [];
       console.log("Stored variants data:", storedVariants);
       const itemsArray = purchaseUnit?.items || [];
@@ -92,11 +71,11 @@ exports.handler = async (event) => {
           return { title: `Product ${i+1}`, price: 0, quantity: 1, variantsid: str || null };
         });
       }
-      const payer = finalOrderData.payer || {};
+      const payer = orderData.payer || {};
       const ship = purchaseUnit.shipping || {};
       // === CORRECTIONS POUR COUNTRY ET PHONE ===
       const countryCodeFromPayPal = ship.address?.country_code || "US";
-      let countryName = "United States";
+      let countryName = "United States"; // Default fallback
       try {
         const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${countryCodeFromPayPal}?fields=name`);
         if (countryRes.ok) {
@@ -106,32 +85,30 @@ exports.handler = async (event) => {
       } catch (err) {
         console.error("Failed to fetch country name:", err.message);
       }
-      const refParts = purchaseUnit.reference_id ? purchaseUnit.reference_id.split('|') : [];
-      let storedFullName = refParts[0] || '';
-      let phone = payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : refParts[1] || '';
-      let email = payer.email_address || refParts[2] || '';
-      let fallbackCountryCode = refParts[3] || countryCodeFromPayPal;
-      let firstName = payer.name?.given_name || '';
-      let lastName = payer.name?.surname || '';
-      // Fallback for name if dummy
-      if (firstName.toLowerCase() === 'john' && lastName.toLowerCase() === 'doe') {
-        const nameParts = storedFullName.split(' ');
-        firstName = nameParts[0] || '';
-        lastName = nameParts.slice(1).join(' ') || '';
+     let phone =
+        payer.phone?.phone_number?.national_number ||
+        purchaseUnit?.shipping?.phone_number ||
+        "";
+
+      if (payer.phone?.phone_number) {
+        phone = `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}`;
+      }
+      // Fallback to frontend phone stored in reference_id if phone is empty
+      if (!phone) {
+        phone = purchaseUnit.reference_id || '';
       }
       shipping = {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
+        firstName: payer.name?.given_name || '',
+        lastName: payer.name?.surname || '',
+        email: payer.email_address || "",
         phone: phone,
         address: ship.address?.address_line_1 || "",
         city: ship.address?.admin_area_2 || "",
         state: ship.address?.admin_area_1 || "",
         postalCode: ship.address?.postal_code || "",
-        country: countryName,
-        countryCode: fallbackCountryCode
+        country: countryName,  // Nom complet (ex: 'Canada')
+        countryCode: countryCodeFromPayPal  // Code ISO (ex: 'CA')
       };
-      console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));
       paymentVerified = true;
     }
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");

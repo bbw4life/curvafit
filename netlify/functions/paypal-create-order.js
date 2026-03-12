@@ -20,11 +20,6 @@ exports.handler = async (event) => {
       },
       body: 'grant_type=client_credentials'
     });
-    if (!tokenRes.ok) {
-      const tokenErr = await tokenRes.text();
-      console.error("[PAYPAL] Token error:", tokenErr);
-      throw new Error("Failed to get PayPal token");
-    }
     const { access_token } = await tokenRes.json();
     // ====================== CALCULS SÉCURISÉS ======================
     let subtotal = 0;
@@ -47,11 +42,10 @@ exports.handler = async (event) => {
       .map(item => item.cj_variant_id || '')
       .join('|');
     // ====================== CREATE ORDER ======================
-    const fullName = `${shipping.firstName || ''} ${shipping.lastName || ''}`.trim();
     const orderBody = {
       intent: "CAPTURE",
       purchase_units: [{
-        reference_id: `${fullName}|${shipping.phone || ''}|${shipping.email || ''}|${shipping.countryCode || 'US'}`,  // AMÉLIORÉ : Ajouté fullName en premier
+        reference_id: shipping.phone || '', // Store frontend phone here for fallback
         amount: {
           currency_code: "USD",
           value: finalTotal,
@@ -63,10 +57,9 @@ exports.handler = async (event) => {
         },
         items: items,
         shipping: {
-          name: { full_name: fullName },
+          name: { full_name: `${shipping.firstName || ''} ${shipping.lastName || ''}`.trim() },
           address: {
-            address_line_1: shipping.address || '',
-            address_line_2: '',  // Ajouté pour mieux prefill
+            address_line_1: shipping.address,
             admin_area_2: shipping.city || "",
             admin_area_1: shipping.state || "",
             postal_code: shipping.postalCode || "",
@@ -96,8 +89,7 @@ exports.handler = async (event) => {
         const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.countryCode}?fields=idd`);
         const countryData = await countryRes.json();
         let callingCode = countryData.idd.root.replace('+', '') + (countryData.idd.suffixes ? countryData.idd.suffixes[0] : '');
-        let nationalNumber = shipping.phone.replace(/^\+/, '').replace(/\D/g, '');
-        if (nationalNumber.startsWith(callingCode)) nationalNumber = nationalNumber.slice(callingCode.length);
+        let nationalNumber = shipping.phone.replace(`+${callingCode}`, '').replace(/\D/g, '');
         payer.phone = {
           phone_type: "MOBILE",
           phone_number: {
@@ -106,12 +98,10 @@ exports.handler = async (event) => {
           }
         };
       } catch (err) {
-        console.error("[PAYPAL] Failed to prefill phone:", err.message);
+        console.error("Failed to prefill phone:", err);
       }
     }
     orderBody.payer = payer;
-    console.log("[PAYPAL] Shipping prefilled:", JSON.stringify(orderBody.purchase_units[0].shipping));
-    console.log("[PAYPAL] Payer prefilled:", JSON.stringify(orderBody.payer));
     const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders`, {
       method: "POST",
       headers: {
@@ -121,9 +111,9 @@ exports.handler = async (event) => {
       body: JSON.stringify(orderBody)
     });
     if (!orderRes.ok) {
-      const errText = await orderRes.text();
-      console.error("[PAYPAL] Create order error full:", errText);
-      throw new Error(errText || "PayPal order creation failed");
+      const err = await orderRes.text();
+      console.error("PayPal Error:", err);
+      throw new Error(err);
     }
     const orderData = await orderRes.json();
     return response(200, {
@@ -134,7 +124,7 @@ exports.handler = async (event) => {
         : "https://www.paypal.com"
     });
   } catch (error) {
-    console.error("[PAYPAL] Global error:", error.message);
+    console.error("PayPal Error:", error.message);
     return response(500, { success: false, error: "PayPal order creation failed" });
   }
 };
