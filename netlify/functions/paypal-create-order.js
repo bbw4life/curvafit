@@ -47,10 +47,11 @@ exports.handler = async (event) => {
       .map(item => item.cj_variant_id || '')
       .join('|');
     // ====================== CREATE ORDER ======================
+    const fullName = `${shipping.firstName || ''} ${shipping.lastName || ''}`.trim();
     const orderBody = {
       intent: "CAPTURE",
       purchase_units: [{
-        reference_id: shipping.phone || '', // Store frontend phone here for fallback
+        reference_id: `${shipping.phone || ''}|${shipping.email || ''}|${shipping.countryCode || 'US'}`,  // AMÉLIORÉ : Stocke phone|email|countryCode pour fallback
         amount: {
           currency_code: "USD",
           value: finalTotal,
@@ -62,9 +63,10 @@ exports.handler = async (event) => {
         },
         items: items,
         shipping: {
-          name: { full_name: `${shipping.firstName || ''} ${shipping.lastName || ''}`.trim() },
+          name: { full_name: fullName },
           address: {
-            address_line_1: shipping.address,
+            address_line_1: shipping.address || '',
+            address_line_2: '',  // Ajouté pour mieux prefill
             admin_area_2: shipping.city || "",
             admin_area_1: shipping.state || "",
             postal_code: shipping.postalCode || "",
@@ -94,7 +96,8 @@ exports.handler = async (event) => {
         const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.countryCode}?fields=idd`);
         const countryData = await countryRes.json();
         let callingCode = countryData.idd.root.replace('+', '') + (countryData.idd.suffixes ? countryData.idd.suffixes[0] : '');
-        let nationalNumber = shipping.phone.replace(`+${callingCode}`, '').replace(/\D/g, '');
+        let nationalNumber = shipping.phone.replace(/^\+/, '').replace(/\D/g, '');  // AMÉLIORÉ : Meilleur nettoyage du phone
+        if (nationalNumber.startsWith(callingCode)) nationalNumber = nationalNumber.slice(callingCode.length);
         payer.phone = {
           phone_type: "MOBILE",
           phone_number: {
@@ -107,6 +110,8 @@ exports.handler = async (event) => {
       }
     }
     orderBody.payer = payer;
+    console.log("[PAYPAL] Shipping prefilled:", JSON.stringify(orderBody.purchase_units[0].shipping));  // LOG AJOUTÉ pour debug
+    console.log("[PAYPAL] Payer prefilled:", JSON.stringify(orderBody.payer));
     const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders`, {
       method: "POST",
       headers: {
@@ -117,7 +122,7 @@ exports.handler = async (event) => {
     });
     if (!orderRes.ok) {
       const errText = await orderRes.text();
-      console.error("[PAYPAL] Create order error full:", errText);  // Log amélioré
+      console.error("[PAYPAL] Create order error full:", errText);
       throw new Error(errText || "PayPal order creation failed");
     }
     const orderData = await orderRes.json();

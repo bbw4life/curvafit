@@ -1,2 +1,8 @@
 [functions]
   directory = "netlify/functions"
+
+
+
+  [functions.retry-pending-order]
+  schedule = "*/5 * * * *"
+  background = true
