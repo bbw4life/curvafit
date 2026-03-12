@@ -1,4 +1,4 @@
-// fetch-eprolo-products.js  ← VERSION FINALE (liste complète + détection Butterfly)
+// fetch-eprolo-products.js  ← VERSION FINALE (liste complète + TOUS les variants + détection Butterfly)
 const fetch = require('node-fetch');
 const crypto = require('crypto');
 
@@ -32,11 +32,15 @@ exports.handler = async (event) => {
       data.data.forEach((product, index) => {
         console.log(`[${index+1}] Product ID interne (à copier) : ${product.id}`);
         console.log(`Titre : ${product.title}`);
-        console.log(`Variants : ${product.variantlist ? product.variantlist.length : 0}`);
+        console.log(`Nombre de variants : ${product.variantlist ? product.variantlist.length : 0}`);
+
         if (product.variantlist && product.variantlist.length > 0) {
-          console.log(`→ Premier variantsid (le BON) : ${product.variantlist[0].id}`);
+          console.log(`→ TOUS les variantsid (copie ceux que tu veux dans data.json) :`);
+          product.variantlist.forEach((variant, vIndex) => {
+            console.log(`   [${vIndex+1}] Variant ID → ${variant.id}   ${variant.sku ? `(SKU: ${variant.sku})` : ''}`);
+          });
         }
-        console.log("─".repeat(50));
+        console.log("─".repeat(70));
       });
 
       // Détection automatique du Butterfly Pillow
@@ -48,9 +52,11 @@ exports.handler = async (event) => {
 
       if (butterfly) {
         console.log(`\n🎯 PRODUIT BUTTERFLY TROUVÉ !`);
-        console.log(`→ Product ID interne à utiliser dans get-eprolo-product-detail : ${butterfly.id}`);
-        console.log(`Titre : ${butterfly.title}`);
-        console.log(`Variantsid à copier dans products.data.json : ${butterfly.variantlist.map(v => v.id).join(', ')}`);
+        console.log(`→ Product ID interne : ${butterfly.id}`);
+        console.log(`→ TOUS les variantsid à copier dans products.data.json :`);
+        butterfly.variantlist.forEach((v, i) => {
+          console.log(`   [${i+1}] ${v.id}   ${v.sku ? `(SKU: ${v.sku})` : ''}`);
+        });
       } else {
         console.log(`\n❌ Le Butterfly Pillow n'apparaît pas encore dans l'API (il est peut-être encore en "Not synced").`);
       }
