@@ -1,9 +1,9 @@
-// fetch-eprolo-products.js  ← VERSION ULTRA SIMPLE (TOUS les produits + couleur visible)
+// fetch-eprolo-products.js  ← VERSION CORRIGÉE & TRÈS STRICTE (couleurs nettoyées + debug structure)
 const fetch = require('node-fetch');
 const crypto = require('crypto');
 
 exports.handler = async (event) => {
-  console.log("[EPROLO PRODUCTS] 🚀 Récupération de TOUS les produits (sans aucun filtre)");
+  console.log("[EPROLO PRODUCTS] 🚀 Récupération de TOUS les produits (version stricte)");
 
   try {
     const apiKey = process.env.EPROLO_API_KEY;
@@ -40,24 +40,49 @@ exports.handler = async (event) => {
 
     console.log(`\n🎉 TOTAL PRODUITS VISIBLES DANS L'API : ${allProducts.length}\n`);
 
-    // AFFICHAGE TRÈS CLAIR - TU COPIES CE QUE TU VEUX
+    // === AFFICHAGE TRÈS STRICT & NETTOYÉ ===
     allProducts.forEach((product, index) => {
-      console.log(`[${index+1}] Product ID interne (à copier) : ${product.id}`);
+      console.log(`[${index+1}] Product ID interne : ${product.id}`);
       console.log(`Titre complet : ${product.title}`);
-      console.log(`Nombre de variants : ${product.variantlist ? product.variantlist.length : 0}`);
+      console.log(`Variants retournés par l'API : ${product.variantlist ? product.variantlist.length : 0}`);
 
       if (product.variantlist && product.variantlist.length > 0) {
-        console.log(`→ Variants (couleur → ID) :`);
+        console.log(`→ Variants (COULEUR NETTOYÉE → ID) :`);
+
+        // Debug structure UNE SEULE FOIS (premier variant du premier produit)
+        if (index === 0 && product.variantlist[0]) {
+          const firstVariant = product.variantlist[0];
+          console.log(`   [DEBUG STRUCTURE] Clés disponibles : ${Object.keys(firstVariant).join(' | ')}`);
+        }
+
         product.variantlist.forEach((variant, vIndex) => {
-          const couleur = variant.color || variant.option1 || variant.option_value || variant.name || 'N/A';
-          console.log(`   [${vIndex+1}] ${couleur} → ${variant.id}   (SKU: ${variant.sku || 'N/A'})`);
+          // Récupération brute
+          let rawColor = variant.color || 
+                        variant.option1 || 
+                        variant.option_value || 
+                        variant.name || 
+                        variant.sku || 
+                        'N/A';
+
+          // NETTOYAGE STRICT :
+          // 1. Supprime " one" à la fin
+          // 2. Supprime espaces inutiles
+          // 3. Capitalise la première lettre
+          let cleanColor = rawColor
+            .replace(/ one$/i, '')
+            .replace(/ - Section \d+/i, '')   // supprime " - Section 21" si tu veux (décommente si besoin)
+            .trim();
+
+          cleanColor = cleanColor.charAt(0).toUpperCase() + cleanColor.slice(1);
+
+          console.log(`   [${vIndex+1}] ${cleanColor} → ${variant.id}   (SKU: ${variant.sku || 'N/A'})`);
         });
       }
       console.log("─".repeat(90));
     });
 
-    console.log(`\n✅ FIN DU LOG\n`);
-    console.log(`Copie simplement les Product ID + les variants dont tu as besoin dans ton products.data.json`);
+    console.log(`\n✅ FIN DU LOG - Copie maintenant les lignes dont tu as besoin dans products.data.json`);
+    console.log(`Note : Si tu ne vois pas "Black", c'est que ce variant n'est pas encore "Synced" dans l'API (même s'il apparaît dans My Products).`);
 
     return { statusCode: 200, body: JSON.stringify({ success: true, total: allProducts.length }) };
 
