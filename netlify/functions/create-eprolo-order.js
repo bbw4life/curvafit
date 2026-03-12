@@ -14,8 +14,8 @@ exports.handler = async (event) => {
     const sign = crypto.createHash('md5').update(apiKey + timestamp + apiSecret).digest('hex');
 
     // Logs pour debug auth
-    console.log("[EPROLO] apiKey:", apiKey ? 'Set' : 'Missing!');
-    console.log("[EPROLO] apiSecret:", apiSecret ? 'Set' : 'Missing!');
+    console.log("[EPROLO] apiKey: Set");
+    console.log("[EPROLO] apiSecret: Set");
     console.log("[EPROLO] Timestamp:", timestamp);
     console.log("[EPROLO] Sign:", sign);
 

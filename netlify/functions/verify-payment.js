@@ -106,12 +106,22 @@ exports.handler = async (event) => {
       } catch (err) {
         console.error("Failed to fetch country name:", err.message);
       }
-      let phone = payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : purchaseUnit.reference_id.split('|')[0] || '';
-      let email = payer.email_address || purchaseUnit.reference_id.split('|')[1] || '';
-      let fallbackCountryCode = purchaseUnit.reference_id.split('|')[2] || countryCodeFromPayPal;
+      const refParts = purchaseUnit.reference_id ? purchaseUnit.reference_id.split('|') : [];
+      let storedFullName = refParts[0] || '';
+      let phone = payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : refParts[1] || '';
+      let email = payer.email_address || refParts[2] || '';
+      let fallbackCountryCode = refParts[3] || countryCodeFromPayPal;
+      let firstName = payer.name?.given_name || '';
+      let lastName = payer.name?.surname || '';
+      // Fallback for name if dummy
+      if (firstName.toLowerCase() === 'john' && lastName.toLowerCase() === 'doe') {
+        const nameParts = storedFullName.split(' ');
+        firstName = nameParts[0] || '';
+        lastName = nameParts.slice(1).join(' ') || '';
+      }
       shipping = {
-        firstName: payer.name?.given_name || '',
-        lastName: payer.name?.surname || '',
+        firstName: firstName,
+        lastName: lastName,
         email: email,
         phone: phone,
         address: ship.address?.address_line_1 || "",
