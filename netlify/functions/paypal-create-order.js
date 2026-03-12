@@ -51,7 +51,7 @@ exports.handler = async (event) => {
     const orderBody = {
       intent: "CAPTURE",
       purchase_units: [{
-        reference_id: `${shipping.phone || ''}|${shipping.email || ''}|${shipping.countryCode || 'US'}`,  // AMÉLIORÉ : Stocke phone|email|countryCode pour fallback
+        reference_id: `${fullName}|${shipping.phone || ''}|${shipping.email || ''}|${shipping.countryCode || 'US'}`,  // AMÉLIORÉ : Ajouté fullName en premier
         amount: {
           currency_code: "USD",
           value: finalTotal,
@@ -96,7 +96,7 @@ exports.handler = async (event) => {
         const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.countryCode}?fields=idd`);
         const countryData = await countryRes.json();
         let callingCode = countryData.idd.root.replace('+', '') + (countryData.idd.suffixes ? countryData.idd.suffixes[0] : '');
-        let nationalNumber = shipping.phone.replace(/^\+/, '').replace(/\D/g, '');  // AMÉLIORÉ : Meilleur nettoyage du phone
+        let nationalNumber = shipping.phone.replace(/^\+/, '').replace(/\D/g, '');
         if (nationalNumber.startsWith(callingCode)) nationalNumber = nationalNumber.slice(callingCode.length);
         payer.phone = {
           phone_type: "MOBILE",
@@ -110,7 +110,7 @@ exports.handler = async (event) => {
       }
     }
     orderBody.payer = payer;
-    console.log("[PAYPAL] Shipping prefilled:", JSON.stringify(orderBody.purchase_units[0].shipping));  // LOG AJOUTÉ pour debug
+    console.log("[PAYPAL] Shipping prefilled:", JSON.stringify(orderBody.purchase_units[0].shipping));
     console.log("[PAYPAL] Payer prefilled:", JSON.stringify(orderBody.payer));
     const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders`, {
       method: "POST",

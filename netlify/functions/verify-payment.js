@@ -106,12 +106,22 @@ exports.handler = async (event) => {
       } catch (err) {
         console.error("Failed to fetch country name:", err.message);
       }
-      let phone = payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : purchaseUnit.reference_id.split('|')[0] || '';  // Fallback to stored phone in reference_id
-      let email = payer.email_address || purchaseUnit.reference_id.split('|')[1] || '';  // Fallback to stored email
-      let fallbackCountryCode = purchaseUnit.reference_id.split('|')[2] || countryCodeFromPayPal;
+      const refParts = purchaseUnit.reference_id ? purchaseUnit.reference_id.split('|') : [];
+      let storedFullName = refParts[0] || '';
+      let phone = payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : refParts[1] || '';
+      let email = payer.email_address || refParts[2] || '';
+      let fallbackCountryCode = refParts[3] || countryCodeFromPayPal;
+      let firstName = payer.name?.given_name || '';
+      let lastName = payer.name?.surname || '';
+      // Fallback for name if dummy
+      if (firstName.toLowerCase() === 'john' && lastName.toLowerCase() === 'doe') {
+        const nameParts = storedFullName.split(' ');
+        firstName = nameParts[0] || '';
+        lastName = nameParts.slice(1).join(' ') || '';
+      }
       shipping = {
-        firstName: payer.name?.given_name || '',
-        lastName: payer.name?.surname || '',
+        firstName: firstName,
+        lastName: lastName,
         email: email,
         phone: phone,
         address: ship.address?.address_line_1 || "",
@@ -119,14 +129,9 @@ exports.handler = async (event) => {
         state: ship.address?.admin_area_1 || "",
         postalCode: ship.address?.postal_code || "",
         country: countryName,
-        countryCode: fallbackCountryCode  // Fallback ajouté
+        countryCode: fallbackCountryCode
       };
-      // Détecte dummy name et log warning
-      if (shipping.firstName.toLowerCase() === 'john' && shipping.lastName.toLowerCase() === 'doe') {
-        console.warn("[PAYPAL] Dummy shipping detected - possible sandbox override. Using fallbacks.");
-        // Ici, tu peux ajouter plus de fallback si needed, ex: from frontend stored ailleurs, mais pour l'instant log
-      }
-      console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));  // LOG AJOUTÉ pour debug
+      console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));
       paymentVerified = true;
     }
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
