@@ -106,8 +106,8 @@ exports.handler = async (event) => {
       } catch (err) {
         console.error("Failed to fetch country name:", err.message);
       }
-      let phone = payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : purchaseUnit.reference_id.split('|')[0] || '';  // Fallback to stored phone in reference_id
-      let email = payer.email_address || purchaseUnit.reference_id.split('|')[1] || '';  // Fallback to stored email
+      let phone = payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : purchaseUnit.reference_id.split('|')[0] || '';
+      let email = payer.email_address || purchaseUnit.reference_id.split('|')[1] || '';
       let fallbackCountryCode = purchaseUnit.reference_id.split('|')[2] || countryCodeFromPayPal;
       shipping = {
         firstName: payer.name?.given_name || '',
@@ -119,14 +119,9 @@ exports.handler = async (event) => {
         state: ship.address?.admin_area_1 || "",
         postalCode: ship.address?.postal_code || "",
         country: countryName,
-        countryCode: fallbackCountryCode  // Fallback ajouté
+        countryCode: fallbackCountryCode
       };
-      // Détecte dummy name et log warning
-      if (shipping.firstName.toLowerCase() === 'john' && shipping.lastName.toLowerCase() === 'doe') {
-        console.warn("[PAYPAL] Dummy shipping detected - possible sandbox override. Using fallbacks.");
-        // Ici, tu peux ajouter plus de fallback si needed, ex: from frontend stored ailleurs, mais pour l'instant log
-      }
-      console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));  // LOG AJOUTÉ pour debug
+      console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));
       paymentVerified = true;
     }
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
