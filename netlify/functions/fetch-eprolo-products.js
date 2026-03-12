@@ -1,57 +1,61 @@
-// fetch-eprolo-products.js (nouvelle function pour lister/valider variantsid)
+// fetch-eprolo-products.js  ← VERSION AMÉLIORÉE (pagination + recherche)
 const fetch = require('node-fetch');
 const crypto = require('crypto');
 
 exports.handler = async (event) => {
-  console.log("[EPROLO PRODUCTS] Function invoked");
+  console.log("[EPROLO PRODUCTS] 🚀 Lancement avec recherche + pagination");
+
   try {
     const apiKey = process.env.EPROLO_API_KEY;
     const apiSecret = process.env.EPROLO_API_SECRET;
     const timestamp = Date.now();
     const sign = crypto.createHash('md5').update(apiKey + timestamp + apiSecret).digest('hex');
 
-    console.log("[EPROLO] apiKey: Set");
-    console.log("[EPROLO] apiSecret: Set");
-    console.log("[EPROLO] Timestamp:", timestamp);
-    console.log("[EPROLO] Sign:", sign);
+    // 🔥 Recherche automatique du Butterfly Pillow
+    const keyword = "Butterfly";  // ou "Memory Neck" si tu veux être plus précis
+    const page = 1;
+    const limit = 100;
 
-    // Utilise product_list.html (ajuste si tu as un param spécifique, ex: page=1&limit=100)
-    const url = `https://openapi.eprolo.com/product_list.html?sign=${sign}&timestamp=${timestamp}`;
+    const url = `https://openapi.eprolo.com/product_list.html?sign=${sign}&timestamp=${timestamp}&page=${page}&limit=${limit}&keyword=${encodeURIComponent(keyword)}`;
+
+    console.log(`[EPROLO] URL utilisée : ${url}`);
+
     const response = await fetch(url, {
-      method: "GET",  // Ou POST si needed, check doc
-      headers: {
-        "apiKey": apiKey,
-        "Content-Type": "application/json"
-      }
+      method: "GET",
+      headers: { "apiKey": apiKey }
     });
+
     const responseText = await response.text();
-    console.log("[EPROLO] Response status:", response.status);
-    console.log("[EPROLO] Response text:", responseText);
+    console.log("[EPROLO] Status:", response.status);
+    console.log("[EPROLO] Response (premiers 800 chars):", responseText.substring(0, 800));
 
     let data;
     try { data = JSON.parse(responseText); } catch { data = {}; }
-    if (response.ok && data.code === 0) {
-      // Retourne la liste des produits avec leurs variantsid
+
+    if (response.ok && data.code === 0 && data.data && data.data.length > 0) {
+      console.log(`✅ ${data.data.length} produit(s) trouvés pour "${keyword}" !`);
+
+      data.data.forEach(product => {
+        console.log(`\n=== PRODUIT TROUVÉ ===`);
+        console.log(`Product ID (à utiliser dans get-eprolo-product-detail) : ${product.id}`);
+        console.log(`Titre : ${product.title}`);
+        console.log(`Variants disponibles :`);
+        product.variantlist.forEach(v => {
+          console.log(`   → variantsid (le BON à copier) : ${v.id} | ${v.title} | Cost: $${v.cost}`);
+        });
+      });
+
       return {
         statusCode: 200,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ success: true, products: data.data || [] })
+        body: JSON.stringify({ success: true, products: data.data })
       };
     } else {
-      const errorMsg = data.msg || responseText.trim() || "Eprolo products fetch failed";
-      console.error("[EPROLO] Error:", errorMsg);
-      return {
-        statusCode: 200,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ success: false, error: errorMsg, code: data.code || response.status })
-      };
+      console.error("[EPROLO] Pas de résultat ou erreur:", data.msg || responseText);
+      return { statusCode: 200, body: JSON.stringify({ success: false, error: data.msg || "Aucun produit trouvé" }) };
     }
   } catch (error) {
     console.error("[EPROLO PRODUCTS ERROR]", error.message);
-    return {
-      statusCode: 500,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ success: false, error: error.message })
-    };
+    return { statusCode: 500, body: JSON.stringify({ success: false, error: error.message }) };
   }
 };

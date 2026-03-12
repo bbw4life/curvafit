@@ -32,7 +32,7 @@ exports.handler = async (event) => {
       shipping_province: shipping.state || '',
       shipping_province_code: shipping.provinceCode || '',
       shipping_zip: shipping.postalCode || '',
-      logistics_id: 10,
+      logistics_id: 1,
       orderItemlist: cart.map(item => ({
         variantsid: item.variantsid || '',
         quantity: parseInt(item.quantity) || 1
