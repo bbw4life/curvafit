@@ -1,9 +1,9 @@
-// fetch-eprolo-products.js  ← VERSION FINALE (TOUS les produits + pagination complète + tous les variants)
+// fetch-eprolo-products.js  ← VERSION ULTRA SIMPLE (TOUS les produits + couleur visible)
 const fetch = require('node-fetch');
 const crypto = require('crypto');
 
 exports.handler = async (event) => {
-  console.log("[EPROLO PRODUCTS] 🚀 Récupération de TOUS les produits (pagination automatique)");
+  console.log("[EPROLO PRODUCTS] 🚀 Récupération de TOUS les produits (sans aucun filtre)");
 
   try {
     const apiKey = process.env.EPROLO_API_KEY;
@@ -20,77 +20,48 @@ exports.handler = async (event) => {
 
       const url = `https://openapi.eprolo.com/product_list.html?sign=${sign}&timestamp=${timestamp}&page=${page}&limit=${limit}`;
 
-      console.log(`[EPROLO] Fetch page ${page} → ${url}`);
+      console.log(`[EPROLO] Page ${page} → ${url}`);
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers: { "apiKey": apiKey }
-      });
-
+      const response = await fetch(url, { method: "GET", headers: { "apiKey": apiKey } });
       const responseText = await response.text();
-      let data;
-      try { data = JSON.parse(responseText); } catch { data = {}; }
-
-      console.log(`[EPROLO] Page ${page} | Status: ${response.status} | Code: ${data.code}`);
+      let data = {};
+      try { data = JSON.parse(responseText); } catch {}
 
       if ((data.code === 0 || data.code === "0") && data.data && data.data.length > 0) {
         allProducts = allProducts.concat(data.data);
-        console.log(`✅ Page ${page} : ${data.data.length} produits ajoutés (total actuel : ${allProducts.length})`);
+        console.log(`✅ Page ${page} : +${data.data.length} produits (total : ${allProducts.length})`);
 
-        // Si on a récupéré moins de "limit", c'est la dernière page
-        if (data.data.length < limit) {
-          hasMore = false;
-        } else {
-          page++;
-        }
+        if (data.data.length < limit) hasMore = false;
+        else page++;
       } else {
-        console.log(`[EPROLO] Fin de la pagination (page ${page} vide ou erreur)`);
         hasMore = false;
       }
     }
 
-    console.log(`\n🎉 TOTAL PRODUITS RÉCUPÉRÉS DANS L'API : ${allProducts.length}\n`);
+    console.log(`\n🎉 TOTAL PRODUITS VISIBLES DANS L'API : ${allProducts.length}\n`);
 
-    if (allProducts.length > 0) {
-      allProducts.forEach((product, index) => {
-        console.log(`[${index+1}] Product ID interne (à copier) : ${product.id}`);
-        console.log(`Titre : ${product.title}`);
-        console.log(`Nombre de variants : ${product.variantlist ? product.variantlist.length : 0}`);
+    // AFFICHAGE TRÈS CLAIR - TU COPIES CE QUE TU VEUX
+    allProducts.forEach((product, index) => {
+      console.log(`[${index+1}] Product ID interne (à copier) : ${product.id}`);
+      console.log(`Titre complet : ${product.title}`);
+      console.log(`Nombre de variants : ${product.variantlist ? product.variantlist.length : 0}`);
 
-        if (product.variantlist && product.variantlist.length > 0) {
-          console.log(`→ TOUS les variantsid (copie ceux que tu veux dans data.json) :`);
-          product.variantlist.forEach((variant, vIndex) => {
-            console.log(`   [${vIndex+1}] Variant ID → ${variant.id}   ${variant.sku ? `(SKU: ${variant.sku})` : ''}`);
-          });
-        }
-        console.log("─".repeat(80));
-      });
-
-      // Détection Butterfly sur TOUS les produits
-      const butterfly = allProducts.find(p => 
-        p.title.toLowerCase().includes("butterfly") || 
-        p.title.toLowerCase().includes("memory neck") ||
-        p.title.toLowerCase().includes("neck pillow")
-      );
-
-      if (butterfly) {
-        console.log(`\n🎯 PRODUIT BUTTERFLY TROUVÉ !`);
-        console.log(`→ Product ID : ${butterfly.id}`);
-        console.log(`→ Variants à copier :`);
-        butterfly.variantlist.forEach((v, i) => {
-          console.log(`   [${i+1}] ${v.id}   ${v.sku ? `(SKU: ${v.sku})` : ''}`);
+      if (product.variantlist && product.variantlist.length > 0) {
+        console.log(`→ Variants (couleur → ID) :`);
+        product.variantlist.forEach((variant, vIndex) => {
+          const couleur = variant.color || variant.option1 || variant.option_value || variant.name || 'N/A';
+          console.log(`   [${vIndex+1}] ${couleur} → ${variant.id}   (SKU: ${variant.sku || 'N/A'})`);
         });
-      } else {
-        console.log(`\n❌ Butterfly Pillow toujours pas visible (il faut qu'il soit bien "Pushed to Store" et synced dans My Products).`);
       }
+      console.log("─".repeat(90));
+    });
 
-    } else {
-      console.log("❌ Aucun produit trouvé dans l'API.");
-    }
+    console.log(`\n✅ FIN DU LOG\n`);
+    console.log(`Copie simplement les Product ID + les variants dont tu as besoin dans ton products.data.json`);
 
     return { statusCode: 200, body: JSON.stringify({ success: true, total: allProducts.length }) };
 
   } catch (error) {
-    console.error("[EPROLO PRODUCTS ERROR]", error.message);
+    console.error("[EPROLO ERROR]", error.message);
   }
 };
