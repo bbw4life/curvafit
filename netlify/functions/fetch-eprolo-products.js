@@ -1,9 +1,9 @@
-// fetch-eprolo-products.js  ← VERSION AMÉLIORÉE (pagination + recherche)
+// fetch-eprolo-products.js  ← VERSION FINALE (liste complète + détection Butterfly)
 const fetch = require('node-fetch');
 const crypto = require('crypto');
 
 exports.handler = async (event) => {
-  console.log("[EPROLO PRODUCTS] 🚀 Lancement avec recherche + pagination");
+  console.log("[EPROLO PRODUCTS] 🚀 Liste complète des produits (sans filtre)");
 
   try {
     const apiKey = process.env.EPROLO_API_KEY;
@@ -11,12 +11,7 @@ exports.handler = async (event) => {
     const timestamp = Date.now();
     const sign = crypto.createHash('md5').update(apiKey + timestamp + apiSecret).digest('hex');
 
-    // 🔥 Recherche automatique du Butterfly Pillow
-    const keyword = "Butterfly";  // ou "Memory Neck" si tu veux être plus précis
-    const page = 1;
-    const limit = 100;
-
-    const url = `https://openapi.eprolo.com/product_list.html?sign=${sign}&timestamp=${timestamp}&page=${page}&limit=${limit}&keyword=${encodeURIComponent(keyword)}`;
+    const url = `https://openapi.eprolo.com/product_list.html?sign=${sign}&timestamp=${timestamp}&page=1&limit=100`;
 
     console.log(`[EPROLO] URL utilisée : ${url}`);
 
@@ -26,36 +21,45 @@ exports.handler = async (event) => {
     });
 
     const responseText = await response.text();
-    console.log("[EPROLO] Status:", response.status);
-    console.log("[EPROLO] Response (premiers 800 chars):", responseText.substring(0, 800));
-
     let data;
     try { data = JSON.parse(responseText); } catch { data = {}; }
 
-    if (response.ok && data.code === 0 && data.data && data.data.length > 0) {
-      console.log(`✅ ${data.data.length} produit(s) trouvés pour "${keyword}" !`);
+    console.log(`[EPROLO] Status: ${response.status} | Code: ${data.code}`);
 
-      data.data.forEach(product => {
-        console.log(`\n=== PRODUIT TROUVÉ ===`);
-        console.log(`Product ID (à utiliser dans get-eprolo-product-detail) : ${product.id}`);
+    if ((data.code === 0 || data.code === "0") && data.data && data.data.length > 0) {
+      console.log(`✅ ${data.data.length} produits trouvés dans l'API !\n`);
+
+      data.data.forEach((product, index) => {
+        console.log(`[${index+1}] Product ID interne (à copier) : ${product.id}`);
         console.log(`Titre : ${product.title}`);
-        console.log(`Variants disponibles :`);
-        product.variantlist.forEach(v => {
-          console.log(`   → variantsid (le BON à copier) : ${v.id} | ${v.title} | Cost: $${v.cost}`);
-        });
+        console.log(`Variants : ${product.variantlist ? product.variantlist.length : 0}`);
+        if (product.variantlist && product.variantlist.length > 0) {
+          console.log(`→ Premier variantsid (le BON) : ${product.variantlist[0].id}`);
+        }
+        console.log("─".repeat(50));
       });
 
-      return {
-        statusCode: 200,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ success: true, products: data.data })
-      };
+      // Détection automatique du Butterfly Pillow
+      const butterfly = data.data.find(p => 
+        p.title.toLowerCase().includes("butterfly") || 
+        p.title.toLowerCase().includes("memory neck") ||
+        p.title.toLowerCase().includes("neck pillow")
+      );
+
+      if (butterfly) {
+        console.log(`\n🎯 PRODUIT BUTTERFLY TROUVÉ !`);
+        console.log(`→ Product ID interne à utiliser dans get-eprolo-product-detail : ${butterfly.id}`);
+        console.log(`Titre : ${butterfly.title}`);
+        console.log(`Variantsid à copier dans products.data.json : ${butterfly.variantlist.map(v => v.id).join(', ')}`);
+      } else {
+        console.log(`\n❌ Le Butterfly Pillow n'apparaît pas encore dans l'API (il est peut-être encore en "Not synced").`);
+      }
+
+      return { statusCode: 200, body: JSON.stringify({ success: true, count: data.data.length }) };
     } else {
-      console.error("[EPROLO] Pas de résultat ou erreur:", data.msg || responseText);
-      return { statusCode: 200, body: JSON.stringify({ success: false, error: data.msg || "Aucun produit trouvé" }) };
+      console.error("[EPROLO] Erreur :", data.msg || responseText.substring(0, 500));
     }
   } catch (error) {
     console.error("[EPROLO PRODUCTS ERROR]", error.message);
-    return { statusCode: 500, body: JSON.stringify({ success: false, error: error.message }) };
   }
 };
