@@ -2,7 +2,8 @@
 const { google } = require("googleapis");
 const fetch = require("node-fetch");
 exports.handler = async () => {
-  console.log('[RETRY PENDING] 🚀 Démarrage - ' + new Date().toISOString());
+  const now = new Date().toISOString();
+  console.log(`[RETRY PENDING] 🚀 Démarrage - ${now}`);
   try {
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -26,7 +27,7 @@ exports.handler = async () => {
           break;
         }
       } catch (e) {
-        console.log(`[RETRY PENDING] ${range.split('!')[0]} non trouvé`);
+        console.error(`[RETRY PENDING] Erreur avec ${range.split('!')[0]}: ${e.message}`);
       }
     }
     if (rows.length <= 1) {
@@ -48,7 +49,7 @@ exports.handler = async () => {
     });
     const paymentIds = Object.keys(groups);
     if (paymentIds.length === 0) {
-      console.log('[RETRY PENDING] Aucune commande en attente ou échouée');
+      console.log('[RETRY PENDING] Aucune commande en pending/failed');
       return { statusCode: 200, body: JSON.stringify({ success: true, processed: 0 }) };
     }
     // Process only one group (one payment_id) per invocation
@@ -73,12 +74,16 @@ exports.handler = async () => {
         countryCode = countryData[0]?.cca2 || 'US';
       }
     } catch (err) {
-      console.error("Failed to fetch country code:", err.message);
+      console.error("[RETRY] Failed to fetch country code:", err.message);
     }
     shipping.countryCode = countryCode;
     // Derive province_code from checkout state input (first two letters uppercase)
     let provinceCode = shipping.state.substring(0, 2).toUpperCase() || '';
     shipping.provinceCode = provinceCode;
+    // Si pas de province, use city comme doc Eprolo
+    if (!shipping.state) {
+      shipping.state = shipping.city || '';
+    }
     // Collect cart items, group by variantsid and sum quantities
     const cartMap = {};
     group.forEach(({ row }) => {
@@ -145,7 +150,7 @@ exports.handler = async () => {
       }
       errors.push(`Commande ${paymentIdToProcess}: ${err.message}`);
     }
-    console.log(`[RETRY PENDING] ✅ FIN - Traités: ${processed} | Réussis: ${fulfilled}`);
+    console.log(`[RETRY PENDING] ✅ FIN - Traités: ${processed} | Réussis: ${fulfilled} | Erreurs: ${errors.join(', ')}`);
     return { statusCode: 200, body: JSON.stringify({ success: true, processed, fulfilled, errors }) };
   } catch (error) {
     console.error("RETRY ERROR:", error.message);

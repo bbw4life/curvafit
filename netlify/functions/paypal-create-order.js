@@ -20,6 +20,11 @@ exports.handler = async (event) => {
       },
       body: 'grant_type=client_credentials'
     });
+    if (!tokenRes.ok) {
+      const tokenErr = await tokenRes.text();
+      console.error("[PAYPAL] Token error:", tokenErr);
+      throw new Error("Failed to get PayPal token");
+    }
     const { access_token } = await tokenRes.json();
     // ====================== CALCULS SÉCURISÉS ======================
     let subtotal = 0;
@@ -98,7 +103,7 @@ exports.handler = async (event) => {
           }
         };
       } catch (err) {
-        console.error("Failed to prefill phone:", err);
+        console.error("[PAYPAL] Failed to prefill phone:", err.message);
       }
     }
     orderBody.payer = payer;
@@ -111,9 +116,9 @@ exports.handler = async (event) => {
       body: JSON.stringify(orderBody)
     });
     if (!orderRes.ok) {
-      const err = await orderRes.text();
-      console.error("PayPal Error:", err);
-      throw new Error(err);
+      const errText = await orderRes.text();
+      console.error("[PAYPAL] Create order error full:", errText);  // Log amélioré
+      throw new Error(errText || "PayPal order creation failed");
     }
     const orderData = await orderRes.json();
     return response(200, {
@@ -124,7 +129,7 @@ exports.handler = async (event) => {
         : "https://www.paypal.com"
     });
   } catch (error) {
-    console.error("PayPal Error:", error.message);
+    console.error("[PAYPAL] Global error:", error.message);
     return response(500, { success: false, error: "PayPal order creation failed" });
   }
 };
