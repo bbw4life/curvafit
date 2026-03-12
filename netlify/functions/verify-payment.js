@@ -2,17 +2,14 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fetch = require('node-fetch');
 const { google } = require('googleapis');
-
 exports.handler = async (event) => {
   console.log("=== VERIFY PAYMENT STARTED ===");
   try {
     if (!event.body) throw new Error("No data received");
     const { provider, sessionId, orderID } = JSON.parse(event.body);
     console.log(`Provider: ${provider} | OrderID: ${orderID || 'N/A'}`);
-
     const paymentId = sessionId || orderID;
     if (!paymentId) throw new Error("Missing payment ID");
-
     // ====================== PROTECTION DOUBLE PROCESSING ======================
     const alreadyProcessed = await isAlreadyProcessed(paymentId);
     if (alreadyProcessed) {
@@ -20,13 +17,11 @@ exports.handler = async (event) => {
       return response(200, { success: true, message: "Duplicate - already processed" });
     }
     // ============================================================================
-
     let cart = [];
     let shipping = {};
     let paymentVerified = false;
     const BASE_URL = process.env.BASE_URL || process.env.URL || `https://${event.headers.host}`;
     console.log(`🔗 BASE_URL utilisée : ${BASE_URL}`);
-
     // ====================== STRIPE ======================
     if (provider === "stripe") {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
@@ -46,35 +41,48 @@ exports.handler = async (event) => {
         });
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
-
-    // ====================== PAYPAL (CORRIGÉ - PLUS DE FREE TRADE ZONE) ======================
+    // ====================== PAYPAL ======================
     } else if (provider === "paypal") {
       const PAYPAL_BASE = process.env.PAYPAL_ENV === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
       const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString("base64");
       const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, { method: "POST", headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=client_credentials" });
       const { access_token } = await tokenRes.json();
-
-      const captureRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, { method: "POST", headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" } });
-      if (!captureRes.ok) {
-        const errData = await captureRes.json();
-        if (errData.name === "RESOURCE_CONFLICT" && errData.details[0].issue === "DUPLICATE_INVOICE_ID") {
-          console.log("PayPal already captured - treating as completed");
-        } else {
-          throw new Error("PayPal capture failed");
-        }
-      }
-
+      
+      // D'abord fetch l'ordre pour check status
       const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
+      if (!orderRes.ok) {
+        const orderErr = await orderRes.text();
+        console.error("[PAYPAL] Fetch order error:", orderErr);
+        throw new Error("PayPal order fetch failed");
+      }
       const orderData = await orderRes.json();
-      if (orderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
-
-      // 🔥 DEBUG : on voit TOUT ce que PayPal renvoie
-      console.log("🔍 FULL PAYPAL ORDER DATA (debug shipping):", JSON.stringify(orderData, null, 2));
-
-      const purchaseUnit = orderData.purchase_units?.[0];
+      console.log("[PAYPAL] Order status:", orderData.status);
+      
+      if (orderData.status === "COMPLETED") {
+        console.log("[PAYPAL] Already completed - no need to capture");
+      } else if (orderData.status === "APPROVED") {
+        const captureRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, { method: "POST", headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" } });
+        if (!captureRes.ok) {
+          const captureErr = await captureRes.json();
+          console.error("[PAYPAL] Capture error full:", JSON.stringify(captureErr));
+          if (captureErr.name === "RESOURCE_CONFLICT" && captureErr.details[0].issue === "DUPLICATE_INVOICE_ID") {
+            console.log("[PAYPAL] Already captured - treating as completed");
+          } else {
+            throw new Error("PayPal capture failed: " + JSON.stringify(captureErr));
+          }
+        }
+      } else {
+        throw new Error(`PayPal invalid status: ${orderData.status}`);
+      }
+      
+      // Re-fetch pour confirmer COMPLETED
+      const finalOrderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
+      const finalOrderData = await finalOrderRes.json();
+      if (finalOrderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
+      
+      const purchaseUnit = finalOrderData.purchase_units?.[0];
       const storedVariants = purchaseUnit?.custom_id ? purchaseUnit.custom_id.split('|') : [];
       console.log("Stored variants data:", storedVariants);
-
       const itemsArray = purchaseUnit?.items || [];
       cart = itemsArray.map((item, i) => {
         return { title: item.name, price: parseFloat(item.unit_amount.value), quantity: parseInt(item.quantity), variantsid: storedVariants[i] || null };
@@ -84,13 +92,10 @@ exports.handler = async (event) => {
           return { title: `Product ${i+1}`, price: 0, quantity: 1, variantsid: str || null };
         });
       }
-
-      const payer = orderData.payer || {};
+      const payer = finalOrderData.payer || {};
       const ship = purchaseUnit.shipping || {};
-      const address = ship.address || {};
-
-      // === EXTRACTION ROBUSTE SHIPPING (fix Free Trade Zone) ===
-      const countryCodeFromPayPal = address.country_code || "US";
+      // === CORRECTIONS POUR COUNTRY ET PHONE ===
+      const countryCodeFromPayPal = ship.address?.country_code || "US";
       let countryName = "United States";
       try {
         const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${countryCodeFromPayPal}?fields=name`);
@@ -101,37 +106,31 @@ exports.handler = async (event) => {
       } catch (err) {
         console.error("Failed to fetch country name:", err.message);
       }
-
-      let phone = payer.phone?.phone_number?.national_number || "";
-      if (payer.phone?.phone_number) {
-        phone = `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}`;
-      }
-      if (!phone) {
-        phone = purchaseUnit.reference_id || '';
-      }
-
+      let phone = payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : purchaseUnit.reference_id.split('|')[0] || '';  // Fallback to stored phone in reference_id
+      let email = payer.email_address || purchaseUnit.reference_id.split('|')[1] || '';  // Fallback to stored email
+      let fallbackCountryCode = purchaseUnit.reference_id.split('|')[2] || countryCodeFromPayPal;
       shipping = {
         firstName: payer.name?.given_name || '',
         lastName: payer.name?.surname || '',
-        email: payer.email_address || "",
+        email: email,
         phone: phone,
-        address: address.address_line_1 || address.address_line_2 || "N/A",   // ← plus solide
-        city: address.admin_area_2 || "",
-        state: address.admin_area_1 || "",
-        postalCode: address.postal_code || "",
+        address: ship.address?.address_line_1 || "",
+        city: ship.address?.admin_area_2 || "",
+        state: ship.address?.admin_area_1 || "",
+        postalCode: ship.address?.postal_code || "",
         country: countryName,
-        countryCode: countryCodeFromPayPal
+        countryCode: fallbackCountryCode  // Fallback ajouté
       };
-
-      // 🔥 LOG POUR VOIR QUE L'ADRESSE EST BIEN PRISE DU FORMULAIRE
-      console.log("✅ SHIPPING FINAL EXTRAIT DE PAYPAL :", JSON.stringify(shipping, null, 2));
-
+      // Détecte dummy name et log warning
+      if (shipping.firstName.toLowerCase() === 'john' && shipping.lastName.toLowerCase() === 'doe') {
+        console.warn("[PAYPAL] Dummy shipping detected - possible sandbox override. Using fallbacks.");
+        // Ici, tu peux ajouter plus de fallback si needed, ex: from frontend stored ailleurs, mais pour l'instant log
+      }
+      console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));  // LOG AJOUTÉ pour debug
       paymentVerified = true;
     }
-
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
     console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
-
     // Group cart by variantsid
     const cartMap = {};
     cart.forEach(item => {
@@ -170,7 +169,6 @@ exports.handler = async (event) => {
     return response(500, { success: false, error: error.message });
   }
 };
-
 // ====================== FONCTION ANTI-DOUBLE ======================
 async function isAlreadyProcessed(paymentId) {
   try {
