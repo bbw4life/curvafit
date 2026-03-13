@@ -3796,6 +3796,7 @@ a {
   font-weight: 700;
   white-space: nowrap;
   opacity: 0;
+  font-size: 15px;
   visibility: hidden;
   transition: all 0.3s;
   border: 2px solid #f0b90b;
@@ -3985,13 +3986,3 @@ a {
 @keyframes popupFade { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
 
-/* FIX MOBILE TOOLTIP - version minimaliste */
-@media (max-width: 768px) {
-  .paul-tooltip {
-    right: auto; left: 50%; top: auto; bottom: 100%;
-    transform: translateX(-50%);
-    font-size: 13px; padding: 6px 12px;
-    max-width: 170px; white-space: normal;
-    text-align: center;
-  }
-}
