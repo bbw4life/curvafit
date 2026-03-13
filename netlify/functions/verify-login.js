@@ -32,13 +32,11 @@ exports.handler = async (event) => {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID_ACCOUNTS;
 
+    // RANGES CORRIGÉS (priorité Feuille 1)
     const rangesToTry = [
-      "CurvaAccount!A:N",
-      "CurvaAccount!A1",
-      "CurvaAccount",
-      "CurvaAccount!A:Z",
-      "Sheet1!A:N",
-      "Feuille 1!A:N"
+      "Feuille 1!A:N", "Feuille 1!A1", "Feuille 1", "Feuille 1!A:Z",
+      "CurvaAccount!A:N", "CurvaAccount!A1", "CurvaAccount", "CurvaAccount!A:Z",
+      "Sheet1!A:N"
     ];
 
     let rows = null;
@@ -52,7 +50,7 @@ exports.handler = async (event) => {
           break;
         }
       } catch (err) {
-        console.log(`❌ Échec avec ${range} → ${err.message}`);
+        console.log(`❌ Échec avec ${range}`);
       }
     }
 
@@ -81,7 +79,6 @@ exports.handler = async (event) => {
       firstName: userRow[1] || "",
       email: userRow[2] || "",
       phone: userRow[3] || "",
-      // POINT 2 + 3 : les 4 nouvelles colonnes
       addressLine1: userRow[9] || "",
       line2: userRow[10] || "",
       city: userRow[11] || "",
@@ -91,20 +88,14 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        success: true,
-        user
-      })
+      body: JSON.stringify({ success: true, user })
     };
 
   } catch (error) {
     console.error("VERIFY LOGIN ERROR:", error.message);
     return {
       statusCode: 500,
-      body: JSON.stringify({
-        success: false,
-        error: error.message
-      })
+      body: JSON.stringify({ success: false, error: error.message })
     };
   }
 };

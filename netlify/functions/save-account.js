@@ -21,7 +21,12 @@ exports.handler = async (event) => {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID_ACCOUNTS;
-    const rangesToTry = ["CurvaAccount!A:N", "CurvaAccount!A1", "CurvaAccount", "CurvaAccount!A:Z"];
+
+    // RANGES CORRIGÉS : priorité à "Feuille 1" (ton vrai nom d'onglet)
+    const rangesToTry = [
+      "Feuille 1!A:N", "Feuille 1!A1", "Feuille 1", "Feuille 1!A:Z",
+      "CurvaAccount!A:N", "CurvaAccount!A1", "CurvaAccount", "CurvaAccount!A:Z"
+    ];
 
     if (action === 'signup') {
       if (!lastName || !firstName || !email || !password) throw new Error("Données manquantes");
@@ -30,14 +35,15 @@ exports.handler = async (event) => {
       for (const range of rangesToTry) {
         try {
           await sheets.spreadsheets.values.append({ spreadsheetId, range, valueInputOption: "RAW", insertDataOption: "INSERT_ROWS", resource: { values } });
+          console.log(`✅ Inscription écrite dans : ${range}`);
           success = true; break;
-        } catch (e) {}
+        } catch (e) { console.log(`❌ Échec append ${range}`); }
       }
       if (!success) throw new Error("Impossible d’écrire");
       return { statusCode: 200, body: JSON.stringify({ success: true }) };
     }
 
-    // POINT 2 + 4 : UPDATE ADDRESS (4 nouvelles colonnes)
+    // UPDATE ADDRESS (4 colonnes)
     if (action === 'update-address') {
       const userEmail = normalize(email).toLowerCase();
       let rows = null;
@@ -49,9 +55,10 @@ exports.handler = async (event) => {
       if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
       const rowNum = rowIndex + 1;
 
+      // Mise à jour sur "Feuille 1" (le vrai onglet)
       await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `CurvaAccount!J${rowNum}:N${rowNum}`,
+        range: `Feuille 1!J${rowNum}:N${rowNum}`,
         valueInputOption: "RAW",
         resource: { values: [[line1 || "", line2 || "", city || "", state || "", zip || ""]] }
       });
@@ -69,7 +76,13 @@ exports.handler = async (event) => {
       const rowIndex = rows.findIndex(row => normalize(row[2] || "").toLowerCase() === userEmail);
       if (rowIndex === -1) throw new Error("Email non reconnu");
       const rowNum = rowIndex + 1;
-      await sheets.spreadsheets.values.update({ spreadsheetId, range: `CurvaAccount!E${rowNum}`, valueInputOption: "RAW", resource: { values: [[normalize(newPassword)]] } });
+
+      await sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range: `Feuille 1!E${rowNum}`,
+        valueInputOption: "RAW",
+        resource: { values: [[normalize(newPassword)]] }
+      });
       return { statusCode: 200, body: JSON.stringify({ success: true }) };
     }
 
