@@ -182,28 +182,20 @@ exports.handler = async (event) => {
 
 
 
-// ====================== RECORD ORDER → GOOGLE SHEET (tes 4 demandes) ======================
-console.log("💾 Enregistrement commande dans Google Sheet...");
 
-let totalPaid = 0;
-if (provider === "stripe") {
-  totalPaid = session.amount_total / 100;
-} else if (provider === "paypal") {
-  totalPaid = parseFloat(purchaseUnit?.amount?.value || 0);
-} else {
-  totalPaid = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-}
 
-const totalQuantity = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+
+console.log("💾 Mise à jour Orders / Spent / History dans Google Sheet...");
+
+const totalPaid = provider === "stripe" ? (session.amount_total / 100) : 
+                 provider === "paypal" ? parseFloat(purchaseUnit?.amount?.value || 0) : 
+                 cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+const totalQty = cart.reduce((sum, i) => sum + (i.quantity || 0), 0);
 
 const orderItems = cart.map(item => ({
-  title: item.title || "Produit",
-  quantity: item.quantity || 1,
-  price: item.price || 0,
-  size: null,
-  color: null,
-  image: null,
-  cj_variant_id: item.variantsid || null
+  title: item.title, quantity: item.quantity, price: item.price,
+  size: null, color: null, image: null, cj_variant_id: item.variantsid || null
 }));
 
 await fetch(`${BASE_URL}/.netlify/functions/save-account`, {
@@ -211,15 +203,14 @@ await fetch(`${BASE_URL}/.netlify/functions/save-account`, {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     action: 'record-order',
-    email: shipping.email || "",
+    email: shipping.email || localStorage.getItem('userEmail') || "",  // ← fallback important
     totalAmount: totalPaid,
-    totalQuantity,
+    totalQuantity: totalQty,
     orderItems
   })
-}).catch(err => console.error("⚠️ Record-order non bloquant:", err.message));
+}).catch(e => console.error("Record-order failed (non bloquant):", e));
 
-console.log(`✅ Record-order lancé (Total payé: $${totalPaid} | Qty: ${totalQuantity})`);
-// ============================================================================
+console.log(`✅ Record-order OK ($${totalPaid} | Qty:${totalQty})`);
 
 
 

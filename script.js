@@ -562,6 +562,7 @@ document.addEventListener('DOMContentLoaded', () => {
               }
             });
             saveCart();
+            updateCartQuantityInSheet();
             updateBadges();
             renderCart();
             checkout();
@@ -1160,6 +1161,7 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       }
       itemElement.querySelector('.quantity span').textContent = item.quantity;
       saveCart();
+      updateCartQuantityInSheet();
       updateSubtotal();
       updateBadges();
       renderCart();
@@ -1172,6 +1174,7 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
     const color = itemElement.dataset.color !== undefined ? itemElement.dataset.color : null;
     cart = cart.filter(i => !(i.id === id && i.size === size && i.color === color));
     saveCart();
+    updateCartQuantityInSheet();
     updateSubtotal();
     updateBadges();
     renderCart();
@@ -1275,6 +1278,7 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       });
     }
     saveCart();
+    updateCartQuantityInSheet();
     updateBadges();
     cartIcon.classList.add('added');
     setTimeout(() => cartIcon.classList.remove('added'), 500);
@@ -1316,6 +1320,7 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       }
     });
     saveCart();
+    updateCartQuantityInSheet();
     updateBadges();
     closeWishlistModal();
     openCartDrawer();
@@ -1811,4 +1816,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 500);
         }
     }
+
+
+    async function updateCartQuantityInSheet() {
+  const userEmail = localStorage.getItem('userEmail');
+  if (!userEmail) return; // pas connecté → pas de mise à jour
+
+  const qty = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  await fetch('/.netlify/functions/save-account', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'update-cart-quantity', email: userEmail, currentCartQuantity: qty })
+  }).catch(() => {}); // non bloquant
+}
 });
