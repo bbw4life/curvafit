@@ -20,16 +20,24 @@
 <body>
     <header class="sticky-header">
         <div class="header-container">
-            <div class="search-icon"><i class="fi fi-rr-search"></i></div>
+            <div class="search-icon">
+                <i class="fi fi-rr-search"></i>
+            </div>
             <div class="search-bar">
                 <input type="text" placeholder="Search programs, nutrition, shop..." list="search-suggestions">
                 <datalist id="search-suggestions">
-                    <option value="Programs"><option value="Nutrition"><option value="Shop">
-                    <option value="Community"><option value="Blog"><option value="Success Stories">
+                    <option value="Programs">
+                    <option value="Nutrition">
+                    <option value="Shop">
+                    <option value="Community">
+                    <option value="Blog">
+                    <option value="Success Stories">
                 </datalist>
                 <i class="fi fi-rr-search submit-search"></i>
             </div>
-            <div class="logo"><a href="index.html"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo"></a></div>
+            <div class="logo">
+                <a href="index.html"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo"></a>
+            </div>
             <nav class="main-nav">
                 <ul>
                     <li><a href="index.html"><i class="fi fi-rr-home"></i> Home</a></li>
@@ -44,10 +52,11 @@
                     <li><a href="contact.html"><i class="fi fi-rr-envelope"></i> Contact</a></li>
                 </ul>
             </nav>
-            <div class="hamburger-menu"><i class="fi fi-rr-menu-burger"></i></div>
+            <div class="hamburger-menu">
+                <i class="fi fi-rr-menu-burger"></i>
+            </div>
         </div>
     </header>
-
     <!-- PAUL INDICATOR -->
     <div class="paul-indicator-wrapper">
         <a href="#" class="paul-indicator" id="paulTrigger">
@@ -55,7 +64,6 @@
             <span class="paul-tooltip">Earn 20% if you login/signup</span>
         </a>
     </div>
-
     <!-- POPUP AUTH -->
     <div class="paul-popup-overlay" id="paulPopup">
         <div class="paul-popup">
@@ -63,7 +71,6 @@
             <h2 class="paul-offer-title">20% OFF TODAY ONLY!</h2>
             <p class="paul-offer-subtitle">Log in or sign up now</p>
             <div id="authContainer">
-                <!-- LOGIN FORM -->
                 <div id="loginForm" class="auth-form">
                     <h3>Login</h3>
                     <input type="email" placeholder="Email" required>
@@ -72,7 +79,6 @@
                     <button type="button" class="paul-btn paul-btn-login">Log In</button>
                     <p class="switch-link">No account? <span id="goToSignup">Sign Up</span></p>
                 </div>
-                <!-- SIGNUP FORM -->
                 <div id="signupForm" class="auth-form" style="display:none;">
                     <h3>Sign Up</h3>
                     <input type="text" placeholder="Last Name" required>
@@ -87,24 +93,14 @@
             </div>
         </div>
     </div>
-
     <main class="account-main">
         <div class="account-background">
             <div class="customer account">
                 <div class="profile-section">
                     <h1 class="customer__title">My Account</h1>
-                    <a href="#" class="logout-btn" onclick="localStorage.clear(); window.location.href='index.html';">
-                        <span class="svg-wrapper">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff">
-                                <path d="M10 9V5l-7 7 7 7v-4h11V9H10z"/>
-                            </svg>
-                        </span>
-                        Log out
-                    </a>
+                    <a href="#" class="logout-btn" onclick="logout()">Log out</a>
                 </div>
-
                 <div class="membership-dashboard">
-                    <!-- ton membership dashboard original reste ici -->
                     <div class="membership-header">
                         <div class="membership-greeting">
                             <h3>Hello, <span id="user-name"></span> Welcome back</h3>
@@ -117,110 +113,85 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="membership-stats-grid">
-                    <!-- tes 4 stats restent identiques -->
-                    <div class="stat-item">...</div>
-                    <!-- ... -->
+                    <div class="stat-item"><div class="stat-icon orders"><svg viewBox="0 0 24 24"><path d="M16 6V4a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h1v-2H5V5h9v1h-2v2h2v2h-2v2h2v2h-2v3h2v2h-2v3h2v2h-2v1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-8zm-1 15H7v-2h8v2zm0-4H7v-2h8v2zm0-4H7v-2h8v2zm0-4H7V9h8v2z"/></svg></div><p class="stat-value">0</p><p class="stat-label">Orders</p></div>
+                    <div class="stat-item"><div class="stat-icon spend"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-1h-1v-2h1v-1h-2v-2h2v-1h-1V9h1V8h2v1h1v2h-1v1h2v2h-2v1h1v2h-1v1z"/></svg></div><p class="stat-value">$0.00</p><p class="stat-label">Total Spent</p></div>
+                    <a href="#" class="stat-item stat-wishlist-link" style="text-decoration:none;color:inherit;"><div class="stat-icon wishlist"><svg viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.5 15.85l-.28.25-.27-.25C6.83 14.6 4 11.97 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 3.47-2.83 6.1-7.72 10.35z"/></svg></div><p class="stat-value" data-wishlist-count>0</p><p class="stat-label">Saved Items</p></a>
+                    <div class="stat-item"><div class="stat-icon reviews"><svg viewBox="0 0 24 24"><path d="M21 6h-2v9h-2V6h-2V4h6v2zm-4 5h-2v9h-2v-9h-2V9h6v2zm-4-1H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V12c0-1.1-.9-2-2-2zm0 12H4v-8h9v8z"/></svg></div><p class="stat-value">0</p><p class="stat-label">Reviews Written</p></div>
                 </div>
-
                 <div class="main-grid">
                     <div class="details-section">
                         <h2>Account Details</h2>
                         <p><strong>Name:</strong> <span id="user-full-name"></span></p>
                         <p><strong>Email:</strong> <span id="user-email"></span></p>
-                        <p><strong>Address:</strong> <span id="user-address">No default address set</span></p>
+                        <p><strong>Address:</strong> <span id="user-address">No address set</span></p>
                     </div>
                     <div class="history-address-section">
-                        <!-- order history et addresses restent identiques -->
+                        <div class="order-history"><h2>Order History</h2><p>No orders yet</p></div>
+                        <div class="address-section"><h2>Addresses</h2><p>No addresses found</p></div>
                     </div>
                 </div>
-
                 <div class="quick-actions-section">
                     <h2 class="quick-actions-title">Quick Actions</h2>
                     <div class="quick-actions-grid">
-                        <!-- TRACK ORDER → popup corrigé -->
-                        <div class="quick-card" onclick="openPopup('track-popup')">
-                            <div class="quick-card-icon">
-                                <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
-                            </div>
-                            <h4>Track Order</h4>
-                            <p>Check the status of your deliveries</p>
-                        </div>
-                        <!-- les 5 autres cartes restent avec leur lien original -->
-                        <a href="/collections/all" class="quick-card">...</a>
-                        <a href="/contact" class="quick-card">...</a>
-                        <div class="quick-card" onclick="openPopup('address-popup')">...</div>
-                        <div class="quick-card" onclick="openPopup('payment-popup')">...</div>
-                        <div class="quick-card" onclick="openPopup('password-popup')">...</div>
+                        <div class="quick-card" onclick="openPopup('track-popup')"><div class="quick-card-icon">📦</div><h4>Track Order</h4><p>Check the status of your deliveries</p></div>
+                        <div class="quick-card" onclick="openPopup('address-popup')"><div class="quick-card-icon">📍</div><h4>Addresses</h4><p>Manage your delivery addresses</p></div>
+                        <div class="quick-card" onclick="openPopup('payment-popup')"><div class="quick-card-icon">💳</div><h4>Payment Methods</h4><p>Manage your cards and accounts</p></div>
+                        <div class="quick-card" onclick="openPopup('password-popup')"><div class="quick-card-icon">🔒</div><h4>Security</h4><p>Change your password</p></div>
                     </div>
                 </div>
-
-                <!-- POPUPS CORRIGÉS -->
-                <!-- Address -->
+                <!-- POPUP ADDRESS -->
                 <div id="address-popup" class="popup-overlay">
                     <div class="popup">
                         <h3>Update Address</h3>
                         <button class="popup-close" onclick="closePopup('address-popup')">×</button>
                         <div class="popup-form">
-                            <input type="text" placeholder="First Name" required>
-                            <input type="text" placeholder="Last Name" required>
-                            <input type="text" placeholder="Address" required>
-                            <input type="text" placeholder="Address 2 (optional)">
-                            <input type="text" placeholder="City" required>
-                            <select required><option value="">Select Country</option><option value="US">United States</option></select>
-                            <input type="text" placeholder="State/Province">
-                            <input type="text" placeholder="ZIP/Postal Code" required>
-                            <input type="tel" placeholder="Phone (optional)">
-                            <button type="button" onclick="saveAddress()">Save Address</button>
+                            <input type="text" id="addr-street" placeholder="Address" required>
+                            <input type="text" id="addr-city" placeholder="City" required>
+                            <input type="text" id="addr-zip" placeholder="ZIP/Postal Code" required>
+                            <button onclick="saveAddress()">Save Address</button>
                         </div>
                     </div>
                 </div>
-
-                <!-- Payment -->
-                <div id="payment-popup" class="popup-overlay">
-                    <div class="popup">
-                        <h3>Payment Methods</h3>
-                        <button class="popup-close" onclick="closePopup('payment-popup')">×</button>
-                        <div class="payment-methods-grid">
-                            <!-- tes 6 payment methods restent identiques -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Security (email + nouveau mot de passe) -->
-                <div id="password-popup" class="popup-overlay">
-                    <div class="popup">
-                        <h3>Change Password</h3>
-                        <button class="popup-close" onclick="closePopup('password-popup')">×</button>
-                        <div class="popup-form">
-                            <input type="email" id="security-email" placeholder="Votre adresse email" required>
-                            <input type="password" id="new-password" placeholder="Nouveau mot de passe" required>
-                            <input type="password" id="confirm-password" placeholder="Confirmer le nouveau mot de passe" required>
-                            <button type="button" onclick="changePassword()">Update Password</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Track Order Popup -->
+                <!-- POPUP TRACK ORDER -->
                 <div id="track-popup" class="popup-overlay">
                     <div class="popup">
                         <h3>Track Your Order</h3>
                         <button class="popup-close" onclick="closePopup('track-popup')">×</button>
                         <div class="popup-form">
-                            <input type="text" id="tracking-number" placeholder="Enter your tracking number (ex: 17TRACK123)">
-                            <button type="button" onclick="trackOrder()">Track Now</button>
+                            <input type="text" id="tracking-number" placeholder="Enter tracking number" required>
+                            <button onclick="trackOrder()">Track Now</button>
+                            <div id="track-result" style="margin-top:15px;color:#28a745;font-weight:600;"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- POPUP PAYMENT -->
+                <div id="payment-popup" class="popup-overlay">
+                    <div class="popup">
+                        <h3>Payment Methods</h3>
+                        <button class="popup-close" onclick="closePopup('payment-popup')">×</button>
+                        <div class="payment-methods-grid">
+                            <!-- tes cartes restent ici -->
+                        </div>
+                    </div>
+                </div>
+                <!-- POPUP PASSWORD -->
+                <div id="password-popup" class="popup-overlay">
+                    <div class="popup">
+                        <h3>Change Password</h3>
+                        <button class="popup-close" onclick="closePopup('password-popup')">×</button>
+                        <div class="popup-form">
+                            <input type="email" id="recover-email" placeholder="Your email" required>
+                            <input type="password" id="new-password" placeholder="New password" required>
+                            <button onclick="changePassword()">Update Password</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
-    <!-- TOAST (petit popup qui disparaît après 10 secondes) -->
-    <div id="toast-notification" class="toast-notification">
-        <p id="toast-message"></p>
-    </div>
     <footer class="footer">
+        <!-- ton footer complet reste exactement le même -->
         <div class="container footer-grid">
             <div class="footer-brand">
                 <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo">
@@ -239,9 +210,7 @@
                 </ul>
             </div>
             <div class="footer-social">
-                <p class="social-title">
-                    Stay in the Loop — Follow for Curvy Tips and Inspiration.
-                </p>
+                <p class="social-title">Stay in the Loop — Follow for Curvy Tips and Inspiration.</p>
                 <a href="#"><i class="fab fa-facebook-f"></i></a>
                 <a href="#"><i class="fab fa-instagram"></i></a>
                 <a href="#"><i class="fab fa-tiktok"></i></a>
@@ -258,24 +227,19 @@
                 </form>
             </div>
         </div>
-        <div class="copyright">
-            <p>&copy; 2026 CurvaFit. All rights reserved.</p>
-        </div>
+        <div class="copyright"><p>&copy; 2026 CurvaFit. All rights reserved.</p></div>
     </footer>
-    <script src="script.js"></script>
     <div id="audio-player" class="draggable-audio-player">
         <button id="play-pause-btn">
-            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                <path d="M8 5v14l11-7z"/>
-            </svg>
-            <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display: none;">
-                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-            </svg>
+            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
         </button>
         <audio id="audio-element" loop>
             <source src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/audio_glowing_1.mp3?v=1771468630" type="audio/mpeg">
-            Votre navigateur ne supporte pas l'élément audio.
         </audio>
     </div>
+    <!-- TOAST -->
+    <div id="toast"></div>
+    <script src="script.js"></script>
 </body>
 </html>
