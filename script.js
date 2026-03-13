@@ -1589,7 +1589,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const goToLogin = document.getElementById('goToLogin');
     const isAccountPage = window.location.pathname.includes('account.html') || window.location.pathname.endsWith('account.html');
 
-    // TOAST
+    // ==================== TOAST ====================
     window.showToast = (msg) => {
         const toast = document.getElementById('toast');
         toast.textContent = msg;
@@ -1597,25 +1597,17 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => toast.classList.remove('show'), 10000);
     };
 
-    // POPUP ACCOUNT FUNCTIONS
+    // ==================== POPUP ACCOUNT FUNCTIONS ====================
     window.openAccountPopup = (id) => {
         const popup = document.getElementById(id);
-        if (popup) {
-            popup.classList.add('open');
-            // PRÉ-REMPLISSAGE ADDRESS POPUP
-            if (id === 'address-popup' && localStorage.getItem('isLoggedIn') === 'true') {
-                document.getElementById('addr-first').value = localStorage.getItem('userFirstName') || '';
-                document.getElementById('addr-last').value = localStorage.getItem('userLastName') || '';
-                document.getElementById('addr-email').value = localStorage.getItem('userEmail') || '';
-            }
-        }
+        if (popup) popup.classList.add('open');
     };
     window.closeAccountPopup = (id) => {
         const popup = document.getElementById(id);
         if (popup) popup.classList.remove('open');
     };
 
-    // PAUL POPUP LOGIC
+    // ==================== PAUL POPUP LOGIC (original) ====================
     function openPaulPopup() {
         overlay.classList.add('active');
         loginForm.style.display = 'block';
@@ -1639,7 +1631,7 @@ document.addEventListener('DOMContentLoaded', () => {
     goToSignup.addEventListener('click', () => { loginForm.style.display = 'none'; signupForm.style.display = 'block'; });
     goToLogin.addEventListener('click', () => { signupForm.style.display = 'none'; loginForm.style.display = 'block'; });
 
-    // SIGNUP
+    // ==================== SIGNUP (original + toast) ====================
     document.querySelector('.paul-btn-register').addEventListener('click', async () => {
         const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
         const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
@@ -1664,7 +1656,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // LOGIN + REDIRECTION AUTOMATIQUE
+    // ==================== LOGIN (original + toast) ====================
     document.querySelector('.paul-btn-login').addEventListener('click', async () => {
         const email = loginForm.querySelector('input[type="email"]').value.trim();
         const password = loginForm.querySelector('input[type="password"]').value.trim();
@@ -1684,18 +1676,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             showToast(`✅ Bienvenue ${data.user.firstName} !`);
             overlay.classList.remove('active');
-
-            // REDIRECTION AUTOMATIQUE (même si popup ouvert)
-            setTimeout(() => {
-                if (isAccountPage) location.reload();
-                else window.location.href = 'account.html';
-            }, 800);
+            if (isAccountPage) location.reload();
+            else window.location.href = 'account.html';
         } else {
             showToast("❌ " + data.error);
         }
     });
 
-    // POPULATE PROFILE
+    // ==================== POPULATE PROFILE ====================
     if (localStorage.getItem('isLoggedIn') === 'true') {
         document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
         document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
@@ -1703,7 +1691,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
     }
 
-    // SAVE ADDRESS
+    // ==================== SAVE ADDRESS ====================
     window.saveAddress = async () => {
         const email = localStorage.getItem('userEmail');
         const addressStr = `${document.getElementById('addr-first').value} ${document.getElementById('addr-last').value}, ${document.getElementById('addr-line1').value} ${document.getElementById('addr-line2').value || ''}, ${document.getElementById('addr-city').value} ${document.getElementById('addr-state').value || ''} ${document.getElementById('addr-zip').value}`;
@@ -1717,14 +1705,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.success) {
             localStorage.setItem('userAddress', addressStr);
             document.getElementById('user-address').textContent = addressStr;
-            showToast("✅ Adresse sauvegardée pour toujours !");
+            showToast("✅ Adresse sauvegardée !");
             closeAccountPopup('address-popup');
         } else {
             showToast("❌ " + data.error);
         }
     };
 
-    // UPDATE PASSWORD
+    // ==================== UPDATE PASSWORD ====================
     window.updatePassword = async () => {
         const email = document.getElementById('security-email').value.trim();
         const newPassword = document.getElementById('new-password').value.trim();
@@ -1744,7 +1732,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // TRACK ORDER
+    // ==================== TRACK ORDER ====================
     window.trackOrder = () => {
         const num = document.getElementById('tracking-number').value.trim();
         const result = document.getElementById('track-result');
@@ -1753,14 +1741,20 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => closeAccountPopup('track-popup'), 4000);
     };
 
-    // LOGOUT
+    // ==================== LOGOUT ====================
     window.logout = () => {
         localStorage.clear();
         window.location.href = 'index.html';
     };
 
-    // PROTECTION PAGE ACCOUNT
-    if (isAccountPage && localStorage.getItem('isLoggedIn') !== 'true') {
-        setTimeout(() => openPaulPopup(), 500);
+    // ==================== PROTECTION ACCOUNT PAGE ====================
+    if (isAccountPage) {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            setTimeout(() => {
+                openPaulPopup();
+                closeBtn.style.pointerEvents = 'none';
+                closeBtn.style.opacity = '0.3';
+            }, 500);
+        }
     }
 });
