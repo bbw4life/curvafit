@@ -1325,6 +1325,26 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
     closeWishlistModal();
     openCartDrawer();
   }
+
+  // ====================== FONCTION POUR METTRE À JOUR QUANTITY IN CART EN DIRECT ======================
+  async function updateCartQuantityInSheet() {
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) return;
+
+    const qty = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+    await fetch('/.netlify/functions/save-account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        action: 'update-cart-quantity', 
+        email: userEmail, 
+        currentCartQuantity: qty 
+      })
+    }).catch(() => {}); // non bloquant
+  }
+
+  
   function openCartDrawer() {
     renderCart();
     cartDrawer.classList.add('active');
@@ -1816,18 +1836,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 500);
         }
     }
-
-
-    async function updateCartQuantityInSheet() {
-  const userEmail = localStorage.getItem('userEmail');
-  if (!userEmail) return; // pas connecté → pas de mise à jour
-
-  const qty = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-  await fetch('/.netlify/functions/save-account', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'update-cart-quantity', email: userEmail, currentCartQuantity: qty })
-  }).catch(() => {}); // non bloquant
-}
 });
