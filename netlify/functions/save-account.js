@@ -22,14 +22,14 @@ exports.handler = async (event) => {
       },
       scopes: ["https://www.googleapis.com/auth/spreadsheets"]
     });
-     const sheets = google.sheets({ version: "v4", auth });
+        const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID_ACCOUNTS;
 
     const values = [[lastName, firstName, email, phone, password, newsletter, 0, 0, 0]];
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: "CurvaAccount",           // ← C’EST ÇA QUI RÉSOUT L’ERREUR
+      range: "CurvaAccount!A1",           // ← C’EST ÇA LA SOLUTION (A1 obligatoire)
       valueInputOption: "RAW",
       insertDataOption: "INSERT_ROWS",
       resource: { values }
