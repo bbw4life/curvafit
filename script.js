@@ -1559,3 +1559,51 @@ document.addEventListener('click', function(e) {
     }
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+// ====================== PAUL INDICATEUR - FORM LOGIN / SIGNUP ======================
+document.addEventListener('DOMContentLoaded', () => {
+  const trigger = document.getElementById('paulTrigger');
+  const overlay = document.getElementById('paulPopup');
+  const closeBtn = document.querySelector('.paul-close');
+
+  const loginForm = document.getElementById('loginForm');
+  const signupForm = document.getElementById('signupForm');
+
+  const goToSignup = document.getElementById('goToSignup');
+  const goToLogin = document.getElementById('goToLogin');
+
+  // Ouvrir le popup
+  trigger.addEventListener('click', (e) => {
+    e.preventDefault();
+    overlay.classList.add('active');
+    loginForm.style.display = 'block';   // commence toujours par Login
+    signupForm.style.display = 'none';
+  });
+
+  // Fermer
+  closeBtn.addEventListener('click', () => overlay.classList.remove('active'));
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('active');
+  });
+
+  // Switch Login <-> Sign Up
+  goToSignup.addEventListener('click', () => {
+    loginForm.style.display = 'none';
+    signupForm.style.display = 'block';
+  });
+
+  goToLogin.addEventListener('click', () => {
+    signupForm.style.display = 'none';
+    loginForm.style.display = 'block';
+  });
+});
