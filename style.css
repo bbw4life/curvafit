@@ -3857,6 +3857,18 @@ a {
   line-height: 1;
 }
 
+/* POINT 1 : icône fermeture maintenant visible dans TOUS les popups */
+.popup-close {
+  position: absolute !important;
+  top: 15px !important;
+  right: 25px !important;
+  font-size: 38px !important;
+  color: #aaaaaa !important;
+  cursor: pointer !important;
+  line-height: 1 !important;
+  z-index: 10;
+}
+
 .paul-offer-title {
   font-size: 30px;
   color: #f0b90b;
@@ -3892,13 +3904,12 @@ a {
   font-size: 16px;
 }
 
-/* CHECKBOX CORRIGÉE (collée au texte + largeur auto) */
 .auth-form label {
   color: #ccc;
   font-size: 15px;
   display: flex;
   align-items: center;
-  gap: 6px;                    /* ← ULTRA COLLÉ maintenant */
+  gap: 6px;
   margin: 12px 0;
   justify-content: flex-start;
 }
@@ -3907,12 +3918,12 @@ a {
   width: auto !important;
   margin: 0;
   flex-shrink: 0;
-  accent-color: #f0b90b;       /* ← jaune comme ton thème */
+  accent-color: #f0b90b;
 }
 
 .paul-btn {
   width: 100%;
-  padding: 10px;
+  padding: 14px 20px; /* POINT 5 : plus épais */
   border: none;
   border-radius: 50px;
   font-size: 18px;
@@ -3936,6 +3947,14 @@ a {
   transform: scale(1.05);
 }
 
+/* POINT 5 : effet "pending/clic" sur tous les boutons */
+.paul-btn:active,
+.popup-form button:active,
+.quick-card:active {
+  transform: scale(0.95) !important;
+  box-shadow: inset 0 4px 12px rgba(0,0,0,0.3) !important;
+}
+
 .switch-link {
   color: #ccc;
   margin-top: 15px;
@@ -3947,23 +3966,29 @@ a {
   font-weight: 700;
 }
 
-
-
-
-
-
-
-
-.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #f0b90b; padding: 14px 24px; border-radius: 50px; border: 2px solid #f0b90b; box-shadow: 0 0 30px rgba(240,185,11,0.5); z-index: 10001; opacity: 0; visibility: hidden; transition: all 0.4s ease; font-weight: 700; }
+.toast { 
+  position: fixed; 
+  bottom: 30px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  background: #1a1a1a; 
+  color: #f0b90b; 
+  padding: 14px 24px; 
+  border-radius: 50px; 
+  border: 2px solid #f0b90b; 
+  box-shadow: 0 0 30px rgba(240,185,11,0.5); 
+  z-index: 10001; 
+  opacity: 0; 
+  visibility: hidden; 
+  transition: all 0.4s ease; 
+  font-weight: 700; 
+}
 .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(-10px); }
+
 .popup-overlay { display: none !important; }
 .popup-overlay.open { display: flex !important; }
 .popup { animation: popupFade 0.4s ease; }
 @keyframes popupFade { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
-
-
-
 
 .membership-dashboard {
     border-radius: 12px;
@@ -4097,7 +4122,6 @@ a {
         flex-direction: column;
         align-items: flex-start;
     }
-
     .membership-badge {
         align-self: flex-end;
     }
@@ -4178,19 +4202,6 @@ a {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0,0,0,0.6) !important;
 }
 
-.customer.account .profile-section .logout-btn .svg-wrapper {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 18px !important;
-    height: 18px !important;
-    color: #ffffff !important;
-}
-
-.customer.account .profile-section a.logout-btn:hover .svg-wrapper {
-    transform: rotate(15deg) scale(1.1);
-}
-
 .main-grid {
     display: flex;
     flex-wrap: wrap;
@@ -4208,7 +4219,6 @@ a {
         grid-template-columns: 1fr 1fr;
         gap: 20px;
     }
-
     .main-grid .details-section,
     .main-grid .history-address-section {
         flex: none;
@@ -4218,27 +4228,6 @@ a {
 .order-history,
 .address-section {
     margin-top: 20px;
-}
-
-table.order-history {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.customer.account table.order-history th,
-.customer.account table.order-history td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-    color: #000000 !important;
-}
-
-.customer.account table.order-history th {
-    background-color: #f5f5f5;
-}
-
-.customer.account table.order-history a:hover {
-    text-decoration: underline !important;
 }
 
 .quick-actions-section {
@@ -4352,22 +4341,6 @@ table.order-history {
     animation: tada 2s infinite !important;
 }
 
-.popup-close {
-    position: absolute !important;
-    top: -30px !important;
-    right: -40px !important;
-    font-size: 36px !important;
-    color: #aaaaaa !important;
-    cursor: pointer !important;
-    font-weight: 300 !important;
-    line-height: 1 !important;
-    background: transparent !important;
-}
-
-.popup-close:hover {
-    transform: scale(1.2) !important;
-}
-
 .popup-form input,
 .popup-form select,
 .popup-form textarea {
@@ -4388,7 +4361,7 @@ table.order-history {
 
 .popup-form button {
     width: 100%;
-    padding: 1px 3px !important;
+    padding: 16px 30px !important; /* POINT 5 : plus épais */
     background: #f0b90b !important;
     color: #000000 !important;
     border: 2px solid #ffffff !important;
@@ -4470,16 +4443,13 @@ table.order-history {
         padding: 34px 10px !important;
         max-width: 340px !important;
     }
-
     #address-popup .popup {
         padding: 35px 10px !important;
         max-width: 380px !important;
     }
-
     .popup h3 {
         font-size: 30px !important;
     }
-
     .popup-close {
         top: -40px !important;
         right: -40px !important;

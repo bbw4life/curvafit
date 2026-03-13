@@ -30,36 +30,27 @@ exports.handler = async (event) => {
     });
 
     const sheets = google.sheets({ version: "v4", auth });
-
     const spreadsheetId = process.env.GOOGLE_SHEET_ID_ACCOUNTS;
 
-    // mêmes essais que save-account
     const rangesToTry = [
-      "CurvaAccount!A:I",
+      "CurvaAccount!A:N",
       "CurvaAccount!A1",
       "CurvaAccount",
       "CurvaAccount!A:Z",
-      "Sheet1!A:I",
-      "Feuille 1!A:I"
+      "Sheet1!A:N",
+      "Feuille 1!A:N"
     ];
 
     let rows = null;
-    let usedRange = "";
 
     for (const range of rangesToTry) {
       try {
-        const res = await sheets.spreadsheets.values.get({
-          spreadsheetId,
-          range
-        });
-
+        const res = await sheets.spreadsheets.values.get({ spreadsheetId, range });
         if (res.data.values && res.data.values.length > 0) {
           rows = res.data.values;
-          usedRange = range;
           console.log(`✅ LECTURE OK dans : ${range}`);
           break;
         }
-
       } catch (err) {
         console.log(`❌ Échec avec ${range} → ${err.message}`);
       }
@@ -68,13 +59,6 @@ exports.handler = async (event) => {
     if (!rows) {
       throw new Error("Impossible de lire le Google Sheet");
     }
-
-    // colonnes :
-    // A lastName
-    // B firstName
-    // C email
-    // D phone
-    // E password
 
     const userRow = rows.find((row) => {
       const sheetEmail = (row[2] || "").toLowerCase();
@@ -96,21 +80,25 @@ exports.handler = async (event) => {
       lastName: userRow[0] || "",
       firstName: userRow[1] || "",
       email: userRow[2] || "",
-      phone: userRow[3] || ""
+      phone: userRow[3] || "",
+      // POINT 2 + 3 : les 4 nouvelles colonnes
+      addressLine1: userRow[9] || "",
+      line2: userRow[10] || "",
+      city: userRow[11] || "",
+      state: userRow[12] || "",
+      zip: userRow[13] || ""
     };
 
     return {
       statusCode: 200,
       body: JSON.stringify({
         success: true,
-        user,
-        usedRange
+        user
       })
     };
 
   } catch (error) {
     console.error("VERIFY LOGIN ERROR:", error.message);
-
     return {
       statusCode: 500,
       body: JSON.stringify({
