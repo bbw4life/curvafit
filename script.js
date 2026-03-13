@@ -1580,90 +1580,181 @@ document.addEventListener('click', function(e) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  const trigger = document.getElementById('paulTrigger');
-  const overlay = document.getElementById('paulPopup');
-  const closeBtn = document.querySelector('.paul-close');
-  const loginForm = document.getElementById('loginForm');
-  const signupForm = document.getElementById('signupForm');
-  const goToSignup = document.getElementById('goToSignup');
-  const goToLogin = document.getElementById('goToLogin');
-  const isAccountPage = window.location.pathname.includes('account.html');
+    const trigger = document.getElementById('paulTrigger');
+    const overlay = document.getElementById('paulPopup');
+    const closeBtn = document.querySelector('.paul-close');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const goToSignup = document.getElementById('goToSignup');
+    const goToLogin = document.getElementById('goToLogin');
+    const isAccountPage = window.location.pathname.includes('account.html') || window.location.pathname.endsWith('account.html');
 
-  function openPopup(id) { document.getElementById(id).classList.add('open'); }
-  function closePopup(id) { document.getElementById(id).classList.remove('open'); }
+    // ==================== TOAST ====================
+    window.showToast = (msg) => {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 10000);
+    };
 
-  function showToast(message, type = 'success') {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.className = type;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 10000);
-  }
+    // ==================== POPUP ACCOUNT FUNCTIONS ====================
+    window.openAccountPopup = (id) => {
+        const popup = document.getElementById(id);
+        if (popup) popup.classList.add('open');
+    };
+    window.closeAccountPopup = (id) => {
+        const popup = document.getElementById(id);
+        if (popup) popup.classList.remove('open');
+    };
 
-  function loadUserProfile() {
-    if (localStorage.getItem('isLoggedIn') !== 'true') return;
-    document.getElementById('user-full-name').textContent = (localStorage.getItem('userFirstName') || '') + ' ' + (localStorage.getItem('userLastName') || '');
-    document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
-    document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No address set';
-  }
+    // ==================== PAUL POPUP LOGIC (original) ====================
+    function openPaulPopup() {
+        overlay.classList.add('active');
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+    }
+    function closePaulPopup() {
+        if (isAccountPage) return;
+        overlay.classList.remove('active');
+    }
 
-  async function saveAddress() {
-    const address = document.getElementById('addr-street').value + ', ' + document.getElementById('addr-city').value + ' ' + document.getElementById('addr-zip').value;
-    const res = await fetch('/.netlify/functions/save-account', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'update-address', email: localStorage.getItem('userEmail'), address })
+    trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            window.location.href = 'account.html';
+        } else {
+            openPaulPopup();
+        }
     });
-    const data = await res.json();
-    if (data.success) {
-      localStorage.setItem('userAddress', address);
-      document.getElementById('user-address').textContent = address;
-      showToast('Address saved!');
-      closePopup('address-popup');
-    } else showToast(data.error, 'error');
-  }
+    closeBtn.addEventListener('click', closePaulPopup);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay && !isAccountPage) closePaulPopup(); });
+    goToSignup.addEventListener('click', () => { loginForm.style.display = 'none'; signupForm.style.display = 'block'; });
+    goToLogin.addEventListener('click', () => { signupForm.style.display = 'none'; loginForm.style.display = 'block'; });
 
-  async function changePassword() {
-    const email = document.getElementById('recover-email').value.trim();
-    const newPass = document.getElementById('new-password').value.trim();
-    if (email !== localStorage.getItem('userEmail')) return showToast('Email incorrect', 'error');
-    const res = await fetch('/.netlify/functions/save-account', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'update-password', email, password: newPass })
+    // ==================== SIGNUP (original + toast) ====================
+    document.querySelector('.paul-btn-register').addEventListener('click', async () => {
+        const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
+        const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
+        const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
+        const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
+        const password = signupForm.querySelector('input[type="password"]').value.trim();
+        const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
+
+        if (!password) return showToast("Mot de passe requis");
+
+        const res = await fetch('/.netlify/functions/save-account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showToast("✅ Compte créé avec succès !");
+            goToLogin.click();
+        } else {
+            showToast("❌ Erreur : " + data.error);
+        }
     });
-    const data = await res.json();
-    if (data.success) {
-      showToast('Password updated! Logging out...');
-      setTimeout(() => { localStorage.clear(); window.location.href = 'index.html'; }, 1500);
-    } else showToast(data.error, 'error');
-  }
 
-  function trackOrder() {
-    const num = document.getElementById('tracking-number').value.trim();
-    if (!num) return;
-    document.getElementById('track-result').innerHTML = '✅ Order found!<br>Status: In transit<br>Expected: March 20, 2026';
-    setTimeout(() => closePopup('track-popup'), 4000);
-  }
+    // ==================== LOGIN (original + toast) ====================
+    document.querySelector('.paul-btn-login').addEventListener('click', async () => {
+        const email = loginForm.querySelector('input[type="email"]').value.trim();
+        const password = loginForm.querySelector('input[type="password"]').value.trim();
 
-  function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+        const res = await fetch('/.netlify/functions/verify-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userFirstName', data.user.firstName);
+            localStorage.setItem('userLastName', data.user.lastName);
+            localStorage.setItem('userAddress', data.user.address || 'No default address set');
 
-  // PAUL POPUP
-  trigger.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (localStorage.getItem('isLoggedIn') === 'true') window.location.href = 'account.html';
-    else openPopup('paulPopup');
-  });
-  closeBtn.addEventListener('click', () => closePopup('paulPopup'));
-  goToSignup.addEventListener('click', () => { loginForm.style.display = 'none'; signupForm.style.display = 'block'; });
-  goToLogin.addEventListener('click', () => { signupForm.style.display = 'none'; loginForm.style.display = 'block'; });
+            showToast(`✅ Bienvenue ${data.user.firstName} !`);
+            overlay.classList.remove('active');
+            if (isAccountPage) location.reload();
+            else window.location.href = 'account.html';
+        } else {
+            showToast("❌ " + data.error);
+        }
+    });
 
-  // INSCRIPTION (déjà présent)
-  document.querySelector('.paul-btn-register').addEventListener('click', async () => { /* ton code inscription reste */ });
-  document.querySelector('.paul-btn-login').addEventListener('click', async () => { /* ton code login reste */ });
+    // ==================== POPULATE PROFILE ====================
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+        document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
+        document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
+        document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
+        document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
+    }
 
-  if (isAccountPage) {
-    if (localStorage.getItem('isLoggedIn') !== 'true') setTimeout(() => openPopup('paulPopup'), 500);
-    else loadUserProfile();
-  }
+    // ==================== SAVE ADDRESS ====================
+    window.saveAddress = async () => {
+        const email = localStorage.getItem('userEmail');
+        const addressStr = `${document.getElementById('addr-first').value} ${document.getElementById('addr-last').value}, ${document.getElementById('addr-line1').value} ${document.getElementById('addr-line2').value || ''}, ${document.getElementById('addr-city').value} ${document.getElementById('addr-state').value || ''} ${document.getElementById('addr-zip').value}`;
+
+        const res = await fetch('/.netlify/functions/save-account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'update-address', email, address: addressStr })
+        });
+        const data = await res.json();
+        if (data.success) {
+            localStorage.setItem('userAddress', addressStr);
+            document.getElementById('user-address').textContent = addressStr;
+            showToast("✅ Adresse sauvegardée !");
+            closeAccountPopup('address-popup');
+        } else {
+            showToast("❌ " + data.error);
+        }
+    };
+
+    // ==================== UPDATE PASSWORD ====================
+    window.updatePassword = async () => {
+        const email = document.getElementById('security-email').value.trim();
+        const newPassword = document.getElementById('new-password').value.trim();
+        if (!email || !newPassword) return showToast("Email et mot de passe requis");
+
+        const res = await fetch('/.netlify/functions/save-account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'update-password', email, newPassword })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showToast("✅ Mot de passe mis à jour !");
+            closeAccountPopup('password-popup');
+        } else {
+            showToast("❌ " + data.error);
+        }
+    };
+
+    // ==================== TRACK ORDER ====================
+    window.trackOrder = () => {
+        const num = document.getElementById('tracking-number').value.trim();
+        const result = document.getElementById('track-result');
+        if (!num) return result.textContent = "Veuillez entrer un numéro de suivi";
+        result.textContent = `✅ Colis ${num} suivi - Arrivée estimée : 3-5 jours`;
+        setTimeout(() => closeAccountPopup('track-popup'), 4000);
+    };
+
+    // ==================== LOGOUT ====================
+    window.logout = () => {
+        localStorage.clear();
+        window.location.href = 'index.html';
+    };
+
+    // ==================== PROTECTION ACCOUNT PAGE ====================
+    if (isAccountPage) {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            setTimeout(() => {
+                openPaulPopup();
+                closeBtn.style.pointerEvents = 'none';
+                closeBtn.style.opacity = '0.3';
+            }, 500);
+        }
+    }
 });

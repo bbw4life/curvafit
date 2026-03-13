@@ -1,24 +1,30 @@
 // netlify/functions/save-account.js
 const { google } = require('googleapis');
+
 exports.handler = async (event) => {
-  if (event.httpMethod !== 'POST') return { statusCode: 405, body: JSON.stringify({ success: false, error: "Method not allowed" }) };
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: JSON.stringify({ success: false, error: "Method not allowed" }) };
+  }
+
   try {
     const body = JSON.parse(event.body);
+    const { action = 'signup', lastName, firstName, email, phone = "", password, newsletter = "No", address, newPassword } = body;
+
+    const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").trim() : "";
     const auth = new google.auth.GoogleAuth({
-      credentials: { client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL, private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n") },
+      credentials: {
+        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n")
+      },
       scopes: ["https://www.googleapis.com/auth/spreadsheets"]
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID_ACCOUNTS;
-    const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").trim() : "";
+    const rangesToTry = ["CurvaAccount!A:J", "CurvaAccount!A1", "CurvaAccount", "CurvaAccount!A:Z"];
 
-    // === CRÉATION COMPTE ===
-    if (!body.action) {
-      let { lastName, firstName, email, phone = "", password, newsletter = "No" } = body;
+    if (action === 'signup') {
       if (!lastName || !firstName || !email || !password) throw new Error("Données manquantes");
-      lastName = normalize(lastName); firstName = normalize(firstName); email = normalize(email).toLowerCase(); phone = normalize(phone);
-      const values = [[lastName, firstName, email, phone, password, newsletter, 0, 0, 0, ""]];
-      const rangesToTry = ["CurvaAccount!A:J", "CurvaAccount!A1", "CurvaAccount", "CurvaAccount!A:Z"];
+      const values = [[normalize(lastName), normalize(firstName), normalize(email).toLowerCase(), normalize(phone), normalize(password), newsletter, 0, 0, 0, ""]];
       let success = false;
       for (const range of rangesToTry) {
         try {
@@ -30,35 +36,39 @@ exports.handler = async (event) => {
       return { statusCode: 200, body: JSON.stringify({ success: true }) };
     }
 
-    // === UPDATE ADRESSE OU PASSWORD ===
-    const { action, email, address, password } = body;
-    if (!email) throw new Error("Email requis");
-    const rangesToTry = ["CurvaAccount!A:J", "CurvaAccount!A1", "CurvaAccount", "CurvaAccount!A:Z"];
-    let rows = null; let rowIndex = -1;
-    for (const range of rangesToTry) {
-      try {
-        const res = await sheets.spreadsheets.values.get({ spreadsheetId, range });
-        if (res.data.values) {
-          rows = res.data.values;
-          rowIndex = rows.findIndex(row => (row[2] || "").toLowerCase() === email.toLowerCase());
-          if (rowIndex !== -1) break;
-        }
-      } catch (e) {}
-    }
-    if (rowIndex === -1) throw new Error("Compte non trouvé");
-    const realRow = rowIndex + 1;
-
+    // UPDATE ADDRESS
     if (action === 'update-address') {
-      await sheets.spreadsheets.values.update({ spreadsheetId, range: `CurvaAccount!J${realRow}`, valueInputOption: "RAW", resource: { values: [[normalize(address)]] } });
+      const userEmail = normalize(email).toLowerCase();
+      let rows = null;
+      for (const range of rangesToTry) {
+        const res = await sheets.spreadsheets.values.get({ spreadsheetId, range });
+        if (res.data.values) { rows = res.data.values; break; }
+      }
+      const rowIndex = rows.findIndex(row => normalize(row[2] || "").toLowerCase() === userEmail);
+      if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
+      const rowNum = rowIndex + 1;
+      await sheets.spreadsheets.values.update({ spreadsheetId, range: `CurvaAccount!J${rowNum}`, valueInputOption: "RAW", resource: { values: [[address]] } });
       return { statusCode: 200, body: JSON.stringify({ success: true }) };
     }
+
+    // UPDATE PASSWORD
     if (action === 'update-password') {
-      await sheets.spreadsheets.values.update({ spreadsheetId, range: `CurvaAccount!E${realRow}`, valueInputOption: "RAW", resource: { values: [[normalize(password)]] } });
+      const userEmail = normalize(email).toLowerCase();
+      let rows = null;
+      for (const range of rangesToTry) {
+        const res = await sheets.spreadsheets.values.get({ spreadsheetId, range });
+        if (res.data.values) { rows = res.data.values; break; }
+      }
+      const rowIndex = rows.findIndex(row => normalize(row[2] || "").toLowerCase() === userEmail);
+      if (rowIndex === -1) throw new Error("Email non reconnu");
+      const rowNum = rowIndex + 1;
+      await sheets.spreadsheets.values.update({ spreadsheetId, range: `CurvaAccount!E${rowNum}`, valueInputOption: "RAW", resource: { values: [[normalize(newPassword)]] } });
       return { statusCode: 200, body: JSON.stringify({ success: true }) };
     }
+
     throw new Error("Action inconnue");
   } catch (error) {
-    console.error("SAVE ACCOUNT ERROR:", error.message);
+    console.error("SAVE ERROR:", error.message);
     return { statusCode: 500, body: JSON.stringify({ success: false, error: error.message }) };
   }
 };

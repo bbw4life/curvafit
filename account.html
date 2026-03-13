@@ -57,6 +57,7 @@
             </div>
         </div>
     </header>
+
     <!-- PAUL INDICATOR -->
     <div class="paul-indicator-wrapper">
         <a href="#" class="paul-indicator" id="paulTrigger">
@@ -64,6 +65,7 @@
             <span class="paul-tooltip">Earn 20% if you login/signup</span>
         </a>
     </div>
+
     <!-- POPUP AUTH -->
     <div class="paul-popup-overlay" id="paulPopup">
         <div class="paul-popup">
@@ -71,6 +73,7 @@
             <h2 class="paul-offer-title">20% OFF TODAY ONLY!</h2>
             <p class="paul-offer-subtitle">Log in or sign up now</p>
             <div id="authContainer">
+                <!-- LOGIN FORM -->
                 <div id="loginForm" class="auth-form">
                     <h3>Login</h3>
                     <input type="email" placeholder="Email" required>
@@ -79,6 +82,7 @@
                     <button type="button" class="paul-btn paul-btn-login">Log In</button>
                     <p class="switch-link">No account? <span id="goToSignup">Sign Up</span></p>
                 </div>
+                <!-- SIGNUP FORM -->
                 <div id="signupForm" class="auth-form" style="display:none;">
                     <h3>Sign Up</h3>
                     <input type="text" placeholder="Last Name" required>
@@ -93,6 +97,7 @@
             </div>
         </div>
     </div>
+
     <main class="account-main">
         <div class="account-background">
             <div class="customer account">
@@ -100,6 +105,7 @@
                     <h1 class="customer__title">My Account</h1>
                     <a href="#" class="logout-btn" onclick="logout()">Log out</a>
                 </div>
+
                 <div class="membership-dashboard">
                     <div class="membership-header">
                         <div class="membership-greeting">
@@ -113,85 +119,132 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="membership-stats-grid">
-                    <div class="stat-item"><div class="stat-icon orders"><svg viewBox="0 0 24 24"><path d="M16 6V4a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h1v-2H5V5h9v1h-2v2h2v2h-2v2h2v2h-2v3h2v2h-2v3h2v2h-2v1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-8zm-1 15H7v-2h8v2zm0-4H7v-2h8v2zm0-4H7v-2h8v2zm0-4H7V9h8v2z"/></svg></div><p class="stat-value">0</p><p class="stat-label">Orders</p></div>
-                    <div class="stat-item"><div class="stat-icon spend"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-1h-1v-2h1v-1h-2v-2h2v-1h-1V9h1V8h2v1h1v2h-1v1h2v2h-2v1h1v2h-1v1z"/></svg></div><p class="stat-value">$0.00</p><p class="stat-label">Total Spent</p></div>
-                    <a href="#" class="stat-item stat-wishlist-link" style="text-decoration:none;color:inherit;"><div class="stat-icon wishlist"><svg viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.5 15.85l-.28.25-.27-.25C6.83 14.6 4 11.97 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 3.47-2.83 6.1-7.72 10.35z"/></svg></div><p class="stat-value" data-wishlist-count>0</p><p class="stat-label">Saved Items</p></a>
-                    <div class="stat-item"><div class="stat-icon reviews"><svg viewBox="0 0 24 24"><path d="M21 6h-2v9h-2V6h-2V4h6v2zm-4 5h-2v9h-2v-9h-2V9h6v2zm-4-1H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V12c0-1.1-.9-2-2-2zm0 12H4v-8h9v8z"/></svg></div><p class="stat-value">0</p><p class="stat-label">Reviews Written</p></div>
+                    <div class="stat-item">
+                        <div class="stat-icon orders"><svg viewBox="0 0 24 24"><path d="M16 6V4a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h1v-2H5V5h9v1h-2v2h2v2h-2v2h2v2h-2v3h2v2h-2v3h2v2h-2v1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-8zm-1 15H7v-2h8v2zm0-4H7v-2h8v2zm0-4H7v-2h8v2zm0-4H7V9h8v2z"/></svg></div>
+                        <p class="stat-value">0</p>
+                        <p class="stat-label">Orders</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon spend"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-1h-1v-2h1v-1h-2v-2h2v-1h-1V9h1V8h2v1h1v2h-1v1h2v2h-2v1h1v2h-1v1z"/></svg></div>
+                        <p class="stat-value">$0.00</p>
+                        <p class="stat-label">Total Spent</p>
+                    </div>
+                    <a href="#" class="stat-item stat-wishlist-link" style="text-decoration:none;color:inherit;">
+                        <div class="stat-icon wishlist"><svg viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.5 15.85l-.28.25-.27-.25C6.83 14.6 4 11.97 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 3.47-2.83 6.1-7.72 10.35z"/></svg></div>
+                        <p class="stat-value" data-wishlist-count>0</p>
+                        <p class="stat-label">Saved Items</p>
+                    </a>
+                    <div class="stat-item">
+                        <div class="stat-icon reviews"><svg viewBox="0 0 24 24"><path d="M21 6h-2v9h-2V6h-2V4h6v2zm-4 5h-2v9h-2v-9h-2V9h6v2zm-4-1H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V12c0-1.1-.9-2-2-2zm0 12H4v-8h9v8z"/></svg></div>
+                        <p class="stat-value">0</p>
+                        <p class="stat-label">Reviews Written</p>
+                    </div>
                 </div>
+
                 <div class="main-grid">
                     <div class="details-section">
                         <h2>Account Details</h2>
                         <p><strong>Name:</strong> <span id="user-full-name"></span></p>
                         <p><strong>Email:</strong> <span id="user-email"></span></p>
-                        <p><strong>Address:</strong> <span id="user-address">No address set</span></p>
+                        <p><strong>Address:</strong> <span id="user-address">No default address set</span></p>
                     </div>
                     <div class="history-address-section">
                         <div class="order-history"><h2>Order History</h2><p>No orders yet</p></div>
                         <div class="address-section"><h2>Addresses</h2><p>No addresses found</p></div>
                     </div>
                 </div>
+
                 <div class="quick-actions-section">
                     <h2 class="quick-actions-title">Quick Actions</h2>
                     <div class="quick-actions-grid">
-                        <div class="quick-card" onclick="openPopup('track-popup')"><div class="quick-card-icon">📦</div><h4>Track Order</h4><p>Check the status of your deliveries</p></div>
-                        <div class="quick-card" onclick="openPopup('address-popup')"><div class="quick-card-icon">📍</div><h4>Addresses</h4><p>Manage your delivery addresses</p></div>
-                        <div class="quick-card" onclick="openPopup('payment-popup')"><div class="quick-card-icon">💳</div><h4>Payment Methods</h4><p>Manage your cards and accounts</p></div>
-                        <div class="quick-card" onclick="openPopup('password-popup')"><div class="quick-card-icon">🔒</div><h4>Security</h4><p>Change your password</p></div>
+                        <div class="quick-card" onclick="openAccountPopup('track-popup')">
+                            <div class="quick-card-icon"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg></div>
+                            <h4>Track Order</h4>
+                            <p>Check the status of your deliveries</p>
+                        </div>
+                        <div class="quick-card" onclick="openAccountPopup('address-popup')">
+                            <div class="quick-card-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+                            <h4>Addresses</h4>
+                            <p>Manage your delivery addresses</p>
+                        </div>
+                        <div class="quick-card" onclick="openAccountPopup('payment-popup')">
+                            <div class="quick-card-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div>
+                            <h4>Payment Methods</h4>
+                            <p>Manage your cards and accounts</p>
+                        </div>
+                        <div class="quick-card" onclick="openAccountPopup('password-popup')">
+                            <div class="quick-card-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></div>
+                            <h4>Security</h4>
+                            <p>Change your password</p>
+                        </div>
                     </div>
                 </div>
-                <!-- POPUP ADDRESS -->
+
+                <!-- ADDRESS POPUP -->
                 <div id="address-popup" class="popup-overlay">
                     <div class="popup">
+                        <button class="popup-close" onclick="closeAccountPopup('address-popup')">×</button>
                         <h3>Update Address</h3>
-                        <button class="popup-close" onclick="closePopup('address-popup')">×</button>
                         <div class="popup-form">
-                            <input type="text" id="addr-street" placeholder="Address" required>
+                            <input type="text" id="addr-first" placeholder="First Name" required>
+                            <input type="text" id="addr-last" placeholder="Last Name" required>
+                            <input type="text" id="addr-line1" placeholder="Address" required>
+                            <input type="text" id="addr-line2" placeholder="Address 2 (optional)">
                             <input type="text" id="addr-city" placeholder="City" required>
+                            <input type="text" id="addr-state" placeholder="State/Province">
                             <input type="text" id="addr-zip" placeholder="ZIP/Postal Code" required>
-                            <button onclick="saveAddress()">Save Address</button>
+                            <button type="button" onclick="saveAddress()">Save Address</button>
                         </div>
                     </div>
                 </div>
-                <!-- POPUP TRACK ORDER -->
-                <div id="track-popup" class="popup-overlay">
-                    <div class="popup">
-                        <h3>Track Your Order</h3>
-                        <button class="popup-close" onclick="closePopup('track-popup')">×</button>
-                        <div class="popup-form">
-                            <input type="text" id="tracking-number" placeholder="Enter tracking number" required>
-                            <button onclick="trackOrder()">Track Now</button>
-                            <div id="track-result" style="margin-top:15px;color:#28a745;font-weight:600;"></div>
-                        </div>
-                    </div>
-                </div>
-                <!-- POPUP PAYMENT -->
+
+                <!-- PAYMENT POPUP -->
                 <div id="payment-popup" class="popup-overlay">
                     <div class="popup">
+                        <button class="popup-close" onclick="closeAccountPopup('payment-popup')">×</button>
                         <h3>Payment Methods</h3>
-                        <button class="popup-close" onclick="closePopup('payment-popup')">×</button>
                         <div class="payment-methods-grid">
-                            <!-- tes cartes restent ici -->
+                            <div class="payment-method"><div class="payment-method-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div><div class="payment-method-name">Visa</div></div>
+                            <div class="payment-method"><div class="payment-method-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div><div class="payment-method-name">Mastercard</div></div>
+                            <div class="payment-method"><div class="payment-method-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div><div class="payment-method-name">PayPal</div></div>
+                            <div class="payment-method"><div class="payment-method-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div><div class="payment-method-name">Apple Pay</div></div>
+                            <div class="payment-method"><div class="payment-method-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div><div class="payment-method-name">Google Pay</div></div>
+                            <div class="payment-method"><div class="payment-method-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div><div class="payment-method-name">Shop Pay</div></div>
                         </div>
                     </div>
                 </div>
-                <!-- POPUP PASSWORD -->
+
+                <!-- SECURITY POPUP -->
                 <div id="password-popup" class="popup-overlay">
                     <div class="popup">
+                        <button class="popup-close" onclick="closeAccountPopup('password-popup')">×</button>
                         <h3>Change Password</h3>
-                        <button class="popup-close" onclick="closePopup('password-popup')">×</button>
                         <div class="popup-form">
-                            <input type="email" id="recover-email" placeholder="Your email" required>
-                            <input type="password" id="new-password" placeholder="New password" required>
-                            <button onclick="changePassword()">Update Password</button>
+                            <input type="email" id="security-email" placeholder="Votre adresse email" required>
+                            <input type="password" id="new-password" placeholder="Nouveau mot de passe" required>
+                            <button type="button" onclick="updatePassword()">Update Password</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TRACK ORDER POPUP -->
+                <div id="track-popup" class="popup-overlay">
+                    <div class="popup">
+                        <button class="popup-close" onclick="closeAccountPopup('track-popup')">×</button>
+                        <h3>Track Your Order</h3>
+                        <div class="popup-form">
+                            <input type="text" id="tracking-number" placeholder="Enter tracking number (ex: 17TRACK123)">
+                            <button type="button" onclick="trackOrder()">Track Now</button>
+                            <p id="track-result" style="margin-top:10px;color:#f0b90b;"></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
-    <footer class="footer">
-        <!-- ton footer complet reste exactement le même -->
+   <footer class="footer">
         <div class="container footer-grid">
             <div class="footer-brand">
                 <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo">
@@ -210,7 +263,9 @@
                 </ul>
             </div>
             <div class="footer-social">
-                <p class="social-title">Stay in the Loop — Follow for Curvy Tips and Inspiration.</p>
+                <p class="social-title">
+                    Stay in the Loop — Follow for Curvy Tips and Inspiration.
+                </p>
                 <a href="#"><i class="fab fa-facebook-f"></i></a>
                 <a href="#"><i class="fab fa-instagram"></i></a>
                 <a href="#"><i class="fab fa-tiktok"></i></a>
@@ -227,19 +282,26 @@
                 </form>
             </div>
         </div>
-        <div class="copyright"><p>&copy; 2026 CurvaFit. All rights reserved.</p></div>
+        <div class="copyright">
+            <p>&copy; 2026 CurvaFit. All rights reserved.</p>
+        </div>
     </footer>
+    <script src="script.js"></script>
     <div id="audio-player" class="draggable-audio-player">
         <button id="play-pause-btn">
-            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+            <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display: none;">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
         </button>
         <audio id="audio-element" loop>
             <source src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/audio_glowing_1.mp3?v=1771468630" type="audio/mpeg">
+            Votre navigateur ne supporte pas l'élément audio.
         </audio>
     </div>
     <!-- TOAST -->
-    <div id="toast"></div>
-    <script src="script.js"></script>
+    <div id="toast" class="toast"></div>
 </body>
 </html>
