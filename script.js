@@ -1562,23 +1562,6 @@ document.addEventListener('click', function(e) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 document.addEventListener('DOMContentLoaded', () => {
     const trigger = document.getElementById('paulTrigger');
     const overlay = document.getElementById('paulPopup');
@@ -1815,6 +1798,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 500);
         }
     }
-
-    console.log('✅ Script chargé - Tout est prêt. Ouvre la console (F12) et clique sur Login !');
 });
