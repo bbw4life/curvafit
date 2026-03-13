@@ -1589,30 +1589,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const goToLogin = document.getElementById('goToLogin');
     const isAccountPage = window.location.pathname.includes('account.html') || window.location.pathname.endsWith('account.html');
 
-    // ==================== TOAST ====================
+    // ==================== TOAST (CORRIGÉ : marche sur TOUTES les pages) ====================
     window.showToast = (msg) => {
-        const toast = document.getElementById('toast');
-        if (toast) {
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 8000);
+        let toast = document.getElementById('toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.className = 'toast';
+            document.body.appendChild(toast);
         }
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 8000);
     };
 
     // ==================== POPUP ACCOUNT FUNCTIONS ====================
     window.openAccountPopup = (id) => {
         const popup = document.getElementById(id);
         if (popup) popup.classList.add('open');
-
-        if (id === 'address-popup') {
-            document.getElementById('addr-first').value = localStorage.getItem('userFirstName') || '';
-            document.getElementById('addr-last').value = localStorage.getItem('userLastName') || '';
-            document.getElementById('addr-line1').value = localStorage.getItem('userAddressLine1') || '';
-            document.getElementById('addr-line2').value = localStorage.getItem('userLine2') || '';
-            document.getElementById('addr-city').value = localStorage.getItem('userCity') || '';
-            document.getElementById('addr-state').value = localStorage.getItem('userState') || '';
-            document.getElementById('addr-zip').value = localStorage.getItem('userZip') || '';
-        }
     };
     window.closeAccountPopup = (id) => {
         const popup = document.getElementById(id);
@@ -1643,7 +1637,7 @@ document.addEventListener('DOMContentLoaded', () => {
     goToSignup.addEventListener('click', () => { loginForm.style.display = 'none'; signupForm.style.display = 'block'; });
     goToLogin.addEventListener('click', () => { signupForm.style.display = 'none'; loginForm.style.display = 'block'; });
 
-    // ==================== SIGNUP (avec try/catch) ====================
+    // ==================== SIGNUP ====================
     document.querySelector('.paul-btn-register').addEventListener('click', async () => {
         console.log('✅ Bouton SIGNUP cliqué');
         try {
@@ -1662,6 +1656,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
             });
             const data = await res.json();
+            console.log('Réponse signup:', data);
 
             if (data.success) {
                 showToast("✅ Compte créé avec succès !");
@@ -1671,25 +1666,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (err) {
             console.error("Signup error:", err);
-            showToast("❌ Erreur réseau ou serveur. Vérifie que tes fonctions Netlify sont déployées.");
+            showToast("❌ Erreur réseau ou serveur");
         }
     });
 
-    // ==================== LOGIN (avec try/catch) ====================
+    // ==================== LOGIN (avec debug complet) ====================
     document.querySelector('.paul-btn-login').addEventListener('click', async () => {
         console.log('✅ Bouton LOGIN cliqué');
         try {
             const email = loginForm.querySelector('input[type="email"]').value.trim();
             const password = loginForm.querySelector('input[type="password"]').value.trim();
 
+            console.log('Envoi login vers serveur...');
             const res = await fetch('/.netlify/functions/verify-login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
             const data = await res.json();
+            console.log('Réponse serveur LOGIN :', data);
 
             if (data.success) {
+                console.log('✅ LOGIN SUCCESS - Sauvegarde localStorage...');
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('userEmail', email);
                 localStorage.setItem('userFirstName', data.user.firstName);
@@ -1704,14 +1702,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 showToast(`✅ Bienvenue ${data.user.firstName} !`);
                 overlay.classList.remove('active');
-                if (isAccountPage) location.reload();
-                else window.location.href = 'account.html';
+
+                console.log('🔄 REDIRECTION VERS ACCOUNT.HTML MAINTENANT...');
+                if (isAccountPage) {
+                    location.reload();
+                } else {
+                    window.location.href = 'account.html';
+                }
             } else {
                 showToast("❌ " + (data.error || "Email ou mot de passe incorrect"));
             }
         } catch (err) {
             console.error("Login error:", err);
-            showToast("❌ Erreur réseau ou serveur. Vérifie que tes fonctions Netlify sont déployées.");
+            showToast("❌ Erreur réseau ou serveur");
         }
     });
 
@@ -1742,11 +1745,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             if (data.success) {
                 localStorage.setItem('userAddress', addressStr || 'No default address set');
-                localStorage.setItem('userAddressLine1', line1);
-                localStorage.setItem('userLine2', line2);
-                localStorage.setItem('userCity', city);
-                localStorage.setItem('userState', state);
-                localStorage.setItem('userZip', zip);
                 document.getElementById('user-address').textContent = addressStr || 'No default address set';
                 showToast("✅ Adresse sauvegardée !");
                 closeAccountPopup('address-popup');
@@ -1808,5 +1806,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    console.log('✅ Script chargé - listeners login/signup OK ! Ouvre la console (F12) pour voir les logs quand tu cliques.');
+    console.log('✅ Script chargé - Tout est prêt. Ouvre la console (F12) et clique sur Login !');
 });
