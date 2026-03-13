@@ -317,7 +317,7 @@
     position: fixed !important;
     inset: 0 !important;
     background: rgba(0,0,0,0.85) !important;
-    z-index: 999 !important;
+    z-index: 99999 !important;
     align-items: center !important;
     justify-content: center !important;
     backdrop-filter: blur(5px) !important;
@@ -433,11 +433,7 @@
 }
 
 #address-popup .popup {
-    max-width: 520px !important;
-    width: 95% !important;
-    max-height: 90vh !important;
     overflow-y: scroll !important;
-    padding: 40px 5px !important;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
 }
@@ -496,7 +492,6 @@
     max-height: 90vh !important;
     overflow-y: auto !important;
     padding: 20px 10px !important;
-    z-index: 19998;
 }
 
 /* Media queries (close button reste visible sur mobile) */
@@ -518,3 +513,4 @@
         font-size: 25px !important;
     }
 }
+
