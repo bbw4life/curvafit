@@ -178,6 +178,53 @@ exports.handler = async (event) => {
       success: true,
       fulfillmentStatus: "processing"
     });
+
+
+
+
+
+
+    // ====================== RECORD ORDER → GOOGLE SHEET (tes 4 demandes) ======================
+console.log("💾 Enregistrement de la commande dans Google Sheet (Member Since / Orders / Spent / History)...");
+
+const totalAmount = provider === "stripe" 
+  ? (session.amount_total / 100) 
+  : (provider === "paypal" 
+     ? parseFloat(purchaseUnit?.amount?.value || 0) 
+     : cart.reduce((sum, item) => sum + (item.price * item.quantity), 0));
+
+const totalQuantity = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+
+const orderItems = cart.map(item => ({
+  title: item.title || "Produit",
+  quantity: item.quantity || 1,
+  price: item.price || 0,
+  size: null,                    // (pas encore stocké dans metadata)
+  color: null,
+  image: null,                   // (pas encore stocké – à ajouter plus tard si besoin)
+  cj_variant_id: item.variantsid || null
+}));
+
+await fetch(`${BASE_URL}/.netlify/functions/save-account`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    action: 'record-order',
+    email: shipping.email || "",           // ← email du client (toujours présent)
+    totalAmount: parseFloat(totalAmount),
+    totalQuantity: parseInt(totalQuantity),
+    orderItems
+  })
+}).catch(err => {
+  console.error("⚠️ Record-order non bloquant :", err.message);
+});
+
+console.log(`✅ Commande enregistrée avec succès ! (Total: $${totalAmount} | Qty: ${totalQuantity})`);
+// ============================================================================
+
+
+
+
   } catch (error) {
     console.error("=== VERIFY PAYMENT ERROR ===", error.message);
     return response(500, { success: false, error: error.message });
