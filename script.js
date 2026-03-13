@@ -1597,17 +1597,28 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => toast.classList.remove('show'), 10000);
     };
 
-    // ==================== POPUP ACCOUNT FUNCTIONS ====================
+    // ==================== POPUP ACCOUNT FUNCTIONS (avec pré-remplissage adresse) ====================
     window.openAccountPopup = (id) => {
         const popup = document.getElementById(id);
         if (popup) popup.classList.add('open');
+
+        // POINT 3 : pré-remplissage automatique depuis Google Sheet (via localStorage)
+        if (id === 'address-popup') {
+            document.getElementById('addr-first').value = localStorage.getItem('userFirstName') || '';
+            document.getElementById('addr-last').value = localStorage.getItem('userLastName') || '';
+            document.getElementById('addr-line1').value = localStorage.getItem('userAddressLine1') || '';
+            document.getElementById('addr-line2').value = localStorage.getItem('userLine2') || '';
+            document.getElementById('addr-city').value = localStorage.getItem('userCity') || '';
+            document.getElementById('addr-state').value = localStorage.getItem('userState') || '';
+            document.getElementById('addr-zip').value = localStorage.getItem('userZip') || '';
+        }
     };
     window.closeAccountPopup = (id) => {
         const popup = document.getElementById(id);
         if (popup) popup.classList.remove('open');
     };
 
-    // ==================== PAUL POPUP LOGIC (original) ====================
+    // ==================== PAUL POPUP LOGIC ====================
     function openPaulPopup() {
         overlay.classList.add('active');
         loginForm.style.display = 'block';
@@ -1621,7 +1632,7 @@ document.addEventListener('DOMContentLoaded', () => {
     trigger.addEventListener('click', (e) => {
         e.preventDefault();
         if (localStorage.getItem('isLoggedIn') === 'true') {
-            window.location.href = 'account.html';
+            window.location.href = 'account.html'; // POINT 6
         } else {
             openPaulPopup();
         }
@@ -1631,7 +1642,7 @@ document.addEventListener('DOMContentLoaded', () => {
     goToSignup.addEventListener('click', () => { loginForm.style.display = 'none'; signupForm.style.display = 'block'; });
     goToLogin.addEventListener('click', () => { signupForm.style.display = 'none'; loginForm.style.display = 'block'; });
 
-    // ==================== SIGNUP (original + toast) ====================
+    // ==================== SIGNUP ====================
     document.querySelector('.paul-btn-register').addEventListener('click', async () => {
         const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
         const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
@@ -1656,7 +1667,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ==================== LOGIN (original + toast) ====================
+    // ==================== LOGIN ====================
     document.querySelector('.paul-btn-login').addEventListener('click', async () => {
         const email = loginForm.querySelector('input[type="email"]').value.trim();
         const password = loginForm.querySelector('input[type="password"]').value.trim();
@@ -1672,12 +1683,20 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('userEmail', email);
             localStorage.setItem('userFirstName', data.user.firstName);
             localStorage.setItem('userLastName', data.user.lastName);
-            localStorage.setItem('userAddress', data.user.address || 'No default address set');
+
+            // POINT 3 + 4 : on récupère maintenant les 4 nouvelles colonnes du Sheet
+            localStorage.setItem('userAddressLine1', data.user.addressLine1 || '');
+            localStorage.setItem('userLine2', data.user.line2 || '');
+            localStorage.setItem('userCity', data.user.city || '');
+            localStorage.setItem('userState', data.user.state || '');
+            localStorage.setItem('userZip', data.user.zip || '');
+            const addressStr = [data.user.addressLine1, data.user.line2, data.user.city, data.user.state, data.user.zip].filter(Boolean).join(', ');
+            localStorage.setItem('userAddress', addressStr || 'No default address set');
 
             showToast(`✅ Bienvenue ${data.user.firstName} !`);
             overlay.classList.remove('active');
             if (isAccountPage) location.reload();
-            else window.location.href = 'account.html';
+            else window.location.href = 'account.html'; // POINT 6
         } else {
             showToast("❌ " + data.error);
         }
@@ -1691,20 +1710,40 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
     }
 
-    // ==================== SAVE ADDRESS ====================
+    // ==================== SAVE ADDRESS (POINT 2 + 3 + 4) ====================
     window.saveAddress = async () => {
         const email = localStorage.getItem('userEmail');
-        const addressStr = `${document.getElementById('addr-first').value} ${document.getElementById('addr-last').value}, ${document.getElementById('addr-line1').value} ${document.getElementById('addr-line2').value || ''}, ${document.getElementById('addr-city').value} ${document.getElementById('addr-state').value || ''} ${document.getElementById('addr-zip').value}`;
+        const line1 = document.getElementById('addr-line1').value.trim();
+        const line2 = document.getElementById('addr-line2').value.trim();
+        const city = document.getElementById('addr-city').value.trim();
+        const state = document.getElementById('addr-state').value.trim();
+        const zip = document.getElementById('addr-zip').value.trim();
+
+        const addressStr = [line1, line2, city, state, zip].filter(Boolean).join(', ');
 
         const res = await fetch('/.netlify/functions/save-account', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'update-address', email, address: addressStr })
+            body: JSON.stringify({ 
+                action: 'update-address', 
+                email, 
+                line1, 
+                line2, 
+                city, 
+                state, 
+                zip 
+            })
         });
         const data = await res.json();
         if (data.success) {
-            localStorage.setItem('userAddress', addressStr);
-            document.getElementById('user-address').textContent = addressStr;
+            localStorage.setItem('userAddress', addressStr || 'No default address set');
+            localStorage.setItem('userAddressLine1', line1);
+            localStorage.setItem('userLine2', line2);
+            localStorage.setItem('userCity', city);
+            localStorage.setItem('userState', state);
+            localStorage.setItem('userZip', zip);
+
+            document.getElementById('user-address').textContent = addressStr || 'No default address set';
             showToast("✅ Adresse sauvegardée !");
             closeAccountPopup('address-popup');
         } else {
