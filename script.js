@@ -1592,17 +1592,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================== TOAST ====================
     window.showToast = (msg) => {
         const toast = document.getElementById('toast');
-        toast.textContent = msg;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 10000);
+        if (toast) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 8000);
+        }
     };
 
-    // ==================== POPUP ACCOUNT FUNCTIONS (avec pré-remplissage adresse) ====================
+    // ==================== POPUP ACCOUNT FUNCTIONS ====================
     window.openAccountPopup = (id) => {
         const popup = document.getElementById(id);
         if (popup) popup.classList.add('open');
 
-        // POINT 3 : pré-remplissage automatique depuis Google Sheet (via localStorage)
         if (id === 'address-popup') {
             document.getElementById('addr-first').value = localStorage.getItem('userFirstName') || '';
             document.getElementById('addr-last').value = localStorage.getItem('userLastName') || '';
@@ -1632,7 +1633,7 @@ document.addEventListener('DOMContentLoaded', () => {
     trigger.addEventListener('click', (e) => {
         e.preventDefault();
         if (localStorage.getItem('isLoggedIn') === 'true') {
-            window.location.href = 'account.html'; // POINT 6
+            window.location.href = 'account.html';
         } else {
             openPaulPopup();
         }
@@ -1642,63 +1643,75 @@ document.addEventListener('DOMContentLoaded', () => {
     goToSignup.addEventListener('click', () => { loginForm.style.display = 'none'; signupForm.style.display = 'block'; });
     goToLogin.addEventListener('click', () => { signupForm.style.display = 'none'; loginForm.style.display = 'block'; });
 
-    // ==================== SIGNUP ====================
+    // ==================== SIGNUP (avec try/catch) ====================
     document.querySelector('.paul-btn-register').addEventListener('click', async () => {
-        const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
-        const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
-        const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
-        const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
-        const password = signupForm.querySelector('input[type="password"]').value.trim();
-        const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
+        console.log('✅ Bouton SIGNUP cliqué');
+        try {
+            const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
+            const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
+            const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
+            const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
+            const password = signupForm.querySelector('input[type="password"]').value.trim();
+            const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
 
-        if (!password) return showToast("Mot de passe requis");
+            if (!password) return showToast("Mot de passe requis");
 
-        const res = await fetch('/.netlify/functions/save-account', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
-        });
-        const data = await res.json();
-        if (data.success) {
-            showToast("✅ Compte créé avec succès !");
-            goToLogin.click();
-        } else {
-            showToast("❌ Erreur : " + data.error);
+            const res = await fetch('/.netlify/functions/save-account', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showToast("✅ Compte créé avec succès !");
+                goToLogin.click();
+            } else {
+                showToast("❌ Erreur : " + (data.error || "Inconnue"));
+            }
+        } catch (err) {
+            console.error("Signup error:", err);
+            showToast("❌ Erreur réseau ou serveur. Vérifie que tes fonctions Netlify sont déployées.");
         }
     });
 
-    // ==================== LOGIN ====================
+    // ==================== LOGIN (avec try/catch) ====================
     document.querySelector('.paul-btn-login').addEventListener('click', async () => {
-        const email = loginForm.querySelector('input[type="email"]').value.trim();
-        const password = loginForm.querySelector('input[type="password"]').value.trim();
+        console.log('✅ Bouton LOGIN cliqué');
+        try {
+            const email = loginForm.querySelector('input[type="email"]').value.trim();
+            const password = loginForm.querySelector('input[type="password"]').value.trim();
 
-        const res = await fetch('/.netlify/functions/verify-login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        const data = await res.json();
-        if (data.success) {
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('userEmail', email);
-            localStorage.setItem('userFirstName', data.user.firstName);
-            localStorage.setItem('userLastName', data.user.lastName);
+            const res = await fetch('/.netlify/functions/verify-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
 
-            // POINT 3 + 4 : on récupère maintenant les 4 nouvelles colonnes du Sheet
-            localStorage.setItem('userAddressLine1', data.user.addressLine1 || '');
-            localStorage.setItem('userLine2', data.user.line2 || '');
-            localStorage.setItem('userCity', data.user.city || '');
-            localStorage.setItem('userState', data.user.state || '');
-            localStorage.setItem('userZip', data.user.zip || '');
-            const addressStr = [data.user.addressLine1, data.user.line2, data.user.city, data.user.state, data.user.zip].filter(Boolean).join(', ');
-            localStorage.setItem('userAddress', addressStr || 'No default address set');
+            if (data.success) {
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userFirstName', data.user.firstName);
+                localStorage.setItem('userLastName', data.user.lastName);
+                localStorage.setItem('userAddressLine1', data.user.addressLine1 || '');
+                localStorage.setItem('userLine2', data.user.line2 || '');
+                localStorage.setItem('userCity', data.user.city || '');
+                localStorage.setItem('userState', data.user.state || '');
+                localStorage.setItem('userZip', data.user.zip || '');
+                const addressStr = [data.user.addressLine1, data.user.line2, data.user.city, data.user.state, data.user.zip].filter(Boolean).join(', ');
+                localStorage.setItem('userAddress', addressStr || 'No default address set');
 
-            showToast(`✅ Bienvenue ${data.user.firstName} !`);
-            overlay.classList.remove('active');
-            if (isAccountPage) location.reload();
-            else window.location.href = 'account.html'; // POINT 6
-        } else {
-            showToast("❌ " + data.error);
+                showToast(`✅ Bienvenue ${data.user.firstName} !`);
+                overlay.classList.remove('active');
+                if (isAccountPage) location.reload();
+                else window.location.href = 'account.html';
+            } else {
+                showToast("❌ " + (data.error || "Email ou mot de passe incorrect"));
+            }
+        } catch (err) {
+            console.error("Login error:", err);
+            showToast("❌ Erreur réseau ou serveur. Vérifie que tes fonctions Netlify sont déployées.");
         }
     });
 
@@ -1710,7 +1723,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
     }
 
-    // ==================== SAVE ADDRESS (POINT 2 + 3 + 4) ====================
+    // ==================== SAVE ADDRESS ====================
     window.saveAddress = async () => {
         const email = localStorage.getItem('userEmail');
         const line1 = document.getElementById('addr-line1').value.trim();
@@ -1718,36 +1731,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const city = document.getElementById('addr-city').value.trim();
         const state = document.getElementById('addr-state').value.trim();
         const zip = document.getElementById('addr-zip').value.trim();
-
         const addressStr = [line1, line2, city, state, zip].filter(Boolean).join(', ');
 
-        const res = await fetch('/.netlify/functions/save-account', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                action: 'update-address', 
-                email, 
-                line1, 
-                line2, 
-                city, 
-                state, 
-                zip 
-            })
-        });
-        const data = await res.json();
-        if (data.success) {
-            localStorage.setItem('userAddress', addressStr || 'No default address set');
-            localStorage.setItem('userAddressLine1', line1);
-            localStorage.setItem('userLine2', line2);
-            localStorage.setItem('userCity', city);
-            localStorage.setItem('userState', state);
-            localStorage.setItem('userZip', zip);
-
-            document.getElementById('user-address').textContent = addressStr || 'No default address set';
-            showToast("✅ Adresse sauvegardée !");
-            closeAccountPopup('address-popup');
-        } else {
-            showToast("❌ " + data.error);
+        try {
+            const res = await fetch('/.netlify/functions/save-account', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'update-address', email, line1, line2, city, state, zip })
+            });
+            const data = await res.json();
+            if (data.success) {
+                localStorage.setItem('userAddress', addressStr || 'No default address set');
+                localStorage.setItem('userAddressLine1', line1);
+                localStorage.setItem('userLine2', line2);
+                localStorage.setItem('userCity', city);
+                localStorage.setItem('userState', state);
+                localStorage.setItem('userZip', zip);
+                document.getElementById('user-address').textContent = addressStr || 'No default address set';
+                showToast("✅ Adresse sauvegardée !");
+                closeAccountPopup('address-popup');
+            } else {
+                showToast("❌ " + data.error);
+            }
+        } catch (err) {
+            showToast("❌ Erreur réseau lors de la sauvegarde");
         }
     };
 
@@ -1757,17 +1764,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const newPassword = document.getElementById('new-password').value.trim();
         if (!email || !newPassword) return showToast("Email et mot de passe requis");
 
-        const res = await fetch('/.netlify/functions/save-account', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'update-password', email, newPassword })
-        });
-        const data = await res.json();
-        if (data.success) {
-            showToast("✅ Mot de passe mis à jour !");
-            closeAccountPopup('password-popup');
-        } else {
-            showToast("❌ " + data.error);
+        try {
+            const res = await fetch('/.netlify/functions/save-account', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'update-password', email, newPassword })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast("✅ Mot de passe mis à jour !");
+                closeAccountPopup('password-popup');
+            } else {
+                showToast("❌ " + data.error);
+            }
+        } catch (err) {
+            showToast("❌ Erreur réseau lors du changement de mot de passe");
         }
     };
 
@@ -1796,4 +1807,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 500);
         }
     }
+
+    console.log('✅ Script chargé - listeners login/signup OK ! Ouvre la console (F12) pour voir les logs quand tu cliques.');
 });
