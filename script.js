@@ -1592,7 +1592,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const isAccountPage = window.location.pathname.includes('account.html') || window.location.pathname.endsWith('account.html');
 
-  // ====================== TOAST NOTIFICATION (10 secondes) ======================
+  // ====================== TOAST (10 secondes) ======================
   function showToast(message, type = 'success') {
     const toast = document.getElementById('toast-notification');
     const msgEl = document.getElementById('toast-message');
@@ -1603,25 +1603,22 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.classList.remove('show'), 10000);
   }
 
-  // ====================== OUVRIR / FERMER POPUPS ======================
+  // ====================== OPEN/CLOSE POPUPS ======================
   window.openPopup = function(id) {
     const el = document.getElementById(id);
     if (el) el.classList.add('open');
   };
-
   window.closePopup = function(id) {
     const el = document.getElementById(id);
     if (el) el.classList.remove('open');
   };
 
-  // ====================== OUVRIR POPUP PAUL ======================
+  // ====================== PAUL POPUP ======================
   function openPaulPopup() {
     overlay.classList.add('active');
     loginForm.style.display = 'block';
     signupForm.style.display = 'none';
   }
-
-  // Fermeture (bloquée sur account.html)
   function closePaulPopup() {
     if (isAccountPage) return;
     overlay.classList.remove('active');
@@ -1641,15 +1638,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === overlay && !isAccountPage) closePaulPopup();
   });
 
-  goToSignup.addEventListener('click', () => {
-    loginForm.style.display = 'none';
-    signupForm.style.display = 'block';
-  });
-
-  goToLogin.addEventListener('click', () => {
-    signupForm.style.display = 'none';
-    loginForm.style.display = 'block';
-  });
+  goToSignup.addEventListener('click', () => { loginForm.style.display = 'none'; signupForm.style.display = 'block'; });
+  goToLogin.addEventListener('click', () => { signupForm.style.display = 'none'; loginForm.style.display = 'block'; });
 
   // ====================== INSCRIPTION ======================
   document.querySelector('.paul-btn-register').addEventListener('click', async () => {
@@ -1657,8 +1647,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
     const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
     const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
-    const passwordInput = signupForm.querySelector('input[type="password"]');
-    const password = passwordInput ? passwordInput.value.trim() : '';
+    const password = signupForm.querySelector('input[type="password"]').value.trim();
     const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
 
     if (!password) return showToast("Mot de passe requis", 'error');
@@ -1678,7 +1667,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ====================== CONNEXION ======================
+  // ====================== CONNEXION + REDIRECTION ======================
   document.querySelector('.paul-btn-login').addEventListener('click', async () => {
     const email = loginForm.querySelector('input[type="email"]').value.trim();
     const password = loginForm.querySelector('input[type="password"]').value.trim();
@@ -1707,7 +1696,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ====================== REMPLIR LE PROFILE (nom, prénom, email) ======================
+  // ====================== REMPLIR LE PROFILE ======================
   if (isAccountPage && localStorage.getItem('isLoggedIn') === 'true') {
     const first = localStorage.getItem('userFirstName') || '';
     const last = localStorage.getItem('userLastName') || '';
@@ -1717,58 +1706,43 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('user-full-name').textContent = `${first} ${last}`;
     document.getElementById('user-email').textContent = email;
 
-    // Adresse sauvegardée
     const savedAddress = localStorage.getItem('userAddress');
-    if (savedAddress) {
-      const addrEl = document.querySelector('#details-section p strong + span') || document.getElementById('user-address');
-      if (addrEl) addrEl.textContent = savedAddress;
-    }
+    if (savedAddress) document.getElementById('user-address').textContent = savedAddress;
   }
 
-  // ====================== TRACK ORDER POPUP ======================
+  // ====================== TRACK ORDER ======================
   window.trackOrder = () => {
     const num = document.getElementById('tracking-number').value.trim();
     if (!num) return showToast("Veuillez entrer un tracking number", 'error');
-    showToast(`Suivi de la commande ${num} lancé ! Statut : En transit (démo)`, 'success');
+    showToast(`Suivi de la commande ${num} lancé ! (démo)`, 'success');
     closePopup('track-popup');
   };
 
   // ====================== SAVE ADRESSE ======================
   window.saveAddress = () => {
-    const inputs = document.querySelectorAll('#address-popup .popup-form input');
-    let addressStr = Array.from(inputs)
-      .map(i => i.value.trim())
-      .filter(v => v)
-      .join(', ');
+    const inputs = document.querySelectorAll('#address-popup input');
+    let addressStr = Array.from(inputs).map(i => i.value.trim()).filter(v => v).join(', ');
     if (!addressStr) return showToast("Veuillez remplir l'adresse", 'error');
-
     localStorage.setItem('userAddress', addressStr);
-    const addrEl = document.querySelector('#details-section p strong + span') || document.getElementById('user-address');
-    if (addrEl) addrEl.textContent = addressStr;
+    document.getElementById('user-address').textContent = addressStr;
     showToast("Adresse enregistrée avec succès !");
     closePopup('address-popup');
   };
 
-  // ====================== CHANGE PASSWORD (met à jour Google Sheet) ======================
+  // ====================== CHANGE PASSWORD (email + nouveau mot de passe) ======================
   window.changePassword = async () => {
-    const email = localStorage.getItem('userEmail');
-    const current = document.getElementById('current-password').value.trim();
+    const email = document.getElementById('security-email').value.trim();
     const newP = document.getElementById('new-password').value.trim();
     const confirm = document.getElementById('confirm-password').value.trim();
 
-    if (!current || !newP || newP !== confirm) {
-      return showToast("Mot de passe actuel ou confirmation incorrect", 'error');
+    if (!email || !newP || newP !== confirm) {
+      return showToast("Email ou confirmation incorrect", 'error');
     }
 
     const res = await fetch('/.netlify/functions/save-account', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'updatePassword',
-        email,
-        currentPassword: current,
-        newPassword: newP
-      })
+      body: JSON.stringify({ action: 'updatePassword', email, newPassword: newP })
     });
 
     const data = await res.json();
@@ -1776,18 +1750,17 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast("Mot de passe changé avec succès !");
       closePopup('password-popup');
     } else {
-      showToast("Erreur : " + (data.error || "Mot de passe actuel incorrect"), 'error');
+      showToast("Erreur : " + (data.error || "Email non trouvé"), 'error');
     }
   };
 
-  // ====================== PROTECTION account.html ======================
+  // ====================== PROTECTION ACCOUNT.HTML ======================
   if (isAccountPage) {
     if (localStorage.getItem('isLoggedIn') !== 'true') {
       setTimeout(() => {
         openPaulPopup();
         closeBtn.style.pointerEvents = 'none';
         closeBtn.style.opacity = '0.3';
-        closeBtn.title = "Vous devez vous inscrire ou vous connecter pour voir cette page";
       }, 500);
     }
   }
