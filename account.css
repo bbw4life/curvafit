@@ -491,22 +491,23 @@
 
 /* ==================== ADDRESS POPUP (plus beau en desktop) ==================== */
 #address-popup .popup {
-    max-width: 580px !important;     /* plus large et propre */
-    width: 95% !important;
+    max-width: 450px !important;
+    width: 90% !important;
     max-height: 90vh !important;
     overflow-y: auto !important;
-    padding: 40px 20px !important;
+    padding: 20px 10px !important;
+    z-index: 19998;
 }
 
 /* Media queries (close button reste visible sur mobile) */
 @media (max-width: 768px) {
     .popup {
-        padding: 30px 15px !important;
+        padding: 20px 15px !important;
         max-width: 360px !important;
     }
     #address-popup .popup {
         max-width: 380px !important;
-        padding: 30px 12px !important;
+        padding: 20px 12px !important;
     }
     .popup-close {
         top: 15px;
@@ -514,6 +515,6 @@
         font-size: 32px;
     }
     .popup h3 {
-        font-size: 28px !important;
+        font-size: 25px !important;
     }
 }
