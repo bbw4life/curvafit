@@ -1592,16 +1592,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const isAccountPage = window.location.pathname.includes('account.html') || window.location.pathname.endsWith('account.html');
 
-  // Ouvrir popup
-  function openPopup() {
+  // ====================== TOAST NOTIFICATION (10 secondes) ======================
+  function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast-notification');
+    const msgEl = document.getElementById('toast-message');
+    msgEl.textContent = message;
+    toast.style.borderColor = type === 'error' ? '#ff6b35' : '#f0b90b';
+    toast.style.color = type === 'error' ? '#ff6b35' : '#f0b90b';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 10000);
+  }
+
+  // ====================== OUVRIR / FERMER POPUPS ======================
+  window.openPopup = function(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('open');
+  };
+
+  window.closePopup = function(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('open');
+  };
+
+  // ====================== OUVRIR POPUP PAUL ======================
+  function openPaulPopup() {
     overlay.classList.add('active');
     loginForm.style.display = 'block';
     signupForm.style.display = 'none';
   }
 
-  // Fermeture (bloquée uniquement sur account.html)
-  function closePopup() {
-    if (isAccountPage) return; // impossible de fermer sur account.html
+  // Fermeture (bloquée sur account.html)
+  function closePaulPopup() {
+    if (isAccountPage) return;
     overlay.classList.remove('active');
   }
 
@@ -1610,13 +1632,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('isLoggedIn') === 'true') {
       window.location.href = 'account.html';
     } else {
-      openPopup();
+      openPaulPopup();
     }
   });
 
-  closeBtn.addEventListener('click', closePopup);
+  closeBtn.addEventListener('click', closePaulPopup);
   overlay.addEventListener('click', (e) => {
-    if (e.target === overlay && !isAccountPage) closePopup();
+    if (e.target === overlay && !isAccountPage) closePaulPopup();
   });
 
   goToSignup.addEventListener('click', () => {
@@ -1629,17 +1651,17 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.style.display = 'block';
   });
 
-  // === INSCRIPTION (ajoute un champ password dans le HTML signupForm !) ===
+  // ====================== INSCRIPTION ======================
   document.querySelector('.paul-btn-register').addEventListener('click', async () => {
     const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
     const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
     const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
     const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
-    const passwordInput = signupForm.querySelector('input[type="password"]'); // ← tu vas l'ajouter
+    const passwordInput = signupForm.querySelector('input[type="password"]');
     const password = passwordInput ? passwordInput.value.trim() : '';
     const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
 
-    if (!password) return alert("Mot de passe requis");
+    if (!password) return showToast("Mot de passe requis", 'error');
 
     const res = await fetch('/.netlify/functions/save-account', {
       method: 'POST',
@@ -1649,14 +1671,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const data = await res.json();
     if (data.success) {
-      alert("Compte créé avec succès !");
+      showToast("Compte créé avec succès !");
       goToLogin.click();
     } else {
-      alert("Erreur : " + data.error);
+      showToast("Erreur : " + data.error, 'error');
     }
   });
 
-  // === CONNEXION ===
+  // ====================== CONNEXION ======================
   document.querySelector('.paul-btn-login').addEventListener('click', async () => {
     const email = loginForm.querySelector('input[type="email"]').value.trim();
     const password = loginForm.querySelector('input[type="password"]').value.trim();
@@ -1675,21 +1697,94 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('userFirstName', data.user.firstName);
       localStorage.setItem('userLastName', data.user.lastName);
 
-      alert(`Bienvenue ${data.user.firstName} !`);
+      showToast(`Bienvenue ${data.user.firstName} !`);
       overlay.classList.remove('active');
 
       if (isAccountPage) location.reload();
       else window.location.href = 'account.html';
     } else {
-      alert("Erreur : " + data.error);
+      showToast("Erreur : " + data.error, 'error');
     }
   });
 
-  // === Protection stricte de account.html ===
+  // ====================== REMPLIR LE PROFILE (nom, prénom, email) ======================
+  if (isAccountPage && localStorage.getItem('isLoggedIn') === 'true') {
+    const first = localStorage.getItem('userFirstName') || '';
+    const last = localStorage.getItem('userLastName') || '';
+    const email = localStorage.getItem('userEmail') || '';
+
+    document.getElementById('user-name').textContent = first;
+    document.getElementById('user-full-name').textContent = `${first} ${last}`;
+    document.getElementById('user-email').textContent = email;
+
+    // Adresse sauvegardée
+    const savedAddress = localStorage.getItem('userAddress');
+    if (savedAddress) {
+      const addrEl = document.querySelector('#details-section p strong + span') || document.getElementById('user-address');
+      if (addrEl) addrEl.textContent = savedAddress;
+    }
+  }
+
+  // ====================== TRACK ORDER POPUP ======================
+  window.trackOrder = () => {
+    const num = document.getElementById('tracking-number').value.trim();
+    if (!num) return showToast("Veuillez entrer un tracking number", 'error');
+    showToast(`Suivi de la commande ${num} lancé ! Statut : En transit (démo)`, 'success');
+    closePopup('track-popup');
+  };
+
+  // ====================== SAVE ADRESSE ======================
+  window.saveAddress = () => {
+    const inputs = document.querySelectorAll('#address-popup .popup-form input');
+    let addressStr = Array.from(inputs)
+      .map(i => i.value.trim())
+      .filter(v => v)
+      .join(', ');
+    if (!addressStr) return showToast("Veuillez remplir l'adresse", 'error');
+
+    localStorage.setItem('userAddress', addressStr);
+    const addrEl = document.querySelector('#details-section p strong + span') || document.getElementById('user-address');
+    if (addrEl) addrEl.textContent = addressStr;
+    showToast("Adresse enregistrée avec succès !");
+    closePopup('address-popup');
+  };
+
+  // ====================== CHANGE PASSWORD (met à jour Google Sheet) ======================
+  window.changePassword = async () => {
+    const email = localStorage.getItem('userEmail');
+    const current = document.getElementById('current-password').value.trim();
+    const newP = document.getElementById('new-password').value.trim();
+    const confirm = document.getElementById('confirm-password').value.trim();
+
+    if (!current || !newP || newP !== confirm) {
+      return showToast("Mot de passe actuel ou confirmation incorrect", 'error');
+    }
+
+    const res = await fetch('/.netlify/functions/save-account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'updatePassword',
+        email,
+        currentPassword: current,
+        newPassword: newP
+      })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      showToast("Mot de passe changé avec succès !");
+      closePopup('password-popup');
+    } else {
+      showToast("Erreur : " + (data.error || "Mot de passe actuel incorrect"), 'error');
+    }
+  };
+
+  // ====================== PROTECTION account.html ======================
   if (isAccountPage) {
     if (localStorage.getItem('isLoggedIn') !== 'true') {
       setTimeout(() => {
-        openPopup();
+        openPaulPopup();
         closeBtn.style.pointerEvents = 'none';
         closeBtn.style.opacity = '0.3';
         closeBtn.title = "Vous devez vous inscrire ou vous connecter pour voir cette page";

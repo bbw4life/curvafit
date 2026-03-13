@@ -3959,7 +3959,32 @@ a {
 
 
 
+/* ====================== TOAST NOTIFICATION ====================== */
+.toast-notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #1a1a1a;
+  color: #f0b90b;
+  padding: 20px 30px;
+  border-radius: 12px;
+  border: 3px solid #f0b90b;
+  box-shadow: 0 0 30px rgba(240, 185, 11, 0.5);
+  z-index: 10001;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  max-width: 320px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.4s ease;
+}
 
+.toast-notification.show {
+  display: flex;
+}
 
 .membership-dashboard {
     border-radius: 12px;
