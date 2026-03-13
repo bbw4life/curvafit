@@ -1572,7 +1572,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const goToLogin = document.getElementById('goToLogin');
     const isAccountPage = window.location.pathname.includes('account.html') || window.location.pathname.endsWith('account.html');
 
-    // ==================== TOAST (CORRIGÉ : marche sur TOUTES les pages) ====================
+    // ==================== TOAST (single line + nowrap) ====================
     window.showToast = (msg) => {
         let toast = document.getElementById('toast');
         if (!toast) {
@@ -1583,14 +1583,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         toast.textContent = msg;
         toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 8000);
+        setTimeout(() => toast.classList.remove('show'), 5000);
     };
 
-    // ==================== POPUP ACCOUNT FUNCTIONS ====================
+    // ==================== ACCOUNT POPUPS ====================
     window.openAccountPopup = (id) => {
         const popup = document.getElementById(id);
         if (popup) popup.classList.add('open');
-         if (id === 'address-popup') {
+
+        if (id === 'address-popup') {
             document.getElementById('addr-email').value = localStorage.getItem('userEmail') || '';
             document.getElementById('addr-first').value = localStorage.getItem('userFirstName') || '';
             document.getElementById('addr-last').value = localStorage.getItem('userLastName') || '';
@@ -1601,17 +1602,19 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('addr-zip').value = localStorage.getItem('userZip') || '';
         }
     };
+
     window.closeAccountPopup = (id) => {
         const popup = document.getElementById(id);
         if (popup) popup.classList.remove('open');
     };
 
-    // ==================== PAUL POPUP LOGIC ====================
+    // ==================== PAUL AUTH POPUP ====================
     function openPaulPopup() {
         overlay.classList.add('active');
         loginForm.style.display = 'block';
         signupForm.style.display = 'none';
     }
+
     function closePaulPopup() {
         if (isAccountPage) return;
         overlay.classList.remove('active');
@@ -1625,62 +1628,66 @@ document.addEventListener('DOMContentLoaded', () => {
             openPaulPopup();
         }
     });
+
     closeBtn.addEventListener('click', closePaulPopup);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay && !isAccountPage) closePaulPopup(); });
-    goToSignup.addEventListener('click', () => { loginForm.style.display = 'none'; signupForm.style.display = 'block'; });
-    goToLogin.addEventListener('click', () => { signupForm.style.display = 'none'; loginForm.style.display = 'block'; });
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay && !isAccountPage) closePaulPopup();
+    });
+
+    goToSignup.addEventListener('click', () => {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'block';
+    });
+
+    goToLogin.addEventListener('click', () => {
+        signupForm.style.display = 'none';
+        loginForm.style.display = 'block';
+    });
 
     // ==================== SIGNUP ====================
     document.querySelector('.paul-btn-register').addEventListener('click', async () => {
-        console.log('✅ Bouton SIGNUP cliqué');
+        const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
+        const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
+        const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
+        const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
+        const password = signupForm.querySelector('input[type="password"]').value.trim();
+        const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
+
+        if (!password) return showToast("Password is required");
+
         try {
-            const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
-            const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
-            const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
-            const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
-            const password = signupForm.querySelector('input[type="password"]').value.trim();
-            const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
-
-            if (!password) return showToast("Mot de passe requis");
-
             const res = await fetch('/.netlify/functions/save-account', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
             });
             const data = await res.json();
-            console.log('Réponse signup:', data);
 
             if (data.success) {
-                showToast("✅ Compte créé avec succès !");
+                showToast("Account created successfully!");
                 goToLogin.click();
             } else {
-                showToast("❌ Erreur : " + (data.error || "Inconnue"));
+                showToast("Error: " + (data.error || "Unknown"));
             }
         } catch (err) {
-            console.error("Signup error:", err);
-            showToast("❌ Erreur réseau ou serveur");
+            showToast("Network error");
         }
     });
 
-    // ==================== LOGIN (avec debug complet) ====================
+    // ==================== LOGIN ====================
     document.querySelector('.paul-btn-login').addEventListener('click', async () => {
-        console.log('✅ Bouton LOGIN cliqué');
-        try {
-            const email = loginForm.querySelector('input[type="email"]').value.trim();
-            const password = loginForm.querySelector('input[type="password"]').value.trim();
+        const email = loginForm.querySelector('input[type="email"]').value.trim();
+        const password = loginForm.querySelector('input[type="password"]').value.trim();
 
-            console.log('Envoi login vers serveur...');
+        try {
             const res = await fetch('/.netlify/functions/verify-login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
             const data = await res.json();
-            console.log('Réponse serveur LOGIN :', data);
 
             if (data.success) {
-                console.log('✅ LOGIN SUCCESS - Sauvegarde localStorage...');
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('userEmail', email);
                 localStorage.setItem('userFirstName', data.user.firstName);
@@ -1690,24 +1697,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('userCity', data.user.city || '');
                 localStorage.setItem('userState', data.user.state || '');
                 localStorage.setItem('userZip', data.user.zip || '');
-                const addressStr = [data.user.addressLine1, data.user.line2, data.user.city, data.user.state, data.user.zip].filter(Boolean).join(', ');
+
+                const addressStr = [data.user.addressLine1, data.user.line2, data.user.city, data.user.state, data.user.zip]
+                    .filter(Boolean).join(', ');
                 localStorage.setItem('userAddress', addressStr || 'No default address set');
 
-                showToast(`✅ Bienvenue ${data.user.firstName} !`);
+                showToast(`Welcome ${data.user.firstName} !`);
+
                 overlay.classList.remove('active');
 
-                console.log('🔄 REDIRECTION VERS ACCOUNT.HTML MAINTENANT...');
                 if (isAccountPage) {
                     location.reload();
                 } else {
                     window.location.href = 'account.html';
                 }
             } else {
-                showToast("❌ " + (data.error || "Email ou mot de passe incorrect"));
+                showToast("Incorrect email or password");
             }
         } catch (err) {
-            console.error("Login error:", err);
-            showToast("❌ Erreur réseau ou serveur");
+            showToast("Network error");
         }
     });
 
@@ -1736,16 +1744,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ action: 'update-address', email, line1, line2, city, state, zip })
             });
             const data = await res.json();
+
             if (data.success) {
                 localStorage.setItem('userAddress', addressStr || 'No default address set');
                 document.getElementById('user-address').textContent = addressStr || 'No default address set';
-                showToast("✅ Adresse sauvegardée !");
+                showToast("Address saved successfully!");
                 closeAccountPopup('address-popup');
             } else {
-                showToast("❌ " + data.error);
+                showToast("Error: " + data.error);
             }
         } catch (err) {
-            showToast("❌ Erreur réseau lors de la sauvegarde");
+            showToast("Network error while saving address");
         }
     };
 
@@ -1753,7 +1762,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.updatePassword = async () => {
         const email = document.getElementById('security-email').value.trim();
         const newPassword = document.getElementById('new-password').value.trim();
-        if (!email || !newPassword) return showToast("Email et mot de passe requis");
+        if (!email || !newPassword) return showToast("Email and new password are required");
 
         try {
             const res = await fetch('/.netlify/functions/save-account', {
@@ -1762,14 +1771,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ action: 'update-password', email, newPassword })
             });
             const data = await res.json();
+
             if (data.success) {
-                showToast("✅ Mot de passe mis à jour !");
+                showToast("Password updated successfully!");
                 closeAccountPopup('password-popup');
             } else {
-                showToast("❌ " + data.error);
+                showToast("Error: " + data.error);
             }
         } catch (err) {
-            showToast("❌ Erreur réseau lors du changement de mot de passe");
+            showToast("Network error while updating password");
         }
     };
 
@@ -1777,8 +1787,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.trackOrder = () => {
         const num = document.getElementById('tracking-number').value.trim();
         const result = document.getElementById('track-result');
-        if (!num) return result.textContent = "Veuillez entrer un numéro de suivi";
-        result.textContent = `✅ Colis ${num} suivi - Arrivée estimée : 3-5 jours`;
+        if (!num) {
+            result.textContent = "Please enter a tracking number";
+            return;
+        }
+        result.textContent = `✅ Order ${num} tracked - Estimated arrival: 3-5 days`;
         setTimeout(() => closeAccountPopup('track-popup'), 4000);
     };
 
@@ -1788,7 +1801,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'index.html';
     };
 
-    // ==================== PROTECTION ACCOUNT PAGE ====================
+    // ==================== ACCOUNT PAGE PROTECTION ====================
     if (isAccountPage) {
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             setTimeout(() => {

@@ -458,10 +458,6 @@
     .popup h3 {
         font-size: 30px !important;
     }
-    .popup-close {
-        top: -40px !important;
-        right: -40px !important;
-    }
 }
 
 .password-info-text {
@@ -474,4 +470,50 @@
 .password-info-text.bottom {
     margin-top: 20px;
     margin-bottom: -20px;
+}
+
+.popup-close {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 40px;
+    color: #f0b90b;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 10;
+    padding: 0;
+}
+.popup-close:hover {
+    color: #ffffff;
+}
+
+/* ==================== ADDRESS POPUP (plus beau en desktop) ==================== */
+#address-popup .popup {
+    max-width: 580px !important;     /* plus large et propre */
+    width: 95% !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    padding: 40px 20px !important;
+}
+
+/* Media queries (close button reste visible sur mobile) */
+@media (max-width: 768px) {
+    .popup {
+        padding: 30px 15px !important;
+        max-width: 360px !important;
+    }
+    #address-popup .popup {
+        max-width: 380px !important;
+        padding: 30px 12px !important;
+    }
+    .popup-close {
+        top: 15px;
+        right: 15px;
+        font-size: 32px;
+    }
+    .popup h3 {
+        font-size: 28px !important;
+    }
 }
