@@ -2,6 +2,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fetch = require('node-fetch');
 const { google } = require('googleapis');
+
 exports.handler = async (event) => {
   console.log("=== VERIFY PAYMENT STARTED ===");
   try {
@@ -10,18 +11,21 @@ exports.handler = async (event) => {
     console.log(`Provider: ${provider} | OrderID: ${orderID || 'N/A'}`);
     const paymentId = sessionId || orderID;
     if (!paymentId) throw new Error("Missing payment ID");
-    // ====================== PROTECTION DOUBLE PROCESSING ======================
+
+    // ====================== PROTECTION DOUBLE PROCESSING (CORRIGÉE) ======================
     const alreadyProcessed = await isAlreadyProcessed(paymentId);
     if (alreadyProcessed) {
       console.log(`🚫 DUPLICATE DETECTED (${paymentId}) → SKIP (already processed)`);
       return response(200, { success: true, message: "Duplicate - already processed" });
     }
     // ============================================================================
+
     let cart = [];
     let shipping = {};
     let paymentVerified = false;
     const BASE_URL = process.env.BASE_URL || process.env.URL || `https://${event.headers.host}`;
     console.log(`🔗 BASE_URL utilisée : ${BASE_URL}`);
+
     // ====================== STRIPE ======================
     if (provider === "stripe") {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
@@ -41,6 +45,7 @@ exports.handler = async (event) => {
         });
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
+
     // ====================== PAYPAL ======================
     } else if (provider === "paypal") {
       const PAYPAL_BASE = process.env.PAYPAL_ENV === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
@@ -48,7 +53,7 @@ exports.handler = async (event) => {
       const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, { method: "POST", headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=client_credentials" });
       const { access_token } = await tokenRes.json();
       
-      // D'abord fetch l'ordre pour check status
+      // D'abord fetch l’ordre pour check status
       const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
       if (!orderRes.ok) {
         const orderErr = await orderRes.text();
@@ -136,7 +141,9 @@ exports.handler = async (event) => {
       console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));
       paymentVerified = true;
     }
+
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
+
     console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
     // Group cart by variantsid
     const cartMap = {};
@@ -176,7 +183,8 @@ exports.handler = async (event) => {
     return response(500, { success: false, error: error.message });
   }
 };
-// ====================== FONCTION ANTI-DOUBLE ======================
+
+// ====================== FONCTION ANTI-DOUBLE (VERSION CORRIGÉE - PLUS JAMAIS DE DUPLICATE) ======================
 async function isAlreadyProcessed(paymentId) {
   try {
     const auth = new google.auth.GoogleAuth({
@@ -188,7 +196,15 @@ async function isAlreadyProcessed(paymentId) {
     });
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const rangesToTry = ["PendingOrders!C:C", "Sheet1!C:C", "Feuille 1!C:C"];
+    
+    const rangesToTry = [
+      "PendingOrders!A:Z",
+      "Sheet1!A:Z",
+      "Feuille 1!A:Z",
+      "Orders!A:Z",
+      "Sheet2!A:Z"
+    ];
+
     for (const range of rangesToTry) {
       try {
         const res = await sheets.spreadsheets.values.get({
@@ -196,11 +212,14 @@ async function isAlreadyProcessed(paymentId) {
           range: range
         });
         const rows = res.data.values || [];
-        if (rows.some(row => row[0] === paymentId)) {
-          return true;
+        for (const row of rows) {
+          if (row.some(cell => cell && cell.toString().includes(paymentId))) {
+            console.log(`✅ Doublon trouvé dans ${range} pour ${paymentId}`);
+            return true;
+          }
         }
       } catch (e) {
-        // pass to next
+        // pass to next range
       }
     }
     return false;
@@ -210,6 +229,7 @@ async function isAlreadyProcessed(paymentId) {
   }
 }
 // ============================================================================
+
 async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending_stock") {
   try {
     await fetch(`${BASE_URL}/.netlify/functions/save-pending-order`, {
@@ -219,9 +239,7 @@ async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, stat
     });
   } catch (e) { console.error("saveAsPending failed:", e.message); }
 }
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+
 function response(statusCode, body) {
   return { statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
 }
