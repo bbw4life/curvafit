@@ -4,24 +4,32 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 exports.handler = async (event) => {
   try {
     if (!event.body) throw new Error("No data received");
+    
     const { cart, shipping, shipping_cost = "10.00", tax = "0.00" } = JSON.parse(event.body);
+
     if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
+
     let subtotal = 0;
     const lineItems = cart.map(item => {
       const price = parseFloat(item.price);
       const qty = parseInt(item.quantity);
       if (!price || !qty || price <= 0) throw new Error("Invalid item");
       subtotal += price * qty;
+
       return {
         price_data: {
           currency: 'usd',
-          product_data: { name: item.title },
+          product_data: { 
+            name: item.title,
+            images: item.image ? [item.image] : []
+          },
           unit_amount: Math.round(price * 100)
         },
         quantity: qty
       };
     });
-    // Add shipping and tax as line items
+
+    // Shipping et Taxes (maintenant toujours reçus correctement)
     lineItems.push({
       price_data: {
         currency: 'usd',
@@ -30,6 +38,7 @@ exports.handler = async (event) => {
       },
       quantity: 1
     });
+
     lineItems.push({
       price_data: {
         currency: 'usd',
@@ -38,9 +47,11 @@ exports.handler = async (event) => {
       },
       quantity: 1
     });
+
     const eproloData = cart.map(item => ({
       variantsid: item.cj_variant_id || ''
     }));
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
@@ -52,6 +63,7 @@ exports.handler = async (event) => {
         shipping: JSON.stringify(shipping)
       }
     });
+
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
