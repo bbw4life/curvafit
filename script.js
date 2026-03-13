@@ -1607,6 +1607,16 @@ document.addEventListener('DOMContentLoaded', () => {
     window.openAccountPopup = (id) => {
         const popup = document.getElementById(id);
         if (popup) popup.classList.add('open');
+         if (id === 'address-popup') {
+            document.getElementById('addr-email').value = localStorage.getItem('userEmail') || '';
+            document.getElementById('addr-first').value = localStorage.getItem('userFirstName') || '';
+            document.getElementById('addr-last').value = localStorage.getItem('userLastName') || '';
+            document.getElementById('addr-line1').value = localStorage.getItem('userAddressLine1') || '';
+            document.getElementById('addr-line2').value = localStorage.getItem('userLine2') || '';
+            document.getElementById('addr-city').value = localStorage.getItem('userCity') || '';
+            document.getElementById('addr-state').value = localStorage.getItem('userState') || '';
+            document.getElementById('addr-zip').value = localStorage.getItem('userZip') || '';
+        }
     };
     window.closeAccountPopup = (id) => {
         const popup = document.getElementById(id);
