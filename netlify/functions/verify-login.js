@@ -2,10 +2,7 @@ const { google } = require("googleapis");
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ success: false, error: "Method not allowed" })
-    };
+    return { statusCode: 405, body: JSON.stringify({ success: false, error: "Method not allowed" }) };
   }
 
   try {
@@ -19,7 +16,7 @@ exports.handler = async (event) => {
       str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").trim() : "";
 
     const userEmail = normalize(email).toLowerCase();
-    const userPassword = normalize(password);
+    const userPassword = normalize(password).toLowerCase();   // ← CORRECTION : toLowerCase + trim
 
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -32,15 +29,12 @@ exports.handler = async (event) => {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID_ACCOUNTS;
 
-    // RANGES CORRIGÉS (priorité Feuille 1)
     const rangesToTry = [
       "Feuille 1!A:N", "Feuille 1!A1", "Feuille 1", "Feuille 1!A:Z",
-      "CurvaAccount!A:N", "CurvaAccount!A1", "CurvaAccount", "CurvaAccount!A:Z",
-      "Sheet1!A:N"
+      "CurvaAccount!A:N", "CurvaAccount!A1", "CurvaAccount", "CurvaAccount!A:Z"
     ];
 
     let rows = null;
-
     for (const range of rangesToTry) {
       try {
         const res = await sheets.spreadsheets.values.get({ spreadsheetId, range });
@@ -49,28 +43,22 @@ exports.handler = async (event) => {
           console.log(`✅ LECTURE OK dans : ${range}`);
           break;
         }
-      } catch (err) {
-        console.log(`❌ Échec avec ${range}`);
-      }
+      } catch (err) {}
     }
 
-    if (!rows) {
-      throw new Error("Impossible de lire le Google Sheet");
-    }
+    if (!rows) throw new Error("Impossible de lire le Google Sheet");
 
     const userRow = rows.find((row) => {
       const sheetEmail = (row[2] || "").toLowerCase();
-      const sheetPassword = row[4] || "";
+      const sheetPassword = (row[4] || "").trim().toLowerCase();   // ← CORRECTION ici aussi
       return sheetEmail === userEmail && sheetPassword === userPassword;
     });
 
     if (!userRow) {
+      console.log("❌ Aucun utilisateur trouvé avec cet email/mot de passe");
       return {
         statusCode: 401,
-        body: JSON.stringify({
-          success: false,
-          error: "Email ou mot de passe incorrect"
-        })
+        body: JSON.stringify({ success: false, error: "Email ou mot de passe incorrect" })
       };
     }
 
@@ -86,16 +74,10 @@ exports.handler = async (event) => {
       zip: userRow[13] || ""
     };
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ success: true, user })
-    };
+    return { statusCode: 200, body: JSON.stringify({ success: true, user }) };
 
   } catch (error) {
     console.error("VERIFY LOGIN ERROR:", error.message);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ success: false, error: error.message })
-    };
+    return { statusCode: 500, body: JSON.stringify({ success: false, error: error.message }) };
   }
 };
