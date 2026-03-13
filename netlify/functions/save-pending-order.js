@@ -40,14 +40,15 @@ exports.handler = async (event) => {
       shipping.city || "",
       shipping.postalCode || "",
       shipping.address || "",
-      "", // Removed cj_product_id
+      "", 
       item.variantsid || "",
       item.quantity || 1,
       status,
       "paid",
-      now
+      now,
+     shipping.shipping_method || "Standard Shipping"
     ]];
-    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
+   const rangesToTry = ["Feuille 1!A:R", "PendingOrders!A:R", "Sheet1!A:R"];
     let success = false;
     for (const range of rangesToTry) {
       try {

@@ -535,3 +535,93 @@ select {
 #wave-gradient stop:last-of-type {
     stop-color: var(--color2);
 }
+
+
+
+
+
+
+/* ==================== SHIPPING METHOD (VERSION MOBILE-FRIENDLY) ==================== */
+.shipping-method {
+    background: #ffecec;
+    padding: 1rem;                    /* même style que les autres sections */
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    grid-column: span 2;                 /* pleine largeur sur desktop */
+}
+
+/* Grid des cartes */
+.shipping-options-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+/* ==================== RESPONSIVE (IMPORTANT) ==================== */
+@media (max-width: 1024px) {
+    .shipping-method {
+        grid-column: span 1;             /* ← FIX PRINCIPAL : pleine largeur sur mobile */
+    }
+    .shipping-options-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .shipping-options-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+}
+
+/* Style des cartes + icônes (inchangé mais optimisé) */
+.shipping-option {
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.shipping-option:hover {
+    border-color: #e91e63;
+    transform: translateY(-3px);
+}
+
+.shipping-option.selected {
+    border-color: #e91e63;
+    background: #fff5f8;
+    box-shadow: 0 0 0 4px rgba(233, 30, 99, 0.15);
+}
+
+.shipping-option h4 {
+    margin: 0rem 0 0.5rem 0;
+    font-size: 1.1rem;
+    color: #1a1a1a;
+}
+
+.shipping-option p {
+    margin: 0;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+/* Icônes */
+.shipping-option i {
+    font-size: 2.2rem;
+    color: #e91e63;
+    margin-bottom: 0.75rem;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.shipping-option:hover i {
+    transform: scale(1.15);
+}
+
+.shipping-option.selected i {
+    color: #c2185b;
+}

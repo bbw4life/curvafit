@@ -116,15 +116,16 @@ document.addEventListener('DOMContentLoaded', () => {
             lastName: document.getElementById('last-name').value.trim(),
             email: document.getElementById('email').value.trim(),
             phone: fullPhone,
-            // === CORRECTION : country reste string (nom complet) + countryCode ajouté ===
             country: selectedOption.value.trim(), // nom complet (compatibilité PayPal/Stripe)
             countryCode: selectedOption.dataset.cca2 || '', // code ISO (pour CJ)
             city: document.getElementById('city').value.trim(),
             state: document.getElementById('state').value.trim(),
             postalCode: document.getElementById('postal-code').value.trim(),
-            address: document.getElementById('address').value.trim()
+            address: document.getElementById('address').value.trim(),
+            shipping_method: document.querySelector('.shipping-option.selected')?.dataset.method || 'Standard Shipping',
         };
     }
+    // shipping_method est maintenant inclus dans shippingData
     payButton.addEventListener('click', async () => {
         if (!validateForm()) return;
         if (!cart.length) return alert('Your cart is empty.');
@@ -247,6 +248,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     loadCountries();
+    // ==================== SHIPPING METHOD SELECTION ====================
+    const shippingOptions = document.querySelectorAll('.shipping-option');
+    shippingOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            shippingOptions.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+        });
+    });
     function updatePromoDisplay() { /* identique à ton original */
         const hasBundle = cart.some(item => item.fromBundle);
         const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);

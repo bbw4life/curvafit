@@ -15,7 +15,7 @@ exports.handler = async () => {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
-    const rangesToTry = ["Feuille 1!A:Q", "PendingOrders!A:Q", "Sheet1!A:Q"];
+    const rangesToTry = ["Feuille 1!A:R", "PendingOrders!A:R", "Sheet1!A:R"];
     let rows = [];
     let activeTab = "";
     for (const range of rangesToTry) {
@@ -71,7 +71,8 @@ exports.handler = async () => {
         state: firstRow[7] || "",
         city: firstRow[8] || "",
         postalCode: firstRow[9] || "",
-        address: firstRow[10] || ""
+        address: firstRow[10] || "",
+        shipping_method: firstRow[17] || "Standard Shipping",
       };
       let countryCode = 'CA';
       try {

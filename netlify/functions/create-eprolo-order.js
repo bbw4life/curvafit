@@ -37,7 +37,8 @@ exports.handler = async (event) => {
       shipping_province: shipping.state || '',
       shipping_province_code: shipping.provinceCode || shipping.state?.substring(0,2).toUpperCase() || '',
       shipping_zip: shipping.postalCode || '',
-      logistics_id: 1, // tu peux tester 3 si Canada
+      logistics_id: 1, 
+      shipping_method: shipping.shipping_method || "Standard Shipping",
       orderItemlist: cart.map(item => ({
         variantsid: item.variantsid || '',
         quantity: parseInt(item.quantity) || 1

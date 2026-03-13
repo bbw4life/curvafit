@@ -107,6 +107,7 @@ exports.handler = async (event) => {
         console.error("Failed to fetch country name:", err.message);
       }
       const refParts = purchaseUnit.reference_id ? purchaseUnit.reference_id.split('|') : [];
+      let shipping_method = refParts[4] || "Standard Shipping";
       let storedFullName = refParts[0] || '';
       let phone = payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : refParts[1] || '';
       let email = payer.email_address || refParts[2] || '';
@@ -129,7 +130,8 @@ exports.handler = async (event) => {
         state: ship.address?.admin_area_1 || "",
         postalCode: ship.address?.postal_code || "",
         country: countryName,
-        countryCode: fallbackCountryCode
+        countryCode: fallbackCountryCode,
+        shipping_method: shipping_method
       };
       console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));
       paymentVerified = true;
