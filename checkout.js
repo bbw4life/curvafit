@@ -42,32 +42,25 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
 
-
-
-// Vérifie si connecté et remplit le formulaire
-if (localStorage.getItem('isLoggedIn') === 'true') {
-    document.getElementById('first-name').value = localStorage.getItem('userFirstName') || '';
-    document.getElementById('last-name').value = localStorage.getItem('userLastName') || '';
-    document.getElementById('email').value = localStorage.getItem('userEmail') || '';
-    document.getElementById('address').value = localStorage.getItem('userAddressLine1') || '';
-    const address2Input = document.getElementById('address2') || document.getElementById('address-line2');
-    if (address2Input) address2Input.value = localStorage.getItem('userLine2') || '';
-    
-    document.getElementById('city').value = localStorage.getItem('userCity') || '';
-    document.getElementById('state').value = localStorage.getItem('userState') || '';
-    document.getElementById('postal-code').value = localStorage.getItem('userZip') || '';
-    const countrySelect = document.getElementById('country');
-    if (countrySelect && localStorage.getItem('userCountry')) {
-        countrySelect.value = localStorage.getItem('userCountry');
-    }
-    
-    console.log("✅ Infos shipping auto-remplies depuis localStorage."); // Pour debug
-}
-
-
-
-
-
+        // Vérifie si connecté et remplit le formulaire
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            document.getElementById('first-name').value = localStorage.getItem('userFirstName') || '';
+            document.getElementById('last-name').value = localStorage.getItem('userLastName') || '';
+            document.getElementById('email').value = localStorage.getItem('userEmail') || '';
+            document.getElementById('address').value = localStorage.getItem('userAddressLine1') || '';
+            const address2Input = document.getElementById('address2') || document.getElementById('address-line2');
+            if (address2Input) address2Input.value = localStorage.getItem('userLine2') || '';
+            
+            document.getElementById('city').value = localStorage.getItem('userCity') || '';
+            document.getElementById('state').value = localStorage.getItem('userState') || '';
+            document.getElementById('postal-code').value = localStorage.getItem('userZip') || '';
+            const countrySelect = document.getElementById('country');
+            if (countrySelect && localStorage.getItem('userCountry')) {
+                countrySelect.value = localStorage.getItem('userCountry');
+            }
+            
+            console.log("✅ Infos shipping auto-remplies depuis localStorage."); // Pour debug
+        }
 
     function renderCart() {
         if (!cart.length) {

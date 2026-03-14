@@ -1703,13 +1703,27 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast("Network error");
         }
     });
-    if (isAccountPage) {
+    function handleOrderClick(e) {
+    const clickable = e.target.closest('.order-item-clickable');
+    if (clickable) {
+        const id = clickable.dataset.id;
+        if (id && typeof window.getProductUrl === 'function') {
+            console.log("✅ Clic détecté sur produit ID:", id); // Pour debug en console (F12)
+            window.location.href = window.getProductUrl(id);
+        } else {
+            console.warn("⚠️ ID manquant ou getProductUrl non disponible pour ID:", id);
+        }
+        e.preventDefault(); // Empêche tout comportement par défaut
+    }
+}
+   if (isAccountPage) {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     const urlParams = new URLSearchParams(window.location.search);
     const forceLogin = urlParams.get('forceLogin') === '1';
+    console.log("🔍 isLoggedIn:", isLoggedIn, "forceLogin:", forceLogin); // Pour debug
 
     // ==================== PROTECTION ULTRA-STRICTE ====================
-    if (!isLoggedIn || forceLogin) {
+    if (!isLoggedIn) {  // Force toujours si non connecté, ignore forceLogin si connecté
         const accountMain = document.querySelector('.account-main');
         const customerSection = document.querySelector('.customer.account');
         if (accountMain) accountMain.style.display = 'none';
@@ -1723,8 +1737,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeBtnPopup.style.opacity = '0.3';
                 closeBtnPopup.title = 'You must log in to access your account.';
             }
-        }, 200);
-        return;
+            console.log("✅ Popup forcé !"); // Debug
+        }, 500);  // Augmenté à 500ms pour plus de sécurité
+        return;  // Stoppe l'exécution pour non connectés
     }
 
     // ==================== UTILISATEUR CONNECTÉ → tout normal ====================
@@ -1794,7 +1809,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 });
                 historyContainer.innerHTML = html;
-
                 document.removeEventListener('click', handleOrderClick); 
                 document.addEventListener('click', handleOrderClick);
 
@@ -1805,20 +1819,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Stats load error", e);
         }
     }
-
-   function handleOrderClick(e) {
-    const clickable = e.target.closest('.order-item-clickable');
-    if (clickable) {
-        const id = clickable.dataset.id;
-        if (id && typeof window.getProductUrl === 'function') {
-            console.log("✅ Clic détecté sur produit ID:", id); // Ouvre la console (F12) pour voir si ça log
-            window.location.href = window.getProductUrl(id);
-        } else {
-            console.warn("⚠️ ID manquant ou getProductUrl non disponible pour ID:", id);
-        }
-        e.preventDefault(); 
-    }
-        }
   
     window.saveAddress = async () => {
         const email = localStorage.getItem('userEmail');
