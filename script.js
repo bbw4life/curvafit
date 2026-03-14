@@ -1795,8 +1795,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 historyContainer.innerHTML = html;
 
-                // === NOUVELLE VERSION ULTRA-ROBUSTE (delegation sur document) ===
-                document.removeEventListener('click', handleOrderClick); // évite les doublons
+                document.removeEventListener('click', handleOrderClick); 
                 document.addEventListener('click', handleOrderClick);
 
             } else {
@@ -1807,19 +1806,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Fonction séparée pour le clic (fonctionne à tous les coups)
-        function handleOrderClick(e) {
-        const clickable = e.target.closest('.order-item-clickable');
-        if (clickable) {
-            const id = clickable.dataset.id;
-            if (id && typeof window.getProductUrl === 'function') {
-                console.log("Clic sur produit ID:", id);
-                window.location.href = window.getProductUrl(id);
-            } else {
-                console.warn("ID manquant ou getProductUrl non disponible");
-            }
+   function handleOrderClick(e) {
+    const clickable = e.target.closest('.order-item-clickable');
+    if (clickable) {
+        const id = clickable.dataset.id;
+        if (id && typeof window.getProductUrl === 'function') {
+            console.log("✅ Clic détecté sur produit ID:", id); // Ouvre la console (F12) pour voir si ça log
+            window.location.href = window.getProductUrl(id);
+        } else {
+            console.warn("⚠️ ID manquant ou getProductUrl non disponible pour ID:", id);
         }
+        e.preventDefault(); 
     }
+        }
+  
     window.saveAddress = async () => {
         const email = localStorage.getItem('userEmail');
         const line1 = document.getElementById('addr-line1').value.trim();
