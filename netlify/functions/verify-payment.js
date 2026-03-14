@@ -143,7 +143,7 @@ exports.handler = async (event) => {
     let totalAmount = 0;
     if (provider === "stripe") {
       totalAmount = session.amount_total / 100;
-    } else {
+    } else if (provider === "paypal") {
       totalAmount = parseFloat(purchaseUnit.amount.value);
     }
     const totalQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
