@@ -1547,7 +1547,7 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       });
     });
   }
-  // === AUTO OPEN CART DRAWER quand on vient de "Saved Items" (exactement comme dans le cart) ===
+  // === AUTO OPEN CART DRAWER quand on vient de "Saved Items" ===
   if (window.location.pathname.toLowerCase().includes('shop.html') && 
       localStorage.getItem('autoOpenCart') === 'true') {
     localStorage.removeItem('autoOpenCart');
@@ -1555,7 +1555,7 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       if (typeof openCartDrawer === 'function') {
         openCartDrawer();
       }
-    }, 1500); // 1.5 secondes pour être sûr que tout est chargé
+    }, 1200);
   }
 });
 
@@ -1706,7 +1706,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isAccountPage) {
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
-        // ==================== PROTECTION ULTRA-STRICTE (page invisible si non connecté) ====================
+        // ==================== PROTECTION ULTRA-STRICTE ====================
         if (!isLoggedIn) {
             const accountMain = document.querySelector('.account-main');
             const customerSection = document.querySelector('.customer.account');
@@ -1734,7 +1734,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadAccountStats();
     }
 
-    // ==================== SAVED ITEMS → shop.html + ouvre cart drawer (exactement comme le cart) ====================
+    // ==================== SAVED ITEMS → shop.html + ouvre cart drawer ====================
     window.openSavedItems = () => {
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             showToast("Connectez-vous pour voir vos articles sauvegardés");
@@ -1744,7 +1744,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'shop.html';
     };
 
-       async function loadAccountStats() {
+        async function loadAccountStats() {
         const email = localStorage.getItem('userEmail');
         if (!email) return;
         try {
@@ -1881,4 +1881,13 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.clear();
         window.location.href = 'index.html';
     };
+    if (isAccountPage) {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            setTimeout(() => {
+                openPaulPopup();
+                closeBtn.style.pointerEvents = 'none';
+                closeBtn.style.opacity = '0.3';
+            }, 500);
+        }
+    }
 });
