@@ -1771,10 +1771,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
                             <div class="order-items">
                                 ${order.items.map(item => `
-                                    <div style="margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;">
-                                        <strong>${item.title}</strong><br>
-                                        Variante : ${item.variant || 'Standard'}<br>
-                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
+                                    <div style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;">
+                                        ${item.image_variant ? `<img src="${item.image_variant}" alt="${item.title}" style="width:50px;height:50px;object-fit:cover;margin-right:10px;">` : ''}
+                                        <div>
+                                            <strong>${item.title}</strong><br>
+                                            Couleur variante : ${item.variant_color || 'N/A'}<br>
+                                            Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
+                                        </div>
                                     </div>
                                 `).join('')}
                             </div>

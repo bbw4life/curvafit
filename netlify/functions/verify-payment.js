@@ -28,6 +28,7 @@ exports.handler = async (event) => {
       if (session.payment_status !== "paid") throw new Error("Stripe not paid");
       const lineItems = await stripe.checkout.sessions.listLineItems(sessionId, { limit: 100 });
       const storedEprolo = JSON.parse(session.metadata.eprolo_data || "[]");
+      const storedImages = JSON.parse(session.metadata.images || "[]");
       cart = lineItems.data
         .filter(li => li.description !== 'Shipping' && li.description !== 'Taxes')
         .map((li, i) => {
@@ -36,7 +37,8 @@ exports.handler = async (event) => {
             title: li.description,
             price: (li.amount_total / 100) / li.quantity,
             quantity: li.quantity,
-            variantsid: eproloItem.variantsid || null
+            variantsid: eproloItem.variantsid || null,
+            image: storedImages[i] || ''
           };
         });
       shipping = JSON.parse(session.metadata.shipping || "{}");
@@ -85,11 +87,11 @@ exports.handler = async (event) => {
       console.log("Stored variants data:", storedVariants);
       const itemsArray = purchaseUnit?.items || [];
       cart = itemsArray.map((item, i) => {
-        return { title: item.name, price: parseFloat(item.unit_amount.value), quantity: parseInt(item.quantity), variantsid: storedVariants[i] || null };
+        return { title: item.name, price: parseFloat(item.unit_amount.value), quantity: parseInt(item.quantity), variantsid: item.sku || storedVariants[i] || null, image: item.description || '' };
       });
       if (cart.length === 0 && storedVariants.length > 0) {
         cart = storedVariants.map((str, i) => {
-          return { title: `Product ${i+1}`, price: 0, quantity: 1, variantsid: str || null };
+          return { title: `Product ${i+1}`, price: 0, quantity: 1, variantsid: str || null, image: '' };
         });
       }
       const payer = finalOrderData.payer || {};
@@ -137,6 +139,38 @@ exports.handler = async (event) => {
       paymentVerified = true;
     }
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
+    // ====================== UPDATE USER PROFILE (Quantity Orders, Total Spent, Order History) ======================
+    let totalAmount = 0;
+    if (provider === "stripe") {
+      totalAmount = session.amount_total / 100;
+    } else {
+      totalAmount = parseFloat(purchaseUnit.amount.value);
+    }
+    const totalQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
+    const orderItems = cart.map(item => ({
+      title: item.title,
+      variant_color: '',  // Placeholder, à remplir si disponible dans le futur
+      image_variant: item.image || '',
+      price: item.price,
+      quantity: item.quantity,
+      lineTotal: item.price * item.quantity,
+      variantsid: item.variantsid || ''
+    }));
+    if (shipping.email) {
+      await fetch(`${BASE_URL}/.netlify/functions/save-account`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: 'record-order',
+          email: shipping.email,
+          totalAmount,
+          totalQuantity,
+          orderItems
+        })
+      });
+    } else {
+      console.warn("No email found, skipping profile update");
+    }
     console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
     // Group cart by variantsid
     const cartMap = {};

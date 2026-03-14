@@ -90,7 +90,6 @@ exports.handler = async (event) => {
       const currentRow = rows[rowIndex] || [];
       const newOrders = parseInt(currentRow[6] || 0) + 1;
       const newSpent = parseFloat(currentRow[7] || 0) + parseFloat(totalAmount);
-      const newQtyCart = parseInt(currentRow[14] || 0) + parseInt(totalQuantity);
       let history = [];
       try { history = JSON.parse(currentRow[16] || "[]"); } catch(e) {}
       history.push({
@@ -106,7 +105,6 @@ exports.handler = async (event) => {
           data: [
             { range: `Feuille 1!G${rowNum}`, values: [[newOrders]] },
             { range: `Feuille 1!H${rowNum}`, values: [[newSpent]] },
-            { range: `Feuille 1!O${rowNum}`, values: [[newQtyCart]] },
             { range: `Feuille 1!Q${rowNum}`, values: [[JSON.stringify(history)]] }
           ]
         }
