@@ -1,9 +1,20 @@
-document.addEventListener('DOMContentLoaded', () => {
-  let products = [];
-  function getProductUrl(id) {
-    const productIndex = products.findIndex(p => p.id === id) + 1;
-    return `product${productIndex}.html`;
+// ================================================
+// GLOBAL PRODUCTS + URL (fix race condition cart + history + order clickable)
+// ================================================
+let products = [];
+
+function getProductUrl(id) {
+  if (!products || products.length === 0) {
+    console.warn('Products not loaded yet → fallback shop.html');
+    return 'shop.html';
   }
+  const productIndex = products.findIndex(p => p.id === id) + 1;
+  return `product${productIndex}.html`;
+}
+
+window.getProductUrl = getProductUrl;
+
+document.addEventListener('DOMContentLoaded', () => {
   function populateMainProductMedia(media) {
     const thumbsContainer = document.getElementById('product-thumbnails');
     const mainSlider = document.getElementById('main-image-slider');
@@ -744,8 +755,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (typeof updateProductPrice === 'function') updateProductPrice();
       }, 300);
-      // === EXPOSE POUR ACCOUNT PAGE (clic produits order history) ===
-      window.getProductUrl = getProductUrl;
     })
     .catch(error => console.error('Erreur de chargement des produits:', error));
   document.querySelectorAll('section').forEach(sec => {
@@ -1548,7 +1557,7 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
     });
   }
   // === AUTO OPEN CART DRAWER quand on vient de "Saved Items" ===
-  if (window.location.pathname.toLowerCase().includes('shop.html') && 
+  if (window.location.pathname.toLowerCase().includes('shop.html') &&
       localStorage.getItem('autoOpenCart') === 'true') {
     localStorage.removeItem('autoOpenCart');
     setTimeout(() => {
@@ -1703,52 +1712,38 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast("Network error");
         }
     });
-    function handleOrderClick(e) {
-    const clickable = e.target.closest('.order-item-clickable');
-    if (clickable) {
-        const id = clickable.dataset.id;
-        if (id && typeof window.getProductUrl === 'function') {
-            console.log("✅ Clic détecté sur produit ID:", id); // Pour debug en console (F12)
-            window.location.href = window.getProductUrl(id);
-        } else {
-            console.warn("⚠️ ID manquant ou getProductUrl non disponible pour ID:", id);
-        }
-        e.preventDefault(); // Empêche tout comportement par défaut
-    }
-}
-   if (isAccountPage) {
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    const urlParams = new URLSearchParams(window.location.search);
-    const forceLogin = urlParams.get('forceLogin') === '1';
-    console.log("🔍 isLoggedIn:", isLoggedIn, "forceLogin:", forceLogin); // Pour debug
 
-    // ==================== PROTECTION ULTRA-STRICTE ====================
-    if (!isLoggedIn) {  // Force toujours si non connecté, ignore forceLogin si connecté
+    // ==================== PROTECTION ACCOUNT + FORCE LOGIN (fix popup après paiement) ====================
+    if (isAccountPage) {
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      const urlParams = new URLSearchParams(window.location.search);
+      const forceLogin = urlParams.get('forceLogin') === '1';
+
+      if (!isLoggedIn || forceLogin) {
         const accountMain = document.querySelector('.account-main');
         const customerSection = document.querySelector('.customer.account');
         if (accountMain) accountMain.style.display = 'none';
         if (customerSection) customerSection.style.display = 'none';
 
         setTimeout(() => {
-            openPaulPopup();
-            const closeBtnPopup = document.querySelector('.paul-close');
-            if (closeBtnPopup) {
-                closeBtnPopup.style.pointerEvents = 'none';
-                closeBtnPopup.style.opacity = '0.3';
-                closeBtnPopup.title = 'You must log in to access your account.';
-            }
-            console.log("✅ Popup forcé !"); // Debug
-        }, 500);  // Augmenté à 500ms pour plus de sécurité
-        return;  // Stoppe l'exécution pour non connectés
-    }
+          openPaulPopup();
+          const closeBtnPopup = document.querySelector('.paul-close');
+          if (closeBtnPopup) {
+            closeBtnPopup.style.pointerEvents = 'none';
+            closeBtnPopup.style.opacity = '0.3';
+            closeBtnPopup.title = 'Vous devez vous connecter pour accéder à votre compte';
+          }
+        }, 200);
+        return;
+      }
 
-    // ==================== UTILISATEUR CONNECTÉ → tout normal ====================
-    document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
-    document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
-    document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
-    document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
-    loadAccountStats();
-}
+      // ==================== UTILISATEUR CONNECTÉ → tout normal ====================
+      document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
+      document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
+      document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
+      document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
+      loadAccountStats();
+    }
 
     // ==================== SAVED ITEMS → shop.html + ouvre cart drawer ====================
     window.openSavedItems = () => {
@@ -1759,7 +1754,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('autoOpenCart', 'true');
         window.location.href = 'shop.html';
     };
-
         async function loadAccountStats() {
         const email = localStorage.getItem('userEmail');
         if (!email) return;
@@ -1770,17 +1764,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ action: 'get-stats', email })
             });
             const data = await res.json();
-
             const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
             if (statValues.length >= 2) {
                 statValues[0].textContent = data.orders || 0;
                 statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
             }
             document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
-
             const historyContainer = document.querySelector('.order-history');
             if (!historyContainer) return;
-
             if (data.history && Array.isArray(data.history) && data.history.length > 0) {
                 let html = `<h2>Order History</h2>`;
                 const sorted = [...data.history].reverse();
@@ -1794,7 +1785,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
                             <div class="order-items">
                                 ${order.items.map(item => `
-                                    <div class="order-item-clickable" data-id="${item.id || ''}" 
+                                    <div class="order-item-clickable" data-id="${item.id || ''}"
                                          style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
                                         ${item.image_variant ? `<img src="${item.image_variant}" alt="${item.title}" style="width:50px;height:50px;object-fit:cover;margin-right:10px;">` : ''}
                                         <div>
@@ -1809,9 +1800,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 });
                 historyContainer.innerHTML = html;
-                document.removeEventListener('click', handleOrderClick); 
+                document.removeEventListener('click', handleOrderClick);
                 document.addEventListener('click', handleOrderClick);
-
             } else {
                 historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
             }
@@ -1819,7 +1809,18 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Stats load error", e);
         }
     }
-  
+    function handleOrderClick(e) {
+        const clickable = e.target.closest('.order-item-clickable');
+        if (clickable) {
+            const id = clickable.dataset.id;
+            if (id && window.getProductUrl) {
+                console.log("✅ Clic détecté → redirection vers produit ID:", id);
+                window.location.href = window.getProductUrl(id);
+            } else {
+                console.warn("⚠️ Pas de ID ou getProductUrl manquant");
+            }
+        }
+    }
     window.saveAddress = async () => {
         const email = localStorage.getItem('userEmail');
         const line1 = document.getElementById('addr-line1').value.trim();
@@ -1882,13 +1883,4 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.clear();
         window.location.href = 'index.html';
     };
-    if (isAccountPage) {
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            setTimeout(() => {
-                openPaulPopup();
-                closeBtn.style.pointerEvents = 'none';
-                closeBtn.style.opacity = '0.3';
-            }, 500);
-        }
-    }
 });
