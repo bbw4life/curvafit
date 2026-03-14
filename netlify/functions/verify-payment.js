@@ -23,15 +23,14 @@ exports.handler = async (event) => {
     let cart = [];
     let shipping = {};
     let paymentVerified = false;
-    let sessionData = null;      // ← FIX pour Stripe
-    let purchaseUnit = null;     // ← FIX pour PayPal
+    let session = null;          // ← FIX Stripe
+    let purchaseUnit = null;     // ← FIX PayPal
     const BASE_URL = process.env.BASE_URL || process.env.URL || `https://${event.headers.host}`;
     console.log(`🔗 BASE_URL utilisée : ${BASE_URL}`);
 
     // ====================== STRIPE ======================
     if (provider === "stripe") {
-      const session = await stripe.checkout.sessions.retrieve(sessionId);
-      sessionData = session;                    // ← STOCKÉ ICI
+      session = await stripe.checkout.sessions.retrieve(sessionId);
       if (session.payment_status !== "paid") throw new Error("Stripe not paid");
       const lineItems = await stripe.checkout.sessions.listLineItems(sessionId, { limit: 100 });
       const storedEprolo = JSON.parse(session.metadata.eprolo_data || "[]");
@@ -58,6 +57,7 @@ exports.handler = async (event) => {
       const { access_token } = await tokenRes.json();
       
       const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
+      if (!orderRes.ok) throw new Error("PayPal order fetch failed");
       const orderData = await orderRes.json();
       
       if (orderData.status === "APPROVED") {
@@ -69,7 +69,7 @@ exports.handler = async (event) => {
       const finalOrderData = await finalOrderRes.json();
       if (finalOrderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
       
-      purchaseUnit = finalOrderData.purchase_units?.[0];   // ← STOCKÉ ICI
+      purchaseUnit = finalOrderData.purchase_units?.[0];
       const storedVariants = purchaseUnit?.custom_id ? purchaseUnit.custom_id.split('|') : [];
       const itemsArray = purchaseUnit?.items || [];
       cart = itemsArray.map((item, i) => ({
@@ -78,7 +78,7 @@ exports.handler = async (event) => {
         quantity: parseInt(item.quantity),
         variantsid: storedVariants[i] || null
       }));
-
+      
       const payer = finalOrderData.payer || {};
       const ship = purchaseUnit.shipping || {};
       shipping = {
@@ -99,11 +99,11 @@ exports.handler = async (event) => {
 
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
 
-    // ====================== RECORD ORDER (ORDERS + SPENT + HISTORY) ======================
+    // ====================== RECORD ORDER (Orders + Total Spent + Order History) ======================
     console.log("💾 Mise à jour Orders / Spent / History dans Google Sheet...");
 
     const totalPaid = provider === "stripe" 
-        ? (sessionData.amount_total / 100) 
+        ? (session.amount_total / 100) 
         : provider === "paypal" 
             ? parseFloat(purchaseUnit?.amount?.value || 0) 
             : cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
@@ -146,7 +146,9 @@ exports.handler = async (event) => {
     cart.forEach(item => {
       const vid = item.variantsid || null;
       if (vid) {
-        if (!cartMap[vid]) cartMap[vid] = { title: item.title, price: item.price, quantity: 0, variantsid: vid };
+        if (!cartMap[vid]) {
+          cartMap[vid] = { title: item.title, price: item.price, quantity: 0, variantsid: vid };
+        }
         cartMap[vid].quantity += item.quantity;
       }
     });
