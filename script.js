@@ -94,6 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(response => response.json())
     .then(data => {
       products = data;
+      window.products = data;
+      window.getProductUrl = getProductUrl;
       const settings = products.find(p => p.type === "settings") || {};
       const enableMediaZoom = (settings.enable_media_zoom || "no").toLowerCase() === "yes";
       const comparisonTable = document.querySelector('.comparison-table tbody');
@@ -1583,15 +1585,18 @@ document.addEventListener('click', function(e) {
       }
     }
   }
-  // === AUTO OUVERTURE CART DEPUIS ACCOUNT ===
-  if ((window.location.pathname.includes('shop.html') || window.location.pathname.endsWith('shop.html')) &&
-      localStorage.getItem('autoOpenCart') === 'true') {
-    localStorage.removeItem('autoOpenCart');
-    setTimeout(() => {
-      if (typeof openCartDrawer === 'function') openCartDrawer();
-    }, 600);
-  }
 });
+
+// === AUTO OUVERTURE CART DEPUIS ACCOUNT (CORRIGÉ) ===
+if ((window.location.pathname.includes('shop.html') || window.location.pathname.endsWith('shop.html')) &&
+    localStorage.getItem('autoOpenCart') === 'true') {
+  localStorage.removeItem('autoOpenCart');
+  setTimeout(() => {
+    if (typeof openCartDrawer === 'function') {
+      openCartDrawer();
+    }
+  }, 800);
+}
 
 
 
@@ -1745,77 +1750,75 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ====================== LOAD STATS + ORDER HISTORY (COMPLET) ======================
-    async function loadAccountStats() {
-        const email = localStorage.getItem('userEmail');
-        if (!email) return;
-        try {
-            const res = await fetch('/.netlify/functions/save-account', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'get-stats', email })
-            });
-            const data = await res.json();
+async function loadAccountStats() {
+    const email = localStorage.getItem('userEmail');
+    if (!email) return;
+    try {
+        const res = await fetch('/.netlify/functions/save-account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'get-stats', email })
+        });
+        const data = await res.json();
 
-            // Mise à jour des stats
-            const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
-            if (statValues.length >= 2) {
-                statValues[0].textContent = data.orders || 0;                    // Orders
-                statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`; // Total Spent
-            }
-            document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
-
-            // ==================== ORDER HISTORY DISPLAY ====================
-            const historyContainer = document.querySelector('.order-history');
-            if (data.history && Array.isArray(data.history) && data.history.length > 0) {
-                let html = `<h2>Order History</h2>`;
-                const sorted = [...data.history].reverse();
-                sorted.forEach(order => {
-                    html += `
-                        <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
-                            <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-                                <strong>Date : ${order.date}</strong>
-                                <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
-                            </div>
-                            <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
-                            <div class="order-items">
-                                ${order.items.map(item => `
-                                    <div style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;">
-                                        ${item.image_variant ? `<img src="${item.image_variant}" alt="${item.title}" style="width:50px;height:50px;object-fit:cover;margin-right:10px;">` : ''}
-                                        <div>
-                                            <strong>${item.title}</strong><br>
-                                            Couleur variante : ${item.variant_color || 'N/A'}<br>
-                                            Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                });
-                historyContainer.innerHTML = html;
-                // === 1. CLIC PRODUIT DANS ORDER HISTORY ===
-            setTimeout(() => {
-              const orderItemDivs = historyContainer.querySelectorAll('.order-items > div');
-              orderItemDivs.forEach(div => {
-                div.style.cursor = 'pointer';
-                div.addEventListener('click', () => {
-                  const titleEl = div.querySelector('strong');
-                  if (!titleEl) return;
-                  const title = titleEl.textContent.trim();
-                  const product = products.find(p => p.title === title);
-                  if (product && typeof getProductUrl === 'function') {
-                    window.location.href = getProductUrl(product.id);
-                  }
-                });
-              });
-            }, 100);
-            } else {
-                historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
-            }
-        } catch (e) {
-            console.error("Stats load error", e);
+        // Mise à jour des stats
+        const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
+        if (statValues.length >= 2) {
+            statValues[0].textContent = data.orders || 0;
+            statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
         }
+        document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
+
+        // ==================== ORDER HISTORY DISPLAY ====================
+        const historyContainer = document.querySelector('.order-history');
+        if (data.history && Array.isArray(data.history) && data.history.length > 0) {
+            let html = `<h2>Order History</h2>`;
+            const sorted = [...data.history].reverse();
+            sorted.forEach(order => {
+                html += `
+                    <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+                            <strong>Date : ${order.date}</strong>
+                            <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
+                        </div>
+                        <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
+                        <div class="order-items">
+                            ${order.items.map(item => `
+                                <div class="order-item-clickable" style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
+                                    ${item.image_variant ? `<img src="${item.image_variant}" alt="${item.title}" style="width:50px;height:50px;object-fit:cover;margin-right:10px;">` : ''}
+                                    <div>
+                                        <strong>${item.title}</strong><br>
+                                        Couleur variante : ${item.variant_color || 'N/A'}<br>
+                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            historyContainer.innerHTML = html;
+
+            // === CLIC PRODUIT → REDIRECTION (FIXÉ) ===
+            setTimeout(() => {
+                const clickableItems = historyContainer.querySelectorAll('.order-item-clickable');
+                clickableItems.forEach(div => {
+                    div.addEventListener('click', () => {
+                        const title = div.querySelector('strong').textContent.trim();
+                        const product = window.products ? window.products.find(p => p.title === title) : null;
+                        if (product && typeof window.getProductUrl === 'function') {
+                            window.location.href = window.getProductUrl(product.id);
+                        }
+                    });
+                });
+            }, 200);
+        } else {
+            historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
+        }
+    } catch (e) {
+        console.error("Stats load error", e);
     }
+}
 
     if (isAccountPage) {
         loadAccountStats();
