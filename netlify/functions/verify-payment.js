@@ -114,7 +114,7 @@ exports.handler = async (event) => {
       let shipping_method = refParts[4] || "Standard Shipping";
       let storedFullName = refParts[0] || '';
       let phone = payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : refParts[1] || '';
-      let email = payer.email_address || refParts[2] || '';
+      let email = refParts[2] || payer.email_address || '';
       let fallbackCountryCode = refParts[3] || countryCodeFromPayPal;
       let firstName = payer.name?.given_name || '';
       let lastName = payer.name?.surname || '';
