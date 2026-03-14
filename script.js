@@ -1583,6 +1583,14 @@ document.addEventListener('click', function(e) {
       }
     }
   }
+  // === AUTO OUVERTURE CART DEPUIS ACCOUNT ===
+  if ((window.location.pathname.includes('shop.html') || window.location.pathname.endsWith('shop.html')) &&
+      localStorage.getItem('autoOpenCart') === 'true') {
+    localStorage.removeItem('autoOpenCart');
+    setTimeout(() => {
+      if (typeof openCartDrawer === 'function') openCartDrawer();
+    }, 600);
+  }
 });
 
 
@@ -1785,6 +1793,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 });
                 historyContainer.innerHTML = html;
+                // === 1. CLIC PRODUIT DANS ORDER HISTORY ===
+            setTimeout(() => {
+              const orderItemDivs = historyContainer.querySelectorAll('.order-items > div');
+              orderItemDivs.forEach(div => {
+                div.style.cursor = 'pointer';
+                div.addEventListener('click', () => {
+                  const titleEl = div.querySelector('strong');
+                  if (!titleEl) return;
+                  const title = titleEl.textContent.trim();
+                  const product = products.find(p => p.title === title);
+                  if (product && typeof getProductUrl === 'function') {
+                    window.location.href = getProductUrl(product.id);
+                  }
+                });
+              });
+            }, 100);
             } else {
                 historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
             }
@@ -1795,6 +1819,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (isAccountPage) {
         loadAccountStats();
+        // === 2. CLIC SUR SAVED ITEMS ===
+    const savedItemsLink = document.querySelector('.stat-wishlist-link');
+    if (savedItemsLink) {
+      savedItemsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+          localStorage.setItem('autoOpenCart', 'true');
+          window.location.href = 'shop.html';
+        }
+      });
+    }
     }
 
     // ==================== SAVE ADDRESS ====================
