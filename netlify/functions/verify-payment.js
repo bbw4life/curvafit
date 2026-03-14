@@ -11,11 +11,11 @@ exports.handler = async (event) => {
     const paymentId = sessionId || orderID;
     if (!paymentId) throw new Error("Missing payment ID");
 
-    // ====================== PROTECTION DOUBLE (ULTRA RENFORCÉE) ======================
+    // ====================== ANTI-DUPLICATE ULTRA RAPIDE ======================
     const alreadyProcessed = await isAlreadyProcessed(paymentId);
     if (alreadyProcessed) {
-      console.log(`🚫 DUPLICATE DÉTECTÉ (${paymentId}) → SKIP`);
-      return response(200, { success: true, message: "Duplicate - already processed" });
+      console.log(`🚫 DUPLICATE DÉTECTÉ (${paymentId}) → SKIP IMMÉDIAT`);
+      return response(200, { success: true, message: "Duplicate skipped" });
     }
 
     let cart = [];
@@ -105,10 +105,10 @@ exports.handler = async (event) => {
 
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
 
+    // ====================== ENREGISTREMENT IMMÉDIAT (ANTI-DUPLICATION) ======================
     let totalAmount = provider === "stripe" ? session.amount_total / 100 : parseFloat(purchaseUnit.amount.value);
     const totalQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
 
-    // ====================== AJOUT DU PAYMENT_ID (anti-duplication) ======================
     const orderItems = cart.map(item => ({
       title: item.title,
       variant_color: item.color || '',
@@ -117,7 +117,7 @@ exports.handler = async (event) => {
       quantity: item.quantity,
       lineTotal: item.price * item.quantity,
       variantsid: item.variantsid || '',
-      payment_id: paymentId   // ← IMPORTANT
+      payment_id: paymentId
     }));
 
     if (shipping.email) {
@@ -126,8 +126,10 @@ exports.handler = async (event) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: 'record-order', email: shipping.email, totalAmount, totalQuantity, orderItems })
       });
+      console.log(`✅ Commande enregistrée immédiatement (anti-duplicate)`);
     }
 
+    // ====================== FULFILLMENT (après enregistrement) ======================
     console.log("=== FULFILLMENT ===");
     const cartMap = {};
     cart.forEach(item => {
@@ -152,12 +154,19 @@ exports.handler = async (event) => {
   }
 };
 
-// ====================== ANTI-DUPLICATE ULTRA RENFORCÉ ======================
+// ====================== ANTI-DUPLICATE ======================
 async function isAlreadyProcessed(paymentId) {
   try {
-    const auth = new google.auth.GoogleAuth({ credentials: { client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL, private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n") }, scopes: ["https://www.googleapis.com/auth/spreadsheets"] });
+    const auth = new google.auth.GoogleAuth({
+      credentials: {
+        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n")
+      },
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"]
+    });
     const sheets = google.sheets({ version: "v4", auth });
 
+    // Check dans toutes les feuilles + historique comptes
     const ranges = ["PendingOrders!A:Z", "Sheet1!A:Z", "Feuille 1!A:Z", "Orders!A:Z", "Sheet2!A:Z"];
     for (const range of ranges) {
       try {
@@ -169,7 +178,7 @@ async function isAlreadyProcessed(paymentId) {
       } catch {}
     }
 
-    // Vérification aussi dans la feuille des comptes (historique)
+    // Check historique dans Feuille 1 (comptes)
     const accountRes = await sheets.spreadsheets.values.get({ spreadsheetId: process.env.GOOGLE_SHEET_ID_ACCOUNTS, range: "Feuille 1!Q:Q" });
     const accountRows = accountRes.data.values || [];
     for (const row of accountRows) {
