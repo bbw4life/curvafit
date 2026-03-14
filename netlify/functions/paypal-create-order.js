@@ -1,4 +1,3 @@
-// paypal-create-order.js
 const fetch = require('node-fetch');
 exports.handler = async (event) => {
   try {
@@ -10,7 +9,7 @@ exports.handler = async (event) => {
     const PAYPAL_BASE = process.env.PAYPAL_ENV === "live"
       ? "https://api-m.paypal.com"
       : "https://api-m.sandbox.paypal.com";
-    // ====================== ACCESS TOKEN ======================
+
     const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
     const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, {
       method: 'POST',
@@ -20,13 +19,9 @@ exports.handler = async (event) => {
       },
       body: 'grant_type=client_credentials'
     });
-    if (!tokenRes.ok) {
-      const tokenErr = await tokenRes.text();
-      console.error("[PAYPAL] Token error:", tokenErr);
-      throw new Error("Failed to get PayPal token");
-    }
+    if (!tokenRes.ok) throw new Error("Failed to get PayPal token");
     const { access_token } = await tokenRes.json();
-    // ====================== CALCULS SÉCURISÉS ======================
+
     let subtotal = 0;
     const items = cart.map(item => {
       const price = parseFloat(item.price);
@@ -38,22 +33,22 @@ exports.handler = async (event) => {
         unit_amount: { currency_code: "USD", value: price.toFixed(2) },
         quantity: qty.toString(),
         sku: item.cj_variant_id || '',
-        description: item.image || ''
+        // === CORRECTION : on encode couleur + image dans description ===
+        description: `${item.color || 'N/A'}|${item.image || ''}`
       };
     });
+
     const shippingCost = parseFloat(shipping_cost);
     const taxAmount = parseFloat(tax);
     const finalTotal = (subtotal + shippingCost + taxAmount).toFixed(2);
-    // ====================== COMPACT CUSTOM_ID WITH VARIANTS IDS ======================
-    const custom_id = cart
-      .map(item => item.cj_variant_id || '')
-      .join('|');
-    // ====================== CREATE ORDER ======================
+
+    const custom_id = cart.map(item => item.cj_variant_id || '').join('|');
+
     const fullName = `${shipping.firstName || ''} ${shipping.lastName || ''}`.trim();
     const orderBody = {
       intent: "CAPTURE",
       purchase_units: [{
-      reference_id: `${fullName}|${shipping.phone || ''}|${shipping.email || ''}|${shipping.countryCode || 'US'}|${shipping.shipping_method || 'Standard Shipping'}`,  // AMÉLIORÉ : Ajouté fullName en premier
+        reference_id: `${fullName}|${shipping.phone || ''}|${shipping.email || ''}|${shipping.countryCode || 'US'}|${shipping.shipping_method || 'Standard Shipping'}`,
         amount: {
           currency_code: "USD",
           value: finalTotal,
@@ -68,7 +63,7 @@ exports.handler = async (event) => {
           name: { full_name: fullName },
           address: {
             address_line_1: shipping.address || '',
-            address_line_2: '',  // Ajouté pour mieux prefill
+            address_line_2: '',
             admin_area_2: shipping.city || "",
             admin_area_1: shipping.state || "",
             postal_code: shipping.postalCode || "",
@@ -82,68 +77,48 @@ exports.handler = async (event) => {
         cancel_url: `${process.env.BASE_URL}/checkout.html`
       }
     };
-    // ====================== PREFILL PAYER FOR PHONE AND EMAIL ======================
+
     let payer = {};
-    if (shipping.email) {
-      payer.email_address = shipping.email;
-    }
+    if (shipping.email) payer.email_address = shipping.email;
     if (shipping.firstName || shipping.lastName) {
-      payer.name = {
-        given_name: shipping.firstName || '',
-        surname: shipping.lastName || ''
-      };
+      payer.name = { given_name: shipping.firstName || '', surname: shipping.lastName || '' };
     }
     if (shipping.phone && shipping.countryCode) {
+      // (code phone inchangé)
       try {
         const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.countryCode}?fields=idd`);
         const countryData = await countryRes.json();
         let callingCode = countryData.idd.root.replace('+', '') + (countryData.idd.suffixes ? countryData.idd.suffixes[0] : '');
         let nationalNumber = shipping.phone.replace(/^\+/, '').replace(/\D/g, '');
         if (nationalNumber.startsWith(callingCode)) nationalNumber = nationalNumber.slice(callingCode.length);
-        payer.phone = {
-          phone_type: "MOBILE",
-          phone_number: {
-            country_code: callingCode,
-            national_number: nationalNumber
-          }
-        };
-      } catch (err) {
-        console.error("[PAYPAL] Failed to prefill phone:", err.message);
-      }
+        payer.phone = { phone_type: "MOBILE", phone_number: { country_code: callingCode, national_number: nationalNumber } };
+      } catch (err) {}
     }
     orderBody.payer = payer;
-    console.log("[PAYPAL] Shipping prefilled:", JSON.stringify(orderBody.purchase_units[0].shipping));
-    console.log("[PAYPAL] Payer prefilled:", JSON.stringify(orderBody.payer));
+
     const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders`, {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${access_token}`,
-        "Content-Type": "application/json"
-      },
+      headers: { "Authorization": `Bearer ${access_token}`, "Content-Type": "application/json" },
       body: JSON.stringify(orderBody)
     });
+
     if (!orderRes.ok) {
       const errText = await orderRes.text();
-      console.error("[PAYPAL] Create order error full:", errText);
       throw new Error(errText || "PayPal order creation failed");
     }
     const orderData = await orderRes.json();
+
     return response(200, {
       success: true,
       orderID: orderData.id,
-      paypalDomain: PAYPAL_BASE.includes("sandbox")
-        ? "https://www.sandbox.paypal.com"
-        : "https://www.paypal.com"
+      paypalDomain: PAYPAL_BASE.includes("sandbox") ? "https://www.sandbox.paypal.com" : "https://www.paypal.com"
     });
   } catch (error) {
     console.error("[PAYPAL] Global error:", error.message);
     return response(500, { success: false, error: "PayPal order creation failed" });
   }
 };
+
 function response(statusCode, body) {
-  return {
-    statusCode,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  };
+  return { statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
 }
