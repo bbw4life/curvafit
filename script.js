@@ -1547,7 +1547,7 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       });
     });
   }
-  // === AUTO OPEN CART DRAWER quand on vient de "Saved Items" ===
+  // === AUTO OPEN CART DRAWER quand on vient de "Saved Items" (exactement comme dans le cart) ===
   if (window.location.pathname.toLowerCase().includes('shop.html') && 
       localStorage.getItem('autoOpenCart') === 'true') {
     localStorage.removeItem('autoOpenCart');
@@ -1555,7 +1555,7 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       if (typeof openCartDrawer === 'function') {
         openCartDrawer();
       }
-    }, 1200);
+    }, 1500); // 1.5 secondes pour être sûr que tout est chargé
   }
 });
 
@@ -1706,7 +1706,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isAccountPage) {
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
-        // ==================== PROTECTION ULTRA-STRICTE ====================
+        // ==================== PROTECTION ULTRA-STRICTE (page invisible si non connecté) ====================
         if (!isLoggedIn) {
             const accountMain = document.querySelector('.account-main');
             const customerSection = document.querySelector('.customer.account');
@@ -1734,7 +1734,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadAccountStats();
     }
 
-    // ==================== SAVED ITEMS → shop.html + ouvre cart drawer ====================
+    // ==================== SAVED ITEMS → shop.html + ouvre cart drawer (exactement comme le cart) ====================
     window.openSavedItems = () => {
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             showToast("Connectez-vous pour voir vos articles sauvegardés");
@@ -1760,6 +1760,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
             }
             document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
+
             const historyContainer = document.querySelector('.order-history');
             if (data.history && Array.isArray(data.history) && data.history.length > 0) {
                 let html = `<h2>Order History</h2>`;
@@ -1790,18 +1791,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 historyContainer.innerHTML = html;
 
-                // === CLIC SUR PRODUIT → redirection page produit ===
-                setTimeout(() => {
-                    const clickable = historyContainer.querySelectorAll('.order-item-clickable');
-                    clickable.forEach(div => {
-                        const id = div.dataset.id;
+                // === CLIC SUR PRODUIT (event delegation comme dans le cart) ===
+                historyContainer.addEventListener('click', (e) => {
+                    const clickable = e.target.closest('.order-item-clickable');
+                    if (clickable) {
+                        const id = clickable.dataset.id;
                         if (id && window.getProductUrl) {
-                            div.addEventListener('click', () => {
-                                window.location.href = window.getProductUrl(id);
-                            });
+                            window.location.href = window.getProductUrl(id);
                         }
-                    });
-                }, 100);
+                    }
+                });
             } else {
                 historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
             }
@@ -1871,13 +1870,4 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.clear();
         window.location.href = 'index.html';
     };
-    if (isAccountPage) {
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            setTimeout(() => {
-                openPaulPopup();
-                closeBtn.style.pointerEvents = 'none';
-                closeBtn.style.opacity = '0.3';
-            }, 500);
-        }
-    }
 });
