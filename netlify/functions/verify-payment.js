@@ -11,7 +11,6 @@ exports.handler = async (event) => {
     const paymentId = sessionId || orderID;
     if (!paymentId) throw new Error("Missing payment ID");
 
-    // ====================== PROTECTION DOUBLE PROCESSING ======================
     const alreadyProcessed = await isAlreadyProcessed(paymentId);
     if (alreadyProcessed) {
       console.log(`🚫 DUPLICATE DETECTED (${paymentId}) → SKIP`);
@@ -49,7 +48,7 @@ exports.handler = async (event) => {
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
 
-    // ====================== PAYPAL (CORRIGÉ) ======================
+    // ====================== PAYPAL (CORRIGÉ + PAYS RÉCUPÉRÉ) ======================
     } else if (provider === "paypal") {
       const PAYPAL_BASE = process.env.PAYPAL_ENV === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
       const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString("base64");
@@ -71,7 +70,6 @@ exports.handler = async (event) => {
       const storedVariants = purchaseUnit.custom_id ? purchaseUnit.custom_id.split('|') : [];
       const itemsArray = purchaseUnit.items || [];
 
-      // === Extraction couleur + image ===
       cart = itemsArray.map((item) => {
         const descParts = (item.description || '').split('|');
         return {
@@ -92,11 +90,21 @@ exports.handler = async (event) => {
 
       const payer = finalOrderData.payer || {};
       const ship = purchaseUnit.shipping || {};
-      
-      // === AJOUTÉ ICI (obligatoire pour éviter "refParts is not defined") ===
       const refParts = purchaseUnit.reference_id ? purchaseUnit.reference_id.split('|') : [];
 
-      // === Email toujours celui du formulaire checkout ===
+      // === RÉCUPÉRATION DU VRAI PAYS (plus jamais "United States" par défaut) ===
+      let countryCode = refParts[3] || ship.address?.country_code || "US";
+      let countryName = "United States";
+      try {
+        const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${countryCode}?fields=name`);
+        if (countryRes.ok) {
+          const data = await countryRes.json();
+          countryName = data.name.common || countryName;
+        }
+      } catch (err) {
+        console.log("[PAYPAL] Country name fetch failed, using fallback");
+      }
+
       let email = refParts[2] || payer.email_address || '';
       let firstName = payer.name?.given_name || '';
       let lastName = payer.name?.surname || '';
@@ -114,8 +122,8 @@ exports.handler = async (event) => {
         city: ship.address?.admin_area_2 || "",
         state: ship.address?.admin_area_1 || "",
         postalCode: ship.address?.postal_code || "",
-        country: "United States",
-        countryCode: refParts[3] || ship.address?.country_code || "US",
+        country: countryName,                    // ← MAINTENANT CORRECT
+        countryCode: countryCode,
         shipping_method: refParts[4] || "Standard Shipping"
       };
       console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));
@@ -124,7 +132,6 @@ exports.handler = async (event) => {
 
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
 
-    // ====================== UPDATE USER PROFILE ======================
     let totalAmount = provider === "stripe" ? session.amount_total / 100 : parseFloat(purchaseUnit.amount.value);
     const totalQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -195,10 +202,7 @@ async function isAlreadyProcessed(paymentId) {
         const res = await sheets.spreadsheets.values.get({ spreadsheetId, range });
         const rows = res.data.values || [];
         for (const row of rows) {
-          if (row.some(cell => cell && cell.toString().includes(paymentId))) {
-            console.log(`✅ Doublon trouvé dans ${range}`);
-            return true;
-          }
+          if (row.some(cell => cell && cell.toString().includes(paymentId))) return true;
         }
       } catch (e) {}
     }
@@ -209,7 +213,6 @@ async function isAlreadyProcessed(paymentId) {
   }
 }
 
-// ====================== SAVE PENDING ======================
 async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending_stock") {
   try {
     await fetch(`${BASE_URL}/.netlify/functions/save-pending-order`, {
