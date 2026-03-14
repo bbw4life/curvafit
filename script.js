@@ -1704,35 +1704,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     if (isAccountPage) {
-        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceLogin = urlParams.get('forceLogin') === '1';
 
-        // ==================== PROTECTION ULTRA-STRICTE ====================
-        if (!isLoggedIn) {
-            const accountMain = document.querySelector('.account-main');
-            const customerSection = document.querySelector('.customer.account');
-            if (accountMain) accountMain.style.display = 'none';
-            if (customerSection) customerSection.style.display = 'none';
+    // ==================== PROTECTION ULTRA-STRICTE ====================
+    if (!isLoggedIn || forceLogin) {
+        const accountMain = document.querySelector('.account-main');
+        const customerSection = document.querySelector('.customer.account');
+        if (accountMain) accountMain.style.display = 'none';
+        if (customerSection) customerSection.style.display = 'none';
 
-            setTimeout(() => {
-                openPaulPopup();
-                const closeBtnPopup = document.querySelector('.paul-close');
-                if (closeBtnPopup) {
-                    closeBtnPopup.style.pointerEvents = 'none';
-                    closeBtnPopup.style.opacity = '0.3';
-                    closeBtnPopup.title = 'Vous devez vous connecter pour accéder à votre compte';
-                }
-            }, 200);
-            return;
-        }
-
-        // ==================== UTILISATEUR CONNECTÉ → tout normal ====================
-        document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
-        document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
-        document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
-        document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
-
-        loadAccountStats();
+        setTimeout(() => {
+            openPaulPopup();
+            const closeBtnPopup = document.querySelector('.paul-close');
+            if (closeBtnPopup) {
+                closeBtnPopup.style.pointerEvents = 'none';
+                closeBtnPopup.style.opacity = '0.3';
+                closeBtnPopup.title = 'You must log in to access your account.';
+            }
+        }, 200);
+        return;
     }
+
+    // ==================== UTILISATEUR CONNECTÉ → tout normal ====================
+    document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
+    document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
+    document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
+    document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
+    loadAccountStats();
+}
 
     // ==================== SAVED ITEMS → shop.html + ouvre cart drawer ====================
     window.openSavedItems = () => {
@@ -1807,15 +1808,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Fonction séparée pour le clic (fonctionne à tous les coups)
-    function handleOrderClick(e) {
+        function handleOrderClick(e) {
         const clickable = e.target.closest('.order-item-clickable');
         if (clickable) {
             const id = clickable.dataset.id;
-            if (id && window.getProductUrl) {
-                console.log("✅ Clic détecté → redirection vers produit ID:", id); // pour debug
+            if (id && typeof window.getProductUrl === 'function') {
+                console.log("Clic sur produit ID:", id);
                 window.location.href = window.getProductUrl(id);
             } else {
-                console.warn("⚠️ Pas de ID ou getProductUrl manquant");
+                console.warn("ID manquant ou getProductUrl non disponible");
             }
         }
     }

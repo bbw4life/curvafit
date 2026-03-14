@@ -41,6 +41,27 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCart();
       });
 
+
+
+
+if (localStorage.getItem('isLoggedIn') === 'true') {
+    document.getElementById('first-name').value = localStorage.getItem('userFirstName') || '';
+    document.getElementById('last-name').value = localStorage.getItem('userLastName') || '';
+    document.getElementById('email').value = localStorage.getItem('userEmail') || '';
+    document.getElementById('address').value = localStorage.getItem('userAddressLine1') || '';
+    document.getElementById('address2').value = localStorage.getItem('userLine2') || ''; 
+    document.getElementById('city').value = localStorage.getItem('userCity') || '';
+    document.getElementById('state').value = localStorage.getItem('userState') || '';
+    document.getElementById('postal-code').value = localStorage.getItem('userZip') || '';
+    document.getElementById('phone').value = localStorage.getItem('userPhone') || '';
+    console.log("Infos shipping auto-remplies depuis profil.");
+}
+
+
+
+
+
+
     function renderCart() {
         if (!cart.length) {
             cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
