@@ -11,9 +11,10 @@ exports.handler = async (event) => {
     const paymentId = sessionId || orderID;
     if (!paymentId) throw new Error("Missing payment ID");
 
+    // ====================== PROTECTION DOUBLE (ULTRA RENFORCÉE) ======================
     const alreadyProcessed = await isAlreadyProcessed(paymentId);
     if (alreadyProcessed) {
-      console.log(`🚫 DUPLICATE DETECTED (${paymentId}) → SKIP`);
+      console.log(`🚫 DUPLICATE DÉTECTÉ (${paymentId}) → SKIP`);
       return response(200, { success: true, message: "Duplicate - already processed" });
     }
 
@@ -23,7 +24,6 @@ exports.handler = async (event) => {
     let session;
     let purchaseUnit;
     const BASE_URL = process.env.BASE_URL || process.env.URL || `https://${event.headers.host}`;
-    console.log(`🔗 BASE_URL utilisée : ${BASE_URL}`);
 
     // ====================== STRIPE ======================
     if (provider === "stripe") {
@@ -36,19 +36,12 @@ exports.handler = async (event) => {
         .filter(li => li.description !== 'Shipping' && li.description !== 'Taxes')
         .map((li, i) => {
           const eproloItem = storedEprolo[i] || {};
-          return {
-            title: li.description,
-            price: (li.amount_total / 100) / li.quantity,
-            quantity: li.quantity,
-            variantsid: eproloItem.variantsid || null,
-            image: storedImages[i] || '',
-            color: ''
-          };
+          return { title: li.description, price: (li.amount_total / 100) / li.quantity, quantity: li.quantity, variantsid: eproloItem.variantsid || null, image: storedImages[i] || '', color: '' };
         });
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
 
-    // ====================== PAYPAL (CORRIGÉ + PAYS RÉCUPÉRÉ) ======================
+    // ====================== PAYPAL ======================
     } else if (provider === "paypal") {
       const PAYPAL_BASE = process.env.PAYPAL_ENV === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
       const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString("base64");
@@ -77,33 +70,25 @@ exports.handler = async (event) => {
           price: parseFloat(item.unit_amount.value),
           quantity: parseInt(item.quantity),
           variantsid: item.sku || storedVariants[0] || null,
-          image: descParts[1] || item.description || '',
+          image: descParts[1] || '',
           color: descParts[0] && descParts[0] !== 'N/A' ? descParts[0] : ''
         };
       });
 
       if (cart.length === 0 && storedVariants.length > 0) {
-        cart = storedVariants.map((str, i) => {
-          return { title: `Product ${i+1}`, price: 0, quantity: 1, variantsid: str || null, image: '' };
-        });
+        cart = storedVariants.map((str, i) => ({ title: `Product ${i+1}`, price: 0, quantity: 1, variantsid: str, image: '' }));
       }
 
       const payer = finalOrderData.payer || {};
       const ship = purchaseUnit.shipping || {};
       const refParts = purchaseUnit.reference_id ? purchaseUnit.reference_id.split('|') : [];
 
-      // === RÉCUPÉRATION DU VRAI PAYS (plus jamais "United States" par défaut) ===
       let countryCode = refParts[3] || ship.address?.country_code || "US";
       let countryName = "United States";
       try {
         const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${countryCode}?fields=name`);
-        if (countryRes.ok) {
-          const data = await countryRes.json();
-          countryName = data.name.common || countryName;
-        }
-      } catch (err) {
-        console.log("[PAYPAL] Country name fetch failed, using fallback");
-      }
+        if (countryRes.ok) countryName = (await countryRes.json()).name.common;
+      } catch {}
 
       let email = refParts[2] || payer.email_address || '';
       let firstName = payer.name?.given_name || '';
@@ -114,19 +99,7 @@ exports.handler = async (event) => {
         lastName = nameParts.slice(1).join(' ') || '';
       }
 
-      shipping = {
-        firstName, lastName,
-        email,
-        phone: payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : refParts[1] || '',
-        address: ship.address?.address_line_1 || "",
-        city: ship.address?.admin_area_2 || "",
-        state: ship.address?.admin_area_1 || "",
-        postalCode: ship.address?.postal_code || "",
-        country: countryName,                    // ← MAINTENANT CORRECT
-        countryCode: countryCode,
-        shipping_method: refParts[4] || "Standard Shipping"
-      };
-      console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));
+      shipping = { firstName, lastName, email, phone: payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : refParts[1] || '', address: ship.address?.address_line_1 || "", city: ship.address?.admin_area_2 || "", state: ship.address?.admin_area_1 || "", postalCode: ship.address?.postal_code || "", country: countryName, countryCode, shipping_method: refParts[4] || "Standard Shipping" };
       paymentVerified = true;
     }
 
@@ -135,6 +108,7 @@ exports.handler = async (event) => {
     let totalAmount = provider === "stripe" ? session.amount_total / 100 : parseFloat(purchaseUnit.amount.value);
     const totalQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
 
+    // ====================== AJOUT DU PAYMENT_ID (anti-duplication) ======================
     const orderItems = cart.map(item => ({
       title: item.title,
       variant_color: item.color || '',
@@ -142,24 +116,19 @@ exports.handler = async (event) => {
       price: item.price,
       quantity: item.quantity,
       lineTotal: item.price * item.quantity,
-      variantsid: item.variantsid || ''
+      variantsid: item.variantsid || '',
+      payment_id: paymentId   // ← IMPORTANT
     }));
 
     if (shipping.email) {
       await fetch(`${BASE_URL}/.netlify/functions/save-account`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: 'record-order',
-          email: shipping.email,
-          totalAmount,
-          totalQuantity,
-          orderItems
-        })
+        body: JSON.stringify({ action: 'record-order', email: shipping.email, totalAmount, totalQuantity, orderItems })
       });
     }
 
-    console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
+    console.log("=== FULFILLMENT ===");
     const cartMap = {};
     cart.forEach(item => {
       const vid = item.variantsid || null;
@@ -183,29 +152,30 @@ exports.handler = async (event) => {
   }
 };
 
-// ====================== ANTI-DOUBLE ======================
+// ====================== ANTI-DUPLICATE ULTRA RENFORCÉ ======================
 async function isAlreadyProcessed(paymentId) {
   try {
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n")
-      },
-      scopes: ["https://www.googleapis.com/auth/spreadsheets"]
-    });
+    const auth = new google.auth.GoogleAuth({ credentials: { client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL, private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n") }, scopes: ["https://www.googleapis.com/auth/spreadsheets"] });
     const sheets = google.sheets({ version: "v4", auth });
-    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
-    const rangesToTry = ["PendingOrders!A:Z", "Sheet1!A:Z", "Feuille 1!A:Z", "Orders!A:Z", "Sheet2!A:Z"];
-    for (const range of rangesToTry) {
+    const ranges = ["PendingOrders!A:Z", "Sheet1!A:Z", "Feuille 1!A:Z", "Orders!A:Z", "Sheet2!A:Z"];
+    for (const range of ranges) {
       try {
-        const res = await sheets.spreadsheets.values.get({ spreadsheetId, range });
+        const res = await sheets.spreadsheets.values.get({ spreadsheetId: process.env.GOOGLE_SHEET_ID, range });
         const rows = res.data.values || [];
         for (const row of rows) {
           if (row.some(cell => cell && cell.toString().includes(paymentId))) return true;
         }
-      } catch (e) {}
+      } catch {}
     }
+
+    // Vérification aussi dans la feuille des comptes (historique)
+    const accountRes = await sheets.spreadsheets.values.get({ spreadsheetId: process.env.GOOGLE_SHEET_ID_ACCOUNTS, range: "Feuille 1!Q:Q" });
+    const accountRows = accountRes.data.values || [];
+    for (const row of accountRows) {
+      if (row[0] && row[0].includes(paymentId)) return true;
+    }
+
     return false;
   } catch (e) {
     console.error("[DUPLICATE CHECK ERROR]", e.message);
@@ -218,11 +188,9 @@ async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, stat
     await fetch(`${BASE_URL}/.netlify/functions/save-pending-order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ shipping, item, payment_provider: provider, payment_id: paymentId || "auto", status })
+      body: JSON.stringify({ shipping, item, payment_provider: provider, payment_id: paymentId, status })
     });
-  } catch (e) {
-    console.error("saveAsPending failed:", e.message);
-  }
+  } catch (e) { console.error("saveAsPending failed:", e.message); }
 }
 
 function response(statusCode, body) {
