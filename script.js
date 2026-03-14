@@ -1763,9 +1763,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action: 'get-account', email })
             });
+            if (!res.ok) {
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            }
             const data = await res.json();
 
             if (data.success) {
+                console.log("Données récupérées du sheet :", data);  // Debug pour vérifier les données
+
                 // Mise à jour basique (sync localStorage avec sheet si besoin)
                 localStorage.setItem('userFirstName', data.firstName || '');
                 localStorage.setItem('userLastName', data.lastName || '');
@@ -1780,73 +1785,82 @@ document.addEventListener('DOMContentLoaded', () => {
                 const addr = [data.line1, data.line2, data.city, data.state, data.zip].filter(Boolean).join(", ");
                 localStorage.setItem('userAddress', addr || 'No default address set');
 
-                document.getElementById("user-name").textContent = data.firstName;
-                document.getElementById("user-full-name").textContent = `${data.firstName} ${data.lastName}`;
-                document.getElementById("user-email").textContent = data.email;
+                document.getElementById("user-name").textContent = data.firstName || "User";
+                document.getElementById("user-full-name").textContent = `${data.firstName || ''} ${data.lastName || ''}`;
+                document.getElementById("user-email").textContent = data.email || "";
                 document.getElementById("user-address").textContent = addr || "No default address set";
 
                 // Member since
                 const memberP = document.querySelector(".membership-greeting p");
-                memberP.textContent = `Member since ${data.memberSince}`;
+                if (memberP) memberP.textContent = `Member since ${data.memberSince || "January 2026"}`;
 
                 // Quantity Order (nombre de commandes)
-                document.querySelector(".stat-item.orders .stat-value").textContent = data.orders;
+                const ordersEl = document.querySelector(".stat-item.orders .stat-value");
+                if (ordersEl) ordersEl.textContent = data.orders || 0;
 
                 // Total Spent
-                document.querySelector(".stat-item.spend .stat-value").textContent = `$${data.totalSpent.toFixed(2)}`;
+                const spentEl = document.querySelector(".stat-item.spend .stat-value");
+                if (spentEl) spentEl.textContent = `$${ (data.totalSpent || 0).toFixed(2) }`;
 
                 // Quantity in Cart (Saved Items, assuming it's wishlist or cart quantity)
-                document.querySelector("[data-wishlist-count]").textContent = data.quantityInCart || 0;
+                const wishlistEl = document.querySelector("[data-wishlist-count]");
+                if (wishlistEl) wishlistEl.textContent = data.quantityInCart || 0;
 
                 // Order History
                 const historyDiv = document.querySelector(".order-history");
-                historyDiv.innerHTML = "<h2>Order History</h2>";
-                if (data.history.length === 0) {
-                    historyDiv.innerHTML += "<p>No orders yet</p>";
-                } else {
-                    data.history.forEach(order => {
-                        const orderDiv = document.createElement("div");
-                        orderDiv.classList.add("order-item");
-                        orderDiv.innerHTML = `<p><strong>Date:</strong> ${order.date} - <strong>Total:</strong> $${order.total} - <strong>Items:</strong> ${order.totalQuantity}</p>`;
-                        const itemsList = document.createElement("ul");
-                        order.items.forEach(item => {
-                            const li = document.createElement("li");
-                            li.innerHTML = `
-                                ${item.image ? `<img src="${item.image}" alt="${item.title}" style="width: 50px; height: auto; margin-right: 10px;">` : ''}
-                                <span>${item.title} - Couleur: ${item.color || 'N/A'} - Prix: $${item.price} - Quantité: ${item.quantity} - Total produit: $${item.total}</span>
-                            `;
-                            itemsList.appendChild(li);
+                if (historyDiv) {
+                    historyDiv.innerHTML = "<h2>Order History</h2>";
+                    if (data.history.length === 0) {
+                        historyDiv.innerHTML += "<p>No orders yet</p>";
+                    } else {
+                        data.history.forEach(order => {
+                            const orderDiv = document.createElement("div");
+                            orderDiv.classList.add("order-item");
+                            orderDiv.innerHTML = `<p><strong>Date:</strong> ${order.date} - <strong>Total:</strong> $${order.total} - <strong>Items:</strong> ${order.totalQuantity}</p>`;
+                            const itemsList = document.createElement("ul");
+                            order.items.forEach(item => {
+                                const li = document.createElement("li");
+                                li.innerHTML = `
+                                    ${item.image ? `<img src="${item.image}" alt="${item.title}" style="width: 50px; height: auto; margin-right: 10px;">` : ''}
+                                    <span>${item.title} - Couleur: ${item.color || 'N/A'} - Prix: $${item.price} - Quantité: ${item.quantity} - Total produit: $${item.total}</span>
+                                `;
+                                itemsList.appendChild(li);
+                            });
+                            orderDiv.appendChild(itemsList);
+                            historyDiv.appendChild(orderDiv);
                         });
-                        orderDiv.appendChild(itemsList);
-                        historyDiv.appendChild(orderDiv);
-                    });
+                    }
                 }
 
                 // Mise à jour adresses section
                 const addressSection = document.querySelector(".address-section");
-                addressSection.innerHTML = "<h2>Addresses</h2>";
-                if (addr) {
-                    addressSection.innerHTML += `<p>${addr}</p>`;
-                } else {
-                    addressSection.innerHTML += "<p>No addresses found</p>";
+                if (addressSection) {
+                    addressSection.innerHTML = "<h2>Addresses</h2>";
+                    if (addr) {
+                        addressSection.innerHTML += `<p>${addr}</p>`;
+                    } else {
+                        addressSection.innerHTML += "<p>No addresses found</p>";
+                    }
                 }
 
                 // Mise à jour popups
-                document.getElementById("addr-email").value = data.email;
-                document.getElementById("addr-first").value = data.firstName;
-                document.getElementById("addr-last").value = data.lastName;
-                document.getElementById("addr-line1").value = data.line1;
-                document.getElementById("addr-line2").value = data.line2;
-                document.getElementById("addr-city").value = data.city;
-                document.getElementById("addr-state").value = data.state;
-                document.getElementById("addr-zip").value = data.zip;
+                document.getElementById("addr-email").value = data.email || "";
+                document.getElementById("addr-first").value = data.firstName || "";
+                document.getElementById("addr-last").value = data.lastName || "";
+                document.getElementById("addr-line1").value = data.line1 || "";
+                document.getElementById("addr-line2").value = data.line2 || "";
+                document.getElementById("addr-city").value = data.city || "";
+                document.getElementById("addr-state").value = data.state || "";
+                document.getElementById("addr-zip").value = data.zip || "";
 
-                document.getElementById("security-email").value = data.email;
+                document.getElementById("security-email").value = data.email || "";
             } else {
                 console.error("Erreur chargement profil:", data.error);
+                showToast("Erreur lors du chargement des données du profil : " + data.error);
             }
         } catch (e) {
-            console.error("Stats load error", e);
+            console.error("Erreur fetch loadAccountStats :", e.message);
+            showToast("Erreur réseau lors du chargement du profil");
         }
     }
 
