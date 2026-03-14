@@ -1597,7 +1597,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const goToLogin = document.getElementById('goToLogin');
     const isAccountPage = window.location.pathname.includes('account.html') || window.location.pathname.endsWith('account.html');
 
-    // ==================== TOAST (single line + nowrap) ====================
+    // ==================== TOAST ====================
     window.showToast = (msg) => {
         let toast = document.getElementById('toast');
         if (!toast) {
@@ -1615,7 +1615,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.openAccountPopup = (id) => {
         const popup = document.getElementById(id);
         if (popup) popup.classList.add('open');
-
         if (id === 'address-popup') {
             document.getElementById('addr-email').value = localStorage.getItem('userEmail') || '';
             document.getElementById('addr-first').value = localStorage.getItem('userFirstName') || '';
@@ -1627,7 +1626,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('addr-zip').value = localStorage.getItem('userZip') || '';
         }
     };
-
     window.closeAccountPopup = (id) => {
         const popup = document.getElementById(id);
         if (popup) popup.classList.remove('open');
@@ -1639,12 +1637,10 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.style.display = 'block';
         signupForm.style.display = 'none';
     }
-
     function closePaulPopup() {
         if (isAccountPage) return;
         overlay.classList.remove('active');
     }
-
     trigger.addEventListener('click', (e) => {
         e.preventDefault();
         if (localStorage.getItem('isLoggedIn') === 'true') {
@@ -1653,17 +1649,14 @@ document.addEventListener('DOMContentLoaded', () => {
             openPaulPopup();
         }
     });
-
     closeBtn.addEventListener('click', closePaulPopup);
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay && !isAccountPage) closePaulPopup();
     });
-
     goToSignup.addEventListener('click', () => {
         loginForm.style.display = 'none';
         signupForm.style.display = 'block';
     });
-
     goToLogin.addEventListener('click', () => {
         signupForm.style.display = 'none';
         loginForm.style.display = 'block';
@@ -1677,9 +1670,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
         const password = signupForm.querySelector('input[type="password"]').value.trim();
         const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
-
         if (!password) return showToast("Password is required");
-
         try {
             const res = await fetch('/.netlify/functions/save-account', {
                 method: 'POST',
@@ -1687,7 +1678,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
             });
             const data = await res.json();
-
             if (data.success) {
                 showToast("Account created successfully!");
                 goToLogin.click();
@@ -1703,7 +1693,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.paul-btn-login').addEventListener('click', async () => {
         const email = loginForm.querySelector('input[type="email"]').value.trim();
         const password = loginForm.querySelector('input[type="password"]').value.trim();
-
         try {
             const res = await fetch('/.netlify/functions/verify-login', {
                 method: 'POST',
@@ -1711,7 +1700,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ email, password })
             });
             const data = await res.json();
-
             if (data.success) {
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('userEmail', email);
@@ -1722,15 +1710,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('userCity', data.user.city || '');
                 localStorage.setItem('userState', data.user.state || '');
                 localStorage.setItem('userZip', data.user.zip || '');
-
                 const addressStr = [data.user.addressLine1, data.user.line2, data.user.city, data.user.state, data.user.zip]
                     .filter(Boolean).join(', ');
                 localStorage.setItem('userAddress', addressStr || 'No default address set');
-
                 showToast(`Welcome ${data.user.firstName} !`);
-
                 overlay.classList.remove('active');
-
                 if (isAccountPage) {
                     location.reload();
                 } else {
@@ -1744,7 +1728,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ==================== POPULATE PROFILE + SYNC AVEC SHEET ====================
+    // ==================== POPULATE PROFILE ====================
     if (localStorage.getItem('isLoggedIn') === 'true') {
         document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
         document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
@@ -1752,123 +1736,63 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
     }
 
-    // ====================== SYNC PROFIL AVEC GOOGLE SHEET (Orders, Spent, History, etc.) ======================
+    // ====================== LOAD STATS + ORDER HISTORY (COMPLET) ======================
     async function loadAccountStats() {
         const email = localStorage.getItem('userEmail');
         if (!email) return;
-
         try {
             const res = await fetch('/.netlify/functions/save-account', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'get-account', email })
+                body: JSON.stringify({ action: 'get-stats', email })
             });
-            if (!res.ok) {
-                throw new Error(`HTTP error! Status: ${res.status}`);
-            }
             const data = await res.json();
 
-            if (data.success) {
-                console.log("Données récupérées du sheet :", data);  // Debug pour vérifier les données
+            // Mise à jour des stats
+            const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
+            if (statValues.length >= 2) {
+                statValues[0].textContent = data.orders || 0;                    // Orders
+                statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`; // Total Spent
+            }
+            document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
 
-                // Mise à jour basique (sync localStorage avec sheet si besoin)
-                localStorage.setItem('userFirstName', data.firstName || '');
-                localStorage.setItem('userLastName', data.lastName || '');
-                localStorage.setItem('userEmail', data.email || '');
-                localStorage.setItem('userPhone', data.phone || '');
-                localStorage.setItem('userAddressLine1', data.line1 || '');
-                localStorage.setItem('userLine2', data.line2 || '');
-                localStorage.setItem('userCity', data.city || '');
-                localStorage.setItem('userState', data.state || '');
-                localStorage.setItem('userZip', data.zip || '');
-
-                const addr = [data.line1, data.line2, data.city, data.state, data.zip].filter(Boolean).join(", ");
-                localStorage.setItem('userAddress', addr || 'No default address set');
-
-                document.getElementById("user-name").textContent = data.firstName || "User";
-                document.getElementById("user-full-name").textContent = `${data.firstName || ''} ${data.lastName || ''}`;
-                document.getElementById("user-email").textContent = data.email || "";
-                document.getElementById("user-address").textContent = addr || "No default address set";
-
-                // Member since
-                const memberP = document.querySelector(".membership-greeting p");
-                if (memberP) memberP.textContent = `Member since ${data.memberSince || "January 2026"}`;
-
-                // Quantity Order (nombre de commandes)
-                const ordersEl = document.querySelector(".stat-item.orders .stat-value");
-                if (ordersEl) ordersEl.textContent = data.orders || 0;
-
-                // Total Spent
-                const spentEl = document.querySelector(".stat-item.spend .stat-value");
-                if (spentEl) spentEl.textContent = `$${ (data.totalSpent || 0).toFixed(2) }`;
-
-                // Quantity in Cart (Saved Items, assuming it's wishlist or cart quantity)
-                const wishlistEl = document.querySelector("[data-wishlist-count]");
-                if (wishlistEl) wishlistEl.textContent = data.quantityInCart || 0;
-
-                // Order History
-                const historyDiv = document.querySelector(".order-history");
-                if (historyDiv) {
-                    historyDiv.innerHTML = "<h2>Order History</h2>";
-                    if (data.history.length === 0) {
-                        historyDiv.innerHTML += "<p>No orders yet</p>";
-                    } else {
-                        data.history.forEach(order => {
-                            const orderDiv = document.createElement("div");
-                            orderDiv.classList.add("order-item");
-                            orderDiv.innerHTML = `<p><strong>Date:</strong> ${order.date} - <strong>Total:</strong> $${order.total} - <strong>Items:</strong> ${order.totalQuantity}</p>`;
-                            const itemsList = document.createElement("ul");
-                            order.items.forEach(item => {
-                                const li = document.createElement("li");
-                                li.innerHTML = `
-                                    ${item.image ? `<img src="${item.image}" alt="${item.title}" style="width: 50px; height: auto; margin-right: 10px;">` : ''}
-                                    <span>${item.title} - Color: ${item.color || 'N/A'} - Price: $${item.price} - Quantity: ${item.quantity} - Product Total: $${item.total}</span>
-                                `;
-                                itemsList.appendChild(li);
-                            });
-                            orderDiv.appendChild(itemsList);
-                            historyDiv.appendChild(orderDiv);
-                        });
-                    }
-                }
-
-                // Mise à jour adresses section
-                const addressSection = document.querySelector(".address-section");
-                if (addressSection) {
-                    addressSection.innerHTML = "<h2>Addresses</h2>";
-                    if (addr) {
-                        addressSection.innerHTML += `<p>${addr}</p>`;
-                    } else {
-                        addressSection.innerHTML += "<p>No addresses found</p>";
-                    }
-                }
-
-                // Mise à jour popups
-                document.getElementById("addr-email").value = data.email || "";
-                document.getElementById("addr-first").value = data.firstName || "";
-                document.getElementById("addr-last").value = data.lastName || "";
-                document.getElementById("addr-line1").value = data.line1 || "";
-                document.getElementById("addr-line2").value = data.line2 || "";
-                document.getElementById("addr-city").value = data.city || "";
-                document.getElementById("addr-state").value = data.state || "";
-                document.getElementById("addr-zip").value = data.zip || "";
-
-                document.getElementById("security-email").value = data.email || "";
+            // ==================== ORDER HISTORY DISPLAY ====================
+            const historyContainer = document.querySelector('.order-history');
+            if (data.history && Array.isArray(data.history) && data.history.length > 0) {
+                let html = `<h2>Order History</h2>`;
+                const sorted = [...data.history].reverse();
+                sorted.forEach(order => {
+                    html += `
+                        <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
+                            <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+                                <strong>Date : ${order.date}</strong>
+                                <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
+                            </div>
+                            <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
+                            <div class="order-items">
+                                ${order.items.map(item => `
+                                    <div style="margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;">
+                                        <strong>${item.title}</strong><br>
+                                        Variante : ${item.variant || 'Standard'}<br>
+                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                historyContainer.innerHTML = html;
             } else {
-                console.error("Erreur chargement profil:", data.error);
-                showToast("Erreur lors du chargement des données du profil : " + data.error);
+                historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
             }
         } catch (e) {
-            console.error("Erreur fetch loadAccountStats :", e.message);
-            showToast("Erreur réseau lors du chargement du profil");
+            console.error("Stats load error", e);
         }
     }
 
-    // Appelle au chargement de la page account
     if (isAccountPage) {
         loadAccountStats();
     }
-    // =================================================================================================
 
     // ==================== SAVE ADDRESS ====================
     window.saveAddress = async () => {
@@ -1879,7 +1803,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const state = document.getElementById('addr-state').value.trim();
         const zip = document.getElementById('addr-zip').value.trim();
         const addressStr = [line1, line2, city, state, zip].filter(Boolean).join(', ');
-
         try {
             const res = await fetch('/.netlify/functions/save-account', {
                 method: 'POST',
@@ -1887,13 +1810,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ action: 'update-address', email, line1, line2, city, state, zip })
             });
             const data = await res.json();
-
             if (data.success) {
                 localStorage.setItem('userAddress', addressStr || 'No default address set');
                 document.getElementById('user-address').textContent = addressStr || 'No default address set';
                 showToast("Address saved successfully!");
                 closeAccountPopup('address-popup');
-                loadAccountStats();  // Recharge pour sync
             } else {
                 showToast("Error: " + data.error);
             }
@@ -1907,7 +1828,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('security-email').value.trim();
         const newPassword = document.getElementById('new-password').value.trim();
         if (!email || !newPassword) return showToast("Email and new password are required");
-
         try {
             const res = await fetch('/.netlify/functions/save-account', {
                 method: 'POST',
@@ -1915,7 +1835,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ action: 'update-password', email, newPassword })
             });
             const data = await res.json();
-
             if (data.success) {
                 showToast("Password updated successfully!");
                 closeAccountPopup('password-popup');
