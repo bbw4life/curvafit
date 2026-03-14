@@ -84,10 +84,10 @@ exports.handler = async (event) => {
       const finalOrderData = await finalOrderRes.json();
       if (finalOrderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
      
-      purchaseUnit = finalOrderData.purchase_units?.[0];
-      const storedVariants = purchaseUnit?.custom_id ? purchaseUnit.custom_id.split('|') : [];
+      purchaseUnit = finalOrderData.purchase_units?.[0] || {};
+      const storedVariants = purchaseUnit.custom_id ? purchaseUnit.custom_id.split('|') : [];
       console.log("Stored variants data:", storedVariants);
-      const itemsArray = purchaseUnit?.items || [];
+      const itemsArray = purchaseUnit.items || [];
       cart = itemsArray.map((item, i) => {
         return { title: item.name, price: parseFloat(item.unit_amount.value), quantity: parseInt(item.quantity), variantsid: item.sku || storedVariants[i] || null, image: item.description || '' };
       });
