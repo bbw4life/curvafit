@@ -2,29 +2,30 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fetch = require('node-fetch');
 const { google } = require('googleapis');
-
 exports.handler = async (event) => {
   console.log("=== VERIFY PAYMENT STARTED ===");
   try {
     if (!event.body) throw new Error("No data received");
     const { provider, sessionId, orderID } = JSON.parse(event.body);
+    console.log(`Provider: ${provider} | OrderID: ${orderID || 'N/A'}`);
     const paymentId = sessionId || orderID;
     if (!paymentId) throw new Error("Missing payment ID");
-
+    // ====================== PROTECTION DOUBLE PROCESSING (CORRIGÉE) ======================
     const alreadyProcessed = await isAlreadyProcessed(paymentId);
     if (alreadyProcessed) {
+      console.log(`🚫 DUPLICATE DETECTED (${paymentId}) → SKIP (already processed)`);
       return response(200, { success: true, message: "Duplicate - already processed" });
     }
-
+    // ============================================================================
     let cart = [];
     let shipping = {};
     let paymentVerified = false;
     let session;
     let purchaseUnit;
     const BASE_URL = process.env.BASE_URL || process.env.URL || `https://${event.headers.host}`;
-
+    console.log(`🔗 BASE_URL utilisée : ${BASE_URL}`);
+    // ====================== STRIPE ======================
     if (provider === "stripe") {
-      // === STRIPE (inchangé, tu as dit que c'est parfait) ===
       session = await stripe.checkout.sessions.retrieve(sessionId);
       if (session.payment_status !== "paid") throw new Error("Stripe not paid");
       const lineItems = await stripe.checkout.sessions.listLineItems(sessionId, { limit: 100 });
@@ -39,34 +40,56 @@ exports.handler = async (event) => {
             price: (li.amount_total / 100) / li.quantity,
             quantity: li.quantity,
             variantsid: eproloItem.variantsid || null,
-            image: storedImages[i] || '',
-            color: '' // Stripe garde son comportement actuel
+            image: storedImages[i] || ''
           };
         });
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
-
+    // ====================== PAYPAL ======================
     } else if (provider === "paypal") {
-      // === PAYPAL (corrigé) ===
       const PAYPAL_BASE = process.env.PAYPAL_ENV === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
       const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString("base64");
       const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, { method: "POST", headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=client_credentials" });
       const { access_token } = await tokenRes.json();
-
+     
+      // D'abord fetch l’ordre pour check status
       const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
-      const orderData = await orderRes.json();
-
-      if (orderData.status === "APPROVED") {
-        await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, { method: "POST", headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" } });
+      if (!orderRes.ok) {
+        const orderErr = await orderRes.text();
+        console.error("[PAYPAL] Fetch order error:", orderErr);
+        throw new Error("PayPal order fetch failed");
       }
-
+      const orderData = await orderRes.json();
+      console.log("[PAYPAL] Order status:", orderData.status);
+     
+      if (orderData.status === "COMPLETED") {
+        console.log("[PAYPAL] Already completed - no need to capture");
+      } else if (orderData.status === "APPROVED") {
+        const captureRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, { method: "POST", headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" } });
+        if (!captureRes.ok) {
+          const captureErr = await captureRes.json();
+          console.error("[PAYPAL] Capture error full:", JSON.stringify(captureErr));
+          if (captureErr.name === "RESOURCE_CONFLICT" && captureErr.details[0].issue === "DUPLICATE_INVOICE_ID") {
+            console.log("[PAYPAL] Already captured - treating as completed");
+          } else {
+            throw new Error("PayPal capture failed: " + JSON.stringify(captureErr));
+          }
+        }
+      } else {
+        throw new Error(`PayPal invalid status: ${orderData.status}`);
+      }
+     
+      // Re-fetch pour confirmer COMPLETED
       const finalOrderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
       const finalOrderData = await finalOrderRes.json();
-
+      if (finalOrderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
+     
       purchaseUnit = finalOrderData.purchase_units?.[0] || {};
       const storedVariants = purchaseUnit.custom_id ? purchaseUnit.custom_id.split('|') : [];
+      console.log("Stored variants data:", storedVariants);
       const itemsArray = purchaseUnit.items || [];
-
+      
+      // === MODIFIÉ ICI (extraction couleur + image) ===
       cart = itemsArray.map((item) => {
         const descParts = (item.description || '').split('|');
         return {
@@ -75,15 +98,19 @@ exports.handler = async (event) => {
           quantity: parseInt(item.quantity),
           variantsid: item.sku || storedVariants[0] || null,
           image: descParts[1] || item.description || '',
-          color: descParts[0] !== 'N/A' ? descParts[0] : ''   // ← NOUVELLE LIGNE
+          color: descParts[0] && descParts[0] !== 'N/A' ? descParts[0] : ''
         };
       });
-
+      
+      if (cart.length === 0 && storedVariants.length > 0) {
+        cart = storedVariants.map((str, i) => {
+          return { title: `Product ${i+1}`, price: 0, quantity: 1, variantsid: str || null, image: '' };
+        });
+      }
       const payer = finalOrderData.payer || {};
       const ship = purchaseUnit.shipping || {};
-      const refParts = purchaseUnit.reference_id ? purchaseUnit.reference_id.split('|') : [];
-
-      // === CORRECTION EMAIL : on prend TOUJOURS l'email du formulaire checkout (refParts[2]) ===
+      
+      // === MODIFIÉ ICI (email toujours celui du formulaire checkout) ===
       let email = refParts[2] || payer.email_address || '';
       let firstName = payer.name?.given_name || '';
       let lastName = payer.name?.surname || '';
@@ -95,7 +122,7 @@ exports.handler = async (event) => {
 
       shipping = {
         firstName, lastName,
-        email,
+        email,                                      // ← maintenant correct
         phone: payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : refParts[1] || '',
         address: ship.address?.address_line_1 || "",
         city: ship.address?.admin_area_2 || "",
@@ -105,25 +132,30 @@ exports.handler = async (event) => {
         countryCode: refParts[3] || ship.address?.country_code || "US",
         shipping_method: refParts[4] || "Standard Shipping"
       };
+      console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));
       paymentVerified = true;
     }
-
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
-
-    // ====================== UPDATE USER PROFILE ======================
-    let totalAmount = provider === "stripe" ? session.amount_total / 100 : parseFloat(purchaseUnit.amount.value);
+    // ====================== UPDATE USER PROFILE (Quantity Orders, Total Spent, Order History) ======================
+    let totalAmount = 0;
+    if (provider === "stripe") {
+      totalAmount = session.amount_total / 100;
+    } else if (provider === "paypal") {
+      totalAmount = parseFloat(purchaseUnit.amount.value);
+    }
     const totalQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
-
+    
+    // Bloc 3 appliqué
     const orderItems = cart.map(item => ({
       title: item.title,
-      variant_color: item.color || '',           // ← CORRIGÉ (plus jamais N/A)
+      variant_color: item.color || '', 
       image_variant: item.image || '',
       price: item.price,
       quantity: item.quantity,
       lineTotal: item.price * item.quantity,
       variantsid: item.variantsid || ''
     }));
-
+    
     if (shipping.email) {
       await fetch(`${BASE_URL}/.netlify/functions/save-account`, {
         method: "POST",
@@ -136,25 +168,43 @@ exports.handler = async (event) => {
           orderItems
         })
       });
+    } else {
+      console.warn("No email found, skipping profile update");
     }
-
-    // === Fulfillment (inchangé) ===
+    console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
+    // Group cart by variantsid
     const cartMap = {};
     cart.forEach(item => {
       const vid = item.variantsid || null;
       if (vid) {
-        if (!cartMap[vid]) cartMap[vid] = { title: item.title, price: item.price, quantity: 0, variantsid: vid };
+        if (!cartMap[vid]) {
+          cartMap[vid] = {
+            title: item.title,
+            price: item.price,
+            quantity: 0,
+            variantsid: vid
+          };
+        }
         cartMap[vid].quantity += item.quantity;
       }
     });
     const groupedCart = Object.values(cartMap);
-    const readyForEprolo = groupedCart.filter(item => item.variantsid);
+    let readyForEprolo = groupedCart.filter(item => item.variantsid);
     const notReady = cart.filter(item => !item.variantsid);
-
-    for (const item of notReady) await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
-    for (const item of readyForEprolo) await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending");
-
-    return response(200, { success: true, fulfillmentStatus: "processing" });
+    for (const item of notReady) {
+      await saveAsPending(item, shipping, BASE_URL, provider, paymentId);
+    }
+    if (readyForEprolo.length > 0) {
+      console.log(`✅ ${readyForEprolo.length} unique item(s) ready for Eprolo`);
+      for (const item of readyForEprolo) {
+        await saveAsPending(item, shipping, BASE_URL, provider, paymentId, "pending");
+      }
+    }
+    console.log("🎯 Fulfillment terminé");
+    return response(200, {
+      success: true,
+      fulfillmentStatus: "processing"
+    });
   } catch (error) {
     console.error("=== VERIFY PAYMENT ERROR ===", error.message);
     return response(500, { success: false, error: error.message });
