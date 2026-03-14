@@ -1756,7 +1756,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
 
-                        // ==================== ORDER HISTORY DISPLAY (EN ANGLAIS + IMAGE + COULEUR) ====================
+            // ==================== ORDER HISTORY DISPLAY ====================
             const historyContainer = document.querySelector('.order-history');
             if (data.history && Array.isArray(data.history) && data.history.length > 0) {
                 let html = `<h2>Order History</h2>`;
@@ -1765,19 +1765,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     html += `
                         <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
                             <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-                                <strong>Date: ${order.date}</strong>
-                                <strong>Total: $${parseFloat(order.total || 0).toFixed(2)}</strong>
+                                <strong>Date : ${order.date}</strong>
+                                <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
                             </div>
-                            <p><strong>Total Quantity:</strong> ${order.totalQuantity || 0} products</p>
+                            <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
                             <div class="order-items">
                                 ${order.items.map(item => `
-                                    <div style="margin:12px 0;padding:12px;border-left:4px solid #f0b90b;background:white;display:flex;gap:12px;align-items:start;">
-                                        ${item.image ? `<img src="${item.image}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;" alt="variant">` : ''}
-                                        <div>
-                                            <strong>${item.title}</strong><br>
-                                            Variant: ${item.variant || 'Standard'}<br>
-                                            Price: $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal}
-                                        </div>
+                                    <div style="margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;">
+                                        <strong>${item.title}</strong><br>
+                                        Variante : ${item.variant || 'Standard'}<br>
+                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
                                     </div>
                                 `).join('')}
                             </div>
