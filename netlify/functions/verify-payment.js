@@ -46,6 +46,45 @@ exports.handler = async (event) => {
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
 
+      // Added code moved here (inside Stripe block, where 'session' is in scope)
+      console.log("💾 Mise à jour Orders / Spent / History dans Google Sheet...");
+
+      const totalPaid = provider === "stripe" 
+          ? (session.amount_total / 100) 
+          : provider === "paypal" 
+              ? parseFloat(purchaseUnit?.amount?.value || 0) 
+              : cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+      const totalQty = cart.reduce((sum, i) => sum + (i.quantity || 0), 0);
+
+      const orderItems = cart.map(item => ({
+          title: item.title || "Produit",
+          quantity: item.quantity || 1,
+          price: item.price || 0,
+          size: null,
+          color: null,
+          image: null,
+          cj_variant_id: item.variantsid || null
+      }));
+
+      const customerEmail = shipping.email || "";
+
+      if (customerEmail) {
+          await fetch(`${BASE_URL}/.netlify/functions/save-account`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                  action: 'record-order',
+                  email: customerEmail,
+                  totalAmount: totalPaid,
+                  totalQuantity: totalQty,
+                  orderItems
+              })
+          }).catch(e => console.error("⚠️ Record-order non bloquant :", e.message));
+
+          console.log(`✅ Record-order lancé avec email : ${customerEmail} | Total: $${totalPaid} | Qty: ${totalQty}`);
+      }
+
     // ====================== PAYPAL ======================
     } else if (provider === "paypal") {
       const PAYPAL_BASE = process.env.PAYPAL_ENV === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
@@ -140,50 +179,48 @@ exports.handler = async (event) => {
       };
       console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));
       paymentVerified = true;
+
+      // Added code moved here (inside PayPal block, where 'purchaseUnit' is in scope)
+      console.log("💾 Mise à jour Orders / Spent / History dans Google Sheet...");
+
+      const totalPaid = provider === "stripe" 
+          ? (session.amount_total / 100) 
+          : provider === "paypal" 
+              ? parseFloat(purchaseUnit?.amount?.value || 0) 
+              : cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+      const totalQty = cart.reduce((sum, i) => sum + (i.quantity || 0), 0);
+
+      const orderItems = cart.map(item => ({
+          title: item.title || "Produit",
+          quantity: item.quantity || 1,
+          price: item.price || 0,
+          size: null,
+          color: null,
+          image: null,
+          cj_variant_id: item.variantsid || null
+      }));
+
+      const customerEmail = shipping.email || "";
+
+      if (customerEmail) {
+          await fetch(`${BASE_URL}/.netlify/functions/save-account`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                  action: 'record-order',
+                  email: customerEmail,
+                  totalAmount: totalPaid,
+                  totalQuantity: totalQty,
+                  orderItems
+              })
+          }).catch(e => console.error("⚠️ Record-order non bloquant :", e.message));
+
+          console.log(`✅ Record-order lancé avec email : ${customerEmail} | Total: $${totalPaid} | Qty: ${totalQty}`);
+      }
     }
 
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
-
-
-     // ====================== RECORD ORDER (Orders + Total Spent + Order History) ======================
-    console.log("💾 Mise à jour Orders / Spent / History dans Google Sheet...");
-
-    const totalPaid = provider === "stripe" 
-        ? (session.amount_total / 100) 
-        : provider === "paypal" 
-            ? parseFloat(purchaseUnit?.amount?.value || 0) 
-            : cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-
-    const totalQty = cart.reduce((sum, i) => sum + (i.quantity || 0), 0);
-
-    const orderItems = cart.map(item => ({
-        title: item.title || "Produit",
-        quantity: item.quantity || 1,
-        price: item.price || 0,
-        size: null,
-        color: null,
-        image: null,
-        cj_variant_id: item.variantsid || null
-    }));
-
-    const customerEmail = shipping.email || "";
-
-    if (customerEmail) {
-        await fetch(`${BASE_URL}/.netlify/functions/save-account`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'record-order',
-                email: customerEmail,
-                totalAmount: totalPaid,
-                totalQuantity: totalQty,
-                orderItems
-            })
-        }).catch(e => console.error("⚠️ Record-order non bloquant :", e.message));
-
-        console.log(`✅ Record-order lancé avec email : ${customerEmail} | Total: $${totalPaid} | Qty: ${totalQty}`);
-    }
-
 
     console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
     // Group cart by variantsid
