@@ -1822,7 +1822,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const li = document.createElement("li");
                                 li.innerHTML = `
                                     ${item.image ? `<img src="${item.image}" alt="${item.title}" style="width: 50px; height: auto; margin-right: 10px;">` : ''}
-                                    <span>${item.title} - Couleur: ${item.color || 'N/A'} - Prix: $${item.price} - Quantité: ${item.quantity} - Total produit: $${item.total}</span>
+                                    <span>${item.title} - Color: ${item.color || 'N/A'} - Price: $${item.price} - Quantity: ${item.quantity} - Product Total: $${item.total}</span>
                                 `;
                                 itemsList.appendChild(li);
                             });
