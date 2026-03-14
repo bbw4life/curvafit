@@ -125,6 +125,19 @@ exports.handler = async (event) => {
       return { statusCode: 200, body: JSON.stringify({ success: true }) };
     }
 
+        if (action === 'get-stats') {
+      if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
+      const currentRow = rows[rowIndex] || [];
+      return { 
+        statusCode: 200, 
+        body: JSON.stringify({
+          orders: parseInt(currentRow[6] || 0),
+          totalSpent: parseFloat(currentRow[7] || 0),
+          quantityInCart: parseInt(currentRow[14] || 0)
+        }) 
+      };
+    }
+
     throw new Error("Action inconnue");
   } catch (error) {
     console.error("SAVE ERROR:", error.message);

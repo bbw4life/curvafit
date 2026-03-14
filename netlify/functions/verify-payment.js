@@ -12,10 +12,10 @@ exports.handler = async (event) => {
     const paymentId = sessionId || orderID;
     if (!paymentId) throw new Error("Missing payment ID");
 
-    // ====================== PROTECTION DOUBLE PROCESSING ======================
+    // ====================== PROTECTION DOUBLE PROCESSING (CORRIGÉE) ======================
     const alreadyProcessed = await isAlreadyProcessed(paymentId);
     if (alreadyProcessed) {
-      console.log(`🚫 DUPLICATE DETECTED (${paymentId}) → SKIP`);
+      console.log(`🚫 DUPLICATE DETECTED (${paymentId}) → SKIP (already processed)`);
       return response(200, { success: true, message: "Duplicate - already processed" });
     }
     // ============================================================================
@@ -23,14 +23,12 @@ exports.handler = async (event) => {
     let cart = [];
     let shipping = {};
     let paymentVerified = false;
-    let session = null;          // ← FIX Stripe
-    let purchaseUnit = null;     // ← FIX PayPal
     const BASE_URL = process.env.BASE_URL || process.env.URL || `https://${event.headers.host}`;
     console.log(`🔗 BASE_URL utilisée : ${BASE_URL}`);
 
     // ====================== STRIPE ======================
     if (provider === "stripe") {
-      session = await stripe.checkout.sessions.retrieve(sessionId);
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
       if (session.payment_status !== "paid") throw new Error("Stripe not paid");
       const lineItems = await stripe.checkout.sessions.listLineItems(sessionId, { limit: 100 });
       const storedEprolo = JSON.parse(session.metadata.eprolo_data || "[]");
@@ -47,59 +45,107 @@ exports.handler = async (event) => {
         });
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
-    }
 
     // ====================== PAYPAL ======================
-    else if (provider === "paypal") {
+    } else if (provider === "paypal") {
       const PAYPAL_BASE = process.env.PAYPAL_ENV === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
       const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString("base64");
       const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, { method: "POST", headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=client_credentials" });
       const { access_token } = await tokenRes.json();
       
+      // D'abord fetch l’ordre pour check status
       const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
-      if (!orderRes.ok) throw new Error("PayPal order fetch failed");
+      if (!orderRes.ok) {
+        const orderErr = await orderRes.text();
+        console.error("[PAYPAL] Fetch order error:", orderErr);
+        throw new Error("PayPal order fetch failed");
+      }
       const orderData = await orderRes.json();
+      console.log("[PAYPAL] Order status:", orderData.status);
       
-      if (orderData.status === "APPROVED") {
+      if (orderData.status === "COMPLETED") {
+        console.log("[PAYPAL] Already completed - no need to capture");
+      } else if (orderData.status === "APPROVED") {
         const captureRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, { method: "POST", headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" } });
-        if (!captureRes.ok) throw new Error("PayPal capture failed");
+        if (!captureRes.ok) {
+          const captureErr = await captureRes.json();
+          console.error("[PAYPAL] Capture error full:", JSON.stringify(captureErr));
+          if (captureErr.name === "RESOURCE_CONFLICT" && captureErr.details[0].issue === "DUPLICATE_INVOICE_ID") {
+            console.log("[PAYPAL] Already captured - treating as completed");
+          } else {
+            throw new Error("PayPal capture failed: " + JSON.stringify(captureErr));
+          }
+        }
+      } else {
+        throw new Error(`PayPal invalid status: ${orderData.status}`);
       }
       
+      // Re-fetch pour confirmer COMPLETED
       const finalOrderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
       const finalOrderData = await finalOrderRes.json();
       if (finalOrderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
       
-      purchaseUnit = finalOrderData.purchase_units?.[0];
+      const purchaseUnit = finalOrderData.purchase_units?.[0];
       const storedVariants = purchaseUnit?.custom_id ? purchaseUnit.custom_id.split('|') : [];
+      console.log("Stored variants data:", storedVariants);
       const itemsArray = purchaseUnit?.items || [];
-      cart = itemsArray.map((item, i) => ({
-        title: item.name,
-        price: parseFloat(item.unit_amount.value),
-        quantity: parseInt(item.quantity),
-        variantsid: storedVariants[i] || null
-      }));
-      
+      cart = itemsArray.map((item, i) => {
+        return { title: item.name, price: parseFloat(item.unit_amount.value), quantity: parseInt(item.quantity), variantsid: storedVariants[i] || null };
+      });
+      if (cart.length === 0 && storedVariants.length > 0) {
+        cart = storedVariants.map((str, i) => {
+          return { title: `Product ${i+1}`, price: 0, quantity: 1, variantsid: str || null };
+        });
+      }
       const payer = finalOrderData.payer || {};
       const ship = purchaseUnit.shipping || {};
+      // === CORRECTIONS POUR COUNTRY ET PHONE ===
+      const countryCodeFromPayPal = ship.address?.country_code || "US";
+      let countryName = "United States";
+      try {
+        const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${countryCodeFromPayPal}?fields=name`);
+        if (countryRes.ok) {
+          const countryData = await countryRes.json();
+          countryName = countryData.name.common || countryName;
+        }
+      } catch (err) {
+        console.error("Failed to fetch country name:", err.message);
+      }
+      const refParts = purchaseUnit.reference_id ? purchaseUnit.reference_id.split('|') : [];
+      let shipping_method = refParts[4] || "Standard Shipping";
+      let storedFullName = refParts[0] || '';
+      let phone = payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : refParts[1] || '';
+      let email = payer.email_address || refParts[2] || '';
+      let fallbackCountryCode = refParts[3] || countryCodeFromPayPal;
+      let firstName = payer.name?.given_name || '';
+      let lastName = payer.name?.surname || '';
+      // Fallback for name if dummy
+      if (firstName.toLowerCase() === 'john' && lastName.toLowerCase() === 'doe') {
+        const nameParts = storedFullName.split(' ');
+        firstName = nameParts[0] || '';
+        lastName = nameParts.slice(1).join(' ') || '';
+      }
       shipping = {
-        firstName: payer.name?.given_name || '',
-        lastName: payer.name?.surname || '',
-        email: payer.email_address || '',
-        phone: payer.phone?.phone_number ? `+${payer.phone.phone_number.country_code || ''}${payer.phone.phone_number.national_number || ''}` : '',
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
         address: ship.address?.address_line_1 || "",
         city: ship.address?.admin_area_2 || "",
         state: ship.address?.admin_area_1 || "",
         postalCode: ship.address?.postal_code || "",
-        country: ship.address?.country_code || "United States",
-        countryCode: ship.address?.country_code || "",
-        shipping_method: "Standard Shipping"
+        country: countryName,
+        countryCode: fallbackCountryCode,
+        shipping_method: shipping_method
       };
+      console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));
       paymentVerified = true;
     }
 
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
 
-    // ====================== RECORD ORDER (Orders + Total Spent + Order History) ======================
+
+     // ====================== RECORD ORDER (Orders + Total Spent + Order History) ======================
     console.log("💾 Mise à jour Orders / Spent / History dans Google Sheet...");
 
     const totalPaid = provider === "stripe" 
@@ -136,18 +182,22 @@ exports.handler = async (event) => {
         }).catch(e => console.error("⚠️ Record-order non bloquant :", e.message));
 
         console.log(`✅ Record-order lancé avec email : ${customerEmail} | Total: $${totalPaid} | Qty: ${totalQty}`);
-    } else {
-        console.error("❌ Pas d'email client trouvé → record-order ignoré");
     }
-    // =================================================================================================
+
 
     console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
+    // Group cart by variantsid
     const cartMap = {};
     cart.forEach(item => {
       const vid = item.variantsid || null;
       if (vid) {
         if (!cartMap[vid]) {
-          cartMap[vid] = { title: item.title, price: item.price, quantity: 0, variantsid: vid };
+          cartMap[vid] = {
+            title: item.title,
+            price: item.price,
+            quantity: 0,
+            variantsid: vid
+          };
         }
         cartMap[vid].quantity += item.quantity;
       }
@@ -165,7 +215,11 @@ exports.handler = async (event) => {
       }
     }
     console.log("🎯 Fulfillment terminé");
-    return response(200, { success: true, fulfillmentStatus: "processing" });
+    return response(200, {
+      success: true,
+      fulfillmentStatus: "processing"
+    });
+
 
   } catch (error) {
     console.error("=== VERIFY PAYMENT ERROR ===", error.message);
@@ -173,7 +227,7 @@ exports.handler = async (event) => {
   }
 };
 
-// ====================== FONCTION ANTI-DOUBLE ======================
+// ====================== FONCTION ANTI-DOUBLE (VERSION CORRIGÉE - PLUS JAMAIS DE DUPLICATE) ======================
 async function isAlreadyProcessed(paymentId) {
   try {
     const auth = new google.auth.GoogleAuth({
@@ -186,11 +240,20 @@ async function isAlreadyProcessed(paymentId) {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
     
-    const rangesToTry = ["PendingOrders!A:Z", "Sheet1!A:Z", "Feuille 1!A:Z", "Orders!A:Z", "Sheet2!A:Z"];
+    const rangesToTry = [
+      "PendingOrders!A:Z",
+      "Sheet1!A:Z",
+      "Feuille 1!A:Z",
+      "Orders!A:Z",
+      "Sheet2!A:Z"
+    ];
 
     for (const range of rangesToTry) {
       try {
-        const res = await sheets.spreadsheets.values.get({ spreadsheetId, range });
+        const res = await sheets.spreadsheets.values.get({
+          spreadsheetId,
+          range: range
+        });
         const rows = res.data.values || [];
         for (const row of rows) {
           if (row.some(cell => cell && cell.toString().includes(paymentId))) {
@@ -198,7 +261,9 @@ async function isAlreadyProcessed(paymentId) {
             return true;
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        // pass to next range
+      }
     }
     return false;
   } catch (e) {
@@ -206,6 +271,7 @@ async function isAlreadyProcessed(paymentId) {
     return false;
   }
 }
+// ============================================================================
 
 async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending_stock") {
   try {

@@ -1344,7 +1344,7 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
     }).catch(() => {}); // non bloquant
   }
 
-  
+
   function openCartDrawer() {
     renderCart();
     cartDrawer.classList.add('active');
@@ -1744,13 +1744,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ==================== POPULATE PROFILE ====================
+    // ==================== POPULATE PROFILE + SYNC AVEC SHEET ====================
     if (localStorage.getItem('isLoggedIn') === 'true') {
         document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
         document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
         document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
         document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
     }
+
+    // ====================== SYNC PROFIL AVEC GOOGLE SHEET (Orders, Spent, Quantity in Cart) ======================
+    async function loadAccountStats() {
+        const email = localStorage.getItem('userEmail');
+        if (!email) return;
+
+        try {
+            const res = await fetch('/.netlify/functions/save-account', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'get-stats', email })
+            });
+            const data = await res.json();
+
+            // Mise à jour des stats dans le profil
+            document.querySelector('.stat-value.orders').textContent = data.orders || 0;
+            document.querySelector('.stat-value.spend').textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
+            document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
+        } catch (e) {
+            console.error("Stats load error", e);
+        }
+    }
+
+    // Appelle au chargement de la page account
+    if (isAccountPage) {
+        loadAccountStats();
+    }
+    // =================================================================================================
 
     // ==================== SAVE ADDRESS ====================
     window.saveAddress = async () => {
