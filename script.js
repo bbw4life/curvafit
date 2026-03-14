@@ -1752,7 +1752,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
     }
 
-    // ====================== SYNC PROFIL AVEC GOOGLE SHEET (Orders, Spent, Quantity in Cart) ======================
+    // ====================== SYNC PROFIL AVEC GOOGLE SHEET (Orders, Spent, History, etc.) ======================
     async function loadAccountStats() {
         const email = localStorage.getItem('userEmail');
         if (!email) return;
@@ -1761,14 +1761,90 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/.netlify/functions/save-account', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'get-stats', email })
+                body: JSON.stringify({ action: 'get-account', email })
             });
             const data = await res.json();
 
-            // Mise à jour des stats dans le profil
-            document.querySelector('.stat-value.orders').textContent = data.orders || 0;
-            document.querySelector('.stat-value.spend').textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
-            document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
+            if (data.success) {
+                // Mise à jour basique (sync localStorage avec sheet si besoin)
+                localStorage.setItem('userFirstName', data.firstName || '');
+                localStorage.setItem('userLastName', data.lastName || '');
+                localStorage.setItem('userEmail', data.email || '');
+                localStorage.setItem('userPhone', data.phone || '');
+                localStorage.setItem('userAddressLine1', data.line1 || '');
+                localStorage.setItem('userLine2', data.line2 || '');
+                localStorage.setItem('userCity', data.city || '');
+                localStorage.setItem('userState', data.state || '');
+                localStorage.setItem('userZip', data.zip || '');
+
+                const addr = [data.line1, data.line2, data.city, data.state, data.zip].filter(Boolean).join(", ");
+                localStorage.setItem('userAddress', addr || 'No default address set');
+
+                document.getElementById("user-name").textContent = data.firstName;
+                document.getElementById("user-full-name").textContent = `${data.firstName} ${data.lastName}`;
+                document.getElementById("user-email").textContent = data.email;
+                document.getElementById("user-address").textContent = addr || "No default address set";
+
+                // Member since
+                const memberP = document.querySelector(".membership-greeting p");
+                memberP.textContent = `Member since ${data.memberSince}`;
+
+                // Quantity Order (nombre de commandes)
+                document.querySelector(".stat-item.orders .stat-value").textContent = data.orders;
+
+                // Total Spent
+                document.querySelector(".stat-item.spend .stat-value").textContent = `$${data.totalSpent.toFixed(2)}`;
+
+                // Quantity in Cart (Saved Items, assuming it's wishlist or cart quantity)
+                document.querySelector("[data-wishlist-count]").textContent = data.quantityInCart || 0;
+
+                // Order History
+                const historyDiv = document.querySelector(".order-history");
+                historyDiv.innerHTML = "<h2>Order History</h2>";
+                if (data.history.length === 0) {
+                    historyDiv.innerHTML += "<p>No orders yet</p>";
+                } else {
+                    data.history.forEach(order => {
+                        const orderDiv = document.createElement("div");
+                        orderDiv.classList.add("order-item");
+                        orderDiv.innerHTML = `<p><strong>Date:</strong> ${order.date} - <strong>Total:</strong> $${order.total} - <strong>Items:</strong> ${order.totalQuantity}</p>`;
+                        const itemsList = document.createElement("ul");
+                        order.items.forEach(item => {
+                            const li = document.createElement("li");
+                            li.innerHTML = `
+                                ${item.image ? `<img src="${item.image}" alt="${item.title}" style="width: 50px; height: auto; margin-right: 10px;">` : ''}
+                                <span>${item.title} - Couleur: ${item.color || 'N/A'} - Prix: $${item.price} - Quantité: ${item.quantity} - Total produit: $${item.total}</span>
+                            `;
+                            itemsList.appendChild(li);
+                        });
+                        orderDiv.appendChild(itemsList);
+                        historyDiv.appendChild(orderDiv);
+                    });
+                }
+
+                // Mise à jour adresses section
+                const addressSection = document.querySelector(".address-section");
+                addressSection.innerHTML = "<h2>Addresses</h2>";
+                if (addr) {
+                    addressSection.innerHTML += `<p>${addr}</p>`;
+                } else {
+                    addressSection.innerHTML += "<p>No addresses found</p>";
+                }
+
+                // Mise à jour popups
+                document.getElementById("addr-email").value = data.email;
+                document.getElementById("addr-first").value = data.firstName;
+                document.getElementById("addr-last").value = data.lastName;
+                document.getElementById("addr-line1").value = data.line1;
+                document.getElementById("addr-line2").value = data.line2;
+                document.getElementById("addr-city").value = data.city;
+                document.getElementById("addr-state").value = data.state;
+                document.getElementById("addr-zip").value = data.zip;
+
+                document.getElementById("security-email").value = data.email;
+            } else {
+                console.error("Erreur chargement profil:", data.error);
+            }
         } catch (e) {
             console.error("Stats load error", e);
         }
@@ -1803,6 +1879,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('user-address').textContent = addressStr || 'No default address set';
                 showToast("Address saved successfully!");
                 closeAccountPopup('address-popup');
+                loadAccountStats();  // Recharge pour sync
             } else {
                 showToast("Error: " + data.error);
             }

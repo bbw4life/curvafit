@@ -40,46 +40,13 @@ exports.handler = async (event) => {
             title: li.description,
             price: (li.amount_total / 100) / li.quantity,
             quantity: li.quantity,
-            variantsid: eproloItem.variantsid || null
+            variantsid: eproloItem.variantsid || null,
+            color: "",  // Ajouter ici si stocké dans metadata (modifie create-stripe-session pour inclure)
+            image: ""   // Idem
           };
         });
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
-
-      // Added code (simplified totalPaid for Stripe)
-      console.log("💾 Mise à jour Orders / Spent / History dans Google Sheet...");
-
-      const totalPaid = session.amount_total / 100;
-
-      const totalQty = cart.reduce((sum, i) => sum + (i.quantity || 0), 0);
-
-      const orderItems = cart.map(item => ({
-          title: item.title || "Produit",
-          quantity: item.quantity || 1,
-          price: item.price || 0,
-          size: null,
-          color: null,
-          image: null,
-          cj_variant_id: item.variantsid || null
-      }));
-
-      const customerEmail = shipping.email || "";
-
-      if (customerEmail) {
-          await fetch(`${BASE_URL}/.netlify/functions/save-account`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                  action: 'record-order',
-                  email: customerEmail,
-                  totalAmount: totalPaid,
-                  totalQuantity: totalQty,
-                  orderItems
-              })
-          }).catch(e => console.error("⚠️ Record-order non bloquant :", e.message));
-
-          console.log(`✅ Record-order lancé avec email : ${customerEmail} | Total: $${totalPaid} | Qty: ${totalQty}`);
-      }
 
     // ====================== PAYPAL ======================
     } else if (provider === "paypal") {
@@ -125,11 +92,18 @@ exports.handler = async (event) => {
       console.log("Stored variants data:", storedVariants);
       const itemsArray = purchaseUnit?.items || [];
       cart = itemsArray.map((item, i) => {
-        return { title: item.name, price: parseFloat(item.unit_amount.value), quantity: parseInt(item.quantity), variantsid: storedVariants[i] || null };
+        return { 
+          title: item.name, 
+          price: parseFloat(item.unit_amount.value), 
+          quantity: parseInt(item.quantity), 
+          variantsid: storedVariants[i] || null,
+          color: "",  // Ajouter ici si stocké dans custom_id/items (modifie paypal-create-order pour inclure)
+          image: "" 
+        };
       });
       if (cart.length === 0 && storedVariants.length > 0) {
         cart = storedVariants.map((str, i) => {
-          return { title: `Product ${i+1}`, price: 0, quantity: 1, variantsid: str || null };
+          return { title: `Product ${i+1}`, price: 0, quantity: 1, variantsid: str || null, color: "", image: "" };
         });
       }
       const payer = finalOrderData.payer || {};
@@ -175,41 +149,6 @@ exports.handler = async (event) => {
       };
       console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));
       paymentVerified = true;
-
-      // Added code (simplified totalPaid for PayPal)
-      console.log("💾 Mise à jour Orders / Spent / History dans Google Sheet...");
-
-      const totalPaid = parseFloat(purchaseUnit?.amount?.value || 0);
-
-      const totalQty = cart.reduce((sum, i) => sum + (i.quantity || 0), 0);
-
-      const orderItems = cart.map(item => ({
-          title: item.title || "Produit",
-          quantity: item.quantity || 1,
-          price: item.price || 0,
-          size: null,
-          color: null,
-          image: null,
-          cj_variant_id: item.variantsid || null
-      }));
-
-      const customerEmail = shipping.email || "";
-
-      if (customerEmail) {
-          await fetch(`${BASE_URL}/.netlify/functions/save-account`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                  action: 'record-order',
-                  email: customerEmail,
-                  totalAmount: totalPaid,
-                  totalQuantity: totalQty,
-                  orderItems
-              })
-          }).catch(e => console.error("⚠️ Record-order non bloquant :", e.message));
-
-          console.log(`✅ Record-order lancé avec email : ${customerEmail} | Total: $${totalPaid} | Qty: ${totalQty}`);
-      }
     }
 
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
@@ -244,6 +183,43 @@ exports.handler = async (event) => {
       }
     }
     console.log("🎯 Fulfillment terminé");
+
+    // ==================== AJOUT: ENREGISTRER L'ORDER DANS LE SHEET (quantity order, total spent, history) ====================
+    let totalAmount = 0;
+    if (provider === "stripe") {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);  // Re-fetch si besoin
+      totalAmount = session.amount_total / 100;
+    } else if (provider === "paypal") {
+      totalAmount = parseFloat(finalOrderData.purchase_units[0].amount.value);
+    }
+    const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const orderItems = cart.map(item => ({
+      title: item.title,
+      price: item.price,
+      quantity: item.quantity,
+      total: item.price * item.quantity,
+      color: item.color || "",
+      image: item.image || ""
+    }));
+
+    const recordRes = await fetch(`${BASE_URL}/.netlify/functions/save-account`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "record-order",
+        email: shipping.email,
+        totalAmount,
+        totalQuantity,
+        orderItems
+      })
+    });
+    if (!recordRes.ok) {
+      const recordErr = await recordRes.json();
+      console.error("Record order failed:", recordErr);
+    } else {
+      console.log("✅ Order recorded in account sheet");
+    }
+
     return response(200, {
       success: true,
       fulfillmentStatus: "processing"

@@ -106,7 +106,14 @@ exports.handler = async (event) => {
         date: formatDate(),
         total: parseFloat(totalAmount).toFixed(2),
         totalQuantity: parseInt(totalQuantity),
-        items: orderItems
+        items: orderItems.map(item => ({
+          title: item.title,
+          price: parseFloat(item.price).toFixed(2),
+          quantity: parseInt(item.quantity),
+          total: parseFloat(item.total).toFixed(2),
+          color: item.color || "",  // Vide si non fourni
+          image: item.image || ""   // Vide si non fourni
+        }))
       });
 
       await sheets.spreadsheets.values.batchUpdate({
@@ -125,15 +132,46 @@ exports.handler = async (event) => {
       return { statusCode: 200, body: JSON.stringify({ success: true }) };
     }
 
-        if (action === 'get-stats') {
+    // ==================== GET STATS (étendu avec history) ====================
+    if (action === 'get-stats') {
       if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
       const currentRow = rows[rowIndex] || [];
+      let history = [];
+      try { history = JSON.parse(currentRow[16] || "[]"); } catch(e) {}
       return { 
         statusCode: 200, 
         body: JSON.stringify({
           orders: parseInt(currentRow[6] || 0),
           totalSpent: parseFloat(currentRow[7] || 0),
-          quantityInCart: parseInt(currentRow[14] || 0)
+          quantityInCart: parseInt(currentRow[14] || 0),
+          history
+        }) 
+      };
+    }
+
+    // ==================== NOUVELLE ACTION: GET ACCOUNT (pour profil complet) ====================
+    if (action === 'get-account') {
+      if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
+      const currentRow = rows[rowIndex] || [];
+      let history = [];
+      try { history = JSON.parse(currentRow[16] || "[]"); } catch(e) {}
+      return { 
+        statusCode: 200, 
+        body: JSON.stringify({
+          success: true,
+          lastName: currentRow[0] || "",
+          firstName: currentRow[1] || "",
+          email: currentRow[2] || "",
+          phone: currentRow[3] || "",
+          line1: currentRow[9] || "",
+          line2: currentRow[10] || "",
+          city: currentRow[11] || "",
+          state: currentRow[12] || "",
+          zip: currentRow[13] || "",
+          orders: parseInt(currentRow[6] || 0),
+          totalSpent: parseFloat(currentRow[7] || 0),
+          memberSince: currentRow[15] || "January 2026",
+          history
         }) 
       };
     }
