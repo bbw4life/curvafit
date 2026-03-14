@@ -46,14 +46,10 @@ exports.handler = async (event) => {
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
 
-      // Added code moved here (inside Stripe block, where 'session' is in scope)
+      // Added code (simplified totalPaid for Stripe)
       console.log("💾 Mise à jour Orders / Spent / History dans Google Sheet...");
 
-      const totalPaid = provider === "stripe" 
-          ? (session.amount_total / 100) 
-          : provider === "paypal" 
-              ? parseFloat(purchaseUnit?.amount?.value || 0) 
-              : cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+      const totalPaid = session.amount_total / 100;
 
       const totalQty = cart.reduce((sum, i) => sum + (i.quantity || 0), 0);
 
@@ -180,14 +176,10 @@ exports.handler = async (event) => {
       console.log("[PAYPAL] Final shipping pulled:", JSON.stringify(shipping));
       paymentVerified = true;
 
-      // Added code moved here (inside PayPal block, where 'purchaseUnit' is in scope)
+      // Added code (simplified totalPaid for PayPal)
       console.log("💾 Mise à jour Orders / Spent / History dans Google Sheet...");
 
-      const totalPaid = provider === "stripe" 
-          ? (session.amount_total / 100) 
-          : provider === "paypal" 
-              ? parseFloat(purchaseUnit?.amount?.value || 0) 
-              : cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+      const totalPaid = parseFloat(purchaseUnit?.amount?.value || 0);
 
       const totalQty = cart.reduce((sum, i) => sum + (i.quantity || 0), 0);
 
