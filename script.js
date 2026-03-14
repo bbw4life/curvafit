@@ -94,8 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(response => response.json())
     .then(data => {
       products = data;
-      window.products = data;
-      window.getProductUrl = getProductUrl;
       const settings = products.find(p => p.type === "settings") || {};
       const enableMediaZoom = (settings.enable_media_zoom || "no").toLowerCase() === "yes";
       const comparisonTable = document.querySelector('.comparison-table tbody');
@@ -616,7 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   const varPrice = product.price;
                   const varCompare = varPrice * ratio;
                   const discountedPrice = varPrice * (1 - discount);
-                  const variant = product.variants ? product.variants[0] : null; // Prendre le premier variant si disponible, sinon null
+                  const variant = product.variants ? product.variants[0] : null;
                   items.push({
                     id: product.id,
                     title: product.title,
@@ -670,7 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const varPrice = product.price;
                     const varCompare = varPrice * ratio;
                     const discountedPrice = varPrice * (1 - discount);
-                    const variant = product.variants ? product.variants[0] : null; // Prendre le premier variant si disponible, sinon null
+                    const variant = product.variants ? product.variants[0] : null;
                     items.push({
                       id: product.id,
                       title: product.title,
@@ -736,18 +734,14 @@ document.addEventListener('DOMContentLoaded', () => {
           trioDesc.textContent = `Save ${product.trio_discount || 0}%`;
         }
       }
-      // === RESET TOTAL : AUCUNE COULEUR SÉLECTIONNÉE + IMAGE DE BASE ===
       setTimeout(() => {
-        // Aucune swatch active
         document.querySelectorAll('.color-swatches .swatch').forEach(s => s.classList.remove('active'));
-        // Forcer toutes les images media à l'original (base produit)
         document.querySelectorAll('#main-image-slider .main-image').forEach(container => {
           const img = container.querySelector('img');
           if (img && container.dataset.originalSrc) {
             img.src = container.dataset.originalSrc;
           }
         });
-        // Mise à jour prix base
         if (typeof updateProductPrice === 'function') updateProductPrice();
       }, 300);
     })
@@ -1206,31 +1200,24 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
     let quantity = 1;
     const qtyInput = container.querySelector('.quantity input');
     if (qtyInput) quantity = parseInt(qtyInput.value);
-        // === NOUVELLE VERSION 100% COMPATIBLE AVEC TON JSON (remplace de "let selectedSize = null;" jusqu'au push) ===
     let selectedSize = null;
     let selectedColor = null;
     let itemImage = product.image;
     let cjVariantId = null;
-
     if (isProductPage) {
       const sizeSelect = document.getElementById('size-select');
       const activeSwatch = document.querySelector('.color-swatches .swatch.active');
-      
-      // Pas de tailles → selectedSize reste null
       selectedSize = sizeSelect && sizeSelect.value !== "" ? sizeSelect.value : null;
       selectedColor = activeSwatch ? activeSwatch.dataset.color : null;
-
-      if ((product.colors && product.colors.length > 0 && !selectedColor) || 
+      if ((product.colors && product.colors.length > 0 && !selectedColor) ||
           (product.sizes && product.sizes.length > 0 && !selectedSize)) {
         return alert("Please select all options.");
       }
-
       if (selectedColor) {
         const colorObj = product.colors.find(c => c.name === selectedColor);
         if (colorObj && colorObj.image) itemImage = colorObj.image;
       }
     } else {
-      // Depuis la boutique
       if (product.colors && product.colors.length > 0) {
         selectedColor = product.colors[0].name;
         const colorObj = product.colors[0];
@@ -1240,29 +1227,21 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
         selectedSize = product.sizes[0];
       }
     }
-
-    // === RECHERCHE INTELLIGENTE DU VARIANT (FIXÉ POUR TON PRODUIT) ===
     const variant = product.variants.find(v => {
       const colorMatch = !selectedColor || v.color === selectedColor;
-      const sizeMatch = (!selectedSize && v.size === "") ||   // cas le plus courant chez toi
+      const sizeMatch = (!selectedSize && v.size === "") ||
                         (selectedSize === null && v.size === "") ||
                         (selectedSize && v.size === selectedSize);
       return colorMatch && sizeMatch;
     });
-
     if (variant) {
       cjVariantId = variant.vid;
-      console.log(`✅ Variant trouvé : ${cjVariantId} (couleur: ${selectedColor})`);
     } else if (product.variants && product.variants.length > 0) {
-      cjVariantId = product.variants[0].vid; // fallback ultra-sûr
-      console.log(`⚠️ Fallback variant utilisé : ${cjVariantId}`);
+      cjVariantId = product.variants[0].vid;
     }
-
     const varPrice = getVariantPrice(product, selectedColor, selectedSize);
     const varCompare = getVariantComparePrice(product, selectedColor, selectedSize);
-
     let cartItem = cart.find(i => i.id === id && i.size === selectedSize && i.color === selectedColor);
-
     if (cartItem) {
       cartItem.quantity += quantity;
     } else {
@@ -1327,26 +1306,20 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
     closeWishlistModal();
     openCartDrawer();
   }
-
-  // ====================== FONCTION POUR METTRE À JOUR QUANTITY IN CART EN DIRECT ======================
   async function updateCartQuantityInSheet() {
     const userEmail = localStorage.getItem('userEmail');
     if (!userEmail) return;
-
     const qty = cart.reduce((sum, item) => sum + item.quantity, 0);
-
     await fetch('/.netlify/functions/save-account', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        action: 'update-cart-quantity', 
-        email: userEmail, 
-        currentCartQuantity: qty 
+      body: JSON.stringify({
+        action: 'update-cart-quantity',
+        email: userEmail,
+        currentCartQuantity: qty
       })
-    }).catch(() => {}); // non bloquant
+    }).catch(() => {});
   }
-
-
   function openCartDrawer() {
     renderCart();
     cartDrawer.classList.add('active');
@@ -1572,6 +1545,17 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       });
     });
   }
+  // === AUTO OPEN CART FROM ACCOUNT SAVED ITEMS (feature 2) ===
+  if (window.location.pathname.endsWith('shop.html') || window.location.pathname.includes('shop.html')) {
+    if (localStorage.getItem('autoOpenCartOnShop') === 'true') {
+      localStorage.removeItem('autoOpenCartOnShop');
+      setTimeout(() => {
+        if (typeof openCartDrawer === 'function') {
+          openCartDrawer();
+        }
+      }, 1000);
+    }
+  }
 });
 document.addEventListener('click', function(e) {
   if (e.target.closest('.swatch')) {
@@ -1586,20 +1570,6 @@ document.addEventListener('click', function(e) {
     }
   }
 });
-
-// === AUTO OUVERTURE CART DEPUIS ACCOUNT (CORRIGÉ) ===
-if ((window.location.pathname.includes('shop.html') || window.location.pathname.endsWith('shop.html')) &&
-    localStorage.getItem('autoOpenCart') === 'true') {
-  localStorage.removeItem('autoOpenCart');
-  setTimeout(() => {
-    if (typeof openCartDrawer === 'function') {
-      openCartDrawer();
-    }
-  }, 800);
-}
-
-
-
 document.addEventListener('DOMContentLoaded', () => {
     const trigger = document.getElementById('paulTrigger');
     const overlay = document.getElementById('paulPopup');
@@ -1609,8 +1579,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const goToSignup = document.getElementById('goToSignup');
     const goToLogin = document.getElementById('goToLogin');
     const isAccountPage = window.location.pathname.includes('account.html') || window.location.pathname.endsWith('account.html');
-
-    // ==================== TOAST ====================
     window.showToast = (msg) => {
         let toast = document.getElementById('toast');
         if (!toast) {
@@ -1623,8 +1591,6 @@ document.addEventListener('DOMContentLoaded', () => {
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 5000);
     };
-
-    // ==================== ACCOUNT POPUPS ====================
     window.openAccountPopup = (id) => {
         const popup = document.getElementById(id);
         if (popup) popup.classList.add('open');
@@ -1643,8 +1609,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const popup = document.getElementById(id);
         if (popup) popup.classList.remove('open');
     };
-
-    // ==================== PAUL AUTH POPUP ====================
     function openPaulPopup() {
         overlay.classList.add('active');
         loginForm.style.display = 'block';
@@ -1674,8 +1638,6 @@ document.addEventListener('DOMContentLoaded', () => {
         signupForm.style.display = 'none';
         loginForm.style.display = 'block';
     });
-
-    // ==================== SIGNUP ====================
     document.querySelector('.paul-btn-register').addEventListener('click', async () => {
         const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
         const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
@@ -1701,8 +1663,6 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast("Network error");
         }
     });
-
-    // ==================== LOGIN ====================
     document.querySelector('.paul-btn-login').addEventListener('click', async () => {
         const email = loginForm.querySelector('input[type="email"]').value.trim();
         const password = loginForm.querySelector('input[type="password"]').value.trim();
@@ -1740,102 +1700,88 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast("Network error");
         }
     });
-
-    // ==================== POPULATE PROFILE ====================
     if (localStorage.getItem('isLoggedIn') === 'true') {
         document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
         document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
         document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
         document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
     }
-
-    // ====================== LOAD STATS + ORDER HISTORY (COMPLET) ======================
-async function loadAccountStats() {
-    const email = localStorage.getItem('userEmail');
-    if (!email) return;
-    try {
-        const res = await fetch('/.netlify/functions/save-account', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'get-stats', email })
-        });
-        const data = await res.json();
-
-        // Mise à jour des stats
-        const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
-        if (statValues.length >= 2) {
-            statValues[0].textContent = data.orders || 0;
-            statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
-        }
-        document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
-
-        // ==================== ORDER HISTORY DISPLAY ====================
-        const historyContainer = document.querySelector('.order-history');
-        if (data.history && Array.isArray(data.history) && data.history.length > 0) {
-            let html = `<h2>Order History</h2>`;
-            const sorted = [...data.history].reverse();
-            sorted.forEach(order => {
-                html += `
-                    <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-                            <strong>Date : ${order.date}</strong>
-                            <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
-                        </div>
-                        <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
-                        <div class="order-items">
-                            ${order.items.map(item => `
-                                <div class="order-item-clickable" style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
-                                    ${item.image_variant ? `<img src="${item.image_variant}" alt="${item.title}" style="width:50px;height:50px;object-fit:cover;margin-right:10px;">` : ''}
-                                    <div>
-                                        <strong>${item.title}</strong><br>
-                                        Couleur variante : ${item.variant_color || 'N/A'}<br>
-                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
+    async function loadAccountStats() {
+        const email = localStorage.getItem('userEmail');
+        if (!email) return;
+        try {
+            const res = await fetch('/.netlify/functions/save-account', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'get-stats', email })
             });
-            historyContainer.innerHTML = html;
-
-            // === CLIC PRODUIT → REDIRECTION (FIXÉ) ===
-            setTimeout(() => {
-                const clickableItems = historyContainer.querySelectorAll('.order-item-clickable');
-                clickableItems.forEach(div => {
-                    div.addEventListener('click', () => {
-                        const title = div.querySelector('strong').textContent.trim();
-                        const product = window.products ? window.products.find(p => p.title === title) : null;
-                        if (product && typeof window.getProductUrl === 'function') {
-                            window.location.href = window.getProductUrl(product.id);
-                        }
-                    });
+            const data = await res.json();
+            const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
+            if (statValues.length >= 2) {
+                statValues[0].textContent = data.orders || 0;
+                statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
+            }
+            document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
+            const historyContainer = document.querySelector('.order-history');
+            if (data.history && Array.isArray(data.history) && data.history.length > 0) {
+                let html = `<h2>Order History</h2>`;
+                const sorted = [...data.history].reverse();
+                sorted.forEach(order => {
+                    html += `
+                        <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
+                            <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+                                <strong>Date : ${order.date}</strong>
+                                <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
+                            </div>
+                            <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
+                            <div class="order-items">
+                                ${order.items.map(item => `
+                                    <div class="order-item" data-product-id="${item.id || ''}" style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
+                                        ${item.image_variant ? `<img src="${item.image_variant}" alt="${item.title}" style="width:50px;height:50px;object-fit:cover;margin-right:10px;">` : ''}
+                                        <div>
+                                            <strong>${item.title}</strong><br>
+                                            Couleur variante : ${item.variant_color || 'N/A'}<br>
+                                            Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
                 });
-            }, 200);
-        } else {
-            historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
+                historyContainer.innerHTML = html;
+                // === FEATURE 1: Clique sur produit order history => redirect page produit ===
+                const orderItemsDivs = historyContainer.querySelectorAll('.order-item');
+                orderItemsDivs.forEach(div => {
+                  const pid = div.dataset.productId;
+                  if (pid) {
+                    div.addEventListener('click', () => {
+                      window.location.href = getProductUrl(parseInt(pid));
+                    });
+                  }
+                });
+            } else {
+                historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
+            }
+        } catch (e) {
+            console.error("Stats load error", e);
         }
-    } catch (e) {
-        console.error("Stats load error", e);
     }
-}
-
     if (isAccountPage) {
         loadAccountStats();
-        // === 2. CLIC SUR SAVED ITEMS ===
+    }
+    // === FEATURE 3: Supprime "No addresses found" au dessus des quick actions ===
+    const addressSection = document.querySelector('.address-section');
+    if (addressSection) addressSection.remove();
+    // === FEATURE 2: Saved Items (wishlist stat) => shop.html + ouvre cart drawer auto ===
     const savedItemsLink = document.querySelector('.stat-wishlist-link');
     if (savedItemsLink) {
       savedItemsLink.addEventListener('click', (e) => {
         e.preventDefault();
-        if (localStorage.getItem('isLoggedIn') === 'true') {
-          localStorage.setItem('autoOpenCart', 'true');
-          window.location.href = 'shop.html';
-        }
+        localStorage.setItem('autoOpenCartOnShop', 'true');
+        window.location.href = 'shop.html';
       });
     }
-    }
-
-    // ==================== SAVE ADDRESS ====================
     window.saveAddress = async () => {
         const email = localStorage.getItem('userEmail');
         const line1 = document.getElementById('addr-line1').value.trim();
@@ -1863,8 +1809,6 @@ async function loadAccountStats() {
             showToast("Network error while saving address");
         }
     };
-
-    // ==================== UPDATE PASSWORD ====================
     window.updatePassword = async () => {
         const email = document.getElementById('security-email').value.trim();
         const newPassword = document.getElementById('new-password').value.trim();
@@ -1886,8 +1830,6 @@ async function loadAccountStats() {
             showToast("Network error while updating password");
         }
     };
-
-    // ==================== TRACK ORDER ====================
     window.trackOrder = () => {
         const num = document.getElementById('tracking-number').value.trim();
         const result = document.getElementById('track-result');
@@ -1898,14 +1840,10 @@ async function loadAccountStats() {
         result.textContent = `✅ Order ${num} tracked - Estimated arrival: 3-5 days`;
         setTimeout(() => closeAccountPopup('track-popup'), 4000);
     };
-
-    // ==================== LOGOUT ====================
     window.logout = () => {
         localStorage.clear();
         window.location.href = 'index.html';
     };
-
-    // ==================== ACCOUNT PAGE PROTECTION ====================
     if (isAccountPage) {
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             setTimeout(() => {
