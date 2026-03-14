@@ -20,11 +20,13 @@ exports.handler = async (event) => {
     let cart = [];
     let shipping = {};
     let paymentVerified = false;
+    let session;
+    let purchaseUnit;
     const BASE_URL = process.env.BASE_URL || process.env.URL || `https://${event.headers.host}`;
     console.log(`🔗 BASE_URL utilisée : ${BASE_URL}`);
     // ====================== STRIPE ======================
     if (provider === "stripe") {
-      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      session = await stripe.checkout.sessions.retrieve(sessionId);
       if (session.payment_status !== "paid") throw new Error("Stripe not paid");
       const lineItems = await stripe.checkout.sessions.listLineItems(sessionId, { limit: 100 });
       const storedEprolo = JSON.parse(session.metadata.eprolo_data || "[]");
@@ -82,7 +84,7 @@ exports.handler = async (event) => {
       const finalOrderData = await finalOrderRes.json();
       if (finalOrderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
      
-      const purchaseUnit = finalOrderData.purchase_units?.[0];
+      purchaseUnit = finalOrderData.purchase_units?.[0];
       const storedVariants = purchaseUnit?.custom_id ? purchaseUnit.custom_id.split('|') : [];
       console.log("Stored variants data:", storedVariants);
       const itemsArray = purchaseUnit?.items || [];
