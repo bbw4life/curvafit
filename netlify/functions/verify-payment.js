@@ -15,7 +15,7 @@ exports.handler = async (event) => {
     // ====================== PROTECTION DOUBLE PROCESSING ======================
     const alreadyProcessed = await isAlreadyProcessed(paymentId);
     if (alreadyProcessed) {
-      console.log(`🚫 DUPLICATE DETECTED (${paymentId}) → SKIP (already processed)`);
+      console.log(`🚫 DUPLICATE DETECTED (${paymentId}) → SKIP`);
       return response(200, { success: true, message: "Duplicate - already processed" });
     }
     // ============================================================================
@@ -23,12 +23,15 @@ exports.handler = async (event) => {
     let cart = [];
     let shipping = {};
     let paymentVerified = false;
+    let sessionData = null;      // ← FIX pour Stripe
+    let purchaseUnit = null;     // ← FIX pour PayPal
     const BASE_URL = process.env.BASE_URL || process.env.URL || `https://${event.headers.host}`;
     console.log(`🔗 BASE_URL utilisée : ${BASE_URL}`);
 
     // ====================== STRIPE ======================
     if (provider === "stripe") {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
+      sessionData = session;                    // ← STOCKÉ ICI
       if (session.payment_status !== "paid") throw new Error("Stripe not paid");
       const lineItems = await stripe.checkout.sessions.listLineItems(sessionId, { limit: 100 });
       const storedEprolo = JSON.parse(session.metadata.eprolo_data || "[]");
@@ -45,16 +48,16 @@ exports.handler = async (event) => {
         });
       shipping = JSON.parse(session.metadata.shipping || "{}");
       paymentVerified = true;
+    }
 
     // ====================== PAYPAL ======================
-    } else if (provider === "paypal") {
+    else if (provider === "paypal") {
       const PAYPAL_BASE = process.env.PAYPAL_ENV === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
       const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString("base64");
       const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, { method: "POST", headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=client_credentials" });
       const { access_token } = await tokenRes.json();
       
       const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
-      if (!orderRes.ok) throw new Error("PayPal order fetch failed");
       const orderData = await orderRes.json();
       
       if (orderData.status === "APPROVED") {
@@ -66,7 +69,7 @@ exports.handler = async (event) => {
       const finalOrderData = await finalOrderRes.json();
       if (finalOrderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
       
-      const purchaseUnit = finalOrderData.purchase_units?.[0];
+      purchaseUnit = finalOrderData.purchase_units?.[0];   // ← STOCKÉ ICI
       const storedVariants = purchaseUnit?.custom_id ? purchaseUnit.custom_id.split('|') : [];
       const itemsArray = purchaseUnit?.items || [];
       cart = itemsArray.map((item, i) => ({
@@ -75,7 +78,7 @@ exports.handler = async (event) => {
         quantity: parseInt(item.quantity),
         variantsid: storedVariants[i] || null
       }));
-      
+
       const payer = finalOrderData.payer || {};
       const ship = purchaseUnit.shipping || {};
       shipping = {
@@ -96,11 +99,11 @@ exports.handler = async (event) => {
 
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
 
-    // ====================== RECORD ORDER (Orders + Total Spent + Order History) ======================
+    // ====================== RECORD ORDER (ORDERS + SPENT + HISTORY) ======================
     console.log("💾 Mise à jour Orders / Spent / History dans Google Sheet...");
 
     const totalPaid = provider === "stripe" 
-        ? (session.amount_total / 100) 
+        ? (sessionData.amount_total / 100) 
         : provider === "paypal" 
             ? parseFloat(purchaseUnit?.amount?.value || 0) 
             : cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
@@ -139,14 +142,11 @@ exports.handler = async (event) => {
     // =================================================================================================
 
     console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
-    // Group cart by variantsid
     const cartMap = {};
     cart.forEach(item => {
       const vid = item.variantsid || null;
       if (vid) {
-        if (!cartMap[vid]) {
-          cartMap[vid] = { title: item.title, price: item.price, quantity: 0, variantsid: vid };
-        }
+        if (!cartMap[vid]) cartMap[vid] = { title: item.title, price: item.price, quantity: 0, variantsid: vid };
         cartMap[vid].quantity += item.quantity;
       }
     });
@@ -204,7 +204,6 @@ async function isAlreadyProcessed(paymentId) {
     return false;
   }
 }
-// ============================================================================
 
 async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending_stock") {
   try {
