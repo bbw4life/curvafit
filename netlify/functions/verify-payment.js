@@ -48,18 +48,23 @@ exports.handler = async (event) => {
       const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, { method: "POST", headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=client_credentials" });
       const { access_token } = await tokenRes.json();
 
+      // On récupère le statut actuel
       const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
       const orderData = await orderRes.json();
 
+      // === IMPORTANT : ON IGNORE TOTALEMENT APPROVED ===
       if (orderData.status === "APPROVED") {
-        await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`, { method: "POST", headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" } });
+        console.log(`[PAYPAL] APPROVED détecté → on attend COMPLETED (skip)`);
+        return response(200, { success: true, message: "Waiting for completion" });
       }
 
-      const finalOrderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderID}`, { headers: { Authorization: `Bearer ${access_token}` } });
-      const finalOrderData = await finalOrderRes.json();
-      if (finalOrderData.status !== "COMPLETED") throw new Error("PayPal payment not completed");
+      if (orderData.status !== "COMPLETED") {
+        throw new Error(`PayPal status invalide: ${orderData.status}`);
+      }
 
-      purchaseUnit = finalOrderData.purchase_units?.[0] || {};
+      console.log(`[PAYPAL] COMPLETED → on traite la commande`);
+
+      purchaseUnit = orderData.purchase_units?.[0] || {};
       const storedVariants = purchaseUnit.custom_id ? purchaseUnit.custom_id.split('|') : [];
       const itemsArray = purchaseUnit.items || [];
 
