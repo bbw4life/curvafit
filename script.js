@@ -1744,7 +1744,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'shop.html';
     };
 
-    async function loadAccountStats() {
+       async function loadAccountStats() {
         const email = localStorage.getItem('userEmail');
         if (!email) return;
         try {
@@ -1754,6 +1754,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ action: 'get-stats', email })
             });
             const data = await res.json();
+
             const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
             if (statValues.length >= 2) {
                 statValues[0].textContent = data.orders || 0;
@@ -1762,6 +1763,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
 
             const historyContainer = document.querySelector('.order-history');
+            if (!historyContainer) return;
+
             if (data.history && Array.isArray(data.history) && data.history.length > 0) {
                 let html = `<h2>Order History</h2>`;
                 const sorted = [...data.history].reverse();
@@ -1791,21 +1794,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 historyContainer.innerHTML = html;
 
-                // === CLIC SUR PRODUIT (event delegation comme dans le cart) ===
-                historyContainer.addEventListener('click', (e) => {
-                    const clickable = e.target.closest('.order-item-clickable');
-                    if (clickable) {
-                        const id = clickable.dataset.id;
-                        if (id && window.getProductUrl) {
-                            window.location.href = window.getProductUrl(id);
-                        }
-                    }
-                });
+                // === NOUVELLE VERSION ULTRA-ROBUSTE (delegation sur document) ===
+                document.removeEventListener('click', handleOrderClick); // évite les doublons
+                document.addEventListener('click', handleOrderClick);
+
             } else {
                 historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
             }
         } catch (e) {
             console.error("Stats load error", e);
+        }
+    }
+
+    // Fonction séparée pour le clic (fonctionne à tous les coups)
+    function handleOrderClick(e) {
+        const clickable = e.target.closest('.order-item-clickable');
+        if (clickable) {
+            const id = clickable.dataset.id;
+            if (id && window.getProductUrl) {
+                console.log("✅ Clic détecté → redirection vers produit ID:", id); // pour debug
+                window.location.href = window.getProductUrl(id);
+            } else {
+                console.warn("⚠️ Pas de ID ou getProductUrl manquant");
+            }
         }
     }
     window.saveAddress = async () => {
