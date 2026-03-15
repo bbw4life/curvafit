@@ -2113,64 +2113,80 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
 
-        // Toggle visibilité mot de passe
-        document.querySelectorAll('.password-toggle').forEach(toggle => {
-            toggle.addEventListener('click', function () {
-                const targetId = this.getAttribute('data-target');
-                const input = document.getElementById(targetId);
-                if (!input) return;
-
-                const icon = this.querySelector('i');
-
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.classList.remove('fi-sr-eye');
-                    icon.classList.add('fi-sr-eye-crossed');
-                } else {
-                    input.type = 'password';
-                    icon.classList.remove('fi-sr-eye-crossed');
-                    icon.classList.add('fi-sr-eye');
-                }
-            });
+        // ==================== PASSWORD EYE TOGGLE avec icons FI (pro) ====================
+      document.querySelectorAll('.password-toggle').forEach(toggle => {
+          toggle.addEventListener('click', function () {
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            if (!input) return;
+            const icon = this.querySelector('i');
+            if (input.type === 'password') {
+              input.type = 'text';
+              icon.classList.remove('fi-sr-eye');
+              icon.classList.add('fi-sr-eye-crossed');
+            } else {
+              input.type = 'password';
+              icon.classList.remove('fi-sr-eye-crossed');
+              icon.classList.add('fi-sr-eye');
+            }
+          });
         });
 
-
-        // Inscription
-        document.querySelector('.paul-btn-register')?.addEventListener('click', async () => {
-            const lastName   = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
-            const firstName  = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
-            const email      = signupForm.querySelector('input[placeholder="Email"]').value.trim();
-            const phone      = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
-            const password   = signupForm.querySelector('input[type="password"]').value.trim();
+        document.querySelector('.paul-btn-register').addEventListener('click', async () => {
+            const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
+            const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
+            const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
+            const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
+            const password = signupForm.querySelector('input[type="password"], input[type="text"]').value.trim(); // ← FIX
             const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
 
             if (!password) return showToast("Password is required");
 
+            const registerBtn = document.querySelector('.paul-btn-register');
+            const originalText = registerBtn.textContent;
+            registerBtn.textContent = "Creating account...";
+            registerBtn.disabled = true;
+
             try {
-                const res = await fetch('/.netlify/functions/save-account', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
-                });
+              const res = await fetch('/.netlify/functions/save-account', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
+              });
+              const data = await res.json();
 
-                const data = await res.json();
-
-                if (data.success) {
-                    showToast("Account created successfully!");
-                    goToLogin.click();
-                } else {
-                    showToast("Error: " + (data.error || "Unknown"));
-                }
+              if (data.success) {
+                registerBtn.textContent = "Your profil is ready...";
+                showToast("Account created successfully!");
+                setTimeout(() => goToLogin.click(), 800);
+              } else {
+                registerBtn.textContent = originalText;
+                registerBtn.disabled = false;
+                showToast("Error: " + (data.error || "Unknown"));
+              }
             } catch (err) {
-                showToast("Network error");
+              registerBtn.textContent = originalText;
+              registerBtn.disabled = false;
+              showToast("Network error");
             }
-        });
+          });
 
+        // ====================== BOUTON LOGIN (corrigé + texte demandé) ======================
+        document.querySelector('.paul-btn-login').addEventListener('click', async () => {
+            const email = loginForm.querySelector('input[type="email"]').value.trim();
+            const passwordInput = loginForm.querySelector('input[placeholder*="Password"], input[type="password"], input[type="text"]');
+            const password = passwordInput ? passwordInput.value.trim() : '';
 
-        // Connexion
-        document.querySelector('.paul-btn-login')?.addEventListener('click', async () => {
-            const email    = loginForm.querySelector('input[type="email"]').value.trim();
-            const password = loginForm.querySelector('input[type="password"]').value.trim();
+            const loginBtn = document.querySelector('.paul-btn-login');
+            const originalText = loginBtn.textContent;
+
+            if (!email || !password) {
+                showToast("Email and password required");
+                return;
+            }
+
+            loginBtn.textContent = "Checking...";
+            loginBtn.disabled = true;
 
             try {
                 const res = await fetch('/.netlify/functions/verify-login', {
@@ -2178,28 +2194,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-
                 const data = await res.json();
 
                 if (data.success) {
+                    loginBtn.textContent = "Your account Loading...";
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('userEmail', email);
                     localStorage.setItem('userFirstName', data.user.firstName);
                     localStorage.setItem('userLastName', data.user.lastName);
                     localStorage.setItem('userAddressLine1', data.user.addressLine1 || '');
-                    localStorage.setItem('userLine2',      data.user.line2 || '');
-                    localStorage.setItem('userCity',       data.user.city || '');
-                    localStorage.setItem('userState',      data.user.state || '');
-                    localStorage.setItem('userZip',        data.user.zip || '');
+                    localStorage.setItem('userLine2', data.user.line2 || '');
+                    localStorage.setItem('userCity', data.user.city || '');
+                    localStorage.setItem('userState', data.user.state || '');
+                    localStorage.setItem('userZip', data.user.zip || '');
 
-                    const addressStr = [
-                        data.user.addressLine1,
-                        data.user.line2,
-                        data.user.city,
-                        data.user.state,
-                        data.user.zip
-                    ].filter(Boolean).join(', ');
-
+                    const addressStr = [data.user.addressLine1, data.user.line2, data.user.city, data.user.state, data.user.zip]
+                        .filter(Boolean).join(', ');
                     localStorage.setItem('userAddress', addressStr || 'No default address set');
 
                     showToast(`Welcome ${data.user.firstName} !`);
@@ -2211,9 +2221,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.location.href = 'account.html';
                     }
                 } else {
+                    loginBtn.textContent = originalText;
+                    loginBtn.disabled = false;
                     showToast("Incorrect email or password");
                 }
             } catch (err) {
+                loginBtn.textContent = originalText;
+                loginBtn.disabled = false;
                 showToast("Network error");
             }
         });
