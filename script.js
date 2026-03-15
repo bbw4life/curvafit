@@ -24,12 +24,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getProductUrl(id) {
     if (!products || !Array.isArray(products) || products.length === 0) {
-      return 'shop.html';
+        return 'shop.html';
     }
+
     const productIndex = products.findIndex(p => p.id === id);
     if (productIndex === -1) return 'shop.html';
-    return `product${productIndex + 1}.html`;
-  }
+
+    // === NOUVEAUTÉ : détection automatique du dossier ===
+    const currentPath = window.location.pathname;
+    const isInsideProductsFolder = currentPath.includes('/products/') || 
+      /product\d+\.html$/.test(currentPath);
+
+    return isInsideProductsFolder 
+        ? `product${productIndex + 1}.html`
+        : `products/product${productIndex + 1}.html`;
+}
   function populateMainProductMedia(media) {
     const thumbsContainer = document.getElementById('product-thumbnails');
     const mainSlider = document.getElementById('main-image-slider');
@@ -1845,13 +1854,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             historyContainer.innerHTML = html;
 
-            // ====================== NOUVEAU : CLIC IMAGE + TITRE (exactement comme wishlist) ======================
+            // ====================== CLICS IMAGE + TITRE (fonctionne partout maintenant) ======================
             historyContainer.querySelectorAll('.order-item-image').forEach(img => {
                 img.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const clickableDiv = img.closest('.order-item-clickable');
-                    if (clickableDiv && clickableDiv.dataset.id && typeof window.getProductUrl === 'function') {
-                        window.location.href = window.getProductUrl(clickableDiv.dataset.id);
+                    const div = img.closest('.order-item-clickable');
+                    if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
+                        window.location.href = window.getProductUrl(div.dataset.id);
                     }
                 });
             });
@@ -1859,20 +1868,19 @@ document.addEventListener('DOMContentLoaded', () => {
             historyContainer.querySelectorAll('.order-item-title').forEach(title => {
                 title.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const clickableDiv = title.closest('.order-item-clickable');
-                    if (clickableDiv && clickableDiv.dataset.id && typeof window.getProductUrl === 'function') {
-                        window.location.href = window.getProductUrl(clickableDiv.dataset.id);
+                    const div = title.closest('.order-item-clickable');
+                    if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
+                        window.location.href = window.getProductUrl(div.dataset.id);
                     }
                 });
             });
-            // =====================================================================================================
 
-            // Garde l'ancien listener (au cas où on clique ailleurs sur la ligne)
+            // Garde aussi le clic sur toute la ligne (pour sécurité)
             historyContainer.addEventListener('click', function(e) {
                 const clickable = e.target.closest('.order-item-clickable');
                 if (clickable) {
                     const id = clickable.dataset.id;
-                    if (id && window.getProductUrl) {
+                    if (id && typeof window.getProductUrl === 'function') {
                         window.location.href = window.getProductUrl(id);
                     }
                 }
