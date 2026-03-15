@@ -1609,69 +1609,57 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       }
     }, 1200);
   }
-});
-document.addEventListener('click', function(e) {
-  if (e.target.closest('.swatch')) {
-    const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent);
-    if (isMobile) {
-      const mediaSlider = document.getElementById('main-image-slider');
-      if (mediaSlider) {
-        setTimeout(() => {
-          mediaSlider.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 50);
+
+  // ====================== DEUXIÈME DOM FUSIONNÉ ICI (tout le code account popup sans wrapper séparé) ======================
+  const trigger = document.getElementById('paulTrigger');
+  const overlayPopup = document.getElementById('paulPopup'); // renommé pour éviter conflit avec l'overlay du cart
+  const closeBtn = document.querySelector('.paul-close');
+  const loginForm = document.getElementById('loginForm');
+  const signupForm = document.getElementById('signupForm');
+  const goToSignup = document.getElementById('goToSignup');
+  const goToLogin = document.getElementById('goToLogin');
+  const pathname = window.location.pathname.toLowerCase();
+  const isAccountPage = /account/i.test(pathname);
+  window.showToast = (msg) => {
+      let toast = document.getElementById('toast');
+      if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'toast';
+          toast.className = 'toast';
+          document.body.appendChild(toast);
       }
-    }
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 5000);
+  };
+  window.openAccountPopup = (id) => {
+      const popup = document.getElementById(id);
+      if (popup) popup.classList.add('open');
+      if (id === 'address-popup') {
+          document.getElementById('addr-email').value = localStorage.getItem('userEmail') || '';
+          document.getElementById('addr-first').value = localStorage.getItem('userFirstName') || '';
+          document.getElementById('addr-last').value = localStorage.getItem('userLastName') || '';
+          document.getElementById('addr-line1').value = localStorage.getItem('userAddressLine1') || '';
+          document.getElementById('addr-line2').value = localStorage.getItem('userLine2') || '';
+          document.getElementById('addr-city').value = localStorage.getItem('userCity') || '';
+          document.getElementById('addr-state').value = localStorage.getItem('userState') || '';
+          document.getElementById('addr-zip').value = localStorage.getItem('userZip') || '';
+      }
+  };
+  window.closeAccountPopup = (id) => {
+      const popup = document.getElementById(id);
+      if (popup) popup.classList.remove('open');
+  };
+  function openPaulPopup() {
+      overlayPopup.classList.add('active');
+      loginForm.style.display = 'block';
+      signupForm.style.display = 'none';
   }
-});
-document.addEventListener('DOMContentLoaded', () => {
-    const trigger = document.getElementById('paulTrigger');
-    const overlay = document.getElementById('paulPopup');
-    const closeBtn = document.querySelector('.paul-close');
-    const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('signupForm');
-    const goToSignup = document.getElementById('goToSignup');
-    const goToLogin = document.getElementById('goToLogin');
-    const pathname = window.location.pathname.toLowerCase();
-    const isAccountPage = /account/i.test(pathname);
-    window.showToast = (msg) => {
-        let toast = document.getElementById('toast');
-        if (!toast) {
-            toast = document.createElement('div');
-            toast.id = 'toast';
-            toast.className = 'toast';
-            document.body.appendChild(toast);
-        }
-        toast.textContent = msg;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 5000);
-    };
-    window.openAccountPopup = (id) => {
-        const popup = document.getElementById(id);
-        if (popup) popup.classList.add('open');
-        if (id === 'address-popup') {
-            document.getElementById('addr-email').value = localStorage.getItem('userEmail') || '';
-            document.getElementById('addr-first').value = localStorage.getItem('userFirstName') || '';
-            document.getElementById('addr-last').value = localStorage.getItem('userLastName') || '';
-            document.getElementById('addr-line1').value = localStorage.getItem('userAddressLine1') || '';
-            document.getElementById('addr-line2').value = localStorage.getItem('userLine2') || '';
-            document.getElementById('addr-city').value = localStorage.getItem('userCity') || '';
-            document.getElementById('addr-state').value = localStorage.getItem('userState') || '';
-            document.getElementById('addr-zip').value = localStorage.getItem('userZip') || '';
-        }
-    };
-    window.closeAccountPopup = (id) => {
-        const popup = document.getElementById(id);
-        if (popup) popup.classList.remove('open');
-    };
-    function openPaulPopup() {
-        overlay.classList.add('active');
-        loginForm.style.display = 'block';
-        signupForm.style.display = 'none';
-    }
-    function closePaulPopup() {
-        if (isAccountPage) return;
-        overlay.classList.remove('active');
-    }
+  function closePaulPopup() {
+      if (isAccountPage) return;
+      overlayPopup.classList.remove('active');
+  }
+  if (trigger) {
     trigger.addEventListener('click', (e) => {
         e.preventDefault();
         if (localStorage.getItem('isLoggedIn') === 'true') {
@@ -1680,19 +1668,28 @@ document.addEventListener('DOMContentLoaded', () => {
             openPaulPopup();
         }
     });
-    closeBtn.addEventListener('click', closePaulPopup);
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay && !isAccountPage) closePaulPopup();
+  }
+  if (closeBtn) closeBtn.addEventListener('click', closePaulPopup);
+  if (overlayPopup) {
+    overlayPopup.addEventListener('click', (e) => {
+        if (e.target === overlayPopup && !isAccountPage) closePaulPopup();
     });
+  }
+  if (goToSignup) {
     goToSignup.addEventListener('click', () => {
         loginForm.style.display = 'none';
         signupForm.style.display = 'block';
     });
+  }
+  if (goToLogin) {
     goToLogin.addEventListener('click', () => {
         signupForm.style.display = 'none';
         loginForm.style.display = 'block';
     });
-    document.querySelector('.paul-btn-register').addEventListener('click', async () => {
+  }
+  const paulBtnRegister = document.querySelector('.paul-btn-register');
+  if (paulBtnRegister) {
+    paulBtnRegister.addEventListener('click', async () => {
         const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
         const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
         const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
@@ -1717,7 +1714,10 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast("Network error");
         }
     });
-    document.querySelector('.paul-btn-login').addEventListener('click', async () => {
+  }
+  const paulBtnLogin = document.querySelector('.paul-btn-login');
+  if (paulBtnLogin) {
+    paulBtnLogin.addEventListener('click', async () => {
         const email = loginForm.querySelector('input[type="email"]').value.trim();
         const password = loginForm.querySelector('input[type="password"]').value.trim();
         try {
@@ -1741,7 +1741,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     .filter(Boolean).join(', ');
                 localStorage.setItem('userAddress', addressStr || 'No default address set');
                 showToast(`Welcome ${data.user.firstName} !`);
-                overlay.classList.remove('active');
+                overlayPopup.classList.remove('active');
                 if (isAccountPage) {
                     location.reload();
                 } else {
@@ -1754,205 +1754,209 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast("Network error");
         }
     });
-    if (isAccountPage) {
-        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-        if (!isLoggedIn) {
-            const hideStyle = document.createElement('style');
-            hideStyle.innerHTML = `
-                body > *:not(#paulPopup) { display: none !important; }
-                #paulPopup { display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 999999 !important; }
-            `;
-            document.head.appendChild(hideStyle);
-            setTimeout(() => {
-                openPaulPopup();
-                const closeBtnPopup = document.querySelector('.paul-close');
-                if (closeBtnPopup) {
-                    closeBtnPopup.style.pointerEvents = 'none';
-                    closeBtnPopup.style.opacity = '0.3';
-                    closeBtnPopup.title = 'Vous devez vous connecter pour accéder à votre compte';
-                }
-            }, 100);
-            return;
-        }
-        document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
-        document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
-        document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
-        document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
-        loadAccountStats();
-    }
-    window.openSavedItems = () => {
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            showToast("Connectez-vous pour voir vos articles sauvegardés");
-            return;
-        }
-        localStorage.setItem('autoOpenCart', 'true');
-        window.location.href = 'shop.html';
-    };
-       async function loadAccountStats() {
-    const email = localStorage.getItem('userEmail');
-    if (!email) return;
-
-    try {
-        const res = await fetch('/.netlify/functions/save-account', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'get-stats', email })
-        });
-        const data = await res.json();
-
-        // Member since + points
-        const memberSinceEl = document.getElementById('member-since');
-        if (memberSinceEl) memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
-
-        const points = data.points || 0;
-        let levelText = 'Basic Member';
-        if (points >= 100 && points < 200) levelText = 'Member pro';
-        else if (points >= 200) levelText = 'Member super pro';
-
-        const levelEl = document.getElementById('membership-level');
-        const pointsEl = document.getElementById('membership-points');
-        if (levelEl) levelEl.textContent = levelText;
-        if (pointsEl) pointsEl.textContent = `${points} pts`;
-
-        // Stats normales
-        const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
-        if (statValues.length >= 2) {
-            statValues[0].textContent = data.orders || 0;
-            statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
-        }
-        document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
-
-        const historyContainer = document.querySelector('.order-history');
-        if (!historyContainer) {
-            console.warn("⚠️ .order-history non trouvé dans le DOM");
-            return;
-        }
-
-        if (data.history && Array.isArray(data.history) && data.history.length > 0) {
-            let html = `<h2>Order History</h2>`;
-            const sorted = [...data.history].reverse();
-            sorted.forEach(order => {
-                html += `
-                    <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-                            <strong>Date : ${order.date}</strong>
-                            <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
-                        </div>
-                        <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
-                        <div class="order-items">
-                            ${order.items.map(item => `
-                                <div class="order-item-clickable" data-id="${item.id || ''}"
-                                     style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
-                                    ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image" style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">` : ''}
-                                    <div>
-                                        <strong class="order-item-title" style="color:#007bff;cursor:pointer;">${item.title}</strong><br>
-                                        Couleur variante : ${item.variant_color || 'N/A'}<br>
-                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            });
-            historyContainer.innerHTML = html;
-
-            // ====================== DELEGATION SUR DOCUMENT (méthode infaillible) ======================
-            setTimeout(() => {
-                console.log("✅ Delegation Order History activée sur document");
-
-                document.addEventListener('click', function(e) {
-                    const clickable = e.target.closest('.order-item-clickable');
-                    if (!clickable) return;
-
-                    const id = clickable.dataset.id;
-                    if (!id) return;
-
-                    e.stopImmediatePropagation();
-
-                    const url = window.getProductUrl(id);
-                    console.log(`🖱️ CLIC DÉTECTÉ → ID=${id} | URL=${url}`);
-
-                    if (url === 'shop.html') {
-                        console.error(`❌ ID=${id} NON TROUVÉ dans products.data.json`);
-                        showErrorPopup(`Produit ID=${id} introuvable`);
-                        return;
-                    }
-
-                    window.location.href = url;
-                });
-            }, 300);
-
-        } else {
-            historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
-        }
-    } catch (e) {
-        console.error("Stats load error", e);
-    }
+  }
+  if (isAccountPage) {
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      if (!isLoggedIn) {
+          const hideStyle = document.createElement('style');
+          hideStyle.innerHTML = `
+              body > *:not(#paulPopup) { display: none !important; }
+              #paulPopup { display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 999999 !important; }
+          `;
+          document.head.appendChild(hideStyle);
+          setTimeout(() => {
+              openPaulPopup();
+              const closeBtnPopup = document.querySelector('.paul-close');
+              if (closeBtnPopup) {
+                  closeBtnPopup.style.pointerEvents = 'none';
+                  closeBtnPopup.style.opacity = '0.3';
+                  closeBtnPopup.title = 'Vous devez vous connecter pour accéder à votre compte';
+              }
+          }, 100);
+          return;
+      }
+      document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
+      document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
+      document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
+      document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
+      loadAccountStats();
+  }
+  window.openSavedItems = () => {
+      if (localStorage.getItem('isLoggedIn') !== 'true') {
+          showToast("Connectez-vous pour voir vos articles sauvegardés");
+          return;
+      }
+      localStorage.setItem('autoOpenCart', 'true');
+      window.location.href = 'shop.html';
+  };
+     async function loadAccountStats() {
+  const email = localStorage.getItem('userEmail');
+  if (!email) return;
+  try {
+      const res = await fetch('/.netlify/functions/save-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'get-stats', email })
+      });
+      const data = await res.json();
+      // Member since + points
+      const memberSinceEl = document.getElementById('member-since');
+      if (memberSinceEl) memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
+      const points = data.points || 0;
+      let levelText = 'Basic Member';
+      if (points >= 100 && points < 200) levelText = 'Member pro';
+      else if (points >= 200) levelText = 'Member super pro';
+      const levelEl = document.getElementById('membership-level');
+      const pointsEl = document.getElementById('membership-points');
+      if (levelEl) levelEl.textContent = levelText;
+      if (pointsEl) pointsEl.textContent = `${points} pts`;
+      // Stats normales
+      const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
+      if (statValues.length >= 2) {
+          statValues[0].textContent = data.orders || 0;
+          statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
+      }
+      document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
+      const historyContainer = document.querySelector('.order-history');
+      if (!historyContainer) {
+          console.warn("⚠️ .order-history non trouvé dans le DOM");
+          return;
+      }
+      if (data.history && Array.isArray(data.history) && data.history.length > 0) {
+          let html = `<h2>Order History</h2>`;
+          const sorted = [...data.history].reverse();
+          sorted.forEach(order => {
+              html += `
+                  <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
+                      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+                          <strong>Date : ${order.date}</strong>
+                          <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
+                      </div>
+                      <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
+                      <div class="order-items">
+                          ${order.items.map(item => `
+                              <div class="order-item-clickable" data-id="${item.id || ''}"
+                                   style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
+                                  ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image" style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">` : ''}
+                                  <div>
+                                      <strong class="order-item-title" style="color:#007bff;cursor:pointer;">${item.title}</strong><br>
+                                      Couleur variante : ${item.variant_color || 'N/A'}<br>
+                                      Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}
+                                  </div>
+                              </div>
+                          `).join('')}
+                      </div>
+                  </div>
+              `;
+          });
+          historyContainer.innerHTML = html;
+          // ====================== DELEGATION SUR DOCUMENT (méthode infaillible) ======================
+          setTimeout(() => {
+              console.log("✅ Delegation Order History activée sur document");
+              document.addEventListener('click', function(e) {
+                  const clickable = e.target.closest('.order-item-clickable');
+                  if (!clickable) return;
+                  const id = clickable.dataset.id;
+                  if (!id) return;
+                  e.stopImmediatePropagation();
+                  const url = window.getProductUrl(id);
+                  console.log(`🖱️ CLIC DÉTECTÉ → ID=${id} | URL=${url}`);
+                  if (url === 'shop.html') {
+                      console.error(`❌ ID=${id} NON TROUVÉ dans products.data.json`);
+                      showErrorPopup(`Produit ID=${id} introuvable`);
+                      return;
+                  }
+                  window.location.href = url;
+              });
+          }, 300);
+      } else {
+          historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
+      }
+  } catch (e) {
+      console.error("Stats load error", e);
+  }
 }
-    window.saveAddress = async () => {
-        const email = localStorage.getItem('userEmail');
-        const line1 = document.getElementById('addr-line1').value.trim();
-        const line2 = document.getElementById('addr-line2').value.trim();
-        const city = document.getElementById('addr-city').value.trim();
-        const state = document.getElementById('addr-state').value.trim();
-        const zip = document.getElementById('addr-zip').value.trim();
-        const addressStr = [line1, line2, city, state, zip].filter(Boolean).join(', ');
-        try {
-            const res = await fetch('/.netlify/functions/save-account', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'update-address', email, line1, line2, city, state, zip })
-            });
-            const data = await res.json();
-            if (data.success) {
-                localStorage.setItem('userAddress', addressStr || 'No default address set');
-                document.getElementById('user-address').textContent = addressStr || 'No default address set';
-                showToast("Address saved successfully!");
-                closeAccountPopup('address-popup');
-            } else {
-                showToast("Error: " + data.error);
-            }
-        } catch (err) {
-            showToast("Network error while saving address");
-        }
-    };
-    window.updatePassword = async () => {
-        const email = document.getElementById('security-email').value.trim();
-        const newPassword = document.getElementById('new-password').value.trim();
-        if (!email || !newPassword) return showToast("Email and new password are required");
-        try {
-            const res = await fetch('/.netlify/functions/save-account', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'update-password', email, newPassword })
-            });
-            const data = await res.json();
-            if (data.success) {
-                showToast("Password updated successfully!");
-                closeAccountPopup('password-popup');
-            } else {
-                showToast("Error: " + data.error);
-            }
-        } catch (err) {
-            showToast("Network error while updating password");
-        }
-    };
-    window.trackOrder = () => {
-        const num = document.getElementById('tracking-number').value.trim();
-        const result = document.getElementById('track-result');
-        if (!num) {
-            result.textContent = "Please enter a tracking number";
-            return;
-        }
-        result.textContent = `✅ Order ${num} tracked - Estimated arrival: 3-5 days`;
-        setTimeout(() => closeAccountPopup('track-popup'), 4000);
-    };
-    window.logout = () => {
-        localStorage.clear();
-        window.location.href = 'index.html';
-    };
+  window.saveAddress = async () => {
+      const email = localStorage.getItem('userEmail');
+      const line1 = document.getElementById('addr-line1').value.trim();
+      const line2 = document.getElementById('addr-line2').value.trim();
+      const city = document.getElementById('addr-city').value.trim();
+      const state = document.getElementById('addr-state').value.trim();
+      const zip = document.getElementById('addr-zip').value.trim();
+      const addressStr = [line1, line2, city, state, zip].filter(Boolean).join(', ');
+      try {
+          const res = await fetch('/.netlify/functions/save-account', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'update-address', email, line1, line2, city, state, zip })
+          });
+          const data = await res.json();
+          if (data.success) {
+              localStorage.setItem('userAddress', addressStr || 'No default address set');
+              document.getElementById('user-address').textContent = addressStr || 'No default address set';
+              showToast("Address saved successfully!");
+              closeAccountPopup('address-popup');
+          } else {
+              showToast("Error: " + data.error);
+          }
+      } catch (err) {
+          showToast("Network error while saving address");
+      }
+  };
+  window.updatePassword = async () => {
+      const email = document.getElementById('security-email').value.trim();
+      const newPassword = document.getElementById('new-password').value.trim();
+      if (!email || !newPassword) return showToast("Email and new password are required");
+      try {
+          const res = await fetch('/.netlify/functions/save-account', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'update-password', email, newPassword })
+          });
+          const data = await res.json();
+          if (data.success) {
+              showToast("Password updated successfully!");
+              closeAccountPopup('password-popup');
+          } else {
+              showToast("Error: " + data.error);
+          }
+      } catch (err) {
+          showToast("Network error while updating password");
+      }
+  };
+  window.trackOrder = () => {
+      const num = document.getElementById('tracking-number').value.trim();
+      const result = document.getElementById('track-result');
+      if (!num) {
+          result.textContent = "Please enter a tracking number";
+          return;
+      }
+      result.textContent = `✅ Order ${num} tracked - Estimated arrival: 3-5 days`;
+      setTimeout(() => closeAccountPopup('track-popup'), 4000);
+  };
+  window.logout = () => {
+      localStorage.clear();
+      window.location.href = 'index.html';
+  };
+
+  // Fin de la fusion du deuxième DOM
 });
+
+// ====================== ÉVÉNEMENT CLICK INDÉPENDANT (non touché) ======================
+document.addEventListener('click', function(e) {
+  if (e.target.closest('.swatch')) {
+    const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent);
+    if (isMobile) {
+      const mediaSlider = document.getElementById('main-image-slider');
+      if (mediaSlider) {
+        setTimeout(() => {
+          mediaSlider.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+      }
+    }
+  }
+});
+
 window.addEventListener('load', () => {
     const pathname = window.location.pathname.toLowerCase();
     const isAccountPage = /account/i.test(pathname);
