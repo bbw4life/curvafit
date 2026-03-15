@@ -817,31 +817,41 @@
         <h2 class="paul-offer-title">20% OFF TODAY ONLY!</h2>
         <p class="paul-offer-subtitle">Log in or sign up now</p>
         <div id="authContainer">
+
+            <!-- LOGIN FORM -->
             <div id="loginForm" class="auth-form">
                 <h3>Login</h3>
                 <input type="email" placeholder="Email" required>
+                
+                <!-- PASSWORD LOGIN -->
                 <div class="password-input-wrapper" style="position:relative !important;">
                     <input type="password" id="login-password" placeholder="Password" required>
                     <span class="password-toggle" data-target="login-password">
                         <i class="fi fi-sr-eye"></i>
                     </span>
-                </div>     
+                </div>
+                
                 <label><input type="checkbox"> Remember me</label>
                 <button type="button" class="paul-btn paul-btn-login">Log In</button>
                 <p class="switch-link">No account? <span id="goToSignup">Sign Up</span></p>
             </div>
+
+            <!-- SIGNUP FORM -->
             <div id="signupForm" class="auth-form" style="display:none;">
                 <h3>Sign Up</h3>
                 <input type="text" placeholder="Last Name" required>
                 <input type="text" placeholder="First Name" required>
                 <input type="email" placeholder="Email" required>
                 <input type="tel" placeholder="Phone (optional)">
+                
+               <!-- PASSWORD SIGNUP -->
                 <div class="password-input-wrapper" style="position:relative !important;">
                     <input type="password" id="signup-password" placeholder="Password" required>
                     <span class="password-toggle" data-target="signup-password">
                         <i class="fi fi-sr-eye"></i>
                     </span>
                 </div>
+                
                 <label><input type="checkbox"> I want to subscribe to the newsletter</label>
                 <button type="button" class="paul-btn paul-btn-register">Create My Account</button>
                 <p class="switch-link">Already have an account? <span id="goToLogin">Login</span></p>
