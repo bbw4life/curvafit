@@ -1782,7 +1782,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('autoOpenCart', 'true');
         window.location.href = 'shop.html';
     };
-   async function loadAccountStats() {
+      async function loadAccountStats() {
     const email = localStorage.getItem('userEmail');
     if (!email) return;
     try {
@@ -1792,23 +1792,22 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ action: 'get-stats', email })
         });
         const data = await res.json();
-        // ====================== MEMBER SINCE + POINTS BADGE (10 pts par commande) ======================
-      const memberSinceEl = document.getElementById('member-since');
-      if (memberSinceEl) {
-          memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
-      }
 
-      const points = data.points || 0;
-      let levelText = 'Basic Member';
-      if (points >= 100 && points < 200) levelText = 'Member pro';
-      else if (points >= 200) levelText = 'Member super pro';
+        // ====================== MEMBER SINCE + POINTS BADGE ======================
+        const memberSinceEl = document.getElementById('member-since');
+        if (memberSinceEl) {
+            memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
+        }
 
-      const levelEl = document.getElementById('membership-level');
-      const pointsEl = document.getElementById('membership-points');
-      const badge = document.getElementById('membership-badge');
+        const points = data.points || 0;
+        let levelText = 'Basic Member';
+        if (points >= 100 && points < 200) levelText = 'Member pro';
+        else if (points >= 200) levelText = 'Member super pro';
 
-      if (levelEl) levelEl.textContent = levelText;
-      if (pointsEl) pointsEl.textContent = `${points} pts`;
+        const levelEl = document.getElementById('membership-level');
+        const pointsEl = document.getElementById('membership-points');
+        if (levelEl) levelEl.textContent = levelText;
+        if (pointsEl) pointsEl.textContent = `${points} pts`;
 
         const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
         if (statValues.length >= 2) {
@@ -1816,8 +1815,10 @@ document.addEventListener('DOMContentLoaded', () => {
             statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
         }
         document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
+
         const historyContainer = document.querySelector('.order-history');
         if (!historyContainer) return;
+
         if (data.history && Array.isArray(data.history) && data.history.length > 0) {
             let html = `<h2>Order History</h2>`;
             const sorted = [...data.history].reverse();
@@ -1852,49 +1853,47 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             });
             historyContainer.innerHTML = html;
-            setTimeout(() => {
-                historyContainer.querySelectorAll('.order-item-image, .order-item-title, .order-item-clickable').forEach(el => {
-                    if (typeof window.getProductUrl === 'function') {
-                        const id = el.closest('.order-item-clickable')?.dataset.id;
-                        if (id) {
-                            el.style.cursor = 'pointer';
-                            el.addEventListener('click', (e) => {
-                                e.stopPropagation();
-                                window.location.href = window.getProductUrl(id);
-                            });
-                        }
-                    }
-                });
-            }, 300);
-            // ====================== CLICS IMAGE + TITRE (fonctionne partout maintenant) ======================
-            historyContainer.querySelectorAll('.order-item-image').forEach(img => {
-                img.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const div = img.closest('.order-item-clickable');
-                    if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
-                        window.location.href = window.getProductUrl(div.dataset.id);
-                    }
-                });
-            });
-            historyContainer.querySelectorAll('.order-item-title').forEach(title => {
-                title.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const div = title.closest('.order-item-clickable');
-                    if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
-                        window.location.href = window.getProductUrl(div.dataset.id);
-                    }
-                });
-            });
-            // Garde aussi le clic sur toute la ligne (pour sécurité)
-            historyContainer.addEventListener('click', function(e) {
-                const clickable = e.target.closest('.order-item-clickable');
-                if (clickable) {
-                    const id = clickable.dataset.id;
-                    if (id && typeof window.getProductUrl === 'function') {
-                        window.location.href = window.getProductUrl(id);
-                    }
+
+            // ====================== SOLUTION DÉFINITIVE : ATTENTE DE getProductUrl ======================
+            function setupHistoryClicks() {
+                if (typeof window.getProductUrl !== 'function') {
+                    setTimeout(setupHistoryClicks, 150);  // on réessaie toutes les 150ms
+                    return;
                 }
-            });
+
+                // On ajoute les clics UNE SEULE FOIS
+                historyContainer.querySelectorAll('.order-item-clickable').forEach(clickable => {
+                    const id = clickable.dataset.id;
+                    if (!id) return;
+
+                    const img = clickable.querySelector('.order-item-image');
+                    const title = clickable.querySelector('.order-item-title');
+
+                    const navigate = () => {
+                        if (typeof window.getProductUrl === 'function') {
+                            window.location.href = window.getProductUrl(id);
+                        }
+                    };
+
+                    clickable.style.cursor = 'pointer';
+                    clickable.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        navigate();
+                    });
+
+                    if (img) {
+                        img.style.cursor = 'pointer';
+                        img.addEventListener('click', (e) => { e.stopPropagation(); navigate(); });
+                    }
+                    if (title) {
+                        title.style.cursor = 'pointer';
+                        title.addEventListener('click', (e) => { e.stopPropagation(); navigate(); });
+                    }
+                });
+            }
+
+            setupHistoryClicks();   // ← LANCEMENT IMMÉDIAT (avec attente intelligente)
+
         } else {
             historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
         }
