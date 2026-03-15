@@ -18,16 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   function getProductUrl(id) {
     if (!products || !Array.isArray(products) || products.length === 0) {
-        console.warn("Products pas encore chargés → fallback shop.html");
         return 'shop.html';
     }
-    const productIndex = products.findIndex(p => String(p.id) === String(id)); // ← FIX ID STRING/NUMBER
-    if (productIndex === -1) {
-        console.warn(`Produit ID ${id} non trouvé dans products.data.json`);
-        return 'shop.html';
-    }
+    const productIndex = products.findIndex(p => p.id === id);
+    if (productIndex === -1) return 'shop.html';
+    // === NOUVEAUTÉ : détection automatique du dossier ===
     const currentPath = window.location.pathname;
-    const isInsideProductsFolder = currentPath.includes('/products/') || /product\d+\.html$/.test(currentPath);
+    const isInsideProductsFolder = currentPath.includes('/products/') ||
+      /product\d+\.html$/.test(currentPath);
     return isInsideProductsFolder
         ? `product${productIndex + 1}.html`
         : `products/product${productIndex + 1}.html`;
@@ -1106,18 +1104,14 @@ document.addEventListener('DOMContentLoaded', () => {
   function saveWishlist() {
     localStorage.setItem('wishlist', JSON.stringify(wishlist));
   }
- function updateBadges() {
+  function updateBadges() {
     const cartQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-    if (cartBadge) {
-        cartBadge.textContent = cartQuantity;
-        cartBadge.classList.toggle('active', cartQuantity > 0);
-    }
-    if (wishlistBadge) {
-        const wishlistCount = wishlist.length;
-        wishlistBadge.textContent = wishlistCount;
-        wishlistBadge.classList.toggle('active', wishlistCount > 0);
-    }
-}
+    cartBadge.textContent = cartQuantity;
+    cartBadge.classList.toggle('active', cartQuantity > 0);
+    const wishlistCount = wishlist.length;
+    wishlistBadge.textContent = wishlistCount;
+    wishlistBadge.classList.toggle('active', wishlistCount > 0);
+  }
   function renderCart() {
     cartItemsContainer.innerHTML = '';
     const emptyCart = document.querySelector('.empty-cart');
@@ -1692,125 +1686,68 @@ document.addEventListener('DOMContentLoaded', () => {
         signupForm.style.display = 'none';
         loginForm.style.display = 'block';
     });
-
-
-    // ==================== PASSWORD EYE TOGGLE avec icons FI (pro) ====================
-document.querySelectorAll('.password-toggle').forEach(toggle => {
-    toggle.addEventListener('click', function () {
-      const targetId = this.getAttribute('data-target');
-      const input = document.getElementById(targetId);
-      if (!input) return;
-      const icon = this.querySelector('i');
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.remove('fi-sr-eye');
-        icon.classList.add('fi-sr-eye-crossed');
-      } else {
-        input.type = 'password';
-        icon.classList.remove('fi-sr-eye-crossed');
-        icon.classList.add('fi-sr-eye');
-      }
-    });
-  });
-
-document.querySelector('.paul-btn-register').addEventListener('click', async () => {
-    const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
-    const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
-    const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
-    const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
-    const password = signupForm.querySelector('input[type="password"], input[type="text"]').value.trim(); // ← FIX
-    const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
-
-    if (!password) return showToast("Password is required");
-
-    const registerBtn = document.querySelector('.paul-btn-register');
-    const originalText = registerBtn.textContent;
-    registerBtn.textContent = "Creating account...";
-    registerBtn.disabled = true;
-
-    try {
-      const res = await fetch('/.netlify/functions/save-account', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        registerBtn.textContent = "Your profil is ready...";
-        showToast("Account created successfully!");
-        setTimeout(() => goToLogin.click(), 800);
-      } else {
-        registerBtn.textContent = originalText;
-        registerBtn.disabled = false;
-        showToast("Error: " + (data.error || "Unknown"));
-      }
-    } catch (err) {
-      registerBtn.textContent = originalText;
-      registerBtn.disabled = false;
-      showToast("Network error");
-    }
-  });
-    // ====================== BOUTON LOGIN (corrigé + texte demandé) ======================
-document.querySelector('.paul-btn-login').addEventListener('click', async () => {
-    const email = loginForm.querySelector('input[type="email"]').value.trim();
-    const passwordInput = loginForm.querySelector('input[placeholder*="Password"], input[type="password"], input[type="text"]');
-    const password = passwordInput ? passwordInput.value.trim() : '';
-
-    const loginBtn = document.querySelector('.paul-btn-login');
-    const originalText = loginBtn.textContent;
-
-    if (!email || !password) {
-        showToast("Email and password required");
-        return;
-    }
-
-    loginBtn.textContent = "Checking...";
-    loginBtn.disabled = true;
-
-    try {
-        const res = await fetch('/.netlify/functions/verify-login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        const data = await res.json();
-
-        if (data.success) {
-            loginBtn.textContent = "Your account Loading...";
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('userEmail', email);
-            localStorage.setItem('userFirstName', data.user.firstName);
-            localStorage.setItem('userLastName', data.user.lastName);
-            localStorage.setItem('userAddressLine1', data.user.addressLine1 || '');
-            localStorage.setItem('userLine2', data.user.line2 || '');
-            localStorage.setItem('userCity', data.user.city || '');
-            localStorage.setItem('userState', data.user.state || '');
-            localStorage.setItem('userZip', data.user.zip || '');
-
-            const addressStr = [data.user.addressLine1, data.user.line2, data.user.city, data.user.state, data.user.zip]
-                .filter(Boolean).join(', ');
-            localStorage.setItem('userAddress', addressStr || 'No default address set');
-
-            showToast(`Welcome ${data.user.firstName} !`);
-            overlay.classList.remove('active');
-
-            if (isAccountPage) {
-                location.reload();
+    document.querySelector('.paul-btn-register').addEventListener('click', async () => {
+        const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
+        const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
+        const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
+        const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
+        const password = signupForm.querySelector('input[type="password"]').value.trim();
+        const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
+        if (!password) return showToast("Password is required");
+        try {
+            const res = await fetch('/.netlify/functions/save-account', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast("Account created successfully!");
+                goToLogin.click();
             } else {
-                window.location.href = 'account.html';
+                showToast("Error: " + (data.error || "Unknown"));
             }
-        } else {
-            loginBtn.textContent = originalText;
-            loginBtn.disabled = false;
-            showToast("Incorrect email or password");
+        } catch (err) {
+            showToast("Network error");
         }
-    } catch (err) {
-        loginBtn.textContent = originalText;
-        loginBtn.disabled = false;
-        showToast("Network error");
-    }
-});
+    });
+    document.querySelector('.paul-btn-login').addEventListener('click', async () => {
+        const email = loginForm.querySelector('input[type="email"]').value.trim();
+        const password = loginForm.querySelector('input[type="password"]').value.trim();
+        try {
+            const res = await fetch('/.netlify/functions/verify-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userFirstName', data.user.firstName);
+                localStorage.setItem('userLastName', data.user.lastName);
+                localStorage.setItem('userAddressLine1', data.user.addressLine1 || '');
+                localStorage.setItem('userLine2', data.user.line2 || '');
+                localStorage.setItem('userCity', data.user.city || '');
+                localStorage.setItem('userState', data.user.state || '');
+                localStorage.setItem('userZip', data.user.zip || '');
+                const addressStr = [data.user.addressLine1, data.user.line2, data.user.city, data.user.state, data.user.zip]
+                    .filter(Boolean).join(', ');
+                localStorage.setItem('userAddress', addressStr || 'No default address set');
+                showToast(`Welcome ${data.user.firstName} !`);
+                overlay.classList.remove('active');
+                if (isAccountPage) {
+                    location.reload();
+                } else {
+                    window.location.href = 'account.html';
+                }
+            } else {
+                showToast("Incorrect email or password");
+            }
+        } catch (err) {
+            showToast("Network error");
+        }
+    });
     if (isAccountPage) {
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
         if (!isLoggedIn) {
@@ -1845,7 +1782,7 @@ document.querySelector('.paul-btn-login').addEventListener('click', async () => 
         localStorage.setItem('autoOpenCart', 'true');
         window.location.href = 'shop.html';
     };
-    async function loadAccountStats() {
+   async function loadAccountStats() {
     const email = localStorage.getItem('userEmail');
     if (!email) return;
     try {
