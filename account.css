@@ -63,9 +63,7 @@
 
 #membership-badge,
 #membership-badge span,
-#membership-badge .points,
-#membership-badge #membership-level,
-#membership-badge #membership-points {
+#membership-badge .points {
     color: #ffffff !important;
 }
 
