@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn("Products pas encore chargés → fallback shop.html");
         return 'shop.html';
     }
-    const productIndex = products.findIndex(p => String(p.id) === String(id)); // ← FIX ID STRING/NUMBER
+    const productIndex = products.findIndex(p => String(p.id) === String(id));
     if (productIndex === -1) {
         console.warn(`Produit ID ${id} non trouvé dans products.data.json`);
         return 'shop.html';
@@ -1315,7 +1315,6 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
                 <p>$${parseFloat(product.price).toFixed(2)}</p>
                 ${comparePriceHTML}
                 <button class="remove-wishlist">Remove</button>`;
-            // ====================== NOUVEAU : CLIC IMAGE + TITRE ======================
             const img = wishlistItem.querySelector('.wishlist-img');
             const titleEl = wishlistItem.querySelector('.wishlist-title');
             if (img && titleEl && typeof window.getProductUrl === 'function') {
@@ -1331,7 +1330,6 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
                     window.location.href = productUrl;
                 });
             }
-            // =====================================================================
             wishlistItemsContainer.appendChild(wishlistItem);
         }
     });
@@ -1610,9 +1608,9 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
     }, 1200);
   }
 
-  // ====================== DEUXIÈME DOM FUSIONNÉ ICI (tout le code account popup sans wrapper séparé) ======================
+  // ====================== FUSION DU SECOND DOM (un seul addEventListener DOMContentLoaded) ======================
   const trigger = document.getElementById('paulTrigger');
-  const overlayPopup = document.getElementById('paulPopup'); // renommé pour éviter conflit avec l'overlay du cart
+  const paulOverlay = document.getElementById('paulPopup');   // ← renommé pour éviter conflit avec le cart overlay
   const closeBtn = document.querySelector('.paul-close');
   const loginForm = document.getElementById('loginForm');
   const signupForm = document.getElementById('signupForm');
@@ -1620,6 +1618,7 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
   const goToLogin = document.getElementById('goToLogin');
   const pathname = window.location.pathname.toLowerCase();
   const isAccountPage = /account/i.test(pathname);
+
   window.showToast = (msg) => {
       let toast = document.getElementById('toast');
       if (!toast) {
@@ -1651,110 +1650,98 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       if (popup) popup.classList.remove('open');
   };
   function openPaulPopup() {
-      overlayPopup.classList.add('active');
+      paulOverlay.classList.add('active');
       loginForm.style.display = 'block';
       signupForm.style.display = 'none';
   }
   function closePaulPopup() {
       if (isAccountPage) return;
-      overlayPopup.classList.remove('active');
+      paulOverlay.classList.remove('active');
   }
-  if (trigger) {
-    trigger.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (localStorage.getItem('isLoggedIn') === 'true') {
-            window.location.href = 'account.html';
-        } else {
-            openPaulPopup();
-        }
-    });
-  }
+  if (trigger) trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (localStorage.getItem('isLoggedIn') === 'true') {
+          window.location.href = 'account.html';
+      } else {
+          openPaulPopup();
+      }
+  });
   if (closeBtn) closeBtn.addEventListener('click', closePaulPopup);
-  if (overlayPopup) {
-    overlayPopup.addEventListener('click', (e) => {
-        if (e.target === overlayPopup && !isAccountPage) closePaulPopup();
-    });
-  }
-  if (goToSignup) {
-    goToSignup.addEventListener('click', () => {
-        loginForm.style.display = 'none';
-        signupForm.style.display = 'block';
-    });
-  }
-  if (goToLogin) {
-    goToLogin.addEventListener('click', () => {
-        signupForm.style.display = 'none';
-        loginForm.style.display = 'block';
-    });
-  }
+  if (paulOverlay) paulOverlay.addEventListener('click', (e) => {
+      if (e.target === paulOverlay && !isAccountPage) closePaulPopup();
+  });
+  if (goToSignup) goToSignup.addEventListener('click', () => {
+      loginForm.style.display = 'none';
+      signupForm.style.display = 'block';
+  });
+  if (goToLogin) goToLogin.addEventListener('click', () => {
+      signupForm.style.display = 'none';
+      loginForm.style.display = 'block';
+  });
   const paulBtnRegister = document.querySelector('.paul-btn-register');
-  if (paulBtnRegister) {
-    paulBtnRegister.addEventListener('click', async () => {
-        const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
-        const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
-        const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
-        const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
-        const password = signupForm.querySelector('input[type="password"]').value.trim();
-        const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
-        if (!password) return showToast("Password is required");
-        try {
-            const res = await fetch('/.netlify/functions/save-account', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
-            });
-            const data = await res.json();
-            if (data.success) {
-                showToast("Account created successfully!");
-                goToLogin.click();
-            } else {
-                showToast("Error: " + (data.error || "Unknown"));
-            }
-        } catch (err) {
-            showToast("Network error");
-        }
-    });
-  }
+  if (paulBtnRegister) paulBtnRegister.addEventListener('click', async () => {
+      const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
+      const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
+      const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
+      const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
+      const password = signupForm.querySelector('input[type="password"]').value.trim();
+      const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
+      if (!password) return showToast("Password is required");
+      try {
+          const res = await fetch('/.netlify/functions/save-account', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
+          });
+          const data = await res.json();
+          if (data.success) {
+              showToast("Account created successfully!");
+              goToLogin.click();
+          } else {
+              showToast("Error: " + (data.error || "Unknown"));
+          }
+      } catch (err) {
+          showToast("Network error");
+      }
+  });
   const paulBtnLogin = document.querySelector('.paul-btn-login');
-  if (paulBtnLogin) {
-    paulBtnLogin.addEventListener('click', async () => {
-        const email = loginForm.querySelector('input[type="email"]').value.trim();
-        const password = loginForm.querySelector('input[type="password"]').value.trim();
-        try {
-            const res = await fetch('/.netlify/functions/verify-login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-            const data = await res.json();
-            if (data.success) {
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('userFirstName', data.user.firstName);
-                localStorage.setItem('userLastName', data.user.lastName);
-                localStorage.setItem('userAddressLine1', data.user.addressLine1 || '');
-                localStorage.setItem('userLine2', data.user.line2 || '');
-                localStorage.setItem('userCity', data.user.city || '');
-                localStorage.setItem('userState', data.user.state || '');
-                localStorage.setItem('userZip', data.user.zip || '');
-                const addressStr = [data.user.addressLine1, data.user.line2, data.user.city, data.user.state, data.user.zip]
-                    .filter(Boolean).join(', ');
-                localStorage.setItem('userAddress', addressStr || 'No default address set');
-                showToast(`Welcome ${data.user.firstName} !`);
-                overlayPopup.classList.remove('active');
-                if (isAccountPage) {
-                    location.reload();
-                } else {
-                    window.location.href = 'account.html';
-                }
-            } else {
-                showToast("Incorrect email or password");
-            }
-        } catch (err) {
-            showToast("Network error");
-        }
-    });
-  }
+  if (paulBtnLogin) paulBtnLogin.addEventListener('click', async () => {
+      const email = loginForm.querySelector('input[type="email"]').value.trim();
+      const password = loginForm.querySelector('input[type="password"]').value.trim();
+      try {
+          const res = await fetch('/.netlify/functions/verify-login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+          if (data.success) {
+              localStorage.setItem('isLoggedIn', 'true');
+              localStorage.setItem('userEmail', email);
+              localStorage.setItem('userFirstName', data.user.firstName);
+              localStorage.setItem('userLastName', data.user.lastName);
+              localStorage.setItem('userAddressLine1', data.user.addressLine1 || '');
+              localStorage.setItem('userLine2', data.user.line2 || '');
+              localStorage.setItem('userCity', data.user.city || '');
+              localStorage.setItem('userState', data.user.state || '');
+              localStorage.setItem('userZip', data.user.zip || '');
+              const addressStr = [data.user.addressLine1, data.user.line2, data.user.city, data.user.state, data.user.zip]
+                  .filter(Boolean).join(', ');
+              localStorage.setItem('userAddress', addressStr || 'No default address set');
+              showToast(`Welcome ${data.user.firstName} !`);
+              paulOverlay.classList.remove('active');
+              if (isAccountPage) {
+                  location.reload();
+              } else {
+                  window.location.href = 'account.html';
+              }
+          } else {
+              showToast("Incorrect email or password");
+          }
+      } catch (err) {
+          showToast("Network error");
+      }
+  });
   if (isAccountPage) {
       const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
       if (!isLoggedIn) {
@@ -1789,93 +1776,84 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       localStorage.setItem('autoOpenCart', 'true');
       window.location.href = 'shop.html';
   };
-     async function loadAccountStats() {
-  const email = localStorage.getItem('userEmail');
-  if (!email) return;
-  try {
-      const res = await fetch('/.netlify/functions/save-account', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'get-stats', email })
-      });
-      const data = await res.json();
-      // Member since + points
-      const memberSinceEl = document.getElementById('member-since');
-      if (memberSinceEl) memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
-      const points = data.points || 0;
-      let levelText = 'Basic Member';
-      if (points >= 100 && points < 200) levelText = 'Member pro';
-      else if (points >= 200) levelText = 'Member super pro';
-      const levelEl = document.getElementById('membership-level');
-      const pointsEl = document.getElementById('membership-points');
-      if (levelEl) levelEl.textContent = levelText;
-      if (pointsEl) pointsEl.textContent = `${points} pts`;
-      // Stats normales
-      const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
-      if (statValues.length >= 2) {
-          statValues[0].textContent = data.orders || 0;
-          statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
-      }
-      document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
-      const historyContainer = document.querySelector('.order-history');
-      if (!historyContainer) {
-          console.warn("⚠️ .order-history non trouvé dans le DOM");
-          return;
-      }
-      if (data.history && Array.isArray(data.history) && data.history.length > 0) {
-          let html = `<h2>Order History</h2>`;
-          const sorted = [...data.history].reverse();
-          sorted.forEach(order => {
-              html += `
-                  <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
-                      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-                          <strong>Date : ${order.date}</strong>
-                          <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
-                      </div>
-                      <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
-                      <div class="order-items">
-                          ${order.items.map(item => `
-                              <div class="order-item-clickable" data-id="${item.id || ''}"
-                                   style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
-                                  ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image" style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">` : ''}
-                                  <div>
-                                      <strong class="order-item-title" style="color:#007bff;cursor:pointer;">${item.title}</strong><br>
-                                      Couleur variante : ${item.variant_color || 'N/A'}<br>
-                                      Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}
-                                  </div>
-                              </div>
-                          `).join('')}
-                      </div>
-                  </div>
-              `;
-          });
-          historyContainer.innerHTML = html;
-          // ====================== DELEGATION SUR DOCUMENT (méthode infaillible) ======================
-          setTimeout(() => {
-              console.log("✅ Delegation Order History activée sur document");
-              document.addEventListener('click', function(e) {
-                  const clickable = e.target.closest('.order-item-clickable');
-                  if (!clickable) return;
-                  const id = clickable.dataset.id;
-                  if (!id) return;
-                  e.stopImmediatePropagation();
-                  const url = window.getProductUrl(id);
-                  console.log(`🖱️ CLIC DÉTECTÉ → ID=${id} | URL=${url}`);
-                  if (url === 'shop.html') {
-                      console.error(`❌ ID=${id} NON TROUVÉ dans products.data.json`);
-                      showErrorPopup(`Produit ID=${id} introuvable`);
-                      return;
-                  }
-                  window.location.href = url;
-              });
-          }, 300);
-      } else {
-          historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
-      }
-  } catch (e) {
-      console.error("Stats load error", e);
+  async function loadAccountStats() {
+    const email = localStorage.getItem('userEmail');
+    if (!email) return;
+    try {
+        const res = await fetch('/.netlify/functions/save-account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'get-stats', email })
+        });
+        const data = await res.json();
+        const memberSinceEl = document.getElementById('member-since');
+        if (memberSinceEl) memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
+        const points = data.points || 0;
+        let levelText = 'Basic Member';
+        if (points >= 100 && points < 200) levelText = 'Member pro';
+        else if (points >= 200) levelText = 'Member super pro';
+        const levelEl = document.getElementById('membership-level');
+        const pointsEl = document.getElementById('membership-points');
+        if (levelEl) levelEl.textContent = levelText;
+        if (pointsEl) pointsEl.textContent = `${points} pts`;
+        const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
+        if (statValues.length >= 2) {
+            statValues[0].textContent = data.orders || 0;
+            statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
+        }
+        document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
+        const historyContainer = document.querySelector('.order-history');
+        if (!historyContainer) return;
+        if (data.history && Array.isArray(data.history) && data.history.length > 0) {
+            let html = `<h2>Order History</h2>`;
+            const sorted = [...data.history].reverse();
+            sorted.forEach(order => {
+                html += `
+                    <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+                            <strong>Date : ${order.date}</strong>
+                            <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
+                        </div>
+                        <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
+                        <div class="order-items">
+                            ${order.items.map(item => `
+                                <div class="order-item-clickable" data-id="${item.id || ''}"
+                                     style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
+                                    ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image" style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">` : ''}
+                                    <div>
+                                        <strong class="order-item-title" style="color:#007bff;cursor:pointer;">${item.title}</strong><br>
+                                        Couleur variante : ${item.variant_color || 'N/A'}<br>
+                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            historyContainer.innerHTML = html;
+            setTimeout(() => {
+                document.addEventListener('click', function(e) {
+                    const clickable = e.target.closest('.order-item-clickable');
+                    if (!clickable) return;
+                    const id = clickable.dataset.id;
+                    if (!id) return;
+                    e.stopImmediatePropagation();
+                    const url = window.getProductUrl(id);
+                    if (url === 'shop.html') {
+                        showErrorPopup(`Produit ID=${id} introuvable`);
+                        return;
+                    }
+                    window.location.href = url;
+                });
+            }, 300);
+        } else {
+            historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
+        }
+    } catch (e) {
+        console.error("Stats load error", e);
+    }
   }
-}
   window.saveAddress = async () => {
       const email = localStorage.getItem('userEmail');
       const line1 = document.getElementById('addr-line1').value.trim();
@@ -1938,11 +1916,9 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       localStorage.clear();
       window.location.href = 'index.html';
   };
-
-  // Fin de la fusion du deuxième DOM
+  // Fin de la fusion du second DOM
 });
 
-// ====================== ÉVÉNEMENT CLICK INDÉPENDANT (non touché) ======================
 document.addEventListener('click', function(e) {
   if (e.target.closest('.swatch')) {
     const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent);
