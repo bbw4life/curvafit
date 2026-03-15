@@ -1692,6 +1692,30 @@ document.addEventListener('DOMContentLoaded', () => {
         signupForm.style.display = 'none';
         loginForm.style.display = 'block';
     });
+
+
+    // ==================== PASSWORD EYE TOGGLE avec icons FI (pro) ====================
+document.querySelectorAll('.password-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function () {
+        const targetId = this.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        if (!input) return;
+
+        const icon = this.querySelector('i');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fi-sr-eye');
+            icon.classList.add('fi-sr-eye-crossed');   // ← icon "masqué"
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fi-sr-eye-crossed');
+            icon.classList.add('fi-sr-eye');           // ← icon "voir"
+        }
+    });
+});
+
+
     document.querySelector('.paul-btn-register').addEventListener('click', async () => {
         const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
         const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
@@ -1849,25 +1873,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             });
             historyContainer.innerHTML = html;
-            // ====================== DELEGATION SUR DOCUMENT (méthode infaillible) ======================
-            setTimeout(() => {
-                console.log("✅ Delegation Order History activée sur document");
-                document.addEventListener('click', function(e) {
-                    const clickable = e.target.closest('.order-item-clickable');
-                    if (!clickable) return;
-                    const id = clickable.dataset.id;
-                    if (!id) return;
-                    e.stopImmediatePropagation();
-                    const url = window.getProductUrl(id);
-                    console.log(`🖱️ CLIC DÉTECTÉ → ID=${id} | URL=${url}`);
-                    if (url === 'shop.html') {
-                        console.error(`❌ ID=${id} NON TROUVÉ dans products.data.json`);
-                        showErrorPopup(`Produit ID=${id} introuvable`);
-                        return;
-                    }
-                    window.location.href = url;
-                });
-            }, 300);
+           // ====================== CLIC DIRECT SUR LES PRODUITS (fix définitif) ======================
+const orderItems = historyContainer.querySelectorAll('.order-item-clickable');
+orderItems.forEach(item => {
+    item.addEventListener('click', function (e) {
+        const id = this.dataset.id;
+        if (!id) return;
+
+        e.stopImmediatePropagation();
+        const url = typeof window.getProductUrl === 'function' 
+                    ? window.getProductUrl(id) 
+                    : 'shop.html';
+
+        console.log(`🖱️ CLIC ORDER HISTORY → ID=${id} | URL=${url}`);
+
+        if (url === 'shop.html') {
+            showErrorPopup(`Produit ID=${id} introuvable`);
+            return;
+        }
+        window.location.href = url;
+    });
+});
         } else {
             historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
         }
