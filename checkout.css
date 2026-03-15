@@ -625,3 +625,28 @@ select {
 .shipping-option.selected i {
     color: #c2185b;
 }
+
+
+
+
+.popup-ok-btn {
+    width: 100%;
+    padding: 16px 30px;
+    background: #f0b90b !important;
+    color: #000000 !important;
+    border: none !important;
+    border-radius: 30px !important;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.popup-ok-btn:hover {
+    background: #d4a017 !important;
+    transform: translateY(-3px);
+}
+
+/* Auto-close animation */
+@keyframes fadeOutPopup {
+    to { opacity: 0; transform: scale(0.95); }
+}

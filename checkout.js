@@ -41,26 +41,48 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCart();
       });
 
-
-        // Vérifie si connecté et remplit le formulaire
-        if (localStorage.getItem('isLoggedIn') === 'true') {
-            document.getElementById('first-name').value = localStorage.getItem('userFirstName') || '';
-            document.getElementById('last-name').value = localStorage.getItem('userLastName') || '';
-            document.getElementById('email').value = localStorage.getItem('userEmail') || '';
-            document.getElementById('address').value = localStorage.getItem('userAddressLine1') || '';
-            const address2Input = document.getElementById('address2') || document.getElementById('address-line2');
-            if (address2Input) address2Input.value = localStorage.getItem('userLine2') || '';
-            
-            document.getElementById('city').value = localStorage.getItem('userCity') || '';
-            document.getElementById('state').value = localStorage.getItem('userState') || '';
-            document.getElementById('postal-code').value = localStorage.getItem('userZip') || '';
-            const countrySelect = document.getElementById('country');
-            if (countrySelect && localStorage.getItem('userCountry')) {
-                countrySelect.value = localStorage.getItem('userCountry');
-            }
-            
-            console.log("✅ Infos shipping auto-remplies depuis localStorage."); // Pour debug
+    // Vérifie si connecté et remplit le formulaire
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+        document.getElementById('first-name').value = localStorage.getItem('userFirstName') || '';
+        document.getElementById('last-name').value = localStorage.getItem('userLastName') || '';
+        document.getElementById('email').value = localStorage.getItem('userEmail') || '';
+        document.getElementById('address').value = localStorage.getItem('userAddressLine1') || '';
+        const address2Input = document.getElementById('address2') || document.getElementById('address-line2');
+        if (address2Input) address2Input.value = localStorage.getItem('userLine2') || '';
+        
+        document.getElementById('city').value = localStorage.getItem('userCity') || '';
+        document.getElementById('state').value = localStorage.getItem('userState') || '';
+        document.getElementById('postal-code').value = localStorage.getItem('userZip') || '';
+        const countrySelect = document.getElementById('country');
+        if (countrySelect && localStorage.getItem('userCountry')) {
+            countrySelect.value = localStorage.getItem('userCountry');
         }
+        
+        console.log("✅ Infos shipping auto-remplies depuis localStorage."); // Pour debug
+    }
+
+    // ====================== NOUVEAU : ERROR POPUP (disparaît après 6 secondes) ======================
+    function showErrorPopup(message, title = "Error") {
+        const popup = document.getElementById('error-popup');
+        if (!popup) {
+            console.error("Error popup HTML missing");
+            alert(message); // fallback très rare
+            return;
+        }
+        document.getElementById('error-title').textContent = title;
+        document.getElementById('error-message').textContent = message;
+        popup.style.display = 'flex';
+        
+        // Disparaît automatiquement après 6 secondes
+        setTimeout(() => {
+            if (popup.style.display === 'flex') closeErrorPopup();
+        }, 6000);
+    }
+
+    function closeErrorPopup() {
+        const popup = document.getElementById('error-popup');
+        if (popup) popup.style.display = 'none';
+    }
 
     function renderCart() {
         if (!cart.length) {
@@ -126,18 +148,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function validateForm() {
-        const inputs = shippingForm.querySelectorAll('input, textarea');
+        const inputs = shippingForm.querySelectorAll('input, textarea, select');
         let valid = true;
         inputs.forEach(input => {
-            if (!input.value.trim()) {
+            if (!input.value.trim() && !input.disabled) {
                 valid = false;
                 input.style.borderColor = 'red';
             } else {
                 input.style.borderColor = '#ccc';
             }
         });
-        if (!valid) alert('Please fill all required fields.');
-        return valid;
+        if (!valid) {
+            showErrorPopup(
+                "Please fill all required fields before finalizing the payment.",
+                "Missing Information"
+            );
+            return false;
+        }
+        return true;
     }
 
     function getShippingData() {
@@ -176,10 +204,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return workingCart;
     }
 
-    // ====================== BOUTON PAY (entièrement corrigé) ======================
+    // ====================== BOUTON PAY (entièrement corrigé avec popup) ======================
     payButton.addEventListener('click', async () => {
         if (!validateForm()) return;
-        if (!cart.length) return alert('Your cart is empty.');
+        if (!cart.length) {
+            showErrorPopup("Your cart is empty. Please add products before checkout.", "Empty Cart");
+            return;
+        }
 
         payButton.disabled = true;
         payButton.textContent = "Processing...";
@@ -228,20 +259,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 const data = await response.json();
-                if (!response.ok || !data.orderID) throw new Error(data.error || 'PayPal order failed');
+                if (!response.ok || !data.orderID) throw new Error(data.error || 'PayPal order creation failed');
 
                 const paypalDomain = data.paypalDomain || 'https://www.sandbox.paypal.com';
                 localStorage.setItem("pendingOrder", "paypal");
                 window.location.href = `${paypalDomain}/checkoutnow?token=${data.orderID}`;
             }
         } catch (error) {
-            alert("Payment error: " + error.message);
+            console.error("Payment error:", error);
+
+            let userMessage = "Payment error occurred. Please try again.";
+            if (error.message.toLowerCase().includes("paypal")) {
+                userMessage = "PayPal order creation failed. Please try again or contact support.";
+            } else if (error.message.toLowerCase().includes("stripe")) {
+                userMessage = "Stripe payment failed. Please try again.";
+            } else if (error.message) {
+                userMessage = error.message;
+            }
+
+            showErrorPopup(userMessage, "Payment Failed");
+            
             payButton.disabled = false;
             payButton.textContent = "Pay Now";
         }
     });
 
-    // ====================== LE RESTE EST IDENTIQUE À TON ORIGINAL ======================
+    // ====================== MODALS POLICIES ======================
     const refundLink = document.getElementById('refund-policy-link');
     const shippingLink = document.getElementById('shipping-policy-link');
     const refundModal = document.getElementById('refund-modal');
@@ -385,7 +428,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('copy-suggested')?.addEventListener('click', () => {
         const code = document.getElementById('suggested-code').textContent;
-        navigator.clipboard.writeText(code).then(() => alert('Code copied: ' + code));
+        navigator.clipboard.writeText(code).then(() => {
+            showErrorPopup("Code copied: " + code, "Success");
+        });
     });
 
     document.getElementById('apply-promo')?.addEventListener('click', () => {
