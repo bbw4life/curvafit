@@ -773,40 +773,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (typeof updateProductPrice === 'function') updateProductPrice();
       }, 300);
-
-      // ←←← UNE SEULE FOIS À LA FIN DU FETCH
       window.getProductUrl = getProductUrl;
     })
-    .catch(error => console.error('Erreur de chargement des produits:', error));
-
-  // ====================== CLIC ORDER HISTORY – VERSION QUI MARCHE (ICI, À LA FIN) ======================
-  document.addEventListener('click', function(e) {
-    const clickable = e.target.closest('.order-item-clickable');
-    if (!clickable) return;
-
-    const id = clickable.dataset.id;
-    if (!id) return;
-
-    if (typeof window.getProductUrl !== 'function') {
-      console.warn("getProductUrl pas encore prêt → retry");
-      setTimeout(() => clickable.click(), 800);
-      return;
-    }
-
-    const url = window.getProductUrl(id);
-    console.log(`🖱️ CLIC ORDER HISTORY → ID=${id} | URL=${url}`);
-
-    if (url === 'shop.html' || !url) {
-      if (typeof showErrorPopup === 'function') {
-        showErrorPopup(`Produit ID=${id} introuvable`);
-      } else {
-        alert(`Produit ID=${id} introuvable`);
-      }
-      return;
-    }
-
-    window.location.href = url;
-  })
     .catch(error => console.error('Erreur de chargement des produits:', error));
   document.querySelectorAll('section').forEach(sec => {
     if (!sec.hasAttribute('data-scroll-reveal')) {
@@ -1881,6 +1849,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             });
             historyContainer.innerHTML = html;
+            // ====================== DELEGATION SUR DOCUMENT (méthode infaillible) ======================
+            setTimeout(() => {
+                console.log("✅ Delegation Order History activée sur document");
+                document.addEventListener('click', function(e) {
+                    const clickable = e.target.closest('.order-item-clickable');
+                    if (!clickable) return;
+                    const id = clickable.dataset.id;
+                    if (!id) return;
+                    e.stopImmediatePropagation();
+                    const url = window.getProductUrl(id);
+                    console.log(`🖱️ CLIC DÉTECTÉ → ID=${id} | URL=${url}`);
+                    if (url === 'shop.html') {
+                        console.error(`❌ ID=${id} NON TROUVÉ dans products.data.json`);
+                        showErrorPopup(`Produit ID=${id} introuvable`);
+                        return;
+                    }
+                    window.location.href = url;
+                });
+            }, 300);
         } else {
             historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
         }
