@@ -1793,21 +1793,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const data = await res.json();
         // ====================== MEMBER SINCE + POINTS BADGE (10 pts par commande) ======================
-          const memberSinceEl = document.getElementById('member-since');
-          if (memberSinceEl) {
-              memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
-          }
+      const memberSinceEl = document.getElementById('member-since');
+      if (memberSinceEl) {
+          memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
+      }
 
-          const points = data.points || 0;
-          let levelText = 'Basic Member';
-          if (points === 100) levelText = 'Member pro';
-          else if (points > 100) levelText = 'Member super pro';
+      const points = data.points || 0;
+      let levelText = 'Basic Member';
+      if (points >= 100 && points < 200) levelText = 'Member pro';
+      else if (points >= 200) levelText = 'Member super pro';
 
-          const levelEl = document.getElementById('membership-level');
-          if (levelEl) levelEl.textContent = levelText;
+      const levelEl = document.getElementById('membership-level');
+      const pointsEl = document.getElementById('membership-points');
+      const badge = document.getElementById('membership-badge');
 
-          const pointsEl = document.getElementById('membership-points');
-          if (pointsEl) pointsEl.textContent = `${points} pts`;
+      if (levelEl) levelEl.textContent = levelText;
+      if (pointsEl) pointsEl.textContent = `${points} pts`;
+
+      // Force l'affichage du texte (couleur blanche comme avant)
+      if (badge) {
+          badge.style.color = '#ffffff';
+          if (levelEl) levelEl.style.color = '#ffffff';
+          if (pointsEl) pointsEl.style.color = '#ffffff';
+      }
+
 
         const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
         if (statValues.length >= 2) {
