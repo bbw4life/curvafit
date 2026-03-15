@@ -763,7 +763,7 @@ document.addEventListener('DOMContentLoaded', () => {
           trioDesc.textContent = `Save ${product.trio_discount || 0}%`;
         }
       }
-            setTimeout(() => {
+      setTimeout(() => {
         document.querySelectorAll('.color-swatches .swatch').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('#main-image-slider .main-image').forEach(container => {
           const img = container.querySelector('img');
@@ -774,38 +774,39 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof updateProductPrice === 'function') updateProductPrice();
       }, 300);
 
-     // ====================== CLIC ORDER HISTORY – VERSION QUI MARCHE (ICI !) ======================
-      document.addEventListener('click', function(e) {
-        const clickable = e.target.closest('.order-item-clickable');
-        if (!clickable) return;
-
-        const id = clickable.dataset.id;
-        if (!id) return;
-
-        if (typeof window.getProductUrl !== 'function') {
-          console.warn("getProductUrl pas encore prêt → retry");
-          setTimeout(() => clickable.click(), 800);
-          return;
-        }
-
-        const url = window.getProductUrl(id);
-        console.log(`🖱️ CLIC ORDER HISTORY → ID=${id} | URL=${url}`);
-
-        if (url === 'shop.html' || !url) {
-          if (typeof showErrorPopup === 'function') {
-            showErrorPopup(`Produit ID=${id} introuvable`);
-          } else {
-            alert(`Produit ID=${id} introuvable`);
-          }
-          return;
-        }
-
-        window.location.href = url;
-      });
-
-      // ←←← UNE SEULE FOIS À LA TOUTE FIN
+      // ←←← UNE SEULE FOIS À LA FIN DU FETCH
       window.getProductUrl = getProductUrl;
     })
+    .catch(error => console.error('Erreur de chargement des produits:', error));
+
+  // ====================== CLIC ORDER HISTORY – VERSION QUI MARCHE (ICI, À LA FIN) ======================
+  document.addEventListener('click', function(e) {
+    const clickable = e.target.closest('.order-item-clickable');
+    if (!clickable) return;
+
+    const id = clickable.dataset.id;
+    if (!id) return;
+
+    if (typeof window.getProductUrl !== 'function') {
+      console.warn("getProductUrl pas encore prêt → retry");
+      setTimeout(() => clickable.click(), 800);
+      return;
+    }
+
+    const url = window.getProductUrl(id);
+    console.log(`🖱️ CLIC ORDER HISTORY → ID=${id} | URL=${url}`);
+
+    if (url === 'shop.html' || !url) {
+      if (typeof showErrorPopup === 'function') {
+        showErrorPopup(`Produit ID=${id} introuvable`);
+      } else {
+        alert(`Produit ID=${id} introuvable`);
+      }
+      return;
+    }
+
+    window.location.href = url;
+  })
     .catch(error => console.error('Erreur de chargement des produits:', error));
   document.querySelectorAll('section').forEach(sec => {
     if (!sec.hasAttribute('data-scroll-reveal')) {
