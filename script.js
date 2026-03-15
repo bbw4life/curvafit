@@ -1108,12 +1108,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   function updateBadges() {
     const cartQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-    cartBadge.textContent = cartQuantity;
-    cartBadge.classList.toggle('active', cartQuantity > 0);
-    const wishlistCount = wishlist.length;
-    wishlistBadge.textContent = wishlistCount;
-    wishlistBadge.classList.toggle('active', wishlistCount > 0);
-  }
+    if (cartBadge) {
+        cartBadge.textContent = cartQuantity;
+        cartBadge.classList.toggle('active', cartQuantity > 0);
+    }
+    if (wishlistBadge) {
+        const wishlistCount = wishlist.length;
+        wishlistBadge.textContent = wishlistCount;
+        wishlistBadge.classList.toggle('active', wishlistCount > 0);
+    }
+}
   function renderCart() {
     cartItemsContainer.innerHTML = '';
     const emptyCart = document.querySelector('.empty-cart');
@@ -1796,7 +1800,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const data = await res.json();
 
-        // ====================== MEMBER SINCE + POINTS BADGE ======================
+        // Member since + points
         const memberSinceEl = document.getElementById('member-since');
         if (memberSinceEl) memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
 
@@ -1810,7 +1814,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (levelEl) levelEl.textContent = levelText;
         if (pointsEl) pointsEl.textContent = `${points} pts`;
 
-        // Stats classiques
+        // Stats
         const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
         if (statValues.length >= 2) {
             statValues[0].textContent = data.orders || 0;
@@ -1850,49 +1854,25 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             historyContainer.innerHTML = html;
 
-            // ====================== POLLING INTELLIGENT (attend que tout soit prêt) ======================
-            let attempts = 0;
-            function attachClicks() {
-                attempts++;
-                console.log(`🔄 Tentative ${attempts} - getProductUrl prêt ?`, typeof window.getProductUrl);
+            // ====================== EVENT DELEGATION (méthode la plus fiable) ======================
+            setTimeout(() => {
+                console.log("✅ Order History chargé – delegation activée");
 
-                if (typeof window.getProductUrl !== 'function' && attempts < 30) {
-                    setTimeout(attachClicks, 200); // on réessaie toutes les 200ms
-                    return;
-                }
+                historyContainer.addEventListener('click', function(e) {
+                    const clickable = e.target.closest('.order-item-clickable');
+                    if (!clickable) return;
 
-                if (typeof window.getProductUrl !== 'function') {
-                    console.error("❌ getProductUrl n'a jamais été défini !");
-                    return;
-                }
-
-                console.log("✅ getProductUrl prêt → attachement des clics");
-
-                historyContainer.querySelectorAll('.order-item-clickable').forEach(clickable => {
                     const id = clickable.dataset.id;
                     if (!id) return;
 
-                    const navigate = () => {
-                        const url = window.getProductUrl(id);
-                        console.log(`🖱️ Clic sur produit ID=${id} → redirection vers ${url}`);
-                        window.location.href = url;
-                    };
+                    e.stopImmediatePropagation();
 
-                    // Clic sur toute la ligne
-                    clickable.addEventListener('click', (e) => {
-                        e.stopImmediatePropagation();
-                        navigate();
-                    });
+                    const url = window.getProductUrl(id);
+                    console.log(`🖱️ CLIC → ID=${id} | URL=${url}`);
 
-                    // Clic image + titre (double sécurité)
-                    const img = clickable.querySelector('.order-item-image');
-                    const title = clickable.querySelector('.order-item-title');
-                    if (img) img.addEventListener('click', (e) => { e.stopImmediatePropagation(); navigate(); });
-                    if (title) title.addEventListener('click', (e) => { e.stopImmediatePropagation(); navigate(); });
+                    window.location.href = url;
                 });
-            }
-
-            attachClicks(); // Lancement immédiat
+            }, 400);
 
         } else {
             historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
