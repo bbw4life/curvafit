@@ -1310,29 +1310,30 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
                 <h4 class="wishlist-title">${product.title}</h4>
                 <p>$${parseFloat(product.price).toFixed(2)}</p>
                 ${comparePriceHTML}
-                <button class="remove-wishlist">Remove</button>
-            `;
+                <button class="remove-wishlist">Remove</button>`;
 
-            // RENDRE IMAGE + TITRE CLIQUABLES
+            // ====================== NOUVEAU : CLIC IMAGE + TITRE ======================
             const img = wishlistItem.querySelector('.wishlist-img');
-            const title = wishlistItem.querySelector('.wishlist-title');
-            const redirect = () => {
-                if (typeof window.getProductUrl === 'function') {
-                    window.location.href = window.getProductUrl(id);
-                }
-            };
-            img.addEventListener('click', redirect);
-            title.addEventListener('click', redirect);
-            img.style.cursor = 'pointer';
-            title.style.cursor = 'pointer';
+            const titleEl = wishlistItem.querySelector('.wishlist-title');
+            if (img && titleEl && typeof window.getProductUrl === 'function') {
+                const productUrl = window.getProductUrl(id);
+                img.style.cursor = 'pointer';
+                titleEl.style.cursor = 'pointer';
+                img.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    window.location.href = productUrl;
+                });
+                titleEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    window.location.href = productUrl;
+                });
+            }
+            // =====================================================================
 
             wishlistItemsContainer.appendChild(wishlistItem);
         }
     });
-
-    wishlistItemsContainer.querySelectorAll('.remove-wishlist').forEach(btn => 
-        btn.addEventListener('click', removeFromWishlist)
-    );
+    wishlistItemsContainer.querySelectorAll('.remove-wishlist').forEach(btn => btn.addEventListener('click', removeFromWishlist));
 }
   function removeFromWishlist(e) {
     const itemElement = e.target.closest('.wishlist-item');
@@ -1785,74 +1786,104 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('autoOpenCart', 'true');
         window.location.href = 'shop.html';
     };
-    async function loadAccountStats() {
-        const email = localStorage.getItem('userEmail');
-        if (!email) return;
-        try {
-            const res = await fetch('/.netlify/functions/save-account', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'get-stats', email })
-            });
-            const data = await res.json();
-            const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
-            if (statValues.length >= 2) {
-                statValues[0].textContent = data.orders || 0;
-                statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
-            }
-            document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
-            const historyContainer = document.querySelector('.order-history');
-            if (!historyContainer) return;
-            if (data.history && Array.isArray(data.history) && data.history.length > 0) {
-                let html = `<h2>Order History</h2>`;
-                const sorted = [...data.history].reverse();
-                sorted.forEach(order => {
-                    html += `
-                        <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
-                            <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-                                <strong>Date : ${order.date}</strong>
-                                <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
-                            </div>
-                            <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
-                            <div class="order-items">
-                                ${order.items.map(item => `
-                                    <div class="order-item-clickable" data-id="${item.id || ''}"
-                                         style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
-                                        ${item.image_variant ? `<img src="${item.image_variant}" alt="${item.title}" style="width:50px;height:50px;object-fit:cover;margin-right:10px;">` : ''}
-                                        <div>
-                                            <strong class="order-item-title" style="color:#007bff; cursor:pointer;">${item.title}</strong><br>
-                                            Couleur variante : ${item.variant_color || 'N/A'}<br>
-                                            Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
-                                        </div>
-                                        
-                                      const orderItemDiv = /* le div créé */;
-                                      orderItemDiv.querySelectorAll('.order-item-title, img').forEach(el => {
-                                          el.style.cursor = 'pointer';
-                                      });
-                                      
-                                    </div>
-                                `).join('')}
-                            </div>
+   async function loadAccountStats() {
+    const email = localStorage.getItem('userEmail');
+    if (!email) return;
+
+    try {
+        const res = await fetch('/.netlify/functions/save-account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'get-stats', email })
+        });
+        const data = await res.json();
+
+        const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
+        if (statValues.length >= 2) {
+            statValues[0].textContent = data.orders || 0;
+            statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
+        }
+        document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
+
+        const historyContainer = document.querySelector('.order-history');
+        if (!historyContainer) return;
+
+        if (data.history && Array.isArray(data.history) && data.history.length > 0) {
+            let html = `<h2>Order History</h2>`;
+            const sorted = [...data.history].reverse();
+
+            sorted.forEach(order => {
+                html += `
+                    <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+                            <strong>Date : ${order.date}</strong>
+                            <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
                         </div>
-                    `;
-                });
-                historyContainer.innerHTML = html;
-                historyContainer.addEventListener('click', function(e) {
-                    const clickable = e.target.closest('.order-item-clickable');
-                    if (clickable) {
-                        const id = clickable.dataset.id;
-                        if (id && window.getProductUrl) {
-                            window.location.href = window.getProductUrl(id);
-                        }
+                        <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
+                        <div class="order-items">
+                            ${order.items.map(item => `
+                                <div class="order-item-clickable" data-id="${item.id || ''}"
+                                     style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
+                                    ${item.image_variant ? 
+                                        `<img src="${item.image_variant}" alt="${item.title}" 
+                                              class="order-item-image"
+                                              style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">` 
+                                        : ''}
+                                    <div>
+                                        <strong class="order-item-title" style="color:#007bff;cursor:pointer;">
+                                            ${item.title}
+                                        </strong><br>
+                                        Couleur variante : ${item.variant_color || 'N/A'}<br>
+                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            historyContainer.innerHTML = html;
+
+            // ====================== NOUVEAU : CLIC IMAGE + TITRE (exactement comme wishlist) ======================
+            historyContainer.querySelectorAll('.order-item-image').forEach(img => {
+                img.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const clickableDiv = img.closest('.order-item-clickable');
+                    if (clickableDiv && clickableDiv.dataset.id && typeof window.getProductUrl === 'function') {
+                        window.location.href = window.getProductUrl(clickableDiv.dataset.id);
                     }
                 });
-            } else {
-                historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
-            }
-        } catch (e) {
-            console.error("Stats load error", e);
+            });
+
+            historyContainer.querySelectorAll('.order-item-title').forEach(title => {
+                title.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const clickableDiv = title.closest('.order-item-clickable');
+                    if (clickableDiv && clickableDiv.dataset.id && typeof window.getProductUrl === 'function') {
+                        window.location.href = window.getProductUrl(clickableDiv.dataset.id);
+                    }
+                });
+            });
+            // =====================================================================================================
+
+            // Garde l'ancien listener (au cas où on clique ailleurs sur la ligne)
+            historyContainer.addEventListener('click', function(e) {
+                const clickable = e.target.closest('.order-item-clickable');
+                if (clickable) {
+                    const id = clickable.dataset.id;
+                    if (id && window.getProductUrl) {
+                        window.location.href = window.getProductUrl(id);
+                    }
+                }
+            });
+        } else {
+            historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
         }
+    } catch (e) {
+        console.error("Stats load error", e);
     }
+}
     window.saveAddress = async () => {
         const email = localStorage.getItem('userEmail');
         const line1 = document.getElementById('addr-line1').value.trim();
