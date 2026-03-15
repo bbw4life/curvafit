@@ -24,6 +24,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let appliedPromo = null;
     let discountAmount = 0;
 
+    // ====================== FONCTION POPUP ======================
+    function showErrorPopup(message) {
+        const popup = document.getElementById('error-popup');
+        const popupText = document.getElementById('popup-message');
+        const closeBtn = document.getElementById('popup-close');
+
+        if (!popup || !popupText || !closeBtn) {
+            console.error("Popup HTML non trouvé ! Ajoute le HTML + CSS du popup.");
+            return;
+        }
+
+        popupText.textContent = message;
+        popup.classList.add('show');
+
+        closeBtn.onclick = () => popup.classList.remove('show');
+
+        setTimeout(() => {
+            if (popup.classList.contains('show')) popup.classList.remove('show');
+        }, 10000);
+    }
+    // ====================== FIN POPUP ======================
+
     fetch('/products.data.json')
       .then(response => response.json())
       .then(data => {
@@ -41,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCart();
       });
 
-    // Vérifie si connecté et remplit le formulaire
     if (localStorage.getItem('isLoggedIn') === 'true') {
         document.getElementById('first-name').value = localStorage.getItem('userFirstName') || '';
         document.getElementById('last-name').value = localStorage.getItem('userLastName') || '';
@@ -49,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('address').value = localStorage.getItem('userAddressLine1') || '';
         const address2Input = document.getElementById('address2') || document.getElementById('address-line2');
         if (address2Input) address2Input.value = localStorage.getItem('userLine2') || '';
-        
         document.getElementById('city').value = localStorage.getItem('userCity') || '';
         document.getElementById('state').value = localStorage.getItem('userState') || '';
         document.getElementById('postal-code').value = localStorage.getItem('userZip') || '';
@@ -57,31 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (countrySelect && localStorage.getItem('userCountry')) {
             countrySelect.value = localStorage.getItem('userCountry');
         }
-        
-        console.log("✅ Infos shipping auto-remplies depuis localStorage."); // Pour debug
-    }
-
-    // ====================== NOUVEAU : ERROR POPUP (disparaît après 6 secondes) ======================
-    function showErrorPopup(message, title = "Error") {
-        const popup = document.getElementById('error-popup');
-        if (!popup) {
-            console.error("Error popup HTML missing");
-            alert(message); // fallback très rare
-            return;
-        }
-        document.getElementById('error-title').textContent = title;
-        document.getElementById('error-message').textContent = message;
-        popup.style.display = 'flex';
-        
-        // Disparaît automatiquement après 6 secondes
-        setTimeout(() => {
-            if (popup.style.display === 'flex') closeErrorPopup();
-        }, 6000);
-    }
-
-    function closeErrorPopup() {
-        const popup = document.getElementById('error-popup');
-        if (popup) popup.style.display = 'none';
     }
 
     function renderCart() {
@@ -93,28 +88,23 @@ document.addEventListener('DOMContentLoaded', () => {
         let subtotal = 0;
         let bundleSavings = 0;
         let hasBundle = false;
-
         cart.forEach(item => {
             const price = Number(item.price) || 0;
             const quantity = Number(item.quantity) || 0;
             const itemTotal = price * quantity;
-
             if (item.fromBundle) {
                 hasBundle = true;
                 bundleSavings += (item.compare_price ? (item.compare_price - price) * quantity : 0);
             }
             subtotal += itemTotal;
-
             const itemDiv = document.createElement('div');
             itemDiv.classList.add('item');
             const img = document.createElement('img');
             img.src = item.image || '';
             img.alt = item.title || 'Product';
             img.loading = "lazy";
-
             let sizeHtml = item.size ? `<p>Size: ${item.size}</p>` : '';
             let colorHtml = item.color ? `<p>Color: ${item.color}</p>` : '';
-
             const info = document.createElement('div');
             info.innerHTML = `
                 <h3>${item.title || ''}</h3>
@@ -124,19 +114,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${colorHtml}
                 <p>Total: $${(price * quantity).toFixed(2)}</p>
             `;
-
             itemDiv.appendChild(img);
             itemDiv.appendChild(info);
             cartItemsContainer.appendChild(itemDiv);
         });
-
         if (hasBundle && bundleSavings > 0) {
             const savingsDiv = document.createElement('div');
             savingsDiv.classList.add('bundle-savings');
             savingsDiv.innerHTML = `<p>Bundle Savings: -$${bundleSavings.toFixed(2)}</p>`;
             cartItemsContainer.appendChild(savingsDiv);
         }
-
         updatePromoDisplay();
         updateTotals();
     }
@@ -148,10 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function validateForm() {
-        const inputs = shippingForm.querySelectorAll('input, textarea, select');
+        const inputs = shippingForm.querySelectorAll('input, textarea');
         let valid = true;
         inputs.forEach(input => {
-            if (!input.value.trim() && !input.disabled) {
+            if (!input.value.trim()) {
                 valid = false;
                 input.style.borderColor = 'red';
             } else {
@@ -159,10 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         if (!valid) {
-            showErrorPopup(
-                "Please fill all required fields before finalizing the payment.",
-                "Missing Information"
-            );
+            showErrorPopup('Please fill all the forms before finalizing the payment');
             return false;
         }
         return true;
@@ -174,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const phoneCode = document.getElementById('phone-code').value.trim();
         const phoneNumber = document.getElementById('phone').value.trim();
         const fullPhone = (phoneCode + phoneNumber).replace(/\s+/g, '');
-
         return {
             firstName: document.getElementById('first-name').value.trim(),
             lastName: document.getElementById('last-name').value.trim(),
@@ -190,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // ====================== NOUVELLE FONCTION (obligatoire pour bundle + promo + tax) ======================
     function getDiscountedCart() {
         let workingCart = JSON.parse(JSON.stringify(cart));
         if (discountAmount > 0) {
@@ -204,11 +186,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return workingCart;
     }
 
-    // ====================== BOUTON PAY (entièrement corrigé avec popup) ======================
     payButton.addEventListener('click', async () => {
         if (!validateForm()) return;
         if (!cart.length) {
-            showErrorPopup("Your cart is empty. Please add products before checkout.", "Empty Cart");
+            showErrorPopup('Your cart is empty. Please add some products before checking out.');
             return;
         }
 
@@ -226,7 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (paymentMethod === 'stripe') {
                 const STRIPE_PUBLIC_KEY = "pk_test_51PMDwoF9QAVBUyaUqwc7ekbAhyZdI9oA3ubZT8b7TtWGrykoPLvsql4mexEwEoS5pggyssqN6jpj2w5VQMHOSftf00q97Rbt1f";
                 const stripe = Stripe(STRIPE_PUBLIC_KEY);
-
                 const response = await fetch('/.netlify/functions/create-stripe-session', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -237,67 +217,48 @@ document.addEventListener('DOMContentLoaded', () => {
                         tax: taxes.toFixed(2)
                     })
                 });
-
                 const data = await response.json();
                 if (!response.ok || !data.sessionId) throw new Error(data.error || 'Stripe session failed');
-
                 localStorage.setItem("pendingOrder", "stripe");
                 await stripe.redirectToCheckout({ sessionId: data.sessionId });
-            } 
-            else { // PAYPAL
+            }
+            else {
                 const bodyData = {
                     cart: discountedCart,
                     shipping: shippingData,
                     shipping_cost: SHIPPING_COST.toFixed(2),
                     tax: taxes.toFixed(2)
                 };
-
                 const response = await fetch('/.netlify/functions/paypal-create-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(bodyData)
                 });
-
                 const data = await response.json();
-                if (!response.ok || !data.orderID) throw new Error(data.error || 'PayPal order creation failed');
-
+                if (!response.ok || !data.orderID) throw new Error(data.error || 'PayPal order failed');
                 const paypalDomain = data.paypalDomain || 'https://www.sandbox.paypal.com';
                 localStorage.setItem("pendingOrder", "paypal");
                 window.location.href = `${paypalDomain}/checkoutnow?token=${data.orderID}`;
             }
         } catch (error) {
-            console.error("Payment error:", error);
-
-            let userMessage = "Payment error occurred. Please try again.";
-            if (error.message.toLowerCase().includes("paypal")) {
-                userMessage = "PayPal order creation failed. Please try again or contact support.";
-            } else if (error.message.toLowerCase().includes("stripe")) {
-                userMessage = "Stripe payment failed. Please try again.";
-            } else if (error.message) {
-                userMessage = error.message;
-            }
-
-            showErrorPopup(userMessage, "Payment Failed");
-            
+            console.error("Payment error:", error.message);
+            showErrorPopup('Payment failed. Please try again.');
             payButton.disabled = false;
             payButton.textContent = "Pay Now";
         }
     });
 
-    // ====================== MODALS POLICIES ======================
     const refundLink = document.getElementById('refund-policy-link');
     const shippingLink = document.getElementById('shipping-policy-link');
     const refundModal = document.getElementById('refund-modal');
     const shippingModal = document.getElementById('shipping-modal');
     const closes = document.querySelectorAll('.close');
-
     refundLink.addEventListener('click', (e) => { e.preventDefault(); refundModal.style.display = 'flex'; });
     shippingLink.addEventListener('click', (e) => { e.preventDefault(); shippingModal.style.display = 'flex'; });
     closes.forEach(close => close.addEventListener('click', () => {
         refundModal.style.display = 'none';
         shippingModal.style.display = 'none';
     }));
-
     window.addEventListener('click', (e) => {
         if (e.target === refundModal) refundModal.style.display = 'none';
         if (e.target === shippingModal) shippingModal.style.display = 'none';
@@ -369,7 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const suggestedCodeEl = document.getElementById('suggested-code');
         const itemCountDisplay = document.getElementById('item-count-display');
         const promoMessage = document.getElementById('promo-message');
-
         if (suggestedDiv && suggestedCodeEl && itemCountDisplay) {
             itemCountDisplay.textContent = totalQuantity;
             if (!hasBundle && suggested) {
@@ -407,15 +367,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 bundleSavings += (item.compare_price ? (item.compare_price - item.price) * item.quantity : 0);
             }
         });
-
         const taxes = subtotal * TAX_RATE;
         const finalTotal = subtotal + taxes + SHIPPING_COST - discountAmount;
-
         document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
         document.getElementById('taxes').textContent = `$${taxes.toFixed(2)}`;
         document.getElementById('shipping').textContent = `$${SHIPPING_COST.toFixed(2)}`;
         document.getElementById('total').textContent = `$${finalTotal.toFixed(2)}`;
-
         const promoLine = document.getElementById('promo-line');
         const discountEl = document.getElementById('discount-amount');
         if (discountAmount > 0) {
@@ -429,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('copy-suggested')?.addEventListener('click', () => {
         const code = document.getElementById('suggested-code').textContent;
         navigator.clipboard.writeText(code).then(() => {
-            showErrorPopup("Code copied: " + code, "Success");
+            showErrorPopup('Code copied successfully: ' + code);
         });
     });
 
@@ -438,7 +395,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const promoMessage = document.getElementById('promo-message');
         const hasBundle = cart.some(item => item.fromBundle);
         const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-
         if (hasBundle) {
             promoMessage.textContent = "Promo codes cannot be used with bundles.";
             promoMessage.style.color = 'red';
@@ -449,7 +405,6 @@ document.addEventListener('DOMContentLoaded', () => {
             promoMessage.style.color = 'red';
             return;
         }
-
         const promo = promos.find(p => p.code.toUpperCase() === input);
         if (promo && promo.items === totalQuantity) {
             appliedPromo = promo;

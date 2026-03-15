@@ -1,5 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
+
+  // ====================== FONCTION POPUP (pour remplacer TOUS les alert du navigateur) ======================
+    function showErrorPopup(message) {
+        const popup = document.getElementById('error-popup');
+        const popupText = document.getElementById('popup-message');
+        const closeBtn = document.getElementById('popup-close');
+
+        if (!popup || !popupText || !closeBtn) {
+            console.error("Popup HTML manquant !");
+            return;
+        }
+
+        popupText.textContent = message;
+        popup.classList.add('show');
+
+        closeBtn.onclick = () => popup.classList.remove('show');
+
+        setTimeout(() => {
+            if (popup.classList.contains('show')) popup.classList.remove('show');
+        }, 10000);
+    }
+
   function getProductUrl(id) {
     if (!products || !Array.isArray(products) || products.length === 0) {
       return 'shop.html';
@@ -637,7 +659,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   const selectedColor = hasColors ? values.color : null;
                   const selectedSize = hasSizes ? values.size : null;
                   if ((hasColors && !selectedColor) || (hasSizes && !selectedSize)) {
-                    return alert("Please complete your selection.");
+                  showErrorPopup("Please complete your selection.");
+                  return;
                   }
                   if (selectedColor) {
                     const colorObj = product.colors.find(c => c.name === selectedColor);
@@ -693,7 +716,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   const selectedSize = hasSizes ? values.size : null;
                   if ((hasColors && !selectedColor) || (hasSizes && !selectedSize)) {
                     valid = false;
-                    alert(`Item ${i}: Please complete selection.`);
+                    showErrorPopup(`Item ${i}: Please complete selection.`);
                     break;
                   }
                   if (selectedColor) {
@@ -787,12 +810,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     submitSearch.addEventListener('click', () => {
       const query = searchInput.value;
-      if (query) alert(`Searching for: ${query}`);
+      if (query) showErrorPopup(`Searching for: ${query}`);
     });
     searchInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         const query = searchInput.value;
-        if (query) alert(`Searching for: ${query}`);
+        if (query) showErrorPopup(`Searching for: ${query}`);
       }
     });
   }
@@ -938,11 +961,11 @@ document.addEventListener('DOMContentLoaded', () => {
         userProgress.push({ date, value });
         userProgress.sort((a, b) => new Date(a.date) - new Date(b.date));
         saveProgress();
-        alert('Data added! Switch tabs to see updated chart.');
+        showErrorPopup('Data added! Switch tabs to see updated chart.');
         const activeTab = document.querySelector('.tab-button.active')?.dataset.tab;
         updateChart(activeTab);
       } else {
-        alert('Please enter a valid date and value.');
+        showErrorPopup('Please enter a valid date and value.');
       }
     });
   }
@@ -1022,14 +1045,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const playOverlay = document.querySelector('.play-overlay');
   if (playOverlay) {
     playOverlay.addEventListener('click', () => {
-      alert('Video playback started');
+     showErrorPopup('Video playback started');
     });
   }
   const forms = document.querySelectorAll('form');
   forms.forEach(form => {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      alert('Subscribed!');
+      showErrorPopup('Subscribed!');
     });
   });
   const ctx = document.getElementById('progress-curve');
@@ -1214,7 +1237,8 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       selectedColor = activeSwatch ? activeSwatch.dataset.color : null;
       if ((product.colors && product.colors.length > 0 && !selectedColor) ||
           (product.sizes && product.sizes.length > 0 && !selectedSize)) {
-        return alert("Please select all options.");
+        showErrorPopup("Please select a color first.");
+       return;
       }
       if (selectedColor) {
         const colorObj = product.colors.find(c => c.name === selectedColor);
@@ -1268,23 +1292,48 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
     setTimeout(() => cartIcon.classList.remove('added'), 500);
     openCartDrawer();
   }
-  function renderWishlist() {
+ function renderWishlist() {
     wishlistItemsContainer.innerHTML = '';
     wishlist.forEach(id => {
-      const product = products.find(p => p.id === id);
-      if (product) {
-        const wishlistItem = document.createElement('div');
-        wishlistItem.classList.add('wishlist-item');
-        wishlistItem.dataset.id = id;
-        wishlistItem.innerHTML = `<img src="${product.image}" alt="${product.title}">
-<h4>${product.title}</h4>
-<p>$${parseFloat(product.price).toFixed(2)}</p>
-<button class="remove-wishlist">Remove</button>`;
-        wishlistItemsContainer.appendChild(wishlistItem);
-      }
+        const product = products.find(p => p.id === id);
+        if (product) {
+            const wishlistItem = document.createElement('div');
+            wishlistItem.classList.add('wishlist-item');
+            wishlistItem.dataset.id = id;
+
+            const comparePriceHTML = product.compare_price && product.compare_price > product.price 
+                ? `<p class="compare-price">$${parseFloat(product.compare_price).toFixed(2)}</p>` 
+                : '';
+
+            wishlistItem.innerHTML = `
+                <img src="${product.image}" alt="${product.title}" class="wishlist-img">
+                <h4 class="wishlist-title">${product.title}</h4>
+                <p>$${parseFloat(product.price).toFixed(2)}</p>
+                ${comparePriceHTML}
+                <button class="remove-wishlist">Remove</button>
+            `;
+
+            // RENDRE IMAGE + TITRE CLIQUABLES
+            const img = wishlistItem.querySelector('.wishlist-img');
+            const title = wishlistItem.querySelector('.wishlist-title');
+            const redirect = () => {
+                if (typeof window.getProductUrl === 'function') {
+                    window.location.href = window.getProductUrl(id);
+                }
+            };
+            img.addEventListener('click', redirect);
+            title.addEventListener('click', redirect);
+            img.style.cursor = 'pointer';
+            title.style.cursor = 'pointer';
+
+            wishlistItemsContainer.appendChild(wishlistItem);
+        }
     });
-    wishlistItemsContainer.querySelectorAll('.remove-wishlist').forEach(btn => btn.addEventListener('click', removeFromWishlist));
-  }
+
+    wishlistItemsContainer.querySelectorAll('.remove-wishlist').forEach(btn => 
+        btn.addEventListener('click', removeFromWishlist)
+    );
+}
   function removeFromWishlist(e) {
     const itemElement = e.target.closest('.wishlist-item');
     const id = itemElement.dataset.id;
@@ -1771,10 +1820,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                          style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
                                         ${item.image_variant ? `<img src="${item.image_variant}" alt="${item.title}" style="width:50px;height:50px;object-fit:cover;margin-right:10px;">` : ''}
                                         <div>
-                                            <strong style="color:#007bff;">${item.title}</strong><br>
+                                            <strong class="order-item-title" style="color:#007bff; cursor:pointer;">${item.title}</strong><br>
                                             Couleur variante : ${item.variant_color || 'N/A'}<br>
                                             Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
                                         </div>
+                                        
+                                      const orderItemDiv = /* le div créé */;
+                                      orderItemDiv.querySelectorAll('.order-item-title, img').forEach(el => {
+                                          el.style.cursor = 'pointer';
+                                      });
+                                      
                                     </div>
                                 `).join('')}
                             </div>

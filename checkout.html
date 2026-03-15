@@ -241,13 +241,11 @@
     </div>
 </div>
 
-<!-- ERROR POPUP - Overlay centré (obligatoire ici AVANT les scripts) -->
-<div id="error-popup" class="popup-overlay">
-    <div class="popup">
-        <button class="popup-close" onclick="closeErrorPopup()">×</button>
-        <h3 id="error-title" style="color:#f0b90b;">Error</h3>
-        <p id="error-message" style="color:#ffffff; font-size:18px; line-height:1.5;"></p>
-        <button onclick="closeErrorPopup()" class="popup-ok-btn">OK</button>
+<!-- POPUP ERREUR -->
+<div id="error-popup" class="error-popup hidden">
+    <div class="popup-content">
+        <p id="popup-message" class="popup-text"></p>
+        <button id="popup-close" class="popup-btn">OK</button>
     </div>
 </div>
 

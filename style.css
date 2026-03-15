@@ -3032,9 +3032,11 @@ a {
     padding: 20px; 
     border-radius: 10px; 
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); 
-    max-width: 400px; 
-    width: 90%; 
+    max-width: 450px; 
+    width: 95%; 
+    max-height: 90%;
     text-align: center; 
+    overflow-y: auto; 
     transform: scale(0.9); 
     opacity: 0; 
     transition: transform 0.3s, opacity 0.3s; 
@@ -3232,9 +3234,9 @@ a {
     background: #f9f9f9; 
     border: 1px solid #ddd; 
     border-radius: 10px; 
-    padding: 5px; 
-    margin: 10px auto; 
-    max-width: 300px; 
+    padding: 20px; 
+    max-width: 400px;
+    width: 100%;
 }
 .empty-cart h3 { 
     margin-bottom: 10px; 
@@ -3747,9 +3749,9 @@ a {
 /* ====================== PAUL INDICATEUR (DROITE) ====================== */
 .paul-indicator-wrapper {
   position: fixed;
-  z-index: 9999;
+  z-index: 999;
   bottom: 100px;
-  right: 20px;
+  right: 10px;
   transition: all 0.3s;
 }
 
@@ -3993,3 +3995,53 @@ a {
 .popup { animation: popupFade 0.4s ease; }
 @keyframes popupFade { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
+
+
+.error-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    padding: 10px 10px;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    z-index: 99999;
+    max-width: 300px;
+    text-align: center;
+    border: 2px solid #e74c3c;
+    display: none;
+}
+
+.error-popup.show {
+    display: block;
+    animation: popupAnim 0.3s ease;
+}
+
+.popup-content p {
+    margin: 0 0 10px 0;
+    font-size: 16.5px;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.4;
+}
+
+.popup-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.popup-btn:hover {
+    background: #c0392b;
+}
+
+@keyframes popupAnim {
+    from { opacity: 0; transform: translate(-50%, -60%); }
+    to   { opacity: 1; transform: translate(-50%, -50%); }
+}
