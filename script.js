@@ -1705,12 +1705,17 @@ document.querySelectorAll('.password-toggle').forEach(toggle => {
     });
   });
 
+// ====================== BOUTON REGISTER (CORRIGÉ) ======================
 document.querySelector('.paul-btn-register').addEventListener('click', async () => {
     const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
     const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
     const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
     const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
-    const password = signupForm.querySelector('input[type="password"], input[type="text"]').value.trim(); // ← FIX
+    
+    // ✅ CORRECTION ICI : même sélecteur que le login
+    const passwordInput = signupForm.querySelector('input[placeholder*="Password"], input[type="password"], input[type="text"]');
+    const password = passwordInput ? passwordInput.value.trim() : '';
+
     const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
 
     if (!password) return showToast("Password is required");
