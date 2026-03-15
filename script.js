@@ -1106,7 +1106,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function saveWishlist() {
     localStorage.setItem('wishlist', JSON.stringify(wishlist));
   }
-  function updateBadges() {
+ function updateBadges() {
     const cartQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
     if (cartBadge) {
         cartBadge.textContent = cartQuantity;
@@ -1814,7 +1814,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (levelEl) levelEl.textContent = levelText;
         if (pointsEl) pointsEl.textContent = `${points} pts`;
 
-        // Stats
+        // Stats normales
         const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
         if (statValues.length >= 2) {
             statValues[0].textContent = data.orders || 0;
@@ -1823,7 +1823,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
 
         const historyContainer = document.querySelector('.order-history');
-        if (!historyContainer) return;
+        if (!historyContainer) {
+            console.warn("⚠️ .order-history non trouvé dans le DOM");
+            return;
+        }
 
         if (data.history && Array.isArray(data.history) && data.history.length > 0) {
             let html = `<h2>Order History</h2>`;
@@ -1854,11 +1857,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             historyContainer.innerHTML = html;
 
-            // ====================== EVENT DELEGATION (méthode la plus fiable) ======================
+            // ====================== DELEGATION SUR DOCUMENT (méthode infaillible) ======================
             setTimeout(() => {
-                console.log("✅ Order History chargé – delegation activée");
+                console.log("✅ Delegation Order History activée sur document");
 
-                historyContainer.addEventListener('click', function(e) {
+                document.addEventListener('click', function(e) {
                     const clickable = e.target.closest('.order-item-clickable');
                     if (!clickable) return;
 
@@ -1868,11 +1871,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     e.stopImmediatePropagation();
 
                     const url = window.getProductUrl(id);
-                    console.log(`🖱️ CLIC → ID=${id} | URL=${url}`);
+                    console.log(`🖱️ CLIC DÉTECTÉ → ID=${id} | URL=${url}`);
+
+                    if (url === 'shop.html') {
+                        console.error(`❌ ID=${id} NON TROUVÉ dans products.data.json`);
+                        showErrorPopup(`Produit ID=${id} introuvable`);
+                        return;
+                    }
 
                     window.location.href = url;
                 });
-            }, 400);
+            }, 300);
 
         } else {
             historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
