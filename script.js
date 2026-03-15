@@ -18,14 +18,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   function getProductUrl(id) {
     if (!products || !Array.isArray(products) || products.length === 0) {
+        console.warn("Products pas encore chargés → fallback shop.html");
         return 'shop.html';
     }
-    const productIndex = products.findIndex(p => p.id === id);
-    if (productIndex === -1) return 'shop.html';
-    // === NOUVEAUTÉ : détection automatique du dossier ===
+    const productIndex = products.findIndex(p => String(p.id) === String(id)); // ← FIX ID STRING/NUMBER
+    if (productIndex === -1) {
+        console.warn(`Produit ID ${id} non trouvé dans products.data.json`);
+        return 'shop.html';
+    }
     const currentPath = window.location.pathname;
-    const isInsideProductsFolder = currentPath.includes('/products/') ||
-      /product\d+\.html$/.test(currentPath);
+    const isInsideProductsFolder = currentPath.includes('/products/') || /product\d+\.html$/.test(currentPath);
     return isInsideProductsFolder
         ? `product${productIndex + 1}.html`
         : `products/product${productIndex + 1}.html`;
@@ -1782,9 +1784,10 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('autoOpenCart', 'true');
         window.location.href = 'shop.html';
     };
-      async function loadAccountStats() {
+       async function loadAccountStats() {
     const email = localStorage.getItem('userEmail');
     if (!email) return;
+
     try {
         const res = await fetch('/.netlify/functions/save-account', {
             method: 'POST',
@@ -1795,9 +1798,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // ====================== MEMBER SINCE + POINTS BADGE ======================
         const memberSinceEl = document.getElementById('member-since');
-        if (memberSinceEl) {
-            memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
-        }
+        if (memberSinceEl) memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
 
         const points = data.points || 0;
         let levelText = 'Basic Member';
@@ -1809,6 +1810,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (levelEl) levelEl.textContent = levelText;
         if (pointsEl) pointsEl.textContent = `${points} pts`;
 
+        // Stats classiques
         const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
         if (statValues.length >= 2) {
             statValues[0].textContent = data.orders || 0;
@@ -1834,17 +1836,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${order.items.map(item => `
                                 <div class="order-item-clickable" data-id="${item.id || ''}"
                                      style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
-                                    ${item.image_variant ?
-                                        `<img src="${item.image_variant}" alt="${item.title}"
-                                              class="order-item-image"
-                                              style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">`
-                                        : ''}
+                                    ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image" style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">` : ''}
                                     <div>
-                                        <strong class="order-item-title" style="color:#007bff;cursor:pointer;">
-                                            ${item.title}
-                                        </strong><br>
+                                        <strong class="order-item-title" style="color:#007bff;cursor:pointer;">${item.title}</strong><br>
                                         Couleur variante : ${item.variant_color || 'N/A'}<br>
-                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
+                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}
                                     </div>
                                 </div>
                             `).join('')}
@@ -1854,45 +1850,49 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             historyContainer.innerHTML = html;
 
-            // ====================== SOLUTION DÉFINITIVE : ATTENTE DE getProductUrl ======================
-            function setupHistoryClicks() {
-                if (typeof window.getProductUrl !== 'function') {
-                    setTimeout(setupHistoryClicks, 150);  // on réessaie toutes les 150ms
+            // ====================== POLLING INTELLIGENT (attend que tout soit prêt) ======================
+            let attempts = 0;
+            function attachClicks() {
+                attempts++;
+                console.log(`🔄 Tentative ${attempts} - getProductUrl prêt ?`, typeof window.getProductUrl);
+
+                if (typeof window.getProductUrl !== 'function' && attempts < 30) {
+                    setTimeout(attachClicks, 200); // on réessaie toutes les 200ms
                     return;
                 }
 
-                // On ajoute les clics UNE SEULE FOIS
+                if (typeof window.getProductUrl !== 'function') {
+                    console.error("❌ getProductUrl n'a jamais été défini !");
+                    return;
+                }
+
+                console.log("✅ getProductUrl prêt → attachement des clics");
+
                 historyContainer.querySelectorAll('.order-item-clickable').forEach(clickable => {
                     const id = clickable.dataset.id;
                     if (!id) return;
 
-                    const img = clickable.querySelector('.order-item-image');
-                    const title = clickable.querySelector('.order-item-title');
-
                     const navigate = () => {
-                        if (typeof window.getProductUrl === 'function') {
-                            window.location.href = window.getProductUrl(id);
-                        }
+                        const url = window.getProductUrl(id);
+                        console.log(`🖱️ Clic sur produit ID=${id} → redirection vers ${url}`);
+                        window.location.href = url;
                     };
 
-                    clickable.style.cursor = 'pointer';
+                    // Clic sur toute la ligne
                     clickable.addEventListener('click', (e) => {
-                        e.stopPropagation();
+                        e.stopImmediatePropagation();
                         navigate();
                     });
 
-                    if (img) {
-                        img.style.cursor = 'pointer';
-                        img.addEventListener('click', (e) => { e.stopPropagation(); navigate(); });
-                    }
-                    if (title) {
-                        title.style.cursor = 'pointer';
-                        title.addEventListener('click', (e) => { e.stopPropagation(); navigate(); });
-                    }
+                    // Clic image + titre (double sécurité)
+                    const img = clickable.querySelector('.order-item-image');
+                    const title = clickable.querySelector('.order-item-title');
+                    if (img) img.addEventListener('click', (e) => { e.stopImmediatePropagation(); navigate(); });
+                    if (title) title.addEventListener('click', (e) => { e.stopImmediatePropagation(); navigate(); });
                 });
             }
 
-            setupHistoryClicks();   // ← LANCEMENT IMMÉDIAT (avec attente intelligente)
+            attachClicks(); // Lancement immédiat
 
         } else {
             historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
