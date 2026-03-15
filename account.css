@@ -35,10 +35,10 @@
     align-items: center;
     gap: 6px;
     background: #000000;
-    color: #ffffff;
+    color: #ffffff !important;
     padding: 6px 12px;
     border-radius: 20px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
     white-space: nowrap;
     transition: transform 0.2s ease;
@@ -59,7 +59,7 @@
     margin-left: 6px;
     font-weight: 600;
     opacity: 0.9;
-    color: #dc3545 !important;
+    color: #ffffff !important;
 }
 
 .membership-stats-grid {

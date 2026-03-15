@@ -1810,14 +1810,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (levelEl) levelEl.textContent = levelText;
       if (pointsEl) pointsEl.textContent = `${points} pts`;
 
-      // Force l'affichage du texte (couleur blanche comme avant)
-      if (badge) {
-          badge.style.color = '#ffffff';
-          if (levelEl) levelEl.style.color = '#ffffff';
-          if (pointsEl) pointsEl.style.color = '#ffffff';
-      }
-
-
         const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
         if (statValues.length >= 2) {
             statValues[0].textContent = data.orders || 0;
