@@ -1891,8 +1891,9 @@ const passwordInput = loginForm.querySelector('input[placeholder*="Password"], i
                         <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
                         <div class="order-items">
                             ${order.items.map(item => `
-                                <div class="order-item-clickable" data-id="${item.id || ''}"
-                                     style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
+                      <div class="order-item-clickable" 
+                          onclick="handleOrderItemClick('${item.id || ''}')"
+                          style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
                                     ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image" style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">` : ''}
                                     <div>
                                         <strong class="order-item-title" style="color:#007bff;cursor:pointer;">${item.title}</strong><br>
@@ -2010,4 +2011,15 @@ window.addEventListener('load', () => {
             if (overlay) overlay.classList.add('active');
         }, 150);
     }
+    // ====================== CLIC ORDER HISTORY (méthode directe et infaillible) ======================
+  window.handleOrderItemClick = function(id) {
+      if (!id) return;
+      const url = window.getProductUrl ? window.getProductUrl(id) : 'shop.html';
+      console.log(`🖱️ Order History clic → ID=${id} | URL=${url}`);
+      if (url === 'shop.html') {
+          showErrorPopup(`Produit ID=${id} introuvable`);
+          return;
+      }
+      window.location.href = url;
+  };
 });
