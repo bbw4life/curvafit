@@ -137,39 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       }
-      // ====================== CLIC SUR PRODUITS DANS ORDER HISTORY (déplacé ici) ======================
-setTimeout(() => {
-    // On attend que tout soit chargé (sécurité)
-    document.addEventListener('click', function(e) {
-        const clickable = e.target.closest('.order-item-clickable');
-        if (!clickable) return;
-
-        const id = clickable.dataset.id;
-        if (!id) return;
-
-        // Protection maximale (comme dans wishlist et cart)
-        if (typeof window.getProductUrl !== 'function') {
-            console.warn("getProductUrl pas encore prêt → retry");
-            setTimeout(() => clickable.click(), 600);
-            return;
-        }
-
-        const url = window.getProductUrl(id);
-        console.log(`🖱️ CLIC ORDER HISTORY → ID=${id} | URL=${url}`);
-
-        if (url === 'shop.html' || !url) {
-            if (typeof showErrorPopup === 'function') {
-                showErrorPopup(`Produit ID=${id} introuvable`);
-            } else {
-                alert(`Produit ID=${id} introuvable`);
-            }
-            return;
-        }
-
-        // Redirection propre
-        window.location.href = url;
-    });
-}, 1200); 
       document.querySelectorAll('.product-card').forEach(card => {
         const id = card.dataset.id;
         const product = products.find(p => p.id === id);
@@ -796,7 +763,7 @@ setTimeout(() => {
           trioDesc.textContent = `Save ${product.trio_discount || 0}%`;
         }
       }
-      setTimeout(() => {
+            setTimeout(() => {
         document.querySelectorAll('.color-swatches .swatch').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('#main-image-slider .main-image').forEach(container => {
           const img = container.querySelector('img');
@@ -806,8 +773,40 @@ setTimeout(() => {
         });
         if (typeof updateProductPrice === 'function') updateProductPrice();
       }, 300);
+
+      // ====================== CLIC ORDER HISTORY – VERSION FINALE (CORRIGÉE) ======================
+      document.addEventListener('click', function(e) {
+        const clickable = e.target.closest('.order-item-clickable');
+        if (!clickable) return;
+
+        const id = clickable.dataset.id;
+        if (!id) return;
+
+        if (typeof window.getProductUrl !== 'function') {
+          console.warn("getProductUrl pas encore prêt");
+          setTimeout(() => clickable.click(), 800);
+          return;
+        }
+
+        const url = window.getProductUrl(id);
+        console.log(`🖱️ CLIC ORDER HISTORY → ID=${id} | URL=${url}`);
+
+        if (url === 'shop.html' || !url) {
+          if (typeof showErrorPopup === 'function') {
+            showErrorPopup(`Produit ID=${id} introuvable`);
+          } else {
+            alert(`Produit ID=${id} introuvable`);
+          }
+          return;
+        }
+
+        window.location.href = url;
+      });
+
+      // ←←← UNE SEULE FOIS à la toute fin
       window.getProductUrl = getProductUrl;
     })
+  
     .catch(error => console.error('Erreur de chargement des produits:', error));
   document.querySelectorAll('section').forEach(sec => {
     if (!sec.hasAttribute('data-scroll-reveal')) {
