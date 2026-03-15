@@ -1788,91 +1788,85 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('autoOpenCart', 'true');
         window.location.href = 'shop.html';
     };
-       async function loadAccountStats() {
+    async function loadAccountStats() {
     const email = localStorage.getItem('userEmail');
-    if (!email) return;
+    if (!email) {
+        console.error("❌ Aucun email dans localStorage");
+        return;
+    }
+
+    console.log("🔄 Chargement stats pour :", email);
+
     try {
         const res = await fetch('/.netlify/functions/save-account', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'get-stats', email })
         });
+
+        console.log("📡 Réponse Netlify :", res.status);
+
+        if (!res.ok) throw new Error(`Netlify erreur ${res.status}`);
+
         const data = await res.json();
-        // Member since + points
-        const memberSinceEl = document.getElementById('member-since');
-        if (memberSinceEl) memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
+        console.log("✅ DONNÉES DU SHEET :", data);
+
+        // === REMPLISSAGE ===
+        document.getElementById('member-since').textContent = `Member since ${data.memberSince || 'January 2026'}`;
+
         const points = data.points || 0;
         let levelText = 'Basic Member';
         if (points >= 100 && points < 200) levelText = 'Member pro';
         else if (points >= 200) levelText = 'Member super pro';
-        const levelEl = document.getElementById('membership-level');
-        const pointsEl = document.getElementById('membership-points');
-        if (levelEl) levelEl.textContent = levelText;
-        if (pointsEl) pointsEl.textContent = `${points} pts`;
-        // Stats normales
+
+        document.getElementById('membership-level').textContent = levelText;
+        document.getElementById('membership-points').textContent = `${points} pts`;
+
         const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
         if (statValues.length >= 2) {
             statValues[0].textContent = data.orders || 0;
             statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
         }
+
         document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
+
+        // Order History
         const historyContainer = document.querySelector('.order-history');
-        if (!historyContainer) {
-            console.warn("⚠️ .order-history non trouvé dans le DOM");
-            return;
-        }
-        if (data.history && Array.isArray(data.history) && data.history.length > 0) {
-            let html = `<h2>Order History</h2>`;
-            const sorted = [...data.history].reverse();
-            sorted.forEach(order => {
-                html += `
-                    <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-                            <strong>Date : ${order.date}</strong>
-                            <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
-                        </div>
-                        <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
-                        <div class="order-items">
-                            ${order.items.map(item => `
-                                <div class="order-item-clickable" data-id="${item.id || ''}"
-                                     style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
-                                    ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image" style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">` : ''}
-                                    <div>
-                                        <strong class="order-item-title" style="color:#007bff;cursor:pointer;">${item.title}</strong><br>
-                                        Couleur variante : ${item.variant_color || 'N/A'}<br>
-                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}
+        if (historyContainer) {
+            if (data.history && data.history.length > 0) {
+                let html = `<h2>Order History</h2>`;
+                [...data.history].reverse().forEach(order => {
+                    html += `
+                        <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
+                            <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+                                <strong>Date : ${order.date}</strong>
+                                <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
+                            </div>
+                            <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
+                            <div class="order-items">
+                                ${order.items.map(item => `
+                                    <div class="order-item-clickable" data-id="${item.id || ''}" style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
+                                        ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image" style="width:50px;height:50px;object-fit:cover;margin-right:10px;">` : ''}
+                                        <div>
+                                            <strong class="order-item-title">${item.title}</strong><br>
+                                            Couleur : ${item.variant_color || 'N/A'}<br>
+                                            Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}
+                                        </div>
                                     </div>
-                                </div>
-                            `).join('')}
+                                `).join('')}
+                            </div>
                         </div>
-                    </div>
-                `;
-            });
-            historyContainer.innerHTML = html;
-            // ====================== DELEGATION SUR DOCUMENT (méthode infaillible) ======================
-            setTimeout(() => {
-                console.log("✅ Delegation Order History activée sur document");
-                document.addEventListener('click', function(e) {
-                    const clickable = e.target.closest('.order-item-clickable');
-                    if (!clickable) return;
-                    const id = clickable.dataset.id;
-                    if (!id) return;
-                    e.stopImmediatePropagation();
-                    const url = window.getProductUrl(id);
-                    console.log(`🖱️ CLIC DÉTECTÉ → ID=${id} | URL=${url}`);
-                    if (url === 'shop.html') {
-                        console.error(`❌ ID=${id} NON TROUVÉ dans products.data.json`);
-                        showErrorPopup(`Produit ID=${id} introuvable`);
-                        return;
-                    }
-                    window.location.href = url;
+                    `;
                 });
-            }, 300);
-        } else {
-            historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
+                historyContainer.innerHTML = html;
+            } else {
+                historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
+            }
         }
+
     } catch (e) {
-        console.error("Stats load error", e);
+        console.error("🚨 ERREUR PROFIL :", e.message);
+        showToast("Impossible de charger le profil - regarde la console F12");
     }
 }
     window.saveAddress = async () => {
