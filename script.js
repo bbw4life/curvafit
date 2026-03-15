@@ -1845,7 +1845,7 @@ document.querySelector('.paul-btn-login').addEventListener('click', async () => 
         localStorage.setItem('autoOpenCart', 'true');
         window.location.href = 'shop.html';
     };
-       async function loadAccountStats() {
+    async function loadAccountStats() {
     const email = localStorage.getItem('userEmail');
     if (!email) return;
     try {
@@ -1855,18 +1855,6 @@ document.querySelector('.paul-btn-login').addEventListener('click', async () => 
             body: JSON.stringify({ action: 'get-stats', email })
         });
         const data = await res.json();
-        // Member since + points
-        const memberSinceEl = document.getElementById('member-since');
-        if (memberSinceEl) memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
-        const points = data.points || 0;
-        let levelText = 'Basic Member';
-        if (points >= 100 && points < 200) levelText = 'Member pro';
-        else if (points >= 200) levelText = 'Member super pro';
-        const levelEl = document.getElementById('membership-level');
-        const pointsEl = document.getElementById('membership-points');
-        if (levelEl) levelEl.textContent = levelText;
-        if (pointsEl) pointsEl.textContent = `${points} pts`;
-        // Stats normales
         const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
         if (statValues.length >= 2) {
             statValues[0].textContent = data.orders || 0;
@@ -1874,10 +1862,7 @@ document.querySelector('.paul-btn-login').addEventListener('click', async () => 
         }
         document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
         const historyContainer = document.querySelector('.order-history');
-        if (!historyContainer) {
-            console.warn("⚠️ .order-history non trouvé dans le DOM");
-            return;
-        }
+        if (!historyContainer) return;
         if (data.history && Array.isArray(data.history) && data.history.length > 0) {
             let html = `<h2>Order History</h2>`;
             const sorted = [...data.history].reverse();
@@ -1893,11 +1878,17 @@ document.querySelector('.paul-btn-login').addEventListener('click', async () => 
                             ${order.items.map(item => `
                                 <div class="order-item-clickable" data-id="${item.id || ''}"
                                      style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
-                                    ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image" style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">` : ''}
+                                    ${item.image_variant ?
+                                        `<img src="${item.image_variant}" alt="${item.title}"
+                                              class="order-item-image"
+                                              style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">`
+                                        : ''}
                                     <div>
-                                        <strong class="order-item-title" style="color:#007bff;cursor:pointer;">${item.title}</strong><br>
+                                        <strong class="order-item-title" style="color:#007bff;cursor:pointer;">
+                                            ${item.title}
+                                        </strong><br>
                                         Couleur variante : ${item.variant_color || 'N/A'}<br>
-                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}
+                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
                                     </div>
                                 </div>
                             `).join('')}
@@ -1906,27 +1897,35 @@ document.querySelector('.paul-btn-login').addEventListener('click', async () => 
                 `;
             });
             historyContainer.innerHTML = html;
-           // ====================== CLIC DIRECT SUR LES PRODUITS (fix définitif) ======================
-const orderItems = historyContainer.querySelectorAll('.order-item-clickable');
-orderItems.forEach(item => {
-    item.addEventListener('click', function (e) {
-        const id = this.dataset.id;
-        if (!id) return;
-
-        e.stopImmediatePropagation();
-        const url = typeof window.getProductUrl === 'function' 
-                    ? window.getProductUrl(id) 
-                    : 'shop.html';
-
-        console.log(`🖱️ CLIC ORDER HISTORY → ID=${id} | URL=${url}`);
-
-        if (url === 'shop.html') {
-            showErrorPopup(`Produit ID=${id} introuvable`);
-            return;
-        }
-        window.location.href = url;
-    });
-});
+            // ====================== CLICS IMAGE + TITRE (fonctionne partout maintenant) ======================
+            historyContainer.querySelectorAll('.order-item-image').forEach(img => {
+                img.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const div = img.closest('.order-item-clickable');
+                    if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
+                        window.location.href = window.getProductUrl(div.dataset.id);
+                    }
+                });
+            });
+            historyContainer.querySelectorAll('.order-item-title').forEach(title => {
+                title.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const div = title.closest('.order-item-clickable');
+                    if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
+                        window.location.href = window.getProductUrl(div.dataset.id);
+                    }
+                });
+            });
+            // Garde aussi le clic sur toute la ligne (pour sécurité)
+            historyContainer.addEventListener('click', function(e) {
+                const clickable = e.target.closest('.order-item-clickable');
+                if (clickable) {
+                    const id = clickable.dataset.id;
+                    if (id && typeof window.getProductUrl === 'function') {
+                        window.location.href = window.getProductUrl(id);
+                    }
+                }
+            });
         } else {
             historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
         }
