@@ -61,14 +61,16 @@
 }
 
 
-.membership-badge span,
-.membership-badge .points {
+#membership-badge,
+#membership-badge span,
+#membership-badge .points,
+#membership-badge #membership-level,
+#membership-badge #membership-points {
     color: #ffffff !important;
 }
 
-.membership-badge #membership-level,
-.membership-badge #membership-points {
-    color: #ffffff !important;
+#membership-badge svg {
+    fill: #ffffff !important;
 }
 
 
