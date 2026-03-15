@@ -1,8 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
   function getProductUrl(id) {
-    const productIndex = products.findIndex(p => p.id === id) + 1;
-    return `product${productIndex}.html`;
+    if (!products || !Array.isArray(products) || products.length === 0) {
+      return 'shop.html';
+    }
+    const productIndex = products.findIndex(p => p.id === id);
+    if (productIndex === -1) return 'shop.html';
+    return `product${productIndex + 1}.html`;
   }
   function populateMainProductMedia(media) {
     const thumbsContainer = document.getElementById('product-thumbnails');
@@ -744,7 +748,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (typeof updateProductPrice === 'function') updateProductPrice();
       }, 300);
-      // === EXPOSE POUR ACCOUNT PAGE (clic produits order history) ===
       window.getProductUrl = getProductUrl;
     })
     .catch(error => console.error('Erreur de chargement des produits:', error));
@@ -1126,17 +1129,12 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
         const img = cartItem.querySelector('img');
         const title = cartItem.querySelector('h4');
         if (img && title) {
-          // === CLIC PRODUIT DANS LE CART (fixé pour connecté + non connecté) ===
           if (typeof window.getProductUrl === 'function') {
             const productUrl = window.getProductUrl(item.id);
             img.style.cursor = 'pointer';
             title.style.cursor = 'pointer';
-            img.addEventListener('click', () => {
-              window.location.href = productUrl;
-            });
-            title.addEventListener('click', () => {
-              window.location.href = productUrl;
-            });
+            img.addEventListener('click', () => { window.location.href = productUrl; });
+            title.addEventListener('click', () => { window.location.href = productUrl; });
           }
         }
       });
@@ -1550,7 +1548,6 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       });
     });
   }
-  // === AUTO OPEN CART DRAWER quand on vient de "Saved Items" ===
   if (window.location.pathname.toLowerCase().includes('shop.html') &&
       localStorage.getItem('autoOpenCart') === 'true') {
     localStorage.removeItem('autoOpenCart');
@@ -1582,7 +1579,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const signupForm = document.getElementById('signupForm');
     const goToSignup = document.getElementById('goToSignup');
     const goToLogin = document.getElementById('goToLogin');
-    const isAccountPage = window.location.pathname.includes('account.html') || window.location.pathname.endsWith('account.html');
+    const pathname = window.location.pathname.toLowerCase();
+    const isAccountPage = /account/i.test(pathname);
     window.showToast = (msg) => {
         let toast = document.getElementById('toast');
         if (!toast) {
@@ -1706,12 +1704,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     if (isAccountPage) {
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-        // ==================== PROTECTION ULTRA-STRICTE ====================
         if (!isLoggedIn) {
-            const accountMain = document.querySelector('.account-main');
-            const customerSection = document.querySelector('.customer.account');
-            if (accountMain) accountMain.style.display = 'none';
-            if (customerSection) customerSection.style.display = 'none';
+            const hideStyle = document.createElement('style');
+            hideStyle.innerHTML = `
+                body > *:not(#paulPopup) { display: none !important; }
+                #paulPopup { display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 999999 !important; }
+            `;
+            document.head.appendChild(hideStyle);
             setTimeout(() => {
                 openPaulPopup();
                 const closeBtnPopup = document.querySelector('.paul-close');
@@ -1720,17 +1719,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     closeBtnPopup.style.opacity = '0.3';
                     closeBtnPopup.title = 'Vous devez vous connecter pour accéder à votre compte';
                 }
-            }, 200);
+            }, 100);
             return;
         }
-        // ==================== UTILISATEUR CONNECTÉ → tout normal ====================
         document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
         document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
         document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
         document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
         loadAccountStats();
     }
-    // ==================== SAVED ITEMS → shop.html + ouvre cart drawer ====================
     window.openSavedItems = () => {
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             showToast("Connectez-vous pour voir vos articles sauvegardés");
@@ -1739,7 +1736,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('autoOpenCart', 'true');
         window.location.href = 'shop.html';
     };
-        async function loadAccountStats() {
+    async function loadAccountStats() {
         const email = localStorage.getItem('userEmail');
         if (!email) return;
         try {
@@ -1785,27 +1782,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 });
                 historyContainer.innerHTML = html;
-                // === NOUVELLE VERSION ULTRA-ROBUSTE (delegation sur document) ===
-                document.removeEventListener('click', handleOrderClick); // évite les doublons
-                document.addEventListener('click', handleOrderClick);
+                historyContainer.addEventListener('click', function(e) {
+                    const clickable = e.target.closest('.order-item-clickable');
+                    if (clickable) {
+                        const id = clickable.dataset.id;
+                        if (id && window.getProductUrl) {
+                            window.location.href = window.getProductUrl(id);
+                        }
+                    }
+                });
             } else {
                 historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
             }
         } catch (e) {
             console.error("Stats load error", e);
-        }
-    }
-    // Fonction séparée pour le clic (fonctionne à tous les coups)
-    function handleOrderClick(e) {
-        const clickable = e.target.closest('.order-item-clickable');
-        if (clickable) {
-            const id = clickable.dataset.id;
-            if (id && window.getProductUrl) {
-                console.log("✅ Clic détecté → redirection vers produit ID:", id); // pour debug
-                window.location.href = window.getProductUrl(id);
-            } else {
-                console.warn("⚠️ Pas de ID ou getProductUrl manquant");
-            }
         }
     }
     window.saveAddress = async () => {
@@ -1870,4 +1860,20 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.clear();
         window.location.href = 'index.html';
     };
+});
+window.addEventListener('load', () => {
+    const pathname = window.location.pathname.toLowerCase();
+    const isAccountPage = /account/i.test(pathname);
+    if (isAccountPage && localStorage.getItem('isLoggedIn') !== 'true') {
+        const hideStyle = document.createElement('style');
+        hideStyle.innerHTML = `
+            body > *:not(#paulPopup) { display: none !important; }
+            #paulPopup { display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 999999 !important; }
+        `;
+        document.head.appendChild(hideStyle);
+        setTimeout(() => {
+            const overlay = document.getElementById('paulPopup');
+            if (overlay) overlay.classList.add('active');
+        }, 150);
+    }
 });
