@@ -524,20 +524,8 @@
 }
 
 
-
-
-.logout-btn {
-    color: #e01e08; 
-    display: inline-flex;
-    align-items: center;
-}
-
 .logout-btn svg {
     width: 20px;
     height: 20px;
     margin-right: 8px;
-}
-
-.logout-btn:hover {
-    color: #9e0a65; 
 }
