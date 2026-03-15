@@ -1,9 +1,35 @@
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
+  // ====================== FONCTION POPUP (pour remplacer TOUS les alert du navigateur) ======================
+    function showErrorPopup(message) {
+        const popup = document.getElementById('error-popup');
+        const popupText = document.getElementById('popup-message');
+        const closeBtn = document.getElementById('popup-close');
+        if (!popup || !popupText || !closeBtn) {
+            console.error("Popup HTML manquant !");
+            return;
+        }
+        popupText.textContent = message;
+        popup.classList.add('show');
+        closeBtn.onclick = () => popup.classList.remove('show');
+        setTimeout(() => {
+            if (popup.classList.contains('show')) popup.classList.remove('show');
+        }, 10000);
+    }
   function getProductUrl(id) {
-    const productIndex = products.findIndex(p => p.id === id) + 1;
-    return `product${productIndex}.html`;
-  }
+    if (!products || !Array.isArray(products) || products.length === 0) {
+        return 'shop.html';
+    }
+    const productIndex = products.findIndex(p => p.id === id);
+    if (productIndex === -1) return 'shop.html';
+    // === NOUVEAUTÉ : détection automatique du dossier ===
+    const currentPath = window.location.pathname;
+    const isInsideProductsFolder = currentPath.includes('/products/') ||
+      /product\d+\.html$/.test(currentPath);
+    return isInsideProductsFolder
+        ? `product${productIndex + 1}.html`
+        : `products/product${productIndex + 1}.html`;
+}
   function populateMainProductMedia(media) {
     const thumbsContainer = document.getElementById('product-thumbnails');
     const mainSlider = document.getElementById('main-image-slider');
@@ -633,7 +659,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   const selectedColor = hasColors ? values.color : null;
                   const selectedSize = hasSizes ? values.size : null;
                   if ((hasColors && !selectedColor) || (hasSizes && !selectedSize)) {
-                    return alert("Please complete your selection.");
+                  showErrorPopup("Please complete your selection.");
+                  return;
                   }
                   if (selectedColor) {
                     const colorObj = product.colors.find(c => c.name === selectedColor);
@@ -689,7 +716,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   const selectedSize = hasSizes ? values.size : null;
                   if ((hasColors && !selectedColor) || (hasSizes && !selectedSize)) {
                     valid = false;
-                    alert(`Item ${i}: Please complete selection.`);
+                    showErrorPopup(`Item ${i}: Please complete selection.`);
                     break;
                   }
                   if (selectedColor) {
@@ -744,7 +771,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (typeof updateProductPrice === 'function') updateProductPrice();
       }, 300);
-      // === EXPOSE POUR ACCOUNT PAGE (clic produits order history) ===
       window.getProductUrl = getProductUrl;
     })
     .catch(error => console.error('Erreur de chargement des produits:', error));
@@ -784,12 +810,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     submitSearch.addEventListener('click', () => {
       const query = searchInput.value;
-      if (query) alert(`Searching for: ${query}`);
+      if (query) showErrorPopup(`Searching for: ${query}`);
     });
     searchInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         const query = searchInput.value;
-        if (query) alert(`Searching for: ${query}`);
+        if (query) showErrorPopup(`Searching for: ${query}`);
       }
     });
   }
@@ -935,11 +961,11 @@ document.addEventListener('DOMContentLoaded', () => {
         userProgress.push({ date, value });
         userProgress.sort((a, b) => new Date(a.date) - new Date(b.date));
         saveProgress();
-        alert('Data added! Switch tabs to see updated chart.');
+        showErrorPopup('Data added! Switch tabs to see updated chart.');
         const activeTab = document.querySelector('.tab-button.active')?.dataset.tab;
         updateChart(activeTab);
       } else {
-        alert('Please enter a valid date and value.');
+        showErrorPopup('Please enter a valid date and value.');
       }
     });
   }
@@ -1019,14 +1045,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const playOverlay = document.querySelector('.play-overlay');
   if (playOverlay) {
     playOverlay.addEventListener('click', () => {
-      alert('Video playback started');
+     showErrorPopup('Video playback started');
     });
   }
   const forms = document.querySelectorAll('form');
   forms.forEach(form => {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      alert('Subscribed!');
+      showErrorPopup('Subscribed!');
     });
   });
   const ctx = document.getElementById('progress-curve');
@@ -1126,15 +1152,13 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
         const img = cartItem.querySelector('img');
         const title = cartItem.querySelector('h4');
         if (img && title) {
-          const productUrl = getProductUrl(item.id);
-          img.style.cursor = 'pointer';
-          title.style.cursor = 'pointer';
-          img.addEventListener('click', () => {
-            window.location.href = productUrl;
-          });
-          title.addEventListener('click', () => {
-            window.location.href = productUrl;
-          });
+          if (typeof window.getProductUrl === 'function') {
+            const productUrl = window.getProductUrl(item.id);
+            img.style.cursor = 'pointer';
+            title.style.cursor = 'pointer';
+            img.addEventListener('click', () => { window.location.href = productUrl; });
+            title.addEventListener('click', () => { window.location.href = productUrl; });
+          }
         }
       });
       cartItemsContainer.querySelectorAll('.qty-plus').forEach(btn => btn.addEventListener('click', handleQuantityChange));
@@ -1213,7 +1237,8 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       selectedColor = activeSwatch ? activeSwatch.dataset.color : null;
       if ((product.colors && product.colors.length > 0 && !selectedColor) ||
           (product.sizes && product.sizes.length > 0 && !selectedSize)) {
-        return alert("Please select all options.");
+        showErrorPopup("Please select a color first.");
+       return;
       }
       if (selectedColor) {
         const colorObj = product.colors.find(c => c.name === selectedColor);
@@ -1267,23 +1292,45 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
     setTimeout(() => cartIcon.classList.remove('added'), 500);
     openCartDrawer();
   }
-  function renderWishlist() {
+ function renderWishlist() {
     wishlistItemsContainer.innerHTML = '';
     wishlist.forEach(id => {
-      const product = products.find(p => p.id === id);
-      if (product) {
-        const wishlistItem = document.createElement('div');
-        wishlistItem.classList.add('wishlist-item');
-        wishlistItem.dataset.id = id;
-        wishlistItem.innerHTML = `<img src="${product.image}" alt="${product.title}">
-<h4>${product.title}</h4>
-<p>$${parseFloat(product.price).toFixed(2)}</p>
-<button class="remove-wishlist">Remove</button>`;
-        wishlistItemsContainer.appendChild(wishlistItem);
-      }
+        const product = products.find(p => p.id === id);
+        if (product) {
+            const wishlistItem = document.createElement('div');
+            wishlistItem.classList.add('wishlist-item');
+            wishlistItem.dataset.id = id;
+            const comparePriceHTML = product.compare_price && product.compare_price > product.price
+                ? `<p class="compare-price">$${parseFloat(product.compare_price).toFixed(2)}</p>`
+                : '';
+            wishlistItem.innerHTML = `
+                <img src="${product.image}" alt="${product.title}" class="wishlist-img">
+                <h4 class="wishlist-title">${product.title}</h4>
+                <p>$${parseFloat(product.price).toFixed(2)}</p>
+                ${comparePriceHTML}
+                <button class="remove-wishlist">Remove</button>`;
+            // ====================== NOUVEAU : CLIC IMAGE + TITRE ======================
+            const img = wishlistItem.querySelector('.wishlist-img');
+            const titleEl = wishlistItem.querySelector('.wishlist-title');
+            if (img && titleEl && typeof window.getProductUrl === 'function') {
+                const productUrl = window.getProductUrl(id);
+                img.style.cursor = 'pointer';
+                titleEl.style.cursor = 'pointer';
+                img.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    window.location.href = productUrl;
+                });
+                titleEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    window.location.href = productUrl;
+                });
+            }
+            // =====================================================================
+            wishlistItemsContainer.appendChild(wishlistItem);
+        }
     });
     wishlistItemsContainer.querySelectorAll('.remove-wishlist').forEach(btn => btn.addEventListener('click', removeFromWishlist));
-  }
+}
   function removeFromWishlist(e) {
     const itemElement = e.target.closest('.wishlist-item');
     const id = itemElement.dataset.id;
@@ -1547,8 +1594,7 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
       });
     });
   }
-  // === AUTO OPEN CART DRAWER quand on vient de "Saved Items" ===
-  if (window.location.pathname.toLowerCase().includes('shop.html') && 
+  if (window.location.pathname.toLowerCase().includes('shop.html') &&
       localStorage.getItem('autoOpenCart') === 'true') {
     localStorage.removeItem('autoOpenCart');
     setTimeout(() => {
@@ -1558,7 +1604,6 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
     }, 1200);
   }
 });
-
 document.addEventListener('click', function(e) {
   if (e.target.closest('.swatch')) {
     const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent);
@@ -1572,7 +1617,6 @@ document.addEventListener('click', function(e) {
     }
   }
 });
-
 document.addEventListener('DOMContentLoaded', () => {
     const trigger = document.getElementById('paulTrigger');
     const overlay = document.getElementById('paulPopup');
@@ -1581,7 +1625,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const signupForm = document.getElementById('signupForm');
     const goToSignup = document.getElementById('goToSignup');
     const goToLogin = document.getElementById('goToLogin');
-    const isAccountPage = window.location.pathname.includes('account.html') || window.location.pathname.endsWith('account.html');
+    const pathname = window.location.pathname.toLowerCase();
+    const isAccountPage = /account/i.test(pathname);
     window.showToast = (msg) => {
         let toast = document.getElementById('toast');
         if (!toast) {
@@ -1641,78 +1686,132 @@ document.addEventListener('DOMContentLoaded', () => {
         signupForm.style.display = 'none';
         loginForm.style.display = 'block';
     });
-    document.querySelector('.paul-btn-register').addEventListener('click', async () => {
-        const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
-        const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
-        const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
-        const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
-        const password = signupForm.querySelector('input[type="password"]').value.trim();
-        const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
-        if (!password) return showToast("Password is required");
-        try {
-            const res = await fetch('/.netlify/functions/save-account', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
-            });
-            const data = await res.json();
-            if (data.success) {
-                showToast("Account created successfully!");
-                goToLogin.click();
-            } else {
-                showToast("Error: " + (data.error || "Unknown"));
-            }
-        } catch (err) {
-            showToast("Network error");
-        }
+     // ==================== PASSWORD EYE TOGGLE avec icons FI (pro) ====================
+document.querySelectorAll('.password-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function () {
+      const targetId = this.getAttribute('data-target');
+      const input = document.getElementById(targetId);
+      if (!input) return;
+      const icon = this.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fi-sr-eye');
+        icon.classList.add('fi-sr-eye-crossed');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fi-sr-eye-crossed');
+        icon.classList.add('fi-sr-eye');
+      }
     });
-    document.querySelector('.paul-btn-login').addEventListener('click', async () => {
-        const email = loginForm.querySelector('input[type="email"]').value.trim();
-        const password = loginForm.querySelector('input[type="password"]').value.trim();
-        try {
-            const res = await fetch('/.netlify/functions/verify-login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-            const data = await res.json();
-            if (data.success) {
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('userFirstName', data.user.firstName);
-                localStorage.setItem('userLastName', data.user.lastName);
-                localStorage.setItem('userAddressLine1', data.user.addressLine1 || '');
-                localStorage.setItem('userLine2', data.user.line2 || '');
-                localStorage.setItem('userCity', data.user.city || '');
-                localStorage.setItem('userState', data.user.state || '');
-                localStorage.setItem('userZip', data.user.zip || '');
-                const addressStr = [data.user.addressLine1, data.user.line2, data.user.city, data.user.state, data.user.zip]
-                    .filter(Boolean).join(', ');
-                localStorage.setItem('userAddress', addressStr || 'No default address set');
-                showToast(`Welcome ${data.user.firstName} !`);
-                overlay.classList.remove('active');
-                if (isAccountPage) {
-                    location.reload();
-                } else {
-                    window.location.href = 'account.html';
-                }
+  });
+
+document.querySelector('.paul-btn-register').addEventListener('click', async () => {
+    const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
+    const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
+    const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
+    const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
+    const password = signupForm.querySelector('input[type="password"], input[type="text"]').value.trim(); // ← FIX
+    const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
+
+    if (!password) return showToast("Password is required");
+
+    const registerBtn = document.querySelector('.paul-btn-register');
+    const originalText = registerBtn.textContent;
+    registerBtn.textContent = "Creating account...";
+    registerBtn.disabled = true;
+
+    try {
+      const res = await fetch('/.netlify/functions/save-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        registerBtn.textContent = "Your profil is ready...";
+        showToast("Account created successfully!");
+        setTimeout(() => goToLogin.click(), 800);
+      } else {
+        registerBtn.textContent = originalText;
+        registerBtn.disabled = false;
+        showToast("Error: " + (data.error || "Unknown"));
+      }
+    } catch (err) {
+      registerBtn.textContent = originalText;
+      registerBtn.disabled = false;
+      showToast("Network error");
+    }
+  });
+    // ====================== BOUTON LOGIN (corrigé + texte demandé) ======================
+document.querySelector('.paul-btn-login').addEventListener('click', async () => {
+    const email = loginForm.querySelector('input[type="email"]').value.trim();
+    const passwordInput = loginForm.querySelector('input[placeholder*="Password"], input[type="password"], input[type="text"]');
+    const password = passwordInput ? passwordInput.value.trim() : '';
+
+    const loginBtn = document.querySelector('.paul-btn-login');
+    const originalText = loginBtn.textContent;
+
+    if (!email || !password) {
+        showToast("Email and password required");
+        return;
+    }
+
+    loginBtn.textContent = "Checking...";
+    loginBtn.disabled = true;
+
+    try {
+        const res = await fetch('/.netlify/functions/verify-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            loginBtn.textContent = "Your account Loading...";
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userFirstName', data.user.firstName);
+            localStorage.setItem('userLastName', data.user.lastName);
+            localStorage.setItem('userAddressLine1', data.user.addressLine1 || '');
+            localStorage.setItem('userLine2', data.user.line2 || '');
+            localStorage.setItem('userCity', data.user.city || '');
+            localStorage.setItem('userState', data.user.state || '');
+            localStorage.setItem('userZip', data.user.zip || '');
+
+            const addressStr = [data.user.addressLine1, data.user.line2, data.user.city, data.user.state, data.user.zip]
+                .filter(Boolean).join(', ');
+            localStorage.setItem('userAddress', addressStr || 'No default address set');
+
+            showToast(`Welcome ${data.user.firstName} !`);
+            overlay.classList.remove('active');
+
+            if (isAccountPage) {
+                location.reload();
             } else {
-                showToast("Incorrect email or password");
+                window.location.href = 'account.html';
             }
-        } catch (err) {
-            showToast("Network error");
+        } else {
+            loginBtn.textContent = originalText;
+            loginBtn.disabled = false;
+            showToast("Incorrect email or password");
         }
-    });
+    } catch (err) {
+        loginBtn.textContent = originalText;
+        loginBtn.disabled = false;
+        showToast("Network error");
+    }
+});
     if (isAccountPage) {
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-
-        // ==================== PROTECTION ULTRA-STRICTE ====================
         if (!isLoggedIn) {
-            const accountMain = document.querySelector('.account-main');
-            const customerSection = document.querySelector('.customer.account');
-            if (accountMain) accountMain.style.display = 'none';
-            if (customerSection) customerSection.style.display = 'none';
-
+            const hideStyle = document.createElement('style');
+            hideStyle.innerHTML = `
+                body > *:not(#paulPopup) { display: none !important; }
+                #paulPopup { display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 999999 !important; }
+            `;
+            document.head.appendChild(hideStyle);
             setTimeout(() => {
                 openPaulPopup();
                 const closeBtnPopup = document.querySelector('.paul-close');
@@ -1721,20 +1820,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     closeBtnPopup.style.opacity = '0.3';
                     closeBtnPopup.title = 'Vous devez vous connecter pour accéder à votre compte';
                 }
-            }, 200);
+            }, 100);
             return;
         }
-
-        // ==================== UTILISATEUR CONNECTÉ → tout normal ====================
         document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
         document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
         document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
         document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
-
         loadAccountStats();
     }
-
-    // ==================== SAVED ITEMS → shop.html + ouvre cart drawer ====================
     window.openSavedItems = () => {
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             showToast("Connectez-vous pour voir vos articles sauvegardés");
@@ -1743,82 +1837,94 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('autoOpenCart', 'true');
         window.location.href = 'shop.html';
     };
-
-        async function loadAccountStats() {
-        const email = localStorage.getItem('userEmail');
-        if (!email) return;
-        try {
-            const res = await fetch('/.netlify/functions/save-account', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'get-stats', email })
-            });
-            const data = await res.json();
-
-            const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
-            if (statValues.length >= 2) {
-                statValues[0].textContent = data.orders || 0;
-                statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
-            }
-            document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
-
-            const historyContainer = document.querySelector('.order-history');
-            if (!historyContainer) return;
-
-            if (data.history && Array.isArray(data.history) && data.history.length > 0) {
-                let html = `<h2>Order History</h2>`;
-                const sorted = [...data.history].reverse();
-                sorted.forEach(order => {
-                    html += `
-                        <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
-                            <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-                                <strong>Date : ${order.date}</strong>
-                                <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
-                            </div>
-                            <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
-                            <div class="order-items">
-                                ${order.items.map(item => `
-                                    <div class="order-item-clickable" data-id="${item.id || ''}" 
-                                         style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
-                                        ${item.image_variant ? `<img src="${item.image_variant}" alt="${item.title}" style="width:50px;height:50px;object-fit:cover;margin-right:10px;">` : ''}
-                                        <div>
-                                            <strong style="color:#007bff;">${item.title}</strong><br>
-                                            Couleur variante : ${item.variant_color || 'N/A'}<br>
-                                            Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
+   async function loadAccountStats() {
+    const email = localStorage.getItem('userEmail');
+    if (!email) return;
+    try {
+        const res = await fetch('/.netlify/functions/save-account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'get-stats', email })
+        });
+        const data = await res.json();
+        const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
+        if (statValues.length >= 2) {
+            statValues[0].textContent = data.orders || 0;
+            statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
+        }
+        document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
+        const historyContainer = document.querySelector('.order-history');
+        if (!historyContainer) return;
+        if (data.history && Array.isArray(data.history) && data.history.length > 0) {
+            let html = `<h2>Order History</h2>`;
+            const sorted = [...data.history].reverse();
+            sorted.forEach(order => {
+                html += `
+                    <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+                            <strong>Date : ${order.date}</strong>
+                            <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
                         </div>
-                    `;
+                        <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
+                        <div class="order-items">
+                            ${order.items.map(item => `
+                                <div class="order-item-clickable" data-id="${item.id || ''}"
+                                     style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
+                                    ${item.image_variant ?
+                                        `<img src="${item.image_variant}" alt="${item.title}"
+                                              class="order-item-image"
+                                              style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">`
+                                        : ''}
+                                    <div>
+                                        <strong class="order-item-title" style="color:#007bff;cursor:pointer;">
+                                            ${item.title}
+                                        </strong><br>
+                                        Couleur variante : ${item.variant_color || 'N/A'}<br>
+                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity} = $${item.lineTotal || (parseFloat(item.price || 0) * item.quantity).toFixed(2)}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            historyContainer.innerHTML = html;
+            // ====================== CLICS IMAGE + TITRE (fonctionne partout maintenant) ======================
+            historyContainer.querySelectorAll('.order-item-image').forEach(img => {
+                img.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const div = img.closest('.order-item-clickable');
+                    if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
+                        window.location.href = window.getProductUrl(div.dataset.id);
+                    }
                 });
-                historyContainer.innerHTML = html;
-
-                // === NOUVELLE VERSION ULTRA-ROBUSTE (delegation sur document) ===
-                document.removeEventListener('click', handleOrderClick); // évite les doublons
-                document.addEventListener('click', handleOrderClick);
-
-            } else {
-                historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
-            }
-        } catch (e) {
-            console.error("Stats load error", e);
+            });
+            historyContainer.querySelectorAll('.order-item-title').forEach(title => {
+                title.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const div = title.closest('.order-item-clickable');
+                    if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
+                        window.location.href = window.getProductUrl(div.dataset.id);
+                    }
+                });
+            });
+            // Garde aussi le clic sur toute la ligne (pour sécurité)
+            historyContainer.addEventListener('click', function(e) {
+                const clickable = e.target.closest('.order-item-clickable');
+                if (clickable) {
+                    const id = clickable.dataset.id;
+                    if (id && typeof window.getProductUrl === 'function') {
+                        window.location.href = window.getProductUrl(id);
+                    }
+                }
+            });
+        } else {
+            historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
         }
+    } catch (e) {
+        console.error("Stats load error", e);
     }
-
-    // Fonction séparée pour le clic (fonctionne à tous les coups)
-    function handleOrderClick(e) {
-        const clickable = e.target.closest('.order-item-clickable');
-        if (clickable) {
-            const id = clickable.dataset.id;
-            if (id && window.getProductUrl) {
-                console.log("✅ Clic détecté → redirection vers produit ID:", id); // pour debug
-                window.location.href = window.getProductUrl(id);
-            } else {
-                console.warn("⚠️ Pas de ID ou getProductUrl manquant");
-            }
-        }
-    }
+}
     window.saveAddress = async () => {
         const email = localStorage.getItem('userEmail');
         const line1 = document.getElementById('addr-line1').value.trim();
@@ -1881,13 +1987,20 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.clear();
         window.location.href = 'index.html';
     };
-    if (isAccountPage) {
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            setTimeout(() => {
-                openPaulPopup();
-                closeBtn.style.pointerEvents = 'none';
-                closeBtn.style.opacity = '0.3';
-            }, 500);
-        }
+});
+window.addEventListener('load', () => {
+    const pathname = window.location.pathname.toLowerCase();
+    const isAccountPage = /account/i.test(pathname);
+    if (isAccountPage && localStorage.getItem('isLoggedIn') !== 'true') {
+        const hideStyle = document.createElement('style');
+        hideStyle.innerHTML = `
+            body > *:not(#paulPopup) { display: none !important; }
+            #paulPopup { display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 999999 !important; }
+        `;
+        document.head.appendChild(hideStyle);
+        setTimeout(() => {
+            const overlay = document.getElementById('paulPopup');
+            if (overlay) overlay.classList.add('active');
+        }, 150);
     }
 });
