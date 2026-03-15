@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!products || !Array.isArray(products) || products.length === 0) {
       return 'shop.html';
     }
-    const productIndex = products.findIndex(p => p.id === id);
+    const productIndex = products.findIndex(p => String(p.id) === String(id));
     if (productIndex === -1) return 'shop.html';
     return `product${productIndex + 1}.html`;
   }
@@ -1782,15 +1782,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 });
                 historyContainer.innerHTML = html;
-                historyContainer.addEventListener('click', function(e) {
-                    const clickable = e.target.closest('.order-item-clickable');
-                    if (clickable) {
-                        const id = clickable.dataset.id;
-                        if (id && window.getProductUrl) {
-                            window.location.href = window.getProductUrl(id);
-                        }
-                    }
-                });
             } else {
                 historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
             }
@@ -1798,6 +1789,16 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Stats load error", e);
         }
     }
+    // === CLIC ORDER HISTORY GLOBAL (toujours actif même après login) ===
+    document.addEventListener('click', function(e) {
+        const clickable = e.target.closest('.order-item-clickable');
+        if (clickable) {
+            const id = clickable.dataset.id;
+            if (id && typeof window.getProductUrl === 'function') {
+                window.location.href = window.getProductUrl(id);
+            }
+        }
+    });
     window.saveAddress = async () => {
         const email = localStorage.getItem('userEmail');
         const line1 = document.getElementById('addr-line1').value.trim();
