@@ -1737,7 +1737,7 @@ document.querySelector('.paul-btn-register').addEventListener('click', async () 
       const data = await res.json();
 
       if (data.success) {
-        registerBtn.textContent = "Your profil is ready...";   // ← TEXTE DEMANDÉ
+        registerBtn.textContent = "Your profil is ready...";
         showToast("Account created successfully!");
         setTimeout(() => goToLogin.click(), 800);
       } else {
@@ -1777,9 +1777,7 @@ document.querySelector('.paul-btn-login').addEventListener('click', async () => 
         const data = await res.json();
 
         if (data.success) {
-            loginBtn.textContent = "Your account Loading...";   // ← TEXTE QUE TU VEUX
-
-            // === CODE DE SUCCÈS (inchangé) ===
+            loginBtn.textContent = "Your account Loading...";
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('userEmail', email);
             localStorage.setItem('userFirstName', data.user.firstName);
