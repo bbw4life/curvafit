@@ -774,7 +774,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof updateProductPrice === 'function') updateProductPrice();
       }, 300);
 
-      // ====================== CLIC ORDER HISTORY – VERSION FINALE (CORRIGÉE) ======================
+     // ====================== CLIC ORDER HISTORY – VERSION QUI MARCHE (ICI !) ======================
       document.addEventListener('click', function(e) {
         const clickable = e.target.closest('.order-item-clickable');
         if (!clickable) return;
@@ -783,7 +783,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!id) return;
 
         if (typeof window.getProductUrl !== 'function') {
-          console.warn("getProductUrl pas encore prêt");
+          console.warn("getProductUrl pas encore prêt → retry");
           setTimeout(() => clickable.click(), 800);
           return;
         }
@@ -803,10 +803,9 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = url;
       });
 
-      // ←←← UNE SEULE FOIS à la toute fin
+      // ←←← UNE SEULE FOIS À LA TOUTE FIN
       window.getProductUrl = getProductUrl;
     })
-  
     .catch(error => console.error('Erreur de chargement des produits:', error));
   document.querySelectorAll('section').forEach(sec => {
     if (!sec.hasAttribute('data-scroll-reveal')) {
