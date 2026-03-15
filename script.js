@@ -1,22 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
-
-  // ====================== GET PRODUCT URL (disponible immédiatement) ======================
-
-window.getProductUrl = function(id) {
-    if (!products || !Array.isArray(products) || products.length === 0) {
-        return 'shop.html';
-    }
-    const productIndex = products.findIndex(p => p.id === id);
-    if (productIndex === -1) return 'shop.html';
-
-    const currentPath = window.location.pathname;
-    const isInsideProductsFolder = currentPath.includes('/products/') ||
-                                   /product\d+\.html$/.test(currentPath);
-    return isInsideProductsFolder
-        ? `product${productIndex + 1}.html`
-        : `products/product${productIndex + 1}.html`;
-};
   // ====================== FONCTION POPUP (pour remplacer TOUS les alert du navigateur) ======================
     function showErrorPopup(message) {
         const popup = document.getElementById('error-popup');
@@ -33,6 +16,20 @@ window.getProductUrl = function(id) {
             if (popup.classList.contains('show')) popup.classList.remove('show');
         }, 10000);
     }
+  function getProductUrl(id) {
+    if (!products || !Array.isArray(products) || products.length === 0) {
+        return 'shop.html';
+    }
+    const productIndex = products.findIndex(p => p.id === id);
+    if (productIndex === -1) return 'shop.html';
+    // === NOUVEAUTÉ : détection automatique du dossier ===
+    const currentPath = window.location.pathname;
+    const isInsideProductsFolder = currentPath.includes('/products/') ||
+      /product\d+\.html$/.test(currentPath);
+    return isInsideProductsFolder
+        ? `product${productIndex + 1}.html`
+        : `products/product${productIndex + 1}.html`;
+}
   function populateMainProductMedia(media) {
     const thumbsContainer = document.getElementById('product-thumbnails');
     const mainSlider = document.getElementById('main-image-slider');
@@ -137,8 +134,6 @@ window.getProductUrl = function(id) {
             if (priceCell) priceCell.textContent = `$${product.price.toFixed(2)}`;
           }
         });
-        products = data;
-window.getProductUrl = window.getProductUrl;
       }
       document.querySelectorAll('.product-card').forEach(card => {
         const id = card.dataset.id;
@@ -1706,11 +1701,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
             });
             const data = await res.json();
-            // === NOUVEAUTÉ 1 : Member since depuis la feuille ===
-           document.getElementById('member-since').textContent = data.memberSince || 'Unknown date';
-           // === NOUVEAUTÉ 2 : Points = 10 pts par commande ===
-            const points = (data.orders || 0) * 10;
-            document.getElementById('points-display').textContent = `${points} pts`;
             if (data.success) {
                 showToast("Account created successfully!");
                 goToLogin.click();
@@ -1802,6 +1792,23 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ action: 'get-stats', email })
         });
         const data = await res.json();
+        // ====================== MEMBER SINCE + POINTS BADGE (10 pts par commande) ======================
+          const memberSinceEl = document.getElementById('member-since');
+          if (memberSinceEl) {
+              memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
+          }
+
+          const points = data.points || 0;
+          let levelText = 'Basic Member';
+          if (points === 100) levelText = 'Member pro';
+          else if (points > 100) levelText = 'Member super pro';
+
+          const levelEl = document.getElementById('membership-level');
+          if (levelEl) levelEl.textContent = levelText;
+
+          const pointsEl = document.getElementById('membership-points');
+          if (pointsEl) pointsEl.textContent = `${points} pts`;
+
         const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
         if (statValues.length >= 2) {
             statValues[0].textContent = data.orders || 0;
@@ -1844,33 +1851,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             });
             historyContainer.innerHTML = html;
-            // ====================== CLICS IMAGE + TITRE (maintenant garanti) ======================
-historyContainer.querySelectorAll('.order-item-image').forEach(img => {
-    img.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const div = img.closest('.order-item-clickable');
-        if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
-            window.location.href = window.getProductUrl(div.dataset.id);
-        }
-    });
-});
-
-historyContainer.querySelectorAll('.order-item-title').forEach(title => {
-    title.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const div = title.closest('.order-item-clickable');
-        if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
-            window.location.href = window.getProductUrl(div.dataset.id);
-        }
-    });
-});
-
-historyContainer.addEventListener('click', function(e) {
-    const clickable = e.target.closest('.order-item-clickable');
-    if (clickable && clickable.dataset.id && typeof window.getProductUrl === 'function') {
-        window.location.href = window.getProductUrl(clickable.dataset.id);
-    }
-});
+            setTimeout(() => {
+                historyContainer.querySelectorAll('.order-item-image, .order-item-title, .order-item-clickable').forEach(el => {
+                    if (typeof window.getProductUrl === 'function') {
+                        const id = el.closest('.order-item-clickable')?.dataset.id;
+                        if (id) {
+                            el.style.cursor = 'pointer';
+                            el.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                window.location.href = window.getProductUrl(id);
+                            });
+                        }
+                    }
+                });
+            }, 300);
+            // ====================== CLICS IMAGE + TITRE (fonctionne partout maintenant) ======================
+            historyContainer.querySelectorAll('.order-item-image').forEach(img => {
+                img.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const div = img.closest('.order-item-clickable');
+                    if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
+                        window.location.href = window.getProductUrl(div.dataset.id);
+                    }
+                });
+            });
+            historyContainer.querySelectorAll('.order-item-title').forEach(title => {
+                title.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const div = title.closest('.order-item-clickable');
+                    if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
+                        window.location.href = window.getProductUrl(div.dataset.id);
+                    }
+                });
+            });
             // Garde aussi le clic sur toute la ligne (pour sécurité)
             historyContainer.addEventListener('click', function(e) {
                 const clickable = e.target.closest('.order-item-clickable');
