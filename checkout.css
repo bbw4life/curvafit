@@ -629,24 +629,61 @@ select {
 
 
 
-.popup-ok-btn {
-    width: 100%;
-    padding: 16px 30px;
+
+/* ==================== ERROR POPUP CHECKOUT (overlay centré) ==================== */
+#error-popup.popup-overlay {
+    display: none !important;
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,0.85) !important;
+    z-index: 99999 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    backdrop-filter: blur(5px) !important;
+}
+
+#error-popup .popup {
+    background: #1a1a1a !important;
+    padding: 40px 30px !important;
+    border-radius: 20px !important;
+    border: 3px solid #f0b90b !important;
+    text-align: center !important;
+    max-width: 420px !important;
+    width: 90% !important;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6) !important;
+    animation: popupFade 0.4s ease !important;
+}
+
+#error-popup .popup-close {
+    position: absolute !important;
+    top: 15px !important;
+    right: 25px !important;
+    font-size: 40px !important;
+    color: #f0b90b !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+#error-popup .popup-ok-btn {
+    width: 100% !important;
+    padding: 16px 30px !important;
     background: #f0b90b !important;
     color: #000000 !important;
     border: none !important;
     border-radius: 30px !important;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 16px;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    margin-top: 15px !important;
 }
 
-.popup-ok-btn:hover {
+#error-popup .popup-ok-btn:hover {
     background: #d4a017 !important;
-    transform: translateY(-3px);
+    transform: translateY(-3px) !important;
 }
 
-/* Auto-close animation */
-@keyframes fadeOutPopup {
-    to { opacity: 0; transform: scale(0.95); }
+@keyframes popupFade {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
 }

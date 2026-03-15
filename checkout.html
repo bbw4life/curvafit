@@ -240,6 +240,17 @@
         <p>If you have any questions or specific delivery requests, we're here to help. <strong>Email</strong>: paulfrance13@gmail.com. <strong>Phone</strong>: +1 809 377 0077.</p>
     </div>
 </div>
+
+<!-- ERROR POPUP - Overlay centré (obligatoire ici AVANT les scripts) -->
+<div id="error-popup" class="popup-overlay">
+    <div class="popup">
+        <button class="popup-close" onclick="closeErrorPopup()">×</button>
+        <h3 id="error-title" style="color:#f0b90b;">Error</h3>
+        <p id="error-message" style="color:#ffffff; font-size:18px; line-height:1.5;"></p>
+        <button onclick="closeErrorPopup()" class="popup-ok-btn">OK</button>
+    </div>
+</div>
+
 <!-- Stripe Public Key -->
 <script>
     window.STRIPE_PUBLIC_KEY = "pk_test_51PMDwoF9QAVBUyaUqwc7ekbAhyZdI9oA3ubZT8b7TtWGrykoPLvsql4mexEwEoS5pggyssqN6jpj2w5VQMHOSftf00q97Rbt1f";
@@ -250,15 +261,5 @@
 <script src="https://www.paypal.com/sdk/js?client-id=AbHxiQOr022CZ5tf7LtOUlpW-NZxUMfCxankCaZnFJNcN6msJ_eNT3HAptmJhcaQDNltCahOOzi4CoPX&currency=USD&intent=capture"></script>
 <!-- JS -->
 <script src="checkout.js"></script>
-
-<!-- ERROR POPUP GLOBAL (même design que tes popups account) -->
-<div id="error-popup" class="popup-overlay">
-    <div class="popup">
-        <button class="popup-close" onclick="closeErrorPopup()">×</button>
-        <h3 id="error-title" style="color:#f0b90b;">Oops!</h3>
-        <p id="error-message" style="color:#ffffff; font-size:18px; line-height:1.5; margin:25px 0 15px;"></p>
-        <button onclick="closeErrorPopup()" class="popup-ok-btn">OK</button>
-    </div>
-</div>
 </body>
 </html>
