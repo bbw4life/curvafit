@@ -61,7 +61,6 @@
 }
 
 
-/* ===== FIX BADGE COULEUR BLANCHE (10 pts par commande) ===== */
 .membership-badge span,
 .membership-badge .points {
     color: #ffffff !important;
@@ -72,10 +71,6 @@
     color: #ffffff !important;
 }
 
-/* Option de secours si jamais ça ne suffit pas */
-.membership-badge * {
-    color: #ffffff !important;
-}
 
 .membership-stats-grid {
     display: flex;
