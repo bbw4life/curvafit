@@ -1,44 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
 
+  // ====================== GET PRODUCT URL (disponible immédiatement) ======================
+
+window.getProductUrl = function(id) {
+    if (!products || !Array.isArray(products) || products.length === 0) {
+        return 'shop.html';
+    }
+    const productIndex = products.findIndex(p => p.id === id);
+    if (productIndex === -1) return 'shop.html';
+
+    const currentPath = window.location.pathname;
+    const isInsideProductsFolder = currentPath.includes('/products/') ||
+                                   /product\d+\.html$/.test(currentPath);
+    return isInsideProductsFolder
+        ? `product${productIndex + 1}.html`
+        : `products/product${productIndex + 1}.html`;
+};
   // ====================== FONCTION POPUP (pour remplacer TOUS les alert du navigateur) ======================
     function showErrorPopup(message) {
         const popup = document.getElementById('error-popup');
         const popupText = document.getElementById('popup-message');
         const closeBtn = document.getElementById('popup-close');
-
         if (!popup || !popupText || !closeBtn) {
             console.error("Popup HTML manquant !");
             return;
         }
-
         popupText.textContent = message;
         popup.classList.add('show');
-
         closeBtn.onclick = () => popup.classList.remove('show');
-
         setTimeout(() => {
             if (popup.classList.contains('show')) popup.classList.remove('show');
         }, 10000);
     }
-
-  function getProductUrl(id) {
-    if (!products || !Array.isArray(products) || products.length === 0) {
-        return 'shop.html';
-    }
-
-    const productIndex = products.findIndex(p => p.id === id);
-    if (productIndex === -1) return 'shop.html';
-
-    // === NOUVEAUTÉ : détection automatique du dossier ===
-    const currentPath = window.location.pathname;
-    const isInsideProductsFolder = currentPath.includes('/products/') || 
-      /product\d+\.html$/.test(currentPath);
-
-    return isInsideProductsFolder 
-        ? `product${productIndex + 1}.html`
-        : `products/product${productIndex + 1}.html`;
-}
   function populateMainProductMedia(media) {
     const thumbsContainer = document.getElementById('product-thumbnails');
     const mainSlider = document.getElementById('main-image-slider');
@@ -143,6 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (priceCell) priceCell.textContent = `$${product.price.toFixed(2)}`;
           }
         });
+        products = data;
+window.getProductUrl = window.getProductUrl;
       }
       document.querySelectorAll('.product-card').forEach(card => {
         const id = card.dataset.id;
@@ -1309,18 +1305,15 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
             const wishlistItem = document.createElement('div');
             wishlistItem.classList.add('wishlist-item');
             wishlistItem.dataset.id = id;
-
-            const comparePriceHTML = product.compare_price && product.compare_price > product.price 
-                ? `<p class="compare-price">$${parseFloat(product.compare_price).toFixed(2)}</p>` 
+            const comparePriceHTML = product.compare_price && product.compare_price > product.price
+                ? `<p class="compare-price">$${parseFloat(product.compare_price).toFixed(2)}</p>`
                 : '';
-
             wishlistItem.innerHTML = `
                 <img src="${product.image}" alt="${product.title}" class="wishlist-img">
                 <h4 class="wishlist-title">${product.title}</h4>
                 <p>$${parseFloat(product.price).toFixed(2)}</p>
                 ${comparePriceHTML}
                 <button class="remove-wishlist">Remove</button>`;
-
             // ====================== NOUVEAU : CLIC IMAGE + TITRE ======================
             const img = wishlistItem.querySelector('.wishlist-img');
             const titleEl = wishlistItem.querySelector('.wishlist-title');
@@ -1338,7 +1331,6 @@ ${item.color ? `<p>Color: ${item.color}</p>` : ''}
                 });
             }
             // =====================================================================
-
             wishlistItemsContainer.appendChild(wishlistItem);
         }
     });
@@ -1714,10 +1706,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
             });
             const data = await res.json();
-            const memberSinceEl = document.getElementById('member-since');
-            if (memberSinceEl) {
-              memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
-            }
+            // === NOUVEAUTÉ 1 : Member since depuis la feuille ===
+           document.getElementById('member-since').textContent = data.memberSince || 'Unknown date';
+           // === NOUVEAUTÉ 2 : Points = 10 pts par commande ===
+            const points = (data.orders || 0) * 10;
+            document.getElementById('points-display').textContent = `${points} pts`;
             if (data.success) {
                 showToast("Account created successfully!");
                 goToLogin.click();
@@ -1802,7 +1795,6 @@ document.addEventListener('DOMContentLoaded', () => {
    async function loadAccountStats() {
     const email = localStorage.getItem('userEmail');
     if (!email) return;
-
     try {
         const res = await fetch('/.netlify/functions/save-account', {
             method: 'POST',
@@ -1810,21 +1802,17 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ action: 'get-stats', email })
         });
         const data = await res.json();
-
         const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
         if (statValues.length >= 2) {
             statValues[0].textContent = data.orders || 0;
             statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
         }
         document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
-
         const historyContainer = document.querySelector('.order-history');
         if (!historyContainer) return;
-
         if (data.history && Array.isArray(data.history) && data.history.length > 0) {
             let html = `<h2>Order History</h2>`;
             const sorted = [...data.history].reverse();
-
             sorted.forEach(order => {
                 html += `
                     <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
@@ -1837,10 +1825,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${order.items.map(item => `
                                 <div class="order-item-clickable" data-id="${item.id || ''}"
                                      style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
-                                    ${item.image_variant ? 
-                                        `<img src="${item.image_variant}" alt="${item.title}" 
+                                    ${item.image_variant ?
+                                        `<img src="${item.image_variant}" alt="${item.title}"
                                               class="order-item-image"
-                                              style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">` 
+                                              style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">`
                                         : ''}
                                     <div>
                                         <strong class="order-item-title" style="color:#007bff;cursor:pointer;">
@@ -1855,60 +1843,44 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             });
-
             historyContainer.innerHTML = html;
-
-            // ====================== CLICS IMAGE + TITRE (fix timing) ======================
-const attachHistoryClicks = () => {
-  const historyContainer = document.querySelector('.order-history');
-  if (!historyContainer) return;
-
-  historyContainer.querySelectorAll('.order-item-image').forEach(img => {
+            // ====================== CLICS IMAGE + TITRE (maintenant garanti) ======================
+historyContainer.querySelectorAll('.order-item-image').forEach(img => {
     img.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const div = img.closest('.order-item-clickable');
-      if (div && div.dataset.id) {
-        if (typeof window.getProductUrl === 'function') {
-          window.location.href = window.getProductUrl(div.dataset.id);
-        } else {
-          // fallback si pas encore chargé
-          window.location.href = 'shop.html';
+        e.stopPropagation();
+        const div = img.closest('.order-item-clickable');
+        if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
+            window.location.href = window.getProductUrl(div.dataset.id);
         }
-      }
     });
-  });
+});
 
-  historyContainer.querySelectorAll('.order-item-title').forEach(title => {
+historyContainer.querySelectorAll('.order-item-title').forEach(title => {
     title.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const div = title.closest('.order-item-clickable');
-      if (div && div.dataset.id) {
-        if (typeof window.getProductUrl === 'function') {
-          window.location.href = window.getProductUrl(div.dataset.id);
-        } else {
-          window.location.href = 'shop.html';
+        e.stopPropagation();
+        const div = title.closest('.order-item-clickable');
+        if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
+            window.location.href = window.getProductUrl(div.dataset.id);
         }
-      }
     });
-  });
+});
 
-  historyContainer.addEventListener('click', function(e) {
+historyContainer.addEventListener('click', function(e) {
     const clickable = e.target.closest('.order-item-clickable');
-    if (clickable) {
-      const id = clickable.dataset.id;
-      if (id) {
-        if (typeof window.getProductUrl === 'function') {
-          window.location.href = window.getProductUrl(id);
-        } else {
-          window.location.href = 'shop.html';
-        }
-      }
+    if (clickable && clickable.dataset.id && typeof window.getProductUrl === 'function') {
+        window.location.href = window.getProductUrl(clickable.dataset.id);
     }
-  });
-};
-
-attachHistoryClicks();
-setTimeout(attachHistoryClicks, 1200);
+});
+            // Garde aussi le clic sur toute la ligne (pour sécurité)
+            historyContainer.addEventListener('click', function(e) {
+                const clickable = e.target.closest('.order-item-clickable');
+                if (clickable) {
+                    const id = clickable.dataset.id;
+                    if (id && typeof window.getProductUrl === 'function') {
+                        window.location.href = window.getProductUrl(id);
+                    }
+                }
+            });
         } else {
             historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
         }
@@ -1931,8 +1903,6 @@ setTimeout(attachHistoryClicks, 1200);
                 body: JSON.stringify({ action: 'update-address', email, line1, line2, city, state, zip })
             });
             const data = await res.json();
-            const pointsEl = document.getElementById('user-points');
-             if (pointsEl) pointsEl.textContent = `${data.points || 0} pts`;
             if (data.success) {
                 localStorage.setItem('userAddress', addressStr || 'No default address set');
                 document.getElementById('user-address').textContent = addressStr || 'No default address set';

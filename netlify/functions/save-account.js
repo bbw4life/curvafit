@@ -36,7 +36,7 @@ exports.handler = async (event) => {
       const passNormalized = normalize(password);
       const memberSince = formatDate();
       const values = [[normalize(lastName), normalize(firstName), normalize(email), normalize(phone), passNormalized, newsletter,
-                       0, 0, 0, "", "", "", "", "", 0, memberSince, "[]", 0]];
+                       0, 0, 0, "", "", "", "", "", 0, memberSince, "[]"]];
       await sheets.spreadsheets.values.append({
         spreadsheetId,
         range: "Feuille 1!A:Z",
@@ -88,7 +88,6 @@ exports.handler = async (event) => {
     if (action === 'record-order') {
       if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
       const currentRow = rows[rowIndex] || [];
-      let currentPoints = parseInt(currentRow[17] || 0) + 10;
       const newOrders = parseInt(currentRow[6] || 0) + 1;
       const newSpent = parseFloat(currentRow[7] || 0) + parseFloat(totalAmount);
       let history = [];
@@ -106,8 +105,7 @@ exports.handler = async (event) => {
           data: [
             { range: `Feuille 1!G${rowNum}`, values: [[newOrders]] },
             { range: `Feuille 1!H${rowNum}`, values: [[newSpent]] },
-            { range: `Feuille 1!Q${rowNum}`, values: [[JSON.stringify(history)]] },
-            { range: `Feuille 1!R${rowNum}`, values: [[currentPoints]] }
+            { range: `Feuille 1!Q${rowNum}`, values: [[JSON.stringify(history)]] }
           ]
         }
       });
@@ -126,9 +124,8 @@ exports.handler = async (event) => {
           orders: parseInt(currentRow[6] || 0),
           totalSpent: parseFloat(currentRow[7] || 0),
           quantityInCart: parseInt(currentRow[14] || 0),
-          history: history,
-          memberSince: currentRow[15] || '',
-          points: parseInt(currentRow[17] || 0)
+          memberSince: currentRow[15] || 'January 2026',
+          history: history
         })
       };
     }
