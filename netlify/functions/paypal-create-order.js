@@ -33,7 +33,6 @@ exports.handler = async (event) => {
         unit_amount: { currency_code: "USD", value: price.toFixed(2) },
         quantity: qty.toString(),
         sku: item.cj_variant_id || '',
-        // === CORRECTION : on encode couleur + image dans description ===
         description: `${item.color || 'N/A'}|${item.image || ''}`
       };
     });
@@ -84,7 +83,6 @@ exports.handler = async (event) => {
       payer.name = { given_name: shipping.firstName || '', surname: shipping.lastName || '' };
     }
     if (shipping.phone && shipping.countryCode) {
-      // (code phone inchangé)
       try {
         const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.countryCode}?fields=idd`);
         const countryData = await countryRes.json();

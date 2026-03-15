@@ -29,7 +29,6 @@ exports.handler = async (event) => {
       };
     });
 
-    // Shipping et Taxes (maintenant toujours reçus correctement)
     lineItems.push({
       price_data: {
         currency: 'usd',

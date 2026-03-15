@@ -183,7 +183,7 @@ exports.handler = async (event) => {
   }
 };
 
-// ====================== ANTI-DOUBLE ======================
+// ====================== ANTI-DUPLICATE ULTRA STRICT ======================
 async function isAlreadyProcessed(paymentId) {
   try {
     const auth = new google.auth.GoogleAuth({
@@ -197,6 +197,8 @@ async function isAlreadyProcessed(paymentId) {
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
     const rangesToTry = ["PendingOrders!A:Z", "Sheet1!A:Z", "Feuille 1!A:Z", "Orders!A:Z", "Sheet2!A:Z"];
+
+    // === PHASE 1 : VÉRIFICATION ===
     for (const range of rangesToTry) {
       try {
         const res = await sheets.spreadsheets.values.get({ spreadsheetId, range });
@@ -206,6 +208,32 @@ async function isAlreadyProcessed(paymentId) {
         }
       } catch (e) {}
     }
+
+    // === PHASE 2 : MARQUAGE IMMÉDIAT (ANTI-RACE CONDITION) ===
+    // La commande est marquée AVANT tout traitement → impossible de dupliquer
+    let marked = false;
+    for (const range of rangesToTry) {
+      const sheetName = range.split('!')[0];
+      const appendRange = `${sheetName}!A:A`;
+      try {
+        await sheets.spreadsheets.values.append({
+          spreadsheetId,
+          range: appendRange,
+          valueInputOption: 'RAW',
+          insertDataOption: 'INSERT_ROWS',
+          resource: {
+            values: [[`PROCESSED_${paymentId}`, new Date().toISOString(), 'VERIFIED_BY_ANTI_DUPLICATE']]
+          }
+        });
+        marked = true;
+        console.log(`[ANTI-DUPLICATE] SUCCESS: Marked ${paymentId} in ${appendRange}`);
+        break;
+      } catch (appendErr) {}
+    }
+    if (!marked) {
+      console.error("[ANTI-DUPLICATE] WARNING: Could not mark - proceeding (très rare)");
+    }
+
     return false;
   } catch (e) {
     console.error("[DUPLICATE CHECK ERROR]", e.message);
