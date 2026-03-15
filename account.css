@@ -29,12 +29,14 @@
     font-size: 14px;
     color: #6c757d;
 }
-
+#membership-badge,
+#membership-badge span,
 .membership-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #e21150;
+    color: #ffffff !important;
+    background: #000000;
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 15px;
@@ -48,10 +50,12 @@
     transform: scale(1.05);
 }
 
+#membership-badge svg,
 .membership-badge svg {
     width: 14px;
     height: 14px;
     fill: currentColor;
+    fill: #ec0c0c !important;
 }
 
 .membership-badge .points {
@@ -60,16 +64,10 @@
     opacity: 0.9;
 }
 
-
-#membership-badge,
-#membership-badge span,
 #membership-badge .points {
-    color: #ffffff !important;
+    color: #ec0a8e !important;
 }
 
-#membership-badge svg {
-    fill: #ffffff !important;
-}
 
 
 .membership-stats-grid {
