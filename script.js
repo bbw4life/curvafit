@@ -1692,19 +1692,36 @@ document.addEventListener('DOMContentLoaded', () => {
         signupForm.style.display = 'none';
         loginForm.style.display = 'block';
     });
-    // ====================== BOUTON REGISTER (sécurisé) ======================
-const registerBtn = document.querySelector('.paul-btn-register');
-if (registerBtn) {
-  registerBtn.addEventListener('click', async () => {
+
+ document.querySelectorAll('.password-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function () {
+      const targetId = this.getAttribute('data-target');
+      const input = document.getElementById(targetId);
+      if (!input) return;
+      const icon = this.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fi-sr-eye');
+        icon.classList.add('fi-sr-eye-crossed');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fi-sr-eye-crossed');
+        icon.classList.add('fi-sr-eye');
+      }
+    });
+  });
+   // ====================== BOUTON REGISTER (nouveau texte) ======================
+  document.querySelector('.paul-btn-register').addEventListener('click', async () => {
     const lastName = signupForm.querySelector('input[placeholder="Last Name"]').value.trim();
     const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
     const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
     const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
-    const password = signupForm.querySelector('input[placeholder*="Password"], input[type="password"], #signup-password').value.trim();
+   const password = signupForm.querySelector('input[placeholder*="Password"], input[type="password"], #signup-password').value.trim();
     const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
 
     if (!password) return showToast("Password is required");
 
+    const registerBtn = document.querySelector('.paul-btn-register');
     const originalText = registerBtn.textContent;
     registerBtn.textContent = "Creating account...";
     registerBtn.disabled = true;
@@ -1732,16 +1749,13 @@ if (registerBtn) {
       showToast("Network error");
     }
   });
-}
-
-// ====================== BOUTON LOGIN (sécurisé) ======================
-const loginBtn = document.querySelector('.paul-btn-login');
-if (loginBtn) {
-  loginBtn.addEventListener('click', async () => {
+   // ====================== BOUTON LOGIN (corrigé + texte demandé) ======================
+document.querySelector('.paul-btn-login').addEventListener('click', async () => {
     const email = loginForm.querySelector('input[type="email"]').value.trim();
-    const passwordInput = loginForm.querySelector('input[placeholder*="Password"], input[type="password"], #login-password');
+const passwordInput = loginForm.querySelector('input[placeholder*="Password"], input[type="password"], #login-password');
     const password = passwordInput ? passwordInput.value.trim() : '';
 
+    const loginBtn = document.querySelector('.paul-btn-login');
     const originalText = loginBtn.textContent;
 
     if (!email || !password) {
@@ -1761,8 +1775,9 @@ if (loginBtn) {
         const data = await res.json();
 
         if (data.success) {
-            loginBtn.textContent = "Your account Loading...";
+            loginBtn.textContent = "Your account Loading..."; 
 
+            // === CODE DE SUCCÈS (inchangé) ===
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('userEmail', email);
             localStorage.setItem('userFirstName', data.user.firstName);
@@ -1795,8 +1810,7 @@ if (loginBtn) {
         loginBtn.disabled = false;
         showToast("Network error");
     }
-  });
-}
+});
     if (isAccountPage) {
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
         if (!isLoggedIn) {
@@ -1831,85 +1845,91 @@ if (loginBtn) {
         localStorage.setItem('autoOpenCart', 'true');
         window.location.href = 'shop.html';
     };
-    async function loadAccountStats() {
+       async function loadAccountStats() {
     const email = localStorage.getItem('userEmail');
-    if (!email) {
-        console.error("❌ Aucun email dans localStorage");
-        return;
-    }
-
-    console.log("🔄 Chargement stats pour :", email);
-
+    if (!email) return;
     try {
         const res = await fetch('/.netlify/functions/save-account', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'get-stats', email })
         });
-
-        console.log("📡 Réponse Netlify :", res.status);
-
-        if (!res.ok) throw new Error(`Netlify erreur ${res.status}`);
-
         const data = await res.json();
-        console.log("✅ DONNÉES DU SHEET :", data);
-
-        // === REMPLISSAGE ===
-        document.getElementById('member-since').textContent = `Member since ${data.memberSince || 'January 2026'}`;
-
+        // Member since + points
+        const memberSinceEl = document.getElementById('member-since');
+        if (memberSinceEl) memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
         const points = data.points || 0;
         let levelText = 'Basic Member';
         if (points >= 100 && points < 200) levelText = 'Member pro';
         else if (points >= 200) levelText = 'Member super pro';
-
-        document.getElementById('membership-level').textContent = levelText;
-        document.getElementById('membership-points').textContent = `${points} pts`;
-
+        const levelEl = document.getElementById('membership-level');
+        const pointsEl = document.getElementById('membership-points');
+        if (levelEl) levelEl.textContent = levelText;
+        if (pointsEl) pointsEl.textContent = `${points} pts`;
+        // Stats normales
         const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
         if (statValues.length >= 2) {
             statValues[0].textContent = data.orders || 0;
             statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
         }
-
         document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
-
-        // Order History
         const historyContainer = document.querySelector('.order-history');
-        if (historyContainer) {
-            if (data.history && data.history.length > 0) {
-                let html = `<h2>Order History</h2>`;
-                [...data.history].reverse().forEach(order => {
-                    html += `
-                        <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
-                            <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-                                <strong>Date : ${order.date}</strong>
-                                <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
-                            </div>
-                            <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
-                            <div class="order-items">
-                                ${order.items.map(item => `
-                                    <div class="order-item-clickable" data-id="${item.id || ''}" style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
-                                        ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image" style="width:50px;height:50px;object-fit:cover;margin-right:10px;">` : ''}
-                                        <div>
-                                            <strong class="order-item-title">${item.title}</strong><br>
-                                            Couleur : ${item.variant_color || 'N/A'}<br>
-                                            Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                });
-                historyContainer.innerHTML = html;
-            } else {
-                historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
-            }
+        if (!historyContainer) {
+            console.warn("⚠️ .order-history non trouvé dans le DOM");
+            return;
         }
-
+        if (data.history && Array.isArray(data.history) && data.history.length > 0) {
+            let html = `<h2>Order History</h2>`;
+            const sorted = [...data.history].reverse();
+            sorted.forEach(order => {
+                html += `
+                    <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+                            <strong>Date : ${order.date}</strong>
+                            <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
+                        </div>
+                        <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
+                        <div class="order-items">
+                            ${order.items.map(item => `
+                                <div class="order-item-clickable" data-id="${item.id || ''}"
+                                     style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
+                                    ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image" style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">` : ''}
+                                    <div>
+                                        <strong class="order-item-title" style="color:#007bff;cursor:pointer;">${item.title}</strong><br>
+                                        Couleur variante : ${item.variant_color || 'N/A'}<br>
+                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            historyContainer.innerHTML = html;
+            // ====================== DELEGATION SUR DOCUMENT (méthode infaillible) ======================
+            setTimeout(() => {
+                console.log("✅ Delegation Order History activée sur document");
+                document.addEventListener('click', function(e) {
+                    const clickable = e.target.closest('.order-item-clickable');
+                    if (!clickable) return;
+                    const id = clickable.dataset.id;
+                    if (!id) return;
+                    e.stopImmediatePropagation();
+                    const url = window.getProductUrl(id);
+                    console.log(`🖱️ CLIC DÉTECTÉ → ID=${id} | URL=${url}`);
+                    if (url === 'shop.html') {
+                        console.error(`❌ ID=${id} NON TROUVÉ dans products.data.json`);
+                        showErrorPopup(`Produit ID=${id} introuvable`);
+                        return;
+                    }
+                    window.location.href = url;
+                });
+            }, 300);
+        } else {
+            historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
+        }
     } catch (e) {
-        console.error("🚨 ERREUR PROFIL :", e.message);
-        showToast("Impossible de charger le profil - regarde la console F12");
+        console.error("Stats load error", e);
     }
 }
     window.saveAddress = async () => {
@@ -1991,4 +2011,3 @@ window.addEventListener('load', () => {
         }, 150);
     }
 });
-
