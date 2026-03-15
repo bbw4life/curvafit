@@ -36,7 +36,7 @@
     align-items: center;
     gap: 6px;
     color: #ffffff !important;
-    background: #000000;
+    background: #1a1818;
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 15px;
@@ -52,10 +52,10 @@
 
 #membership-badge svg,
 .membership-badge svg {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     fill: currentColor;
-    fill: #ec0c0c !important;
+    fill: #d4bdbd !important;
 }
 
 .membership-badge .points {
@@ -65,7 +65,7 @@
 }
 
 #membership-badge .points {
-    color: #ec0a8e !important;
+    color: #ec0a73 !important;
 }
 
 
