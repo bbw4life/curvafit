@@ -1716,7 +1716,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const firstName = signupForm.querySelector('input[placeholder="First Name"]').value.trim();
     const email = signupForm.querySelector('input[placeholder="Email"]').value.trim();
     const phone = signupForm.querySelector('input[placeholder="Phone (optional)"]').value.trim();
-    const password = signupForm.querySelector('input[type="password"], input[type="text"]').value.trim(); // ← FIX
+   const password = signupForm.querySelector('input[placeholder*="Password"], input[type="password"], #signup-password').value.trim();
     const newsletter = signupForm.querySelector('input[type="checkbox"]').checked ? "Yes" : "No";
 
     if (!password) return showToast("Password is required");
@@ -1752,7 +1752,7 @@ document.addEventListener('DOMContentLoaded', () => {
    // ====================== BOUTON LOGIN (corrigé + texte demandé) ======================
 document.querySelector('.paul-btn-login').addEventListener('click', async () => {
     const email = loginForm.querySelector('input[type="email"]').value.trim();
-    const passwordInput = loginForm.querySelector('input[placeholder*="Password"], input[type="password"], input[type="text"]');
+const passwordInput = loginForm.querySelector('input[placeholder*="Password"], input[type="password"], #login-password');
     const password = passwordInput ? passwordInput.value.trim() : '';
 
     const loginBtn = document.querySelector('.paul-btn-login');
