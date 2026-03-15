@@ -801,15 +801,17 @@
         <button class="add-all-to-cart">Add All to Cart</button>
     </div>
 </div>
-<!-- POPUP ERREUR -->
-<div id="error-popup" class="error-popup hidden">
-    <div class="popup-content">
-        <p id="popup-message" class="popup-text"></p>
-        <button id="popup-close" class="popup-btn">OK</button>
-    </div>
-</div>
 
-<!-- POPUP AUTH -->
+
+<!-- PAUL INDICATOR -->
+    <div class="paul-indicator-wrapper">
+        <a href="#" class="paul-indicator" id="paulTrigger">
+            <i class="fi fi-rr-user"></i>
+            <span class="paul-tooltip">Earn 20% if you login/signup</span>
+        </a>
+    </div>
+
+    <!-- POPUP AUTH -->
 <div class="paul-popup-overlay" id="paulPopup">
     <div class="paul-popup">
         <span class="paul-close">×</span>
@@ -822,8 +824,8 @@
                 <h3>Login</h3>
                 <input type="email" placeholder="Email" required>
                 
-                <!-- PASSWORD AVEC ICON FI -->
-                <div class="password-input-wrapper">
+                <!-- PASSWORD LOGIN -->
+                <div class="password-input-wrapper" style="position:relative !important;">
                     <input type="password" id="login-password" placeholder="Password" required>
                     <span class="password-toggle" data-target="login-password">
                         <i class="fi fi-sr-eye"></i>
@@ -843,8 +845,8 @@
                 <input type="email" placeholder="Email" required>
                 <input type="tel" placeholder="Phone (optional)">
                 
-                <!-- PASSWORD AVEC ICON FI -->
-                <div class="password-input-wrapper">
+                <!-- PASSWORD SIGNUP -->
+                <div class="password-input-wrapper" style="position:relative !important;">
                     <input type="password" id="signup-password" placeholder="Password" required>
                     <span class="password-toggle" data-target="signup-password">
                         <i class="fi fi-sr-eye"></i>
@@ -859,6 +861,14 @@
     </div>
 </div>
 
+
+<!-- POPUP ERREUR -->
+<div id="error-popup" class="error-popup hidden">
+    <div class="popup-content">
+        <p id="popup-message" class="popup-text"></p>
+        <button id="popup-close" class="popup-btn">OK</button>
+    </div>
+</div>
 
 </body>
 </html>
