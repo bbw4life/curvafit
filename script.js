@@ -137,6 +137,39 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       }
+      // ====================== CLIC SUR PRODUITS DANS ORDER HISTORY (déplacé ici) ======================
+setTimeout(() => {
+    // On attend que tout soit chargé (sécurité)
+    document.addEventListener('click', function(e) {
+        const clickable = e.target.closest('.order-item-clickable');
+        if (!clickable) return;
+
+        const id = clickable.dataset.id;
+        if (!id) return;
+
+        // Protection maximale (comme dans wishlist et cart)
+        if (typeof window.getProductUrl !== 'function') {
+            console.warn("getProductUrl pas encore prêt → retry");
+            setTimeout(() => clickable.click(), 600);
+            return;
+        }
+
+        const url = window.getProductUrl(id);
+        console.log(`🖱️ CLIC ORDER HISTORY → ID=${id} | URL=${url}`);
+
+        if (url === 'shop.html' || !url) {
+            if (typeof showErrorPopup === 'function') {
+                showErrorPopup(`Produit ID=${id} introuvable`);
+            } else {
+                alert(`Produit ID=${id} introuvable`);
+            }
+            return;
+        }
+
+        // Redirection propre
+        window.location.href = url;
+    });
+}, 1200); 
       document.querySelectorAll('.product-card').forEach(card => {
         const id = card.dataset.id;
         const product = products.find(p => p.id === id);
@@ -1849,37 +1882,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             });
             historyContainer.innerHTML = html;
-            // ====================== DELEGATION CLIC ORDER HISTORY (version corrigée) ======================
-        setTimeout(() => {
-            document.addEventListener('click', function(e) {
-                const clickable = e.target.closest('.order-item-clickable');
-                if (!clickable) return;
-
-                const id = clickable.dataset.id;
-                if (!id) return;
-
-                // ←←← PROTECTION OBLIGATOIRE (comme dans wishlist/cart)
-                if (typeof window.getProductUrl !== 'function') {
-                    console.warn("getProductUrl pas encore chargé → retry dans 500ms");
-                    setTimeout(() => clickable.click(), 500); // on retente
-                    return;
-                }
-
-                const url = window.getProductUrl(id);
-                console.log(`🖱️ CLIC ORDER HISTORY → ID=${id} | URL=${url}`);
-
-                if (url === 'shop.html' || !url) {
-                    if (typeof showErrorPopup === 'function') {
-                        showErrorPopup(`Produit ID=${id} introuvable`);
-                    } else {
-                        alert(`Produit ID=${id} introuvable`); // fallback
-                    }
-                    return;
-                }
-
-                window.location.href = url;
-            });
-        }, 800);
         } else {
             historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
         }
