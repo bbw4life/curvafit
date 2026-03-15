@@ -1714,6 +1714,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ lastName, firstName, email, phone, password, newsletter })
             });
             const data = await res.json();
+            const memberSinceEl = document.getElementById('member-since');
+            if (memberSinceEl) {
+              memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
+            }
             if (data.success) {
                 showToast("Account created successfully!");
                 goToLogin.click();
@@ -1854,37 +1858,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
             historyContainer.innerHTML = html;
 
-            // ====================== CLICS IMAGE + TITRE (fonctionne partout maintenant) ======================
-            historyContainer.querySelectorAll('.order-item-image').forEach(img => {
-                img.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const div = img.closest('.order-item-clickable');
-                    if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
-                        window.location.href = window.getProductUrl(div.dataset.id);
-                    }
-                });
-            });
+            // ====================== CLICS IMAGE + TITRE (fix timing) ======================
+const attachHistoryClicks = () => {
+  const historyContainer = document.querySelector('.order-history');
+  if (!historyContainer) return;
 
-            historyContainer.querySelectorAll('.order-item-title').forEach(title => {
-                title.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const div = title.closest('.order-item-clickable');
-                    if (div && div.dataset.id && typeof window.getProductUrl === 'function') {
-                        window.location.href = window.getProductUrl(div.dataset.id);
-                    }
-                });
-            });
+  historyContainer.querySelectorAll('.order-item-image').forEach(img => {
+    img.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const div = img.closest('.order-item-clickable');
+      if (div && div.dataset.id) {
+        if (typeof window.getProductUrl === 'function') {
+          window.location.href = window.getProductUrl(div.dataset.id);
+        } else {
+          // fallback si pas encore chargé
+          window.location.href = 'shop.html';
+        }
+      }
+    });
+  });
 
-            // Garde aussi le clic sur toute la ligne (pour sécurité)
-            historyContainer.addEventListener('click', function(e) {
-                const clickable = e.target.closest('.order-item-clickable');
-                if (clickable) {
-                    const id = clickable.dataset.id;
-                    if (id && typeof window.getProductUrl === 'function') {
-                        window.location.href = window.getProductUrl(id);
-                    }
-                }
-            });
+  historyContainer.querySelectorAll('.order-item-title').forEach(title => {
+    title.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const div = title.closest('.order-item-clickable');
+      if (div && div.dataset.id) {
+        if (typeof window.getProductUrl === 'function') {
+          window.location.href = window.getProductUrl(div.dataset.id);
+        } else {
+          window.location.href = 'shop.html';
+        }
+      }
+    });
+  });
+
+  historyContainer.addEventListener('click', function(e) {
+    const clickable = e.target.closest('.order-item-clickable');
+    if (clickable) {
+      const id = clickable.dataset.id;
+      if (id) {
+        if (typeof window.getProductUrl === 'function') {
+          window.location.href = window.getProductUrl(id);
+        } else {
+          window.location.href = 'shop.html';
+        }
+      }
+    }
+  });
+};
+
+attachHistoryClicks();
+setTimeout(attachHistoryClicks, 1200);
         } else {
             historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
         }
@@ -1907,6 +1931,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ action: 'update-address', email, line1, line2, city, state, zip })
             });
             const data = await res.json();
+            const pointsEl = document.getElementById('user-points');
+             if (pointsEl) pointsEl.textContent = `${data.points || 0} pts`;
             if (data.success) {
                 localStorage.setItem('userAddress', addressStr || 'No default address set');
                 document.getElementById('user-address').textContent = addressStr || 'No default address set';
