@@ -59,28 +59,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// ====================== CONTACT FORM (nouveau) ======================
+// ====================== CONTACT FORM (CORRIGÉ) ======================
 document.addEventListener('DOMContentLoaded', () => {
     const contactForm = document.getElementById('contact-form');
-    if (!contactForm) return;   // ← sécurité : seulement sur contact.html
-
-    // ====================== POPUP ERREUR (nouveau) ======================
-function showErrorPopup(msg) {
-    // Option 1 : utiliser le toast que tu as déjà (recommandé)
-    const toast = document.getElementById('toast');
-    if (toast) {
-        toast.textContent = msg;
-        toast.style.background = '#e74c3c';
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 6000);
+    if (!contactForm) {
+        console.warn("⚠️ Contact form non trouvé (id='contact-form'). Vérifie que tu es bien sur contact.html");
         return;
     }
 
-  
-}
+    console.log("✅ Contact form détecté – listener attaché");
 
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        console.log("🚀 Submit déclenché !");
 
         const formData = new FormData(contactForm);
         const data = {
@@ -91,7 +82,7 @@ function showErrorPopup(msg) {
             message: formData.get('message')
         };
 
-        const submitBtn = contactForm.querySelector('button');
+        const submitBtn = contactForm.querySelector('button[type="submit"]') || contactForm.querySelector('button');
         const originalText = submitBtn.textContent;
         submitBtn.textContent = "Sending...";
         submitBtn.disabled = true;
@@ -104,24 +95,24 @@ function showErrorPopup(msg) {
             });
 
             const result = await res.json();
+            console.log("Réponse serveur :", result);
 
             if (result.success) {
                 const popup = document.getElementById('contact-success-popup');
-                popup.classList.add('show');
-
-                // Auto-fermeture après 8 secondes
-                setTimeout(() => popup.classList.remove('show'), 8000);
-
-                // Bouton Close manuel
+                if (popup) {
+                    popup.classList.add('show');
+                    setTimeout(() => popup.classList.remove('show'), 8000);
+                }
                 document.getElementById('contact-popup-close').onclick = () => {
                     popup.classList.remove('show');
                 };
-
                 contactForm.reset();
+                console.log("✅ Message enregistré avec succès !");
             } else {
                 showErrorPopup("Error: " + (result.error || "Unknown"));
             }
         } catch (err) {
+            console.error("❌ Erreur fetch :", err);
             showErrorPopup("Network error. Please try again.");
         } finally {
             submitBtn.textContent = originalText;

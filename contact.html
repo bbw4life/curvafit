@@ -91,31 +91,31 @@
                 </div>
             </div>
         </section>
-        <section id="contact-form" class="contact-form-section">
-            <div class="container">
-                <h2>Send Us a Message</h2>
-                <form id="contact-form">
-                    <input type="text" name="firstName" placeholder="First Name" required>
-                    <input type="text" name="lastName" placeholder="Last Name" required>
-                    <input type="email" name="email" placeholder="Email" required>
-                    <select name="subject" required>
-                        <option value="">Select Subject</option>
-                        <option value="general">General Question</option>
-                        <option value="program">Program Inquiry</option>
-                        <option value="technical">Technical Issue</option>
-                        <option value="partnership">Partnership</option>
-                        <option value="other">Other</option>
-                    </select>
-                    <textarea name="message" placeholder="Your Message" required></textarea>
-                    <label>
-                        <input type="checkbox" required>
-                        I agree to the privacy policy.
-                    </label>
-                    <button type="submit" class="button-3d">Send Message</button>
-                </form>
-                <p class="reassurance">We respect your privacy and never share your information.</p>
-            </div>
-        </section>
+       <section id="contact-section" class="contact-form-section">   <!-- ← ID CHANGÉ -->
+    <div class="container">
+        <h2>Send Us a Message</h2>
+        <form id="contact-form">   <!-- ← ID gardé ici (celui que le script cherche) -->
+            <input type="text" name="firstName" placeholder="First Name" required>
+            <input type="text" name="lastName" placeholder="Last Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <select name="subject" required>
+                <option value="">Select Subject</option>
+                <option value="general">General Question</option>
+                <option value="program">Program Inquiry</option>
+                <option value="technical">Technical Issue</option>
+                <option value="partnership">Partnership</option>
+                <option value="other">Other</option>
+            </select>
+            <textarea name="message" placeholder="Your Message" required></textarea>
+            <label>
+                <input type="checkbox" required>
+                I agree to the privacy policy.
+            </label>
+            <button type="submit" class="button-3d">Send Message</button>
+        </form>
+        <p class="reassurance">We respect your privacy and never share your information.</p>
+    </div>
+</section>
         <section id="faq" class="faq-section">
             <div class="container">
                 <h2>Frequently Asked Questions</h2>
@@ -299,6 +299,14 @@
         <h3>Message Sent Successfully!</h3>
         <p>Thank you! Our team will reply within 24-48 hours.</p>
         <button id="contact-popup-close">Close</button>
+    </div>
+</div>
+<!-- ERROR POPUP -->
+<div id="error-popup" class="error-popup" style="display: none;">
+    <div class="popup-content">
+        <h3>Oops! Something went wrong</h3>
+        <p id="error-message"></p>
+        <button onclick="this.parentElement.parentElement.style.display='none'">OK</button>
     </div>
 </div>
 </body>
