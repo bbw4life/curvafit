@@ -437,6 +437,7 @@ async function loadDynamicReviews() {
                 newReview.className = 'review-card dynamic-review';
                 const avatarLetter = review.fullName.charAt(0).toUpperCase();
                 const stars = '★'.repeat(review.rating);
+                  reviewsList.appendChild(newReview);
 
                 newReview.innerHTML = `
                     <div class="avatar">${avatarLetter}</div>
@@ -452,7 +453,7 @@ async function loadDynamicReviews() {
             });
         }
     } catch (e) {
-        console.error("Erreur chargement reviews:", e);
+        console.error("Error loading reviews:", e);
     }
 }
 
@@ -466,7 +467,7 @@ form.addEventListener('submit', async (e) => {
     const text = document.getElementById('review-text').value.trim();
 
     if (!name || !email || !rating || !title || !text) {
-        showErrorPopup("Veuillez remplir tous les champs");
+        showErrorPopup("Please fill in all fields");
         return;
     }
 
@@ -490,17 +491,17 @@ form.addEventListener('submit', async (e) => {
         const data = await res.json();
 
         if (data.success) {
-            showErrorPopup("Review envoyée avec succès !");
+            showErrorPopup("Review successfully submitted!");
             loadDynamicReviews();           // recharge immédiatement
             form.reset();
             reviewForm.style.display = 'none';
             writeButton.style.display = 'block';
         } else {
-            showErrorPopup("Erreur : " + (data.error || "Inconnue"));
+            showErrorPopup("Error: " + (data.error || "Unknown"));
         }
     } catch (err) {
-        console.error("❌ Erreur fetch review :", err);
-        showErrorPopup("Review bien enregistrée ! (rafraîchis la page si elle n'apparaît pas)");
+        console.error("❌ Fetch review error:", err);
+        showErrorPopup("Review successfully saved! (refresh the page if it doesn't appear)");
         setTimeout(loadDynamicReviews, 1000);   // force l'affichage
     }
 });

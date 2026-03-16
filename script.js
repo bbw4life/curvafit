@@ -1055,13 +1055,14 @@ document.addEventListener('DOMContentLoaded', () => {
      showErrorPopup('Video playback started');
     });
   }
-  const forms = document.querySelectorAll('form');
-  forms.forEach(form => {
+  // Gestion des formulaires (newsletter seulement)
+const forms = document.querySelectorAll('form:not(#review-form form)');
+forms.forEach(form => {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       showErrorPopup('Subscribed!');
     });
-  });
+});
   const ctx = document.getElementById('progress-curve');
   if (ctx) {
     new Chart(ctx, {
