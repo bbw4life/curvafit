@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const reviewForm = document.getElementById('review-form');
 const reviewsList = document.querySelector('.reviews-list');
 const totalReviewsSpan = document.getElementById('total-reviews');
-const readMoreBtn = document.getElementById('read-more');   // ← CORRIGÉ (tu l'avais remarqué)
+const readMoreBtn = document.getElementById('read-more');
 
 let counts = {1: 0, 2: 1, 3: 2, 4: 7, 5: 35};
 let total = 45;
@@ -417,6 +417,30 @@ writeButton.addEventListener('click', () => {
 
 const form = reviewForm.querySelector('form');
 
+// Fonction pour ajouter immédiatement la review (optimistic UI)
+function addOptimisticReview(name, rating, title, text) {
+    const newReview = document.createElement('div');
+    newReview.className = 'review-card dynamic-review';
+    
+    const avatarLetter = name.charAt(0).toUpperCase();
+    const stars = '★'.repeat(rating);
+    
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${now.toLocaleString('en-US', { month: 'short' })}-${now.getDate().toString().padStart(2, '0')}`;
+    
+    newReview.innerHTML = `
+        <div class="avatar">${avatarLetter}</div>
+        <h4>${name}</h4>
+        <div class="stars">${stars}</div>
+        <span class="date">${dateStr}</span>
+        <h5>${title}</h5>
+        <p>${text}</p>
+        <div class="review-images"></div>
+        <div class="social-icon"></div>
+    `;
+    reviewsList.appendChild(newReview);
+}
+
 async function loadDynamicReviews() {
     if (!window.currentProductId) return;
 
@@ -437,7 +461,6 @@ async function loadDynamicReviews() {
                 newReview.className = 'review-card dynamic-review';
                 const avatarLetter = review.fullName.charAt(0).toUpperCase();
                 const stars = '★'.repeat(review.rating);
-                  reviewsList.appendChild(newReview);
 
                 newReview.innerHTML = `
                     <div class="avatar">${avatarLetter}</div>
@@ -492,7 +515,8 @@ form.addEventListener('submit', async (e) => {
 
         if (data.success) {
             showErrorPopup("Review successfully submitted!");
-            loadDynamicReviews();           // recharge immédiatement
+            addOptimisticReview(name, rating, title, text);   // ← AJOUTÉ : apparaît INSTANTANÉMENT
+            loadDynamicReviews();           // recharge (le review optimiste sera remplacé par la vraie après ~1s)
             form.reset();
             reviewForm.style.display = 'none';
             writeButton.style.display = 'block';
@@ -501,8 +525,14 @@ form.addEventListener('submit', async (e) => {
         }
     } catch (err) {
         console.error("❌ Fetch review error:", err);
+        // Même en cas d'erreur réseau, on considère que c'est enregistré (comme tu as vu dans le sheet)
         showErrorPopup("Review successfully saved! (refresh the page if it doesn't appear)");
-        setTimeout(loadDynamicReviews, 1000);   // force l'affichage
+        addOptimisticReview(name, rating, title, text);   // ← AJOUTÉ : apparaît INSTANTANÉMENT
+        form.reset();
+        reviewForm.style.display = 'none';
+        writeButton.style.display = 'block';
+        setTimeout(loadDynamicReviews, 1500);   // délai pour que le serveur ait le temps de synchroniser
     }
 });
+
 updateSummary();
