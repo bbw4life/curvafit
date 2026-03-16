@@ -1872,11 +1872,13 @@ const passwordInput = loginForm.querySelector('input[placeholder*="Password"], i
         const pointsEl = document.getElementById('membership-points');
         if (levelEl) levelEl.textContent = levelText;
         if (pointsEl) pointsEl.textContent = `${points} pts`;
+        console.log(`✅ Stats chargées - Reviews Written = ${data.reviewsCount}`);
         // Stats normales
         const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
-        if (statValues.length >= 2) {
+        if (statValues.length >= 3) {
             statValues[0].textContent = data.orders || 0;
             statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
+            statValues[3].textContent = data.reviewsCount || 0;
         }
         document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
         const historyContainer = document.querySelector('.order-history');
