@@ -59,57 +59,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// ====================== CONTACT FORM (VERSION FIXÉE - CLIQUE SÛR) ======================
+// ====================== CONTACT FORM (nouveau) ======================
 document.addEventListener('DOMContentLoaded', () => {
     const contactForm = document.getElementById('contact-form');
-    if (!contactForm) {
-        console.warn("⚠️ Formulaire #contact-form non trouvé sur cette page");
-        return;
-    }
+    if (!contactForm) return;   // ← sécurité : seulement sur contact.html
 
-    const submitBtn = contactForm.querySelector('button[type="submit"]') || 
-                      contactForm.querySelector('button');
-
-    if (!submitBtn) {
-        console.error("❌ Bouton d'envoi non trouvé dans le formulaire !");
-        return;
-    }
-
-    // ✅ Fonction d'erreur (utilise ton toast déjà présent)
-    function showError(msg) {
-        const toast = document.getElementById('toast');
-        if (toast) {
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 6000);
-        } else {
-            alert(msg);
-        }
-    }
-
-    // ====================== CLIQUE DIRECT SUR LE BOUTON ======================
-    submitBtn.addEventListener('click', async (e) => {
-        e.preventDefault();   // empêche le rechargement de page
-
-        console.log("✅ Clique détecté sur le bouton !"); // ← tu verras ça dans la console
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
         const formData = new FormData(contactForm);
         const data = {
-            firstName: formData.get('firstName') || "",
-            lastName:  formData.get('lastName') || "",
-            email:     formData.get('email') || "",
-            subject:   formData.get('subject') || "",
-            message:   formData.get('message') || ""
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            email: formData.get('email'),
+            subject: formData.get('subject'),
+            message: formData.get('message')
         };
 
-        // Vérification rapide
-        if (!data.email || !data.message) {
-            showError("Email et message sont obligatoires");
-            return;
-        }
-
+        const submitBtn = contactForm.querySelector('button');
         const originalText = submitBtn.textContent;
-        submitBtn.textContent = "Envoi en cours...";
+        submitBtn.textContent = "Sending...";
         submitBtn.disabled = true;
 
         try {
@@ -123,27 +92,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (result.success) {
                 const popup = document.getElementById('contact-success-popup');
-                if (popup) {
-                    popup.classList.add('show');
-                    setTimeout(() => popup.classList.remove('show'), 8000);
-                }
+                popup.classList.add('show');
+
+                // Auto-fermeture après 8 secondes
+                setTimeout(() => popup.classList.remove('show'), 8000);
+
+                // Bouton Close manuel
+                document.getElementById('contact-popup-close').onclick = () => {
+                    popup.classList.remove('show');
+                };
+
                 contactForm.reset();
             } else {
-                showError("Erreur : " + (result.error || "Inconnue"));
+                showErrorPopup("Error: " + (result.error || "Unknown"));
             }
         } catch (err) {
-            console.error(err);
-            showError("Erreur réseau – réessaie dans 5 secondes");
+            showErrorPopup("Network error. Please try again.");
         } finally {
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
         }
     });
-
-    // Bonus : fermeture du popup
-    const closeBtn = document.getElementById('contact-popup-close');
-    const popup = document.getElementById('contact-success-popup');
-    if (closeBtn && popup) {
-        closeBtn.onclick = () => popup.classList.remove('show');
-    }
 });
