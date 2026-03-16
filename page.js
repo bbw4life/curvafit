@@ -59,45 +59,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// ====================== CONTACT FORM (CORRIGÉ) ======================
+// ====================== CONTACT FORM (VERSION FIXÉE - CLIQUE SÛR) ======================
 document.addEventListener('DOMContentLoaded', () => {
     const contactForm = document.getElementById('contact-form');
-    if (!contactForm) return;
-
-    // ✅ Fermeture du popup une seule fois (pas à chaque submit)
-    const successPopup = document.getElementById('contact-success-popup');
-    const closeBtn = document.getElementById('contact-popup-close');
-    if (closeBtn && successPopup) {
-        closeBtn.onclick = () => successPopup.classList.remove('show');
+    if (!contactForm) {
+        console.warn("⚠️ Formulaire #contact-form non trouvé sur cette page");
+        return;
     }
 
-    // ✅ Fonction d’erreur (utilise le toast déjà présent sur tes pages)
-    function showErrorPopup(msg) {
+    const submitBtn = contactForm.querySelector('button[type="submit"]') || 
+                      contactForm.querySelector('button');
+
+    if (!submitBtn) {
+        console.error("❌ Bouton d'envoi non trouvé dans le formulaire !");
+        return;
+    }
+
+    // ✅ Fonction d'erreur (utilise ton toast déjà présent)
+    function showError(msg) {
         const toast = document.getElementById('toast');
         if (toast) {
             toast.textContent = msg;
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 5000);
+            setTimeout(() => toast.classList.remove('show'), 6000);
         } else {
             alert(msg);
         }
     }
 
-    contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // ====================== CLIQUE DIRECT SUR LE BOUTON ======================
+    submitBtn.addEventListener('click', async (e) => {
+        e.preventDefault();   // empêche le rechargement de page
+
+        console.log("✅ Clique détecté sur le bouton !"); // ← tu verras ça dans la console
 
         const formData = new FormData(contactForm);
         const data = {
-            firstName: formData.get('firstName'),
-            lastName: formData.get('lastName'),
-            email: formData.get('email'),
-            subject: formData.get('subject'),
-            message: formData.get('message')
+            firstName: formData.get('firstName') || "",
+            lastName:  formData.get('lastName') || "",
+            email:     formData.get('email') || "",
+            subject:   formData.get('subject') || "",
+            message:   formData.get('message') || ""
         };
 
-        const submitBtn = contactForm.querySelector('button[type="submit"]') || contactForm.querySelector('button');
+        // Vérification rapide
+        if (!data.email || !data.message) {
+            showError("Email et message sont obligatoires");
+            return;
+        }
+
         const originalText = submitBtn.textContent;
-        submitBtn.textContent = "Sending...";
+        submitBtn.textContent = "Envoi en cours...";
         submitBtn.disabled = true;
 
         try {
@@ -110,20 +122,28 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await res.json();
 
             if (result.success) {
-                if (successPopup) {
-                    successPopup.classList.add('show');
-                    setTimeout(() => successPopup.classList.remove('show'), 8000);
+                const popup = document.getElementById('contact-success-popup');
+                if (popup) {
+                    popup.classList.add('show');
+                    setTimeout(() => popup.classList.remove('show'), 8000);
                 }
                 contactForm.reset();
             } else {
-                showErrorPopup("Erreur : " + (result.error || "Unknown error"));
+                showError("Erreur : " + (result.error || "Inconnue"));
             }
         } catch (err) {
             console.error(err);
-            showErrorPopup("Erreur réseau. Réessaie.");
+            showError("Erreur réseau – réessaie dans 5 secondes");
         } finally {
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
         }
     });
+
+    // Bonus : fermeture du popup
+    const closeBtn = document.getElementById('contact-popup-close');
+    const popup = document.getElementById('contact-success-popup');
+    if (closeBtn && popup) {
+        closeBtn.onclick = () => popup.classList.remove('show');
+    }
 });
