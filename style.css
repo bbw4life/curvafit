@@ -1256,8 +1256,10 @@ a {
     height: 50px;
 }
 
-.footer-newsletter button-3d {
+.footer-newsletter button,
+.button-3d {
     cursor: pointer !important;
+    transition: all 0.3s ease;
 }
 
 .footer-social {

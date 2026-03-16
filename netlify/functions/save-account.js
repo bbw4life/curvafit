@@ -119,18 +119,16 @@ exports.handler = async (event) => {
       };
     }
 
-    // ==================== NEWSLETTER SUBSCRIBE ====================
+  // ==================== NEWSLETTER SUBSCRIBE ====================
 if (action === 'newsletter-subscribe') {
     if (!email) throw new Error("Email required");
 
     const normalizedEmail = normalize(email);
-
-    // Vérifier si l'email existe déjà
     const rowIndex = rows.findIndex(row => normalize(row[2] || "") === normalizedEmail);
     const rowNum = rowIndex + 1;
 
     if (rowIndex !== -1) {
-        // Mise à jour newsletter = Yes
+        // Mise à jour seulement Newsletter = Yes (colonne F)
         await sheets.spreadsheets.values.update({
             spreadsheetId,
             range: `Feuille 1!F${rowNum}`,
@@ -138,17 +136,19 @@ if (action === 'newsletter-subscribe') {
             resource: { values: [["Yes"]] }
         });
     } else {
-        // Nouvel utilisateur minimal (newsletter only)
-        const values = [
-            "", "", normalizedEmail, "", "", "Yes",
-            0, 0, 0, "", "", "", "", "", 0, formatDate(), "[]"
+        // Nouvel abonné (email bien en colonne C, téléphone vide en D)
+        const rowData = [
+            "", "", normalizedEmail, "", "", "Yes",   // A B C D E F
+            0, 0, 0, "", "", "", "", "", 0,           // G à O
+            formatDate(), "[]"                        // P Q
         ];
+
         await sheets.spreadsheets.values.append({
             spreadsheetId,
             range: "Feuille 1!A:Z",
             valueInputOption: "RAW",
             insertDataOption: "INSERT_ROWS",
-            resource: { values: [values] }
+            resource: { values: [rowData] }   // ← IMPORTANT : tableau 2D
         });
     }
 
