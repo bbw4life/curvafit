@@ -523,9 +523,46 @@
     }
 }
 
-
 .logout-btn svg {
     width: 20px;
     height: 20px;
     margin-right: 8px;
+}
+
+
+.order-entry {
+    margin:15px 0;
+    padding:15px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    background:#f9f9f9;
+}
+
+.order-header {
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:10px;
+}
+
+.order-item-clickable {
+    display:flex;
+    align-items:center;
+    margin:8px 0;
+    padding:10px;
+    border-left:4px solid #f0b90b;
+    background:white;
+    cursor:pointer;
+}
+
+.order-item-image {
+    width:50px;
+    height:50px;
+    object-fit:cover;
+    margin-right:10px;
+    cursor:pointer;
+}
+
+.order-item-title {
+    color:#007bff;
+    cursor:pointer;
 }

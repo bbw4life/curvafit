@@ -1941,8 +1941,8 @@ const passwordInput = loginForm.querySelector('input[placeholder*="Password"], i
             const sorted = [...data.history].reverse();
             sorted.forEach(order => {
                 html += `
-                    <div class="order-entry" style="margin:15px 0;padding:15px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+                    <div class="order-entry">
+                        <div class="order-header">
                             <strong>Date : ${order.date}</strong>
                             <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
                         </div>
@@ -1950,11 +1950,10 @@ const passwordInput = loginForm.querySelector('input[placeholder*="Password"], i
                         <div class="order-items">
                             ${order.items.map(item => `
                       <div class="order-item-clickable" 
-                          onclick="handleOrderItemClick('${item.id || ''}')"
-                          style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
-                                    ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image" style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">` : ''}
+                          onclick="handleOrderItemClick('${item.id || ''}')">
+                                    ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image">` : ''}
                                     <div>
-                                        <strong class="order-item-title" style="color:#007bff;cursor:pointer;">${item.title}</strong><br>
+                                        <strong class="order-item-title">${item.title}</strong><br>
                                         Couleur variante : ${item.variant_color || 'N/A'}<br>
                                         Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}
                                     </div>
