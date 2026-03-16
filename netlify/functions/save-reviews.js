@@ -1,3 +1,4 @@
+// netlify/functions/save-review.js
 const { google } = require('googleapis');
 
 exports.handler = async (event) => {
@@ -17,7 +18,9 @@ exports.handler = async (event) => {
       scopes: ["https://www.googleapis.com/auth/spreadsheets"]
     });
     const sheets = google.sheets({ version: "v4", auth });
-    const spreadsheetId = process.env.GOOGLE_SHEET_ID_REVIEWS;   // ← ton nouveau env var
+
+    const reviewsSpreadsheetId = process.env.GOOGLE_SHEET_ID_REVIEWS;
+    const accountsSpreadsheetId = process.env.GOOGLE_SHEET_ID_ACCOUNTS;
 
     function formatReviewDate() {
       const d = new Date();
@@ -25,38 +28,62 @@ exports.handler = async (event) => {
       return `${d.getFullYear()}-${monthNames[d.getMonth()]}-${d.getDate().toString().padStart(2, '0')}`;
     }
 
-    const res = await sheets.spreadsheets.values.get({ 
-      spreadsheetId, 
-      range: "CustomersReviews!A:Z" 
-    });
-    const rows = res.data.values || [];
+    const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() : "";
 
-    // ====================== SAVE REVIEW ======================
     if (action === 'save-review') {
-      if (!fullName || !email || !title || !rating || !text || !productId) {
-        throw new Error("Toutes les données sont obligatoires");
-      }
+      if (!fullName || !email || !title || !rating || !text || !productId) throw new Error("Toutes les données sont obligatoires");
       if (!email.includes('@')) throw new Error("Email invalide");
 
+      // Sauvegarde de l'avis (toujours)
       const date = formatReviewDate();
       const values = [[fullName.trim(), email.trim(), title.trim(), rating, text.trim(), date, productId]];
-
       await sheets.spreadsheets.values.append({
-        spreadsheetId,
+        spreadsheetId: reviewsSpreadsheetId,
         range: "CustomersReviews!A:G",
         valueInputOption: "RAW",
         insertDataOption: "INSERT_ROWS",
         resource: { values }
       });
 
+      // Vérification compte + incrémentation Reviews Written (colonne I)
+      const accountsRes = await sheets.spreadsheets.values.get({ 
+        spreadsheetId: accountsSpreadsheetId, 
+        range: "Feuille 1!A:Z" 
+      });
+      const accountsRows = accountsRes.data.values || [];
+
+      const accountRowIndex = accountsRows.findIndex(row => normalize(row[2] || "") === normalize(email));
+      
+      if (accountRowIndex !== -1) {
+        const accountRowNum = accountRowIndex + 1;
+        const currentRow = accountsRows[accountRowIndex] || [];
+        let currentReviewsCount = parseInt(currentRow[8] || 0);   // Colonne I
+        const newReviewsCount = currentReviewsCount + 1;
+
+        await sheets.spreadsheets.values.update({
+          spreadsheetId: accountsSpreadsheetId,
+          range: `Feuille 1!I${accountRowNum}`,
+          valueInputOption: "RAW",
+          resource: { values: [[newReviewsCount]] }
+        });
+
+        console.log(`✅ Reviews Written mis à jour pour ${email} → ${newReviewsCount}`);
+      } else {
+        console.log(`ℹ️ Email ${email} non trouvé dans les comptes`);
+      }
+
       return { statusCode: 200, body: JSON.stringify({ success: true }) };
     }
 
-    // ====================== GET REVIEWS ======================
     if (action === 'get-reviews') {
       if (!productId) throw new Error("Product ID manquant");
+      const res = await sheets.spreadsheets.values.get({ 
+        spreadsheetId: reviewsSpreadsheetId, 
+        range: "CustomersReviews!A:Z" 
+      });
+      const rows = res.data.values || [];
 
-      const reviews = rows.slice(1) // skip header
+      const reviews = rows.slice(1)
         .filter(row => row[6] === productId)
         .map(row => ({
           fullName: row[0] || "",

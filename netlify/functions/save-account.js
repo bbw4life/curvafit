@@ -98,7 +98,7 @@ exports.handler = async (event) => {
       return { statusCode: 200, body: JSON.stringify({ success: true }) };
     }
 
-    // ==================== GET STATS (MIS À JOUR) ====================
+    // ==================== GET STATS ====================
     if (action === 'get-stats') {
       if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
       const currentRow = rows[rowIndex] || [];
@@ -112,9 +112,9 @@ exports.handler = async (event) => {
           totalSpent: parseFloat(currentRow[7] || 0),
           quantityInCart: parseInt(currentRow[14] || 0),
           history: history,
-          // === NOUVEAUTÉS ===
           memberSince: currentRow[15] || "January 2026",
-          points: parseInt(currentRow[6] || 0) * 10   // 10 pts par commande
+          points: parseInt(currentRow[6] || 0) * 10,
+          reviewsCount: parseInt(currentRow[8] || 0)   // Colonne I = Reviews Written
         })
       };
     }
