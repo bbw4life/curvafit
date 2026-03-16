@@ -595,11 +595,20 @@
                 <a href="#"><i class="fab fa-x-twitter"></i></a>
             </div>
             <div class="footer-newsletter">
-                <h3>Newsletter</h3>
-                <form>
-                    <input type="email" placeholder="Enter your email">
-                    <button type="submit" class="button-3d">Subscribe</button>
-                </form>
+            <h3>Newsletter</h3>
+            <form id="newsletter-form">
+                <input type="email" id="newsletter-email" placeholder="Enter your email" required>
+                <button type="submit" class="button-3d">Subscribe</button>
+            </form>
+        </div>
+        </div>
+        <!-- NEWSLETTER SUCCESS POPUP -->
+        <div id="newsletter-popup" class="newsletter-success-popup">
+            <div class="popup-content">
+                <div class="popup-icon">🎉</div>
+                <h3>Thank you for subscribing!</h3>
+                <p>You'll receive exclusive tips, offers and CurvaFit updates soon.</p>
+                <button id="popup-close-btn">Close</button>
             </div>
         </div>
         <div class="copyright">

@@ -94,11 +94,11 @@
         <section id="contact-form" class="contact-form-section">
             <div class="container">
                 <h2>Send Us a Message</h2>
-                <form>
-                    <input type="text" placeholder="First Name" required>
-                    <input type="text" placeholder="Last Name" required>
-                    <input type="email" placeholder="Email" required>
-                    <select required>
+                <form id="contact-form">
+                    <input type="text" name="firstName" placeholder="First Name" required>
+                    <input type="text" name="lastName" placeholder="Last Name" required>
+                    <input type="email" name="email" placeholder="Email" required>
+                    <select name="subject" required>
                         <option value="">Select Subject</option>
                         <option value="general">General Question</option>
                         <option value="program">Program Inquiry</option>
@@ -106,7 +106,7 @@
                         <option value="partnership">Partnership</option>
                         <option value="other">Other</option>
                     </select>
-                    <textarea placeholder="Your Message" required></textarea>
+                    <textarea name="message" placeholder="Your Message" required></textarea>
                     <label>
                         <input type="checkbox" required>
                         I agree to the privacy policy.
@@ -256,11 +256,20 @@
                 <a href="#"><i class="fab fa-x-twitter"></i></a>
             </div>
             <div class="footer-newsletter">
-                <h3>Newsletter</h3>
-                <form>
-                    <input type="email" placeholder="Enter your email">
-                    <button type="submit" class="button-3d">Subscribe</button>
-                </form>
+            <h3>Newsletter</h3>
+            <form id="newsletter-form">
+                <input type="email" id="newsletter-email" placeholder="Enter your email" required>
+                <button type="submit" class="button-3d">Subscribe</button>
+            </form>
+        </div>
+        </div>
+        <!-- NEWSLETTER SUCCESS POPUP -->
+        <div id="newsletter-popup" class="newsletter-success-popup">
+            <div class="popup-content">
+                <div class="popup-icon">🎉</div>
+                <h3>Thank you for subscribing!</h3>
+                <p>You'll receive exclusive tips, offers and CurvaFit updates soon.</p>
+                <button id="popup-close-btn">Close</button>
             </div>
         </div>
         <div class="copyright">
@@ -283,5 +292,14 @@
             Votre navigateur ne supporte pas l'élément audio.
         </audio>
     </div>
+    <!-- CONTACT SUCCESS POPUP -->
+<div id="contact-success-popup" class="newsletter-success-popup">
+    <div class="popup-content">
+        <div class="popup-icon">✅</div>
+        <h3>Message Sent Successfully!</h3>
+        <p>Thank you! Our team will reply within 24-48 hours.</p>
+        <button id="contact-popup-close">Close</button>
+    </div>
+</div>
 </body>
 </html>

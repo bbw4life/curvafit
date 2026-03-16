@@ -28,9 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
-
-
 // Blog Category Filtering
 document.addEventListener('DOMContentLoaded', () => {
     const filterButtons = document.querySelectorAll('.category-filters button');
@@ -59,3 +56,58 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize with 'All' active
     document.querySelector('.category-filters button.active').click();
 });
+
+
+
+
+// ====================== CONTACT FORM ======================
+const contactForm = document.getElementById('contact-form');
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(contactForm);
+        const data = {
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            email: formData.get('email'),
+            subject: formData.get('subject'),
+            message: formData.get('message')
+        };
+
+        const submitBtn = contactForm.querySelector('button');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "Sending...";
+        submitBtn.disabled = true;
+
+        try {
+            const res = await fetch('/.netlify/functions/save-message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+
+            if (result.success) {
+                const popup = document.getElementById('contact-success-popup');
+                popup.classList.add('show');
+
+                setTimeout(() => popup.classList.remove('show'), 8000);
+
+                document.getElementById('contact-popup-close').onclick = () => {
+                    popup.classList.remove('show');
+                };
+
+                contactForm.reset();
+            } else {
+                showErrorPopup("Error: " + (result.error || "Unknown"));
+            }
+        } catch (err) {
+            showErrorPopup("Network error. Please try again.");
+        } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+}
