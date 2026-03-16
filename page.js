@@ -64,6 +64,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const contactForm = document.getElementById('contact-form');
     if (!contactForm) return;   // ← sécurité : seulement sur contact.html
 
+    // ====================== POPUP ERREUR (nouveau) ======================
+function showErrorPopup(msg) {
+    // Option 1 : utiliser le toast que tu as déjà (recommandé)
+    const toast = document.getElementById('toast');
+    if (toast) {
+        toast.textContent = msg;
+        toast.style.background = '#e74c3c';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 6000);
+        return;
+    }
+
+  
+}
+
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 

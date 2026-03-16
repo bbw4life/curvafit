@@ -11,7 +11,7 @@ exports.handler = async (event) => {
     const { firstName, lastName, email, subject, message } = body;
 
     if (!firstName || !lastName || !email || !subject || !message) {
-      throw new Error("All fields are required");
+      throw new Error("Tous les champs sont obligatoires");
     }
 
     const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() : "";
@@ -25,14 +25,14 @@ exports.handler = async (event) => {
     });
 
     const sheets = google.sheets({ version: "v4", auth });
-    const spreadsheetId = process.env.GOOGLE_SHEET_ID_MESSAGES;   // ← TON NOUVEL ID
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID_MESSAGES;
 
     function formatDate() {
       const d = new Date();
       return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear().toString().slice(-2)}`;
     }
 
-    // On ajoute la date en colonne F (bonus très utile, tu peux la cacher dans Sheets si tu veux)
+    // ✅ Correction ici : values est déjà [[...]] → on le passe directement
     const values = [[
       normalize(firstName),
       normalize(lastName),
@@ -44,10 +44,10 @@ exports.handler = async (event) => {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: "ContactMessages!A:F",           // ← Nom de ta feuille
+      range: "ContactMessages!A:F",
       valueInputOption: "RAW",
       insertDataOption: "INSERT_ROWS",
-      resource: { values: [values] }          // Important : tableau 2D
+      resource: { values }   // ← ICI : plus de [values]
     });
 
     return { statusCode: 200, body: JSON.stringify({ success: true }) };
