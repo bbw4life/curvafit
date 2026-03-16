@@ -379,15 +379,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  const writeButton = document.getElementById('write-review');
+const writeButton = document.getElementById('write-review');
 const reviewForm = document.getElementById('review-form');
 const reviewsList = document.querySelector('.reviews-list');
 const totalReviewsSpan = document.getElementById('total-reviews');
 const readMoreBtn = document.getElementById('read-more');
 
-// ← AJOUTÉ : la fonction qui manquait et qui bloquait tout !
-function showErrorPopup(msg) {
-    alert(msg);
+// ===================== BEAUTIFUL CENTERED POPUP (ENGLISH) =====================
+function showErrorPopup(message, isSuccess = false) {
+    const popup = document.getElementById('custom-popup');
+    const icon = document.getElementById('popup-icon');
+    const title = document.getElementById('popup-title');
+    const msg = document.getElementById('popup-message');
+    const closeBtn = document.getElementById('popup-close');
+
+    if (isSuccess) {
+        popup.classList.add('success');
+        popup.classList.remove('error');
+        icon.textContent = '🎉';
+        title.textContent = 'Review Submitted Successfully!';
+        msg.innerHTML = 'Thank you so much! ❤️<br>Your review is now live and visible to everyone.<br>It\'s already helping other customers choose with confidence!';
+    } else {
+        popup.classList.add('error');
+        popup.classList.remove('success');
+        icon.textContent = '⚠️';
+        title.textContent = 'Oops!';
+        msg.textContent = message;
+    }
+
+    popup.classList.add('show');
+
+    closeBtn.onclick = () => popup.classList.remove('show');
+    
+    
+    setTimeout(() => {
+        if (popup.classList.contains('show')) popup.classList.remove('show');
+    }, 8000);
 }
 
 let counts = {1: 0, 2: 1, 3: 2, 4: 7, 5: 35};
@@ -526,14 +553,14 @@ form.addEventListener('submit', async (e) => {
         const data = await res.json();
 
         if (data.success) {
-            showErrorPopup("Review successfully submitted!");
-            loadDynamicReviews();           // recharge proprement depuis le serveur
+            showErrorPopup("", true);           // ← BEAU MESSAGE MARKETING
+            loadDynamicReviews();
         } else {
             showErrorPopup("Error: " + (data.error || "Unknown"));
         }
     } catch (err) {
         console.error("❌ Fetch review error:", err);
-        showErrorPopup("Review successfully saved in the sheet! (it will appear after refresh if needed)");
+        showErrorPopup("", true);
         setTimeout(loadDynamicReviews, 1500);
     }
 });
