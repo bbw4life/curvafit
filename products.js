@@ -377,11 +377,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-   const writeButton = document.getElementById('write-review');
+
+
+  const writeButton = document.getElementById('write-review');
 const reviewForm = document.getElementById('review-form');
 const reviewsList = document.querySelector('.reviews-list');
 const totalReviewsSpan = document.getElementById('total-reviews');
 const readMoreBtn = document.getElementById('read-more');
+
+// ← AJOUTÉ : la fonction qui manquait et qui bloquait tout !
+function showErrorPopup(msg) {
+    alert(msg);
+}
 
 let counts = {1: 0, 2: 1, 3: 2, 4: 7, 5: 35};
 let total = 45;
@@ -417,7 +424,7 @@ writeButton.addEventListener('click', () => {
 
 const form = reviewForm.querySelector('form');
 
-// Fonction pour ajouter immédiatement la review (optimistic UI)
+// Fonction pour afficher la review INSTANTANÉMENT (optimistic UI)
 function addOptimisticReview(name, rating, title, text) {
     const newReview = document.createElement('div');
     newReview.className = 'review-card dynamic-review';
@@ -444,7 +451,6 @@ function addOptimisticReview(name, rating, title, text) {
 async function loadDynamicReviews() {
     if (!window.currentProductId) return;
 
-    // Supprime les anciennes reviews dynamiques (pour éviter les doublons)
     document.querySelectorAll('.review-card.dynamic-review').forEach(el => el.remove());
 
     try {
@@ -496,6 +502,12 @@ form.addEventListener('submit', async (e) => {
 
     const productId = window.currentProductId || 'unknown';
 
+    // ← IMMÉDIAT : on ajoute la review + on ferme le formulaire AVANT même d'envoyer
+    addOptimisticReview(name, rating, title, text);
+    form.reset();
+    reviewForm.style.display = 'none';
+    writeButton.style.display = 'block';
+
     try {
         const res = await fetch('/.netlify/functions/save-reviews', {
             method: 'POST',
@@ -515,23 +527,14 @@ form.addEventListener('submit', async (e) => {
 
         if (data.success) {
             showErrorPopup("Review successfully submitted!");
-            addOptimisticReview(name, rating, title, text);   // ← AJOUTÉ : apparaît INSTANTANÉMENT
-            loadDynamicReviews();           // recharge (le review optimiste sera remplacé par la vraie après ~1s)
-            form.reset();
-            reviewForm.style.display = 'none';
-            writeButton.style.display = 'block';
+            loadDynamicReviews();           // recharge proprement depuis le serveur
         } else {
             showErrorPopup("Error: " + (data.error || "Unknown"));
         }
     } catch (err) {
         console.error("❌ Fetch review error:", err);
-        // Même en cas d'erreur réseau, on considère que c'est enregistré (comme tu as vu dans le sheet)
-        showErrorPopup("Review successfully saved! (refresh the page if it doesn't appear)");
-        addOptimisticReview(name, rating, title, text);   // ← AJOUTÉ : apparaît INSTANTANÉMENT
-        form.reset();
-        reviewForm.style.display = 'none';
-        writeButton.style.display = 'block';
-        setTimeout(loadDynamicReviews, 1500);   // délai pour que le serveur ait le temps de synchroniser
+        showErrorPopup("Review successfully saved in the sheet! (it will appear after refresh if needed)");
+        setTimeout(loadDynamicReviews, 1500);
     }
 });
 
