@@ -2311,23 +2311,108 @@ h1, h2, h3 {
 }
 
 
-/* CONTACT POPUP (même style que newsletter) */
+/* ====================== CONTACT SUCCESS POPUP - VERSION LUXE ====================== */
 #contact-success-popup {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0, 0, 0, 0.75);
     display: none;
     align-items: center;
     justify-content: center;
     z-index: 99999;
+    backdrop-filter: blur(8px);
 }
 
 #contact-success-popup.show {
     display: flex;
 }
 
-#contact-success-popup .popup-content h3 {
+/* Boîte blanche élégante */
+#contact-success-popup .popup-content {
+    background: #ffffff;
+    max-width: 300px;
+    width: 80%;
+    border-radius: 24px;
+    padding: 10px 20px;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+    border: 6px solid #10b981;           /* belle bordure verte */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Effet bordure lumineuse */
+#contact-success-popup .popup-content::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 3px solid #10b981;
+    border-radius: 24px;
+    opacity: 0.15;
+    pointer-events: none;
+}
+
+/* Icône verte carrée (comme ta capture) */
+.popup-icon {
+    width: 90px;
+    height: 90px;
+    background: #10b981;
+    color: white;
+    border-radius: 16px;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+}
+
+/* Titre rose flashy (comme sur l'image) */
+#contact-success-popup h3 {
+    font-size: 28px;
+    font-weight: 700;
     color: #e91e63;
+    margin: 0 0 12px;
+    line-height: 1.1;
+}
+
+/* Texte clair */
+#contact-success-popup p {
+    font-size: 17px;
+    color: #333;
+    margin-bottom: 28px;
+    line-height: 1.5;
+}
+
+/* Bouton stylé avec bordure + hover */
+#contact-popup-close {
+    background: #ffffff;
+    color: #e91e63;
+    border: 3px solid #e91e63;
+    padding: 14px 42px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 15px rgba(233, 30, 99, 0.2);
+}
+
+#contact-popup-close:hover {
+    background: #e91e63;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 20px rgba(233, 30, 99, 0.35);
+}
+
+/* Animation d'apparition douce */
+#contact-success-popup.show .popup-content {
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }
 

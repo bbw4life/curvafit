@@ -92,30 +92,30 @@
             </div>
         </section>
        <section id="contact-section" class="contact-form-section">   <!-- ← ID CHANGÉ -->
-    <div class="container">
-        <h2>Send Us a Message</h2>
-        <form id="contact-form">   <!-- ← ID gardé ici (celui que le script cherche) -->
-            <input type="text" name="firstName" placeholder="First Name" required>
-            <input type="text" name="lastName" placeholder="Last Name" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <select name="subject" required>
-                <option value="">Select Subject</option>
-                <option value="general">General Question</option>
-                <option value="program">Program Inquiry</option>
-                <option value="technical">Technical Issue</option>
-                <option value="partnership">Partnership</option>
-                <option value="other">Other</option>
-            </select>
-            <textarea name="message" placeholder="Your Message" required></textarea>
-            <label>
-                <input type="checkbox" required>
-                I agree to the privacy policy.
-            </label>
-            <button type="submit" class="button-3d">Send Message</button>
-        </form>
-        <p class="reassurance">We respect your privacy and never share your information.</p>
-    </div>
-</section>
+        <div class="container">
+            <h2>Send Us a Message</h2>
+            <form id="contact-form">   <!-- ← ID gardé ici (celui que le script cherche) -->
+                <input type="text" name="firstName" placeholder="First Name" required>
+                <input type="text" name="lastName" placeholder="Last Name" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <select name="subject" required>
+                    <option value="">Select Subject</option>
+                    <option value="general">General Question</option>
+                    <option value="program">Program Inquiry</option>
+                    <option value="technical">Technical Issue</option>
+                    <option value="partnership">Partnership</option>
+                    <option value="other">Other</option>
+                </select>
+                <textarea name="message" placeholder="Your Message" required></textarea>
+                <label>
+                    <input type="checkbox" required>
+                    I agree to the privacy policy.
+                </label>
+                <button type="submit" class="button-3d">Send Message</button>
+            </form>
+            <p class="reassurance">We respect your privacy and never share your information.</p>
+        </div>
+    </section>
         <section id="faq" class="faq-section">
             <div class="container">
                 <h2>Frequently Asked Questions</h2>
@@ -292,11 +292,13 @@
             Votre navigateur ne supporte pas l'élément audio.
         </audio>
     </div>
-    <!-- CONTACT SUCCESS POPUP -->
-<div id="contact-success-popup" class="newsletter-success-popup">
+    <!-- CONTACT SUCCESS POPUP - VERSION BEAUTÉ 2026 -->
+<div id="contact-success-popup">
     <div class="popup-content">
-        <div class="popup-icon">✅</div>
-        <h3>Message Sent Successfully!</h3>
+        <div class="popup-icon">
+            <span>✅</span>
+        </div>
+        <h3>Message Sent<br>Successfully!</h3>
         <p>Thank you! Our team will reply within 24-48 hours.</p>
         <button id="contact-popup-close">Close</button>
     </div>
