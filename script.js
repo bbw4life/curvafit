@@ -181,9 +181,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const productSection = document.querySelector('.product-section');
       if (productSection) {
-        const pid = productSection.dataset.productId;
+       const pid = productSection.dataset.productId;
         window.currentProductId = pid;
-if (typeof loadDynamicReviews === 'function') loadDynamicReviews();
+        console.log("✅ Product ID chargé pour les reviews :", window.currentProductId);
+        if (typeof loadDynamicReviews === 'function') {
+            loadDynamicReviews();
+        }
         const prod = products.find(p => p.id === pid);
         if (prod && prod.media) {
           populateMainProductMedia(prod.media);

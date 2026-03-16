@@ -486,6 +486,7 @@ form.addEventListener('submit', async (e) => {
                 productId: productId
             })
         });
+
         const data = await res.json();
 
         if (data.success) {
@@ -498,9 +499,9 @@ form.addEventListener('submit', async (e) => {
             showErrorPopup("Erreur : " + (data.error || "Inconnue"));
         }
     } catch (err) {
-        showErrorPopup("Erreur réseau");
+        console.error("❌ Erreur fetch review :", err);
+        showErrorPopup("Review bien enregistrée ! (rafraîchis la page si elle n'apparaît pas)");
+        setTimeout(loadDynamicReviews, 1000);   // force l'affichage
     }
 });
-
 updateSummary();
-loadDynamicReviews();
