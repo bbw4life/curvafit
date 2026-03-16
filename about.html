@@ -185,17 +185,21 @@
                 </div>
             </div>
         </section>
-        <section id="community" class="community-section">
-            <div class="container">
-                <h2>More Than Fitness. It’s a Movement.</h2>
-                <div class="community-grid">
-                    <div class="community-text">
-                        <p>CurvaFit is a sisterhood where curvy women find private support, accountability, and encouragement. Our community fosters body positive fitness, sharing triumphs in sustainable weight loss and personal growth.</p>
-                    </div>
-                    <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/blog_img_1.avif?v=1772583394" alt="Supportive community of curvy women in fitness group encouraging each other">
-                </div>
+       <section id="community" class="community-section">
+    <div class="container">
+        <h2>More Than Fitness. It’s a Movement.</h2>
+        
+        <div class="community-grid">
+            <img 
+                src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/blog_img_1.avif?v=1772583394" 
+                alt="Supportive community of curvy women in fitness group encouraging each other">
+            
+            <div class="community-text">
+                <p>CurvaFit is a sisterhood where curvy women find private support, accountability, and encouragement. Our community fosters body positive fitness, sharing triumphs in sustainable weight loss and personal growth.</p>
             </div>
-        </section>
+        </div>
+    </div>
+</section>
         <section id="final-cta" class="final-cta-section">
             <div class="container">
                 <h2>Ready to Start Your Own Transformation?</h2>
@@ -235,12 +239,12 @@
                 <a href="#"><i class="fab fa-x-twitter"></i></a>
             </div>
             <div class="footer-newsletter">
-                <h3>Newsletter</h3>
-                <form>
-                    <input type="email" placeholder="Enter your email">
-                    <button type="submit" class="button-3d">Subscribe</button>
-                </form>
-            </div>
+            <h3>Newsletter</h3>
+            <form id="newsletter-form">
+                <input type="email" id="newsletter-email" placeholder="Enter your email" required>
+                <button type="submit" class="button-3d">Subscribe</button>
+            </form>
+        </div>
         </div>
         <div class="copyright">
             <p>&copy; 2026 CurvaFit. All rights reserved.</p>
@@ -261,5 +265,14 @@
             Votre navigateur ne supporte pas l'élément audio.
         </audio>
     </div>
+    <!-- NEWSLETTER SUCCESS POPUP -->
+<div id="newsletter-popup" class="newsletter-success-popup">
+    <div class="popup-content">
+        <div class="popup-icon">🎉</div>
+        <h3>Thank you for subscribing!</h3>
+        <p>You'll receive exclusive tips, offers and CurvaFit updates soon.</p>
+        <button id="popup-close-btn">Close</button>
+    </div>
+</div>
 </body>
 </html>

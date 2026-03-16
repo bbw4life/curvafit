@@ -1055,14 +1055,64 @@ document.addEventListener('DOMContentLoaded', () => {
      showErrorPopup('Video playback started');
     });
   }
-  // Gestion des formulaires (newsletter seulement)
-const forms = document.querySelectorAll('form:not(#review-form form)');
-forms.forEach(form => {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      showErrorPopup('Subscribed!');
+ // ====================== NEWSLETTER SPECIFIQUE ======================
+const newsletterForm = document.getElementById('newsletter-form');
+if (newsletterForm) {
+    newsletterForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const emailInput = document.getElementById('newsletter-email');
+        const email = emailInput.value.trim();
+
+        if (!email || !email.includes('@')) {
+            showErrorPopup("Please enter a valid email");
+            return;
+        }
+
+        const submitBtn = newsletterForm.querySelector('button');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "Saving...";
+        submitBtn.disabled = true;
+
+        try {
+            const res = await fetch('/.netlify/functions/save-account', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'newsletter-subscribe',
+                    email: email
+                })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                // Affiche le beau popup
+                const popup = document.getElementById('newsletter-popup');
+                popup.classList.add('show');
+                
+                // Auto-fermeture après 10 secondes
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                }, 10000);
+
+                // Bouton close
+                document.getElementById('popup-close-btn').onclick = () => {
+                    popup.classList.remove('show');
+                };
+
+                emailInput.value = ''; // vide le champ
+            } else {
+                showErrorPopup("Error: " + (data.error || "Unknown"));
+            }
+        } catch (err) {
+            showErrorPopup("Network error. Please try again.");
+        } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
     });
-});
+}
   const ctx = document.getElementById('progress-curve');
   if (ctx) {
     new Chart(ctx, {

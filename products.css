@@ -2829,3 +2829,152 @@ product-card:hover img {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
 }
+
+
+
+/* Our Journey - version beaucoup plus belle */
+.our-journey-section {
+    padding: 10px 0;
+    background: linear-gradient(to bottom, #fce4ec, #fdf2f8);
+    position: relative;
+    overflow: hidden;
+}
+
+.our-journey-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 20%, rgba(233, 30, 99, 0.05), transparent);
+    pointer-events: none;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.our-journey-section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #c2185b;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.our-journey-section h2::after {
+    content: '';
+    display: block;
+    width: 120px;
+    height: 4px;
+    background: linear-gradient(to right, #e91e63, #ff80ab);
+    margin: 20px auto 0;
+    border-radius: 2px;
+}
+
+.story-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+
+/* Image avec effets de bordure premium */
+.story-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 30px;
+    border: 12px solid #ffffff;
+    box-shadow: 0 25px 50px rgba(233, 30, 99, 0.25),
+                0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s ease;
+}
+
+.story-image img:hover {
+    transform: scale(1.03);
+    box-shadow: 0 35px 70px rgba(233, 30, 99, 0.35);
+}
+
+/* Texte stylé */
+.story-text p {
+    font-size: 1.1rem;
+    line-height: 1.85;
+    color: #444;
+    margin-bottom: 30px;
+}
+
+.highlight {
+    font-weight: 700;
+    color: #e91e63;
+    background: rgba(233, 30, 99, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Grille des 4 icônes (colonne de 4 = 4 colonnes) */
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.value-item {
+    background: white;
+    padding: 5px 10px 10px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.value-item:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 20px 40px rgba(233, 30, 99, 0.15);
+}
+
+.value-item i {
+    font-size: 3rem;
+    color: #e91e63;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.value-item h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .story-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    .values-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .values-grid {
+        grid-template-columns: 1fr;
+    }
+    .our-journey-section h2 {
+        font-size: 2.8rem;
+    }
+}
+
+/* Texte stylé - Mobile */
+@media (max-width: 768px) {
+    .story-text p {
+        margin-bottom: 0px;
+        padding: 0px;
+    }
+}

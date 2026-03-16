@@ -119,6 +119,42 @@ exports.handler = async (event) => {
       };
     }
 
+    // ==================== NEWSLETTER SUBSCRIBE ====================
+if (action === 'newsletter-subscribe') {
+    if (!email) throw new Error("Email required");
+
+    const normalizedEmail = normalize(email);
+
+    // Vérifier si l'email existe déjà
+    const rowIndex = rows.findIndex(row => normalize(row[2] || "") === normalizedEmail);
+    const rowNum = rowIndex + 1;
+
+    if (rowIndex !== -1) {
+        // Mise à jour newsletter = Yes
+        await sheets.spreadsheets.values.update({
+            spreadsheetId,
+            range: `Feuille 1!F${rowNum}`,
+            valueInputOption: "RAW",
+            resource: { values: [["Yes"]] }
+        });
+    } else {
+        // Nouvel utilisateur minimal (newsletter only)
+        const values = [
+            "", "", normalizedEmail, "", "", "Yes",
+            0, 0, 0, "", "", "", "", "", 0, formatDate(), "[]"
+        ];
+        await sheets.spreadsheets.values.append({
+            spreadsheetId,
+            range: "Feuille 1!A:Z",
+            valueInputOption: "RAW",
+            insertDataOption: "INSERT_ROWS",
+            resource: { values: [values] }
+        });
+    }
+
+    return { statusCode: 200, body: JSON.stringify({ success: true }) };
+}
+
     throw new Error("Action inconnue");
   } catch (error) {
     console.error("SAVE ERROR:", error.message);

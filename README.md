@@ -181,7 +181,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const productSection = document.querySelector('.product-section');
       if (productSection) {
-        const pid = productSection.dataset.productId;
+       const pid = productSection.dataset.productId;
+        window.currentProductId = pid;
+        console.log("✅ Product ID chargé pour les reviews :", window.currentProductId);
+        if (typeof loadDynamicReviews === 'function') {
+            loadDynamicReviews();
+        }
         const prod = products.find(p => p.id === pid);
         if (prod && prod.media) {
           populateMainProductMedia(prod.media);
@@ -1050,13 +1055,14 @@ document.addEventListener('DOMContentLoaded', () => {
      showErrorPopup('Video playback started');
     });
   }
-  const forms = document.querySelectorAll('form');
-  forms.forEach(form => {
+  // Gestion des formulaires (newsletter seulement)
+const forms = document.querySelectorAll('form:not(#review-form form)');
+forms.forEach(form => {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       showErrorPopup('Subscribed!');
     });
-  });
+});
   const ctx = document.getElementById('progress-curve');
   if (ctx) {
     new Chart(ctx, {
@@ -1866,11 +1872,13 @@ const passwordInput = loginForm.querySelector('input[placeholder*="Password"], i
         const pointsEl = document.getElementById('membership-points');
         if (levelEl) levelEl.textContent = levelText;
         if (pointsEl) pointsEl.textContent = `${points} pts`;
+        console.log(`✅ Stats chargées - Reviews Written = ${data.reviewsCount}`);
         // Stats normales
         const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
-        if (statValues.length >= 2) {
+        if (statValues.length >= 3) {
             statValues[0].textContent = data.orders || 0;
             statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
+            statValues[3].textContent = data.reviewsCount || 0;
         }
         document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
         const historyContainer = document.querySelector('.order-history');
@@ -1891,8 +1899,9 @@ const passwordInput = loginForm.querySelector('input[placeholder*="Password"], i
                         <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
                         <div class="order-items">
                             ${order.items.map(item => `
-                                <div class="order-item-clickable" data-id="${item.id || ''}"
-                                     style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
+                      <div class="order-item-clickable" 
+                          onclick="handleOrderItemClick('${item.id || ''}')"
+                          style="display:flex;align-items:center;margin:8px 0;padding:10px;border-left:4px solid #f0b90b;background:white;cursor:pointer;">
                                     ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image" style="width:50px;height:50px;object-fit:cover;margin-right:10px;cursor:pointer;">` : ''}
                                     <div>
                                         <strong class="order-item-title" style="color:#007bff;cursor:pointer;">${item.title}</strong><br>
@@ -2010,4 +2019,153 @@ window.addEventListener('load', () => {
             if (overlay) overlay.classList.add('active');
         }, 150);
     }
+    // ====================== CLIC ORDER HISTORY (méthode directe et infaillible) ======================
+  window.handleOrderItemClick = function(id) {
+      if (!id) return;
+      const url = window.getProductUrl ? window.getProductUrl(id) : 'shop.html';
+      console.log(`🖱️ Order History clic → ID=${id} | URL=${url}`);
+      if (url === 'shop.html') {
+          showErrorPopup(`Produit ID=${id} introuvable`);
+          return;
+      }
+      window.location.href = url;
+  };
 });
+
+
+
+
+
+
+
+
+
+
+
+// netlify/functions/save-account.js
+const { google } = require('googleapis');
+
+exports.handler = async (event) => {
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: JSON.stringify({ success: false, error: "Method not allowed" }) };
+  }
+
+  try {
+    const body = JSON.parse(event.body);
+    const { action = 'signup', lastName, firstName, email, phone = "", password, newsletter = "No",
+            line1, line2, city, state, zip, newPassword,
+            totalAmount = 0, totalQuantity = 0, orderItems = [],
+            currentCartQuantity = null } = body;
+
+    const normalize = (str) => str ? str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() : "";
+    const auth = new google.auth.GoogleAuth({
+      credentials: {
+        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n")
+      },
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"]
+    });
+    const sheets = google.sheets({ version: "v4", auth });
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID_ACCOUNTS;
+
+    function formatDate() {
+      const d = new Date();
+      return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear().toString().slice(-2)}`;
+    }
+
+    const res = await sheets.spreadsheets.values.get({ spreadsheetId, range: "Feuille 1!A:Z" });
+    let rows = res.data.values || [];
+    const rowIndex = rows.findIndex(row => normalize(row[2] || "") === normalize(email));
+    const rowNum = rowIndex + 1;
+
+    // ==================== SIGNUP ====================
+    if (action === 'signup') {
+      if (!lastName || !firstName || !email || !password) throw new Error("Données manquantes");
+      const passNormalized = normalize(password);
+      const memberSince = formatDate();
+      const values = [[normalize(lastName), normalize(firstName), normalize(email), normalize(phone), passNormalized, newsletter,
+                       0, 0, 0, "", "", "", "", "", 0, memberSince, "[]"]];
+      await sheets.spreadsheets.values.append({
+        spreadsheetId, range: "Feuille 1!A:Z", valueInputOption: "RAW", insertDataOption: "INSERT_ROWS", resource: { values }
+      });
+      return { statusCode: 200, body: JSON.stringify({ success: true }) };
+    }
+
+    // ==================== UPDATE ADDRESS ====================
+    if (action === 'update-address') {
+      if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
+      await sheets.spreadsheets.values.update({ spreadsheetId, range: `Feuille 1!J${rowNum}:N${rowNum}`, valueInputOption: "RAW",
+        resource: { values: [[line1 || "", line2 || "", city || "", state || "", zip || ""]] }
+      });
+      return { statusCode: 200, body: JSON.stringify({ success: true }) };
+    }
+
+    // ==================== UPDATE PASSWORD ====================
+    if (action === 'update-password') {
+      if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
+      await sheets.spreadsheets.values.update({ spreadsheetId, range: `Feuille 1!E${rowNum}`, valueInputOption: "RAW",
+        resource: { values: [[normalize(newPassword)]] }
+      });
+      return { statusCode: 200, body: JSON.stringify({ success: true }) };
+    }
+
+    // ==================== UPDATE CART QUANTITY ====================
+    if (action === 'update-cart-quantity') {
+      if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
+      await sheets.spreadsheets.values.update({ spreadsheetId, range: `Feuille 1!O${rowNum}`, valueInputOption: "RAW",
+        resource: { values: [[currentCartQuantity]] }
+      });
+      return { statusCode: 200, body: JSON.stringify({ success: true }) };
+    }
+
+    // ==================== RECORD ORDER ====================
+    if (action === 'record-order') {
+      if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
+      const currentRow = rows[rowIndex] || [];
+      const newOrders = parseInt(currentRow[6] || 0) + 1;
+      const newSpent = parseFloat(currentRow[7] || 0) + parseFloat(totalAmount);
+      let history = [];
+      try { history = JSON.parse(currentRow[16] || "[]"); } catch(e) {}
+      history.push({ date: formatDate(), total: parseFloat(totalAmount).toFixed(2), totalQuantity: parseInt(totalQuantity), items: orderItems });
+
+      await sheets.spreadsheets.values.batchUpdate({
+        spreadsheetId,
+        resource: {
+          valueInputOption: "RAW",
+          data: [
+            { range: `Feuille 1!G${rowNum}`, values: [[newOrders]] },
+            { range: `Feuille 1!H${rowNum}`, values: [[newSpent]] },
+            { range: `Feuille 1!Q${rowNum}`, values: [[JSON.stringify(history)]] }
+          ]
+        }
+      });
+      return { statusCode: 200, body: JSON.stringify({ success: true }) };
+    }
+
+    // ==================== GET STATS ====================
+    if (action === 'get-stats') {
+      if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
+      const currentRow = rows[rowIndex] || [];
+      let history = [];
+      try { history = JSON.parse(currentRow[16] || "[]"); } catch(e) {}
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          orders: parseInt(currentRow[6] || 0),
+          totalSpent: parseFloat(currentRow[7] || 0),
+          quantityInCart: parseInt(currentRow[14] || 0),
+          history: history,
+          memberSince: currentRow[15] || "January 2026",
+          points: parseInt(currentRow[6] || 0) * 10,
+          reviewsCount: parseInt(currentRow[8] || 0)   // Colonne I = Reviews Written
+        })
+      };
+    }
+
+    throw new Error("Action inconnue");
+  } catch (error) {
+    console.error("SAVE ERROR:", error.message);
+    return { statusCode: 500, body: JSON.stringify({ success: false, error: error.message }) };
+  }
+};
