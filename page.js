@@ -57,3 +57,73 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.category-filters button.active')?.click();
 });
 
+
+
+// ====================== CONTACT FORM (CORRIGÉ) ======================
+document.addEventListener('DOMContentLoaded', () => {
+    const contactForm = document.getElementById('contact-form');
+    if (!contactForm) return;
+
+    // ✅ Fermeture du popup une seule fois (pas à chaque submit)
+    const successPopup = document.getElementById('contact-success-popup');
+    const closeBtn = document.getElementById('contact-popup-close');
+    if (closeBtn && successPopup) {
+        closeBtn.onclick = () => successPopup.classList.remove('show');
+    }
+
+    // ✅ Fonction d’erreur (utilise le toast déjà présent sur tes pages)
+    function showErrorPopup(msg) {
+        const toast = document.getElementById('toast');
+        if (toast) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 5000);
+        } else {
+            alert(msg);
+        }
+    }
+
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(contactForm);
+        const data = {
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            email: formData.get('email'),
+            subject: formData.get('subject'),
+            message: formData.get('message')
+        };
+
+        const submitBtn = contactForm.querySelector('button[type="submit"]') || contactForm.querySelector('button');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "Sending...";
+        submitBtn.disabled = true;
+
+        try {
+            const res = await fetch('/.netlify/functions/save-message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+
+            if (result.success) {
+                if (successPopup) {
+                    successPopup.classList.add('show');
+                    setTimeout(() => successPopup.classList.remove('show'), 8000);
+                }
+                contactForm.reset();
+            } else {
+                showErrorPopup("Erreur : " + (result.error || "Unknown error"));
+            }
+        } catch (err) {
+            console.error(err);
+            showErrorPopup("Erreur réseau. Réessaie.");
+        } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+});

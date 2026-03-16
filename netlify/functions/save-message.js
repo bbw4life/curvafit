@@ -25,14 +25,13 @@ exports.handler = async (event) => {
     });
 
     const sheets = google.sheets({ version: "v4", auth });
-    const spreadsheetId = process.env.GOOGLE_SHEET_ID_MESSAGES;   // ← TON NOUVEL ID
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID_MESSAGES;
 
     function formatDate() {
       const d = new Date();
       return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear().toString().slice(-2)}`;
     }
 
-    // On ajoute la date en colonne F (bonus très utile, tu peux la cacher dans Sheets si tu veux)
     const values = [[
       normalize(firstName),
       normalize(lastName),
@@ -44,15 +43,18 @@ exports.handler = async (event) => {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: "ContactMessages!A:F",           // ← Nom de ta feuille
+      range: "ContactMessages!A:F",
       valueInputOption: "RAW",
       insertDataOption: "INSERT_ROWS",
-      resource: { values: [values] }          // Important : tableau 2D
+      resource: { values }          // ← CORRIGÉ (plus de [values])
     });
 
     return { statusCode: 200, body: JSON.stringify({ success: true }) };
   } catch (error) {
     console.error("SAVE MESSAGE ERROR:", error.message);
-    return { statusCode: 500, body: JSON.stringify({ success: false, error: error.message }) };
+    return { 
+      statusCode: 500, 
+      body: JSON.stringify({ success: false, error: error.message }) 
+    };
   }
 };
