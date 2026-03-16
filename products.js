@@ -377,86 +377,130 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    const writeButton = document.getElementById('write-review');
-    const reviewForm = document.getElementById('review-form');
-    const reviewsList = document.querySelector('.reviews-list');
-    const totalReviewsSpan = document.getElementById('total-reviews');
-    const readMoreBtn = document.getElementById('read-more');
+   const writeButton = document.getElementById('write-review');
+const reviewForm = document.getElementById('review-form');
+const reviewsList = document.querySelector('.reviews-list');
+const totalReviewsSpan = document.getElementById('total-reviews');
+const readMoreBtn = document.getElementById('read-more');   // ← CORRIGÉ (tu l'avais remarqué)
 
-    let counts = {1: 0, 2: 1, 3: 2, 4: 7, 5: 35};
-    let total = 45;
+let counts = {1: 0, 2: 1, 3: 2, 4: 7, 5: 35};
+let total = 45;
 
-    function updateSummary() {
-        totalReviewsSpan.textContent = total;
-        for (let i = 1; i <= 5; i++) {
-            const percentage = (counts[i] / total) * 100;
-            document.getElementById(`bar-${i}`).style.width = `${percentage}%`;
-            document.getElementById(`count-${i}`).textContent = counts[i];
+function updateSummary() {
+    totalReviewsSpan.textContent = total;
+    for (let i = 1; i <= 5; i++) {
+        const percentage = (counts[i] / total) * 100;
+        document.getElementById(`bar-${i}`).style.width = `${percentage}%`;
+        document.getElementById(`count-${i}`).textContent = counts[i];
+    }
+}
+
+const hiddenReviews = document.querySelectorAll('.review-card.hidden');
+let showingAll = false;
+
+readMoreBtn.addEventListener('click', () => {
+    if (!showingAll) {
+        hiddenReviews.forEach(review => review.classList.remove('hidden'));
+        readMoreBtn.textContent = 'Close Reviews';
+        showingAll = true;
+    } else {
+        hiddenReviews.forEach(review => review.classList.add('hidden'));
+        readMoreBtn.textContent = 'Read more reviews';
+        showingAll = false;
+    }
+});
+
+writeButton.addEventListener('click', () => {
+    reviewForm.style.display = 'block';
+    writeButton.style.display = 'none';
+});
+
+const form = reviewForm.querySelector('form');
+
+async function loadDynamicReviews() {
+    if (!window.currentProductId) return;
+
+    // Supprime les anciennes reviews dynamiques (pour éviter les doublons)
+    document.querySelectorAll('.review-card.dynamic-review').forEach(el => el.remove());
+
+    try {
+        const res = await fetch('/.netlify/functions/save-reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'get-reviews', productId: window.currentProductId })
+        });
+        const data = await res.json();
+
+        if (data.success && data.reviews) {
+            data.reviews.forEach(review => {
+                const newReview = document.createElement('div');
+                newReview.className = 'review-card dynamic-review';
+                const avatarLetter = review.fullName.charAt(0).toUpperCase();
+                const stars = '★'.repeat(review.rating);
+
+                newReview.innerHTML = `
+                    <div class="avatar">${avatarLetter}</div>
+                    <h4>${review.fullName}</h4>
+                    <div class="stars">${stars}</div>
+                    <span class="date">${review.date}</span>
+                    <h5>${review.title}</h5>
+                    <p>${review.text}</p>
+                    <div class="review-images"></div>
+                    <div class="social-icon"></div>
+                `;
+                reviewsList.appendChild(newReview);
+            });
         }
+    } catch (e) {
+        console.error("Erreur chargement reviews:", e);
+    }
+}
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('review-name').value.trim();
+    const email = document.getElementById('review-email').value.trim();
+    const rating = parseInt(document.getElementById('review-rating').value);
+    const title = document.getElementById('review-title').value.trim();
+    const text = document.getElementById('review-text').value.trim();
+
+    if (!name || !email || !rating || !title || !text) {
+        showErrorPopup("Veuillez remplir tous les champs");
+        return;
     }
 
-    const hiddenReviews = document.querySelectorAll('.review-card.hidden');
-    let showingAll = false;
+    const productId = window.currentProductId || 'unknown';
 
-    readMoreBtn.addEventListener('click', () => {
-        if (!showingAll) {
-            hiddenReviews.forEach(review => review.classList.remove('hidden'));
-            readMoreBtn.textContent = 'Close Reviews';
-            showingAll = true;
+    try {
+        const res = await fetch('/.netlify/functions/save-reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'save-review',
+                fullName: name,
+                email: email,
+                title: title,
+                rating: rating,
+                text: text,
+                productId: productId
+            })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            showErrorPopup("Review envoyée avec succès !");
+            loadDynamicReviews();           // recharge immédiatement
+            form.reset();
+            reviewForm.style.display = 'none';
+            writeButton.style.display = 'block';
         } else {
-            hiddenReviews.forEach(review => review.classList.add('hidden'));
-            readMoreBtn.textContent = 'Read more reviews';
-            showingAll = false;
+            showErrorPopup("Erreur : " + (data.error || "Inconnue"));
         }
-    });
+    } catch (err) {
+        showErrorPopup("Erreur réseau");
+    }
+});
 
-    writeButton.addEventListener('click', () => {
-        reviewForm.style.display = 'block';
-        writeButton.style.display = 'none'; // Optional: hide button after click
-    });
-
-    const form = reviewForm.querySelector('form');
-    form.noValidate = true;
-
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = document.getElementById('review-name').value.trim();
-        const rating = parseInt(document.getElementById('review-rating').value);
-        const title = document.getElementById('review-title').value.trim();
-        const text = document.getElementById('review-text').value.trim();
-
-        if (!name || !rating || !title || !text) return;
-
-        const newReview = document.createElement('div');
-        newReview.className = 'review-card';
-        const avatarLetter = name.charAt(0).toUpperCase();
-        const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).replace(/ /g, '-');
-        const stars = '★'.repeat(rating);
-
-        newReview.innerHTML = `
-            <div class="avatar">${avatarLetter}</div>
-            <h4>${name}</h4>
-            <div class="stars">${stars}</div>
-            <span class="date">${currentDate}</span>
-            <h5>${title}</h5>
-            <p>${text}</p>
-            <div class="review-images"></div>
-            <div class="social-icon"></div>
-        `;
-
-        reviewsList.appendChild(newReview);
-        counts[rating]++;
-        total++;
-        updateSummary();
-
-        // Clear form
-        document.getElementById('review-name').value = '';
-        document.getElementById('review-rating').value = '';
-        document.getElementById('review-title').value = '';
-        document.getElementById('review-text').value = '';
-
-        reviewForm.style.display = 'none';
-        writeButton.style.display = 'block';
-    });
-
-    updateSummary(); // Initial update
+updateSummary();
+loadDynamicReviews();

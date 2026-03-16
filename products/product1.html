@@ -1564,21 +1564,22 @@
     <button id="read-more">Read more reviews</button>
     <button id="write-review">Write a Review</button>
     <div id="review-form" style="display: none;">
-        <form>
-            <input type="text" id="review-name" placeholder="Your Name">
-            <select id="review-rating">
-                <option value="">Select Rating</option>
-                <option value="5">5 ★</option>
-                <option value="4">4 ★</option>
-                <option value="3">3 ★</option>
-                <option value="2">2 ★</option>
-                <option value="1">1 ★</option>
-            </select>
-            <input type="text" id="review-title" placeholder="Review Title">
-            <textarea id="review-text" placeholder="Your Review"></textarea>
-            <button type="submit">Submit Review</button>
-        </form>
-    </div>
+    <form>
+        <input type="text" id="review-name" placeholder="Your Name" required>
+        <input type="email" id="review-email" placeholder="Your Email" required>
+        <select id="review-rating" required>
+            <option value="">Select Rating</option>
+            <option value="5">5 ★</option>
+            <option value="4">4 ★</option>
+            <option value="3">3 ★</option>
+            <option value="2">2 ★</option>
+            <option value="1">1 ★</option>
+        </select>
+        <input type="text" id="review-title" placeholder="Review Title" required>
+        <textarea id="review-text" placeholder="Your Review" required></textarea>
+        <button type="submit">Submit Review</button>
+    </form>
+</div>
 </section>
 <!-- ==================== STORE INFOS SECTION ==================== -->
 <section class="store-infos-section">
