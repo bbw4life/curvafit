@@ -1359,6 +1359,175 @@
     }
   },
   {
+  "cj_id": "689838385",
+  "sku_internal": "AW-001",
+  "id": "ankle-weights",
+  "active": true,
+  "stock_managed_by": "cj",
+  "currency": "USD",
+  "last_updated": "2026-03-17",
+  "start_date": "2026-03-17",
+  "end_date": "2026-03-20",
+  "single_discount": 0,
+  "duo_discount": 10,
+  "trio_discount": 20,
+  "title": "Ankle Weights",
+  "description": "Adjustable ankle weights with soft neoprene wraps for comfort during walks and cardio.",
+  "price": 30.29,
+  "compare_price": 50.99,
+  "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/band_1.webp?v=1771462321",
+  "sizes": ["0.5kg Each", "1kg Each", "1.5kg Each", "2kg Each"],
+  "colors": [
+    { "name": "Black", "hex": "#000000", "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/band_1.webp?v=1771462321", "active": true },
+    { "name": "Pink", "hex": "#FF69B4", "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/band_2.webp?v=1771462321", "active": true }
+  ],
+  "variants": [
+    { "vid": "AW_BLACK_0.5", "color": "Black", "size": "0.5kg Each", "price": 22.99, "active": true },
+    { "vid": "AW_BLACK_1", "color": "Black", "size": "1kg Each", "price": 22.99, "active": true },
+    { "vid": "AW_BLACK_1.5", "color": "Black", "size": "1.5kg Each", "price": 22.99, "active": true },
+    { "vid": "AW_BLACK_2", "color": "Black", "size": "2kg Each", "price": 22.99, "active": true },
+    { "vid": "AW_PINK_0.5", "color": "Pink", "size": "0.5kg Each", "price": 22.99, "active": true },
+    { "vid": "AW_PINK_1", "color": "Pink", "size": "1kg Each", "price": 22.99, "active": true },
+    { "vid": "AW_PINK_1.5", "color": "Pink", "size": "1.5kg Each", "price": 22.99, "active": true },
+    { "vid": "AW_PINK_2", "color": "Pink", "size": "2kg Each", "price": 22.99, "active": true }
+  ],
+  "media": [
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/band_1.webp?v=1771462321",
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/band_2.webp?v=1771462321"
+  ],
+  "promo": { 
+  "start_date": "2026-03-17", 
+  "end_date": "2026-03-20", 
+  "single_discount": 0,
+   "duo_discount": 10, 
+   "trio_discount": 20 }
+},
+{
+  "cj_id": "689838386",
+  "sku_internal": "CT-001",
+  "id": "cooling-towel",
+  "active": true,
+  "stock_managed_by": "cj",
+  "currency": "USD",
+  "last_updated": "2026-03-17",
+  "start_date": "2026-03-17",
+  "end_date": "2026-03-20",
+  "single_discount": 0,
+  "duo_discount": 10,
+  "trio_discount": 20,
+  "title": "Cooling Towel",
+  "description": "Instant cooling effect with one snap of the wrist. Ultra-soft microfiber stays cool for hours.",
+  "price": 11.99,
+  "compare_price": 19.99,
+  "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_2.webp?v=1771457384",
+  "sizes": ["30x90cm", "40x100cm", "50x110cm"],
+  "colors": [
+    { "name": "Blue", "hex": "#2196F3", "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_2.webp?v=1771457384", "active": true },
+    { "name": "Pink", "hex": "#FF69B4", "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_3.webp?v=1771457384", "active": true }
+  ],
+  "variants": [
+    { "vid": "CT_BLUE_30", "color": "Blue", "size": "30x90cm", "price": 11.99, "active": true },
+    { "vid": "CT_BLUE_40", "color": "Blue", "size": "40x100cm", "price": 11.99, "active": true },
+    { "vid": "CT_BLUE_50", "color": "Blue", "size": "50x110cm", "price": 11.99, "active": true },
+    { "vid": "CT_PINK_30", "color": "Pink", "size": "30x90cm", "price": 11.99, "active": true },
+    { "vid": "CT_PINK_40", "color": "Pink", "size": "40x100cm", "price": 11.99, "active": true },
+    { "vid": "CT_PINK_50", "color": "Pink", "size": "50x110cm", "price": 11.99, "active": true }
+  ],
+  "media": [
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_2.webp?v=1771457384",
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_3.webp?v=1771457384"
+  ],
+  "promo": { "start_date": "2026-03-17", 
+  "end_date": "2026-03-20", 
+  "single_discount": 0, 
+  "duo_discount": 10, 
+  "trio_discount": 20 }
+},
+{
+  "cj_id": "689838387",
+  "sku_internal": "MB-001",
+  "id": "massage-ball",
+  "active": true,
+  "stock_managed_by": "cj",
+  "currency": "USD",
+  "last_updated": "2026-03-17",
+  "start_date": "2026-03-17",
+  "end_date": "2026-03-20",
+  "single_discount": 0,
+  "duo_discount": 10,
+  "trio_discount": 20,
+  "title": "Massage Ball",
+  "description": "Deep tissue massage ball for targeted muscle relief and recovery after workouts.",
+  "price": 9.99,
+  "compare_price": 17.99,
+  "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_3.webp?v=1771457384",
+  "sizes": ["6cm", "8cm", "10cm"],
+  "colors": [
+    { "name": "Black", "hex": "#000000", "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_3.webp?v=1771457384", "active": true },
+    { "name": "Pink", "hex": "#FF69B4", "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/band_1.webp?v=1771462321", "active": true }
+  ],
+  "variants": [
+    { "vid": "MB_BLACK_6", "color": "Black", "size": "6cm", "price": 9.99, "active": true },
+    { "vid": "MB_BLACK_8", "color": "Black", "size": "8cm", "price": 9.99, "active": true },
+    { "vid": "MB_BLACK_10", "color": "Black", "size": "10cm", "price": 9.99, "active": true },
+    { "vid": "MB_PINK_6", "color": "Pink", "size": "6cm", "price": 9.99, "active": true },
+    { "vid": "MB_PINK_8", "color": "Pink", "size": "8cm", "price": 9.99, "active": true },
+    { "vid": "MB_PINK_10", "color": "Pink", "size": "10cm", "price": 9.99, "active": true }
+  ],
+  "media": [
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_3.webp?v=1771457384",
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/band_1.webp?v=1771462321"
+  ],
+  "promo": { 
+    "start_date": "2026-03-17", 
+    "end_date": "2026-03-20", 
+    "single_discount": 0, 
+    "duo_discount": 10, 
+    "trio_discount": 20 }
+},
+{
+  "cj_id": "689838388",
+  "sku_internal": "GB-001",
+  "id": "gym-bag",
+  "active": true,
+  "stock_managed_by": "cj",
+  "currency": "USD",
+  "last_updated": "2026-03-17",
+  "start_date": "2026-03-17",
+  "end_date": "2026-03-20",
+  "single_discount": 0,
+  "duo_discount": 10,
+  "trio_discount": 20,
+  "title": "Gym Bag",
+  "description": "Spacious gym bag with reinforced handles and wet pocket separation. Built for curvy women who need durable, roomy storage.",
+  "price": 34.99,
+  "compare_price": 49.99,
+  "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_health_1.jpg?v=1771457668",
+  "sizes": ["20L", "30L", "40L"],
+  "colors": [
+    { "name": "Black", "hex": "#000000", "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_health_1.jpg?v=1771457668", "active": true },
+    { "name": "Rose", "hex": "#b83058", "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style.webp?v=1771457385", "active": true }
+  ],
+  "variants": [
+    { "vid": "GB_BLACK_20", "color": "Black", "size": "20L", "price": 34.99, "active": true },
+    { "vid": "GB_BLACK_30", "color": "Black", "size": "30L", "price": 34.99, "active": true },
+    { "vid": "GB_BLACK_40", "color": "Black", "size": "40L", "price": 34.99, "active": true },
+    { "vid": "GB_ROSE_20", "color": "Rose", "size": "20L", "price": 34.99, "active": true },
+    { "vid": "GB_ROSE_30", "color": "Rose", "size": "30L", "price": 34.99, "active": true },
+    { "vid": "GB_ROSE_40", "color": "Rose", "size": "40L", "price": 34.99, "active": true }
+  ],
+  "media": [
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_health_1.jpg?v=1771457668",
+    "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style.webp?v=1771457385"
+  ],
+  "promo": { 
+    "start_date": "2026-03-17",
+     "end_date": "2026-03-20", 
+     "single_discount": 0, 
+     "duo_discount": 10, 
+     "trio_discount": 20 }
+},
+  {
     "type": "settings",
     "tax_rate": 0.1,
     "shipping_cost": 10.00,
