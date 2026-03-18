@@ -3,21 +3,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ====================== QUALITÉ MAXIMALE IMAGES SHOPIFY ======================
-  // UNIQUEMENT sur cdn.shopify.com - remplace les variantes de taille par _master
-  // Ne touche PAS aux autres URLs (CDN externes, CJ, etc.)
   function upgradeShopifyImageUrl(url) {
     if (!url || typeof url !== 'string') return url;
-    if (!url.includes('cdn.shopify.com')) return url; // securite : Shopify CDN seulement
+    if (!url.includes('cdn.shopify.com')) return url;
     if (url.startsWith('data:') || url.includes('_master.')) return url;
-    // Remplace uniquement si une variante de taille Shopify connue est presente
     return url.replace(
       /_(pico|icon|thumb|small|compact|medium|large|grande|original|1024x1024|2048x2048|\d+x\d+|\d+x|x\d+)(\.(?:jpg|jpeg|png|webp|gif))(\?|$)/gi,
       '_master$2$3'
     );
   }
-  // ====================== FIN QUALITE MAXIMALE ======================
 
-  // ====================== IMAGES NETTES (ANTI-FLOU GLOBAL) ======================
+  // ====================== IMAGES NETTES ======================
   (function injectSharpImageStyles() {
     const style = document.createElement('style');
     style.id = 'sharp-images-style';
@@ -54,20 +50,15 @@ document.addEventListener('DOMContentLoaded', () => {
         max-width: 100%;
         height: auto;
       }
-
       img {
         image-rendering: auto;
         -webkit-font-smoothing: antialiased;
       }
-
-      /* Supprime tout blur appliqué via filter ou backdrop-filter sur les images */
       img[style*="blur"],
       img[class*="blur"] {
         filter: none !important;
         -webkit-filter: none !important;
       }
-
-      /* Force la qualité haute résolution sur les écrans Retina / HiDPI */
       @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
         img {
           image-rendering: -webkit-optimize-contrast;
@@ -77,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.head.appendChild(style);
   })();
-  // ====================== FIN IMAGES NETTES ======================
 
   let products = [];
 
@@ -191,8 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const settings = products.find(p => p.type === "settings") || {};
       const enableMediaZoom = (settings.enable_media_zoom || "no").toLowerCase() === "yes";
 
-      // ====================== NOUVEAU : SOCIAL LINKS ======================
-      // Injecte les liens réseaux sociaux depuis settings.social_links dans tous les footers
+      // SOCIAL LINKS
       const socialLinks = settings.social_links || {};
       const socialMap = {
         'fa-facebook-f':  socialLinks.facebook,
@@ -214,7 +203,6 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       });
-      // ====================== FIN SOCIAL LINKS ======================
 
       // Comparison table
       const comparisonTable = document.querySelector('.comparison-table tbody');
@@ -231,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
 
-      // ====================== PRODUCT CARDS ======================
+      // PRODUCT CARDS
       document.querySelectorAll('.product-card').forEach(card => {
         const id = card.dataset.id;
         const product = products.find(p => p.id === id);
@@ -274,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      // ====================== PAGE PRODUIT ======================
+      // PAGE PRODUIT
       const productSection = document.querySelector('.product-section');
       if (productSection) {
         const pid = productSection.dataset.productId;
@@ -283,46 +271,33 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof loadDynamicReviews === 'function') loadDynamicReviews();
         const prod = products.find(p => p.id === pid);
 
-        // ====================== NOUVEAU : RATING & REVIEWS COUNT ======================
-        // Injecte la note et le nombre de reviews depuis le JSON dans le bloc stars
         if (prod) {
           const rating = prod.rating || 4.8;
           const reviewsCount = prod.reviews_count || 0;
-
           const ratingEl = document.querySelector('.unique-stars');
           const ratingTextEl = document.querySelector('.unique-rating-text');
           const reviewsCountEl = document.querySelector('.unique-reviews');
-
           if (ratingEl) {
             ratingEl.dataset.rating = rating;
             ratingEl.innerHTML = '';
             for (let i = 0; i < 5; i++) {
               const star = document.createElement('span');
               star.classList.add('unique-star');
-              if (i + 1 <= Math.floor(rating)) {
-                star.classList.add('full');
-              } else if (i < rating && i + 1 > rating) {
-                star.classList.add('half');
-              }
+              if (i + 1 <= Math.floor(rating)) star.classList.add('full');
+              else if (i < rating && i + 1 > rating) star.classList.add('half');
               ratingEl.appendChild(star);
             }
           }
           if (ratingTextEl) ratingTextEl.textContent = rating.toFixed(1) + ' / 5';
           if (reviewsCountEl) reviewsCountEl.textContent = reviewsCount + ' reviews';
-
-          // Scroll vers reviews au clic sur étoiles / rating text / reviews count
           const scrollToReviews = () => {
             const reviewsSection = document.getElementById('reviews-section');
             if (reviewsSection) reviewsSection.scrollIntoView({ behavior: 'smooth' });
           };
-          if (ratingEl) ratingEl.style.cursor = 'pointer';
-          if (ratingEl) ratingEl.addEventListener('click', scrollToReviews);
-          if (ratingTextEl) ratingTextEl.style.cursor = 'pointer';
-          if (ratingTextEl) ratingTextEl.addEventListener('click', scrollToReviews);
-          if (reviewsCountEl) reviewsCountEl.style.cursor = 'pointer';
-          if (reviewsCountEl) reviewsCountEl.addEventListener('click', scrollToReviews);
+          if (ratingEl) { ratingEl.style.cursor = 'pointer'; ratingEl.addEventListener('click', scrollToReviews); }
+          if (ratingTextEl) { ratingTextEl.style.cursor = 'pointer'; ratingTextEl.addEventListener('click', scrollToReviews); }
+          if (reviewsCountEl) { reviewsCountEl.style.cursor = 'pointer'; reviewsCountEl.addEventListener('click', scrollToReviews); }
         }
-        // ====================== FIN RATING & REVIEWS COUNT ======================
 
         if (prod && prod.media) {
           populateMainProductMedia(prod.media);
@@ -1022,7 +997,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartMarquee         = cartDrawer.querySelector('.cart-marquee');
     const paymentIcons        = cartDrawer.querySelector('.payment-icons');
     const cartFooter          = cartDrawer.querySelector('.cart-drawer__footer');
-
     const countdown   = cartDrawer.querySelector('.cart-drawer__countdown');
     const progressBar = cartDrawer.querySelector('.cart-drawer__progress-container');
     const promoMsg    = cartDrawer.querySelector('.cart-promo-message');
@@ -1242,7 +1216,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }).catch(() => {});
   }
 
-  // ── openCartDrawer ──
   function openCartDrawer() {
     renderCart();
     cartDrawer.classList.add('active');
@@ -1270,7 +1243,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initCartPromoCodeSlider(promos);
   }
 
-  // ── 1. COUNTDOWN ─────────────────────────────────────────────
   function initCartCountdown(cd) {
     const body = cartDrawer.querySelector('.cart-drawer__body');
     if (!body) return;
@@ -1294,29 +1266,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const STORAGE_KEY = 'drawerCountdownEnd';
 
     function runCycle() {
-      // Vérifie si un timer actif existe encore dans localStorage
       const savedEnd = localStorage.getItem(STORAGE_KEY);
       const now = Date.now();
-
       let endTime;
       if (savedEnd && parseInt(savedEnd) > now) {
-        // Timer existant pas encore expiré → on le reprend
         endTime = parseInt(savedEnd);
       } else {
-        // Nouveau cycle
         endTime = now + totalSeconds * 1000;
         localStorage.setItem(STORAGE_KEY, endTime);
       }
-
       if (_countdownTimer) clearInterval(_countdownTimer);
       _countdownTimer = setInterval(() => {
         const timeEl = document.getElementById('drawerCountdownTime');
         const remaining = Math.floor((endTime - Date.now()) / 1000);
-
         if (remaining <= 0) {
           if (timeEl) timeEl.textContent = `0:00 ${suffix}`;
           clearInterval(_countdownTimer);
-          // Nouveau cycle après 3 secondes
           setTimeout(() => {
             localStorage.removeItem(STORAGE_KEY);
             _countdownStarted = false;
@@ -1324,7 +1289,6 @@ document.addEventListener('DOMContentLoaded', () => {
           }, 3000);
           return;
         }
-
         if (timeEl) {
           const m = Math.floor(remaining / 60);
           const s = remaining % 60;
@@ -1336,7 +1300,6 @@ document.addEventListener('DOMContentLoaded', () => {
     runCycle();
   }
 
-  // ── 2. PROGRESS BAR ──────────────────────────────────────────
   function updateCartProgressBar(cd) {
     const body = cartDrawer.querySelector('.cart-drawer__body');
     if (!body) return;
@@ -1380,7 +1343,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ── 3. PROMO MESSAGE ─────────────────────────────────────────
   function updateCartPromoMessage(cd) {
     const body = cartDrawer.querySelector('.cart-drawer__body');
     if (!body) return;
@@ -1417,7 +1379,6 @@ document.addEventListener('DOMContentLoaded', () => {
     span.className = `promo-text ${cls}`;
   }
 
-  // ── 4. BANNER SLIDER ─────────────────────────────────────────
   function initCartBanner(cd) {
     const body = cartDrawer.querySelector('.cart-drawer__body');
     if (!body) return;
@@ -1470,7 +1431,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, duration);
   }
 
-  // ── 5. PROMO CODE SLIDER ─────────────────────────────────────
   function initCartPromoCodeSlider(promos) {
     const body = cartDrawer.querySelector('.cart-drawer__body');
     if (!body || !promos.length) return;
@@ -1534,7 +1494,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 6000);
   }
 
-  // ── Fermeture / wishlist / checkout ──
   function closeCartDrawer() { cartDrawer.classList.remove('active'); overlay.classList.remove('active'); }
   function openWishlistModal() { renderWishlist(); wishlistModal.classList.add('active'); overlay.classList.add('active'); }
   function closeWishlistModal() { wishlistModal.classList.remove('active'); overlay.classList.remove('active'); }
@@ -1607,7 +1566,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ====================== PAUL BANNER (page principale) ======================
+  // ====================== PAUL BANNER ======================
   const paulContainer = document.getElementById('paul-banner');
   if (paulContainer) {
     const paulVideoUrl    = '';
@@ -1937,6 +1896,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (wishlistCountEl) wishlistCountEl.textContent = data.quantityInCart || 0;
       const historyContainer = document.querySelector('.order-history');
       if (!historyContainer) return;
+
       if (data.history && Array.isArray(data.history) && data.history.length > 0) {
         let html = `<h2>Order History</h2>`;
         [...data.history].reverse().forEach(order => {
@@ -1944,7 +1904,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="order-header"><strong>Date : ${order.date}</strong><strong>Total : $${parseFloat(order.total||0).toFixed(2)}</strong></div>
             <p><strong>Quantité totale :</strong> ${order.totalQuantity||0} produits</p>
             <div class="order-items">${order.items.map(item => `
-              <div class="order-item-clickable" onclick="handleOrderItemClick('${item.id||''}')">
+              <div class="order-item-clickable" data-id="${item.id||''}">
                 ${item.image_variant ? `<img src="${upgradeShopifyImageUrl(item.image_variant)}" class="order-item-image">` : ''}
                 <div>
                   <strong class="order-item-title">${item.title}</strong><br>
@@ -1955,18 +1915,41 @@ document.addEventListener('DOMContentLoaded', () => {
             </div></div>`;
         });
         historyContainer.innerHTML = html;
-        setTimeout(() => {
-          document.addEventListener('click', function(e) {
-            const clickable = e.target.closest('.order-item-clickable');
-            if (!clickable) return;
-            const id = clickable.dataset.id;
-            if (!id) return;
-            e.stopImmediatePropagation();
-            const url = window.getProductUrl(id);
-            if (url === 'shop.html') { console.error(`❌ ID=${id} NON TROUVÉ`); return; }
-            window.location.href = url;
+
+        // ── FIX CLICK : attend que getProductUrl soit disponible ──
+        function attachOrderClickListeners() {
+          historyContainer.querySelectorAll('.order-item-clickable').forEach(el => {
+            if (el.dataset.listenerAttached) return;
+            el.dataset.listenerAttached = '1';
+            el.style.cursor = 'pointer';
+            el.addEventListener('click', function() {
+              const id = this.dataset.id;
+              if (!id) return;
+              if (typeof window.getProductUrl !== 'function') {
+                // retry si pas encore prêt
+                setTimeout(() => this.click(), 200);
+                return;
+              }
+              const url = window.getProductUrl(id);
+              if (!url || url === 'shop.html') { console.error(`❌ Produit ID=${id} introuvable`); return; }
+              window.location.href = url;
+            });
           });
-        }, 300);
+        }
+
+        attachOrderClickListeners();
+
+        // Si getProductUrl pas encore dispo, retry jusqu'à 5s
+        if (typeof window.getProductUrl !== 'function') {
+          const retryInterval = setInterval(() => {
+            if (typeof window.getProductUrl === 'function') {
+              clearInterval(retryInterval);
+              attachOrderClickListeners();
+            }
+          }, 150);
+          setTimeout(() => clearInterval(retryInterval), 5000);
+        }
+
       } else {
         historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
       }
@@ -2023,28 +2006,28 @@ window.addEventListener('load', () => {
     setTimeout(() => { const overlayEl = document.getElementById('paulPopup'); if (overlayEl) overlayEl.classList.add('active'); }, 150);
   }
 
+  // Gardé pour compatibilité avec d'éventuels appels externes
   window.handleOrderItemClick = function(id) {
     if (!id) return;
     if (typeof window.getProductUrl === 'function') {
-        const url = window.getProductUrl(id);
-        if (url === 'shop.html') { console.error(`❌ ID=${id} introuvable`); return; }
-        window.location.href = url;
-        return;
+      const url = window.getProductUrl(id);
+      if (!url || url === 'shop.html') { console.error(`❌ ID=${id} introuvable`); return; }
+      window.location.href = url;
+      return;
     }
-    const maxWait = 5000;
-    const interval = 100;
+    const maxWait = 5000, interval = 100;
     let waited = 0;
     const retry = setInterval(() => {
-        waited += interval;
-        if (typeof window.getProductUrl === 'function') {
-            clearInterval(retry);
-            const url = window.getProductUrl(id);
-            if (url === 'shop.html') { console.error(`❌ ID=${id} introuvable`); return; }
-            window.location.href = url;
-        } else if (waited >= maxWait) {
-            clearInterval(retry);
-            console.error('getProductUrl jamais disponible');
-        }
+      waited += interval;
+      if (typeof window.getProductUrl === 'function') {
+        clearInterval(retry);
+        const url = window.getProductUrl(id);
+        if (!url || url === 'shop.html') { console.error(`❌ ID=${id} introuvable`); return; }
+        window.location.href = url;
+      } else if (waited >= maxWait) {
+        clearInterval(retry);
+        console.error('getProductUrl jamais disponible');
+      }
     }, interval);
-};
+  };
 });
