@@ -276,7 +276,70 @@ a { text-decoration: none; color: inherit; }
     font-size: 18px;
 }
 
-.logo img { height: 56px; }
+
+
+/* ================================================================
+   LOGO — Effets premium
+================================================================ */
+.logo {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.logo::before {
+    content: '';
+    position: absolute;
+    inset: -8px -14px;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(184,48,88,0.08), transparent);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.40s ease;
+    pointer-events: none;
+}
+
+.logo:hover::before { opacity: 1; }
+
+.logo img {
+    height: 56px;
+    transition: all 0.40s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 2px 8px rgba(184,48,88,0.18));
+    transform-origin: center bottom;
+}
+
+.logo img:hover {
+    transform: scale(1.08) translateY(-2px);
+    filter:
+        drop-shadow(0 6px 18px rgba(184,48,88,0.32))
+        drop-shadow(0 0 28px rgba(196,148,58,0.20))
+        brightness(1.04);
+}
+
+/* Shimmer sur le logo au hover */
+.logo a {
+    position: relative;
+    overflow: visible;
+    display: block;
+}
+
+.logo a::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -120%;
+    width: 60%; height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.45),
+        transparent
+    );
+    transform: skewX(-20deg);
+    transition: left 0.55s ease;
+    pointer-events: none;
+}
+
+.logo a:hover::after { left: 160%; }
+
 
 .main-nav ul {
     display: flex;
@@ -293,63 +356,183 @@ a { text-decoration: none; color: inherit; }
     font-weight: 500;
     color: var(--slate);
     border-radius: var(--radius-sm);
-    transition: var(--transition);
+    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     white-space: nowrap;
+    overflow: hidden;
 }
 
-.main-nav a i { font-size: 14px; }
+/* Background shimmer au hover */
+.main-nav a::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(184,48,88,0.06), rgba(107,52,96,0.06));
+    border-radius: var(--radius-sm);
+    opacity: 0;
+    transform: scale(0.85);
+    transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
+.main-nav a:hover::before { opacity: 1; transform: scale(1); }
+
+/* Ligne sous le lien */
 .main-nav a::after {
     content: '';
     position: absolute;
     bottom: 4px; left: 12px; right: 12px;
     height: 2px;
-    background: var(--rose);
+    background: linear-gradient(90deg, var(--rose), var(--plum));
     border-radius: 2px;
     transform: scaleX(0);
-    transition: transform 0.3s ease;
+    transition: transform 0.30s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .main-nav a:hover::after,
 .main-nav a.active::after { transform: scaleX(1); }
 
-.main-nav a:hover { color: var(--rose); background: var(--rose-ultra); }
-.main-nav a.active { color: var(--rose); font-weight: 600; }
+.main-nav a i {
+    font-size: 14px;
+    transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
+.main-nav a:hover i { transform: scale(1.25) rotate(5deg); color: var(--rose); }
+
+.main-nav a:hover { color: var(--rose); background: var(--rose-ultra); }
+
+/* ── ACTIVE STATE ── */
+.main-nav a.active {
+    color: var(--rose);
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(184,48,88,0.09), rgba(107,52,96,0.06));
+    box-shadow:
+        0 0 0 1px rgba(184,48,88,0.14),
+        inset 0 1px 0 rgba(255,255,255,0.60);
+}
+
+.main-nav a.active i {
+    color: var(--rose);
+    filter: drop-shadow(0 0 4px rgba(184,48,88,0.40));
+    animation: iconPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(184,48,88,0.40)); }
+    50%       { transform: scale(1.15); filter: drop-shadow(0 0 8px rgba(184,48,88,0.65)); }
+}
+
+/* ================================================================
+   HAMBURGER
+================================================================ */
 .hamburger-menu {
     display: none;
     cursor: pointer;
     font-size: 22px;
     color: var(--rose);
     padding: 8px;
+    transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: var(--radius-sm);
 }
 
+.hamburger-menu:hover {
+    background: var(--rose-ultra);
+    transform: scale(1.10) rotate(5deg);
+    box-shadow: 0 0 0 1px rgba(184,48,88,0.18);
+}
+
+/* ================================================================
+   MOBILE NAV — Animations d'ouverture
+================================================================ */
 @media (max-width: 900px) {
     .header-container { justify-content: center; position: relative; }
     .logo { margin: 0 auto; }
     .logo img { height: 46px; }
+
     .hamburger-menu {
         display: block;
         position: absolute;
         right: 16px; top: 50%;
         transform: translateY(-50%);
     }
+
+    .hamburger-menu:hover { transform: translateY(-50%) scale(1.10) rotate(5deg); }
+
     .main-nav {
         display: none;
         position: absolute;
         top: 100%; left: 0;
         width: 100%;
         background: rgba(253,248,245,0.98);
-        backdrop-filter: blur(20px);
-        box-shadow: 0 8px 30px rgba(0,0,0,0.10);
-        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        box-shadow: 0 12px 40px rgba(107,52,96,0.14), 0 0 0 1px var(--border);
+        border-bottom: 2px solid rgba(184,48,88,0.12);
+        overflow: hidden;
+        /* État fermé */
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(-8px);
+        transition:
+            max-height 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity    0.32s cubic-bezier(0.4, 0, 0.2, 1),
+            transform  0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .main-nav.active { display: block; }
+
+    .main-nav.active {
+        display: block;
+        max-height: 600px;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
     .main-nav ul { flex-direction: column; gap: 0; }
-    .main-nav li { border-bottom: 1px solid var(--border); }
-    .main-nav a { padding: 16px 24px; border-radius: 0; }
+
+    .main-nav li {
+        border-bottom: 1px solid var(--border);
+        opacity: 0;
+        transform: translateX(-16px);
+        transition:
+            opacity   0.28s ease,
+            transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Stagger animation sur chaque item */
+    .main-nav.active li:nth-child(1)  { opacity: 1; transform: translateX(0); transition-delay: 0.04s; }
+    .main-nav.active li:nth-child(2)  { opacity: 1; transform: translateX(0); transition-delay: 0.08s; }
+    .main-nav.active li:nth-child(3)  { opacity: 1; transform: translateX(0); transition-delay: 0.12s; }
+    .main-nav.active li:nth-child(4)  { opacity: 1; transform: translateX(0); transition-delay: 0.16s; }
+    .main-nav.active li:nth-child(5)  { opacity: 1; transform: translateX(0); transition-delay: 0.20s; }
+    .main-nav.active li:nth-child(6)  { opacity: 1; transform: translateX(0); transition-delay: 0.24s; }
+    .main-nav.active li:nth-child(7)  { opacity: 1; transform: translateX(0); transition-delay: 0.28s; }
+    .main-nav.active li:nth-child(8)  { opacity: 1; transform: translateX(0); transition-delay: 0.32s; }
+    .main-nav.active li:nth-child(9)  { opacity: 1; transform: translateX(0); transition-delay: 0.36s; }
+    .main-nav.active li:nth-child(10) { opacity: 1; transform: translateX(0); transition-delay: 0.40s; }
+
+    .main-nav a {
+        padding: 15px 24px;
+        border-radius: 0;
+        font-size: 0.92rem;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+        transition: all 0.22s ease;
+    }
+
     .main-nav a::after { display: none; }
+    .main-nav a::before { border-radius: 0; }
+
+    .main-nav a:hover {
+        background: linear-gradient(90deg, var(--rose-ultra), transparent);
+        border-left-color: var(--rose);
+        padding-left: 30px;
+    }
+
+    .main-nav a.active {
+        background: linear-gradient(90deg, rgba(184,48,88,0.09), transparent);
+        border-left: 3px solid var(--rose);
+        padding-left: 30px;
+        box-shadow: none;
+    }
+
     .search-icon { margin-left: 16px; }
 }
 
@@ -1910,7 +2093,7 @@ a { text-decoration: none; color: inherit; }
    FINAL CTA
 ───────────────────────────────────────────── */
 .final-cta-section {
-    padding: 80px 0;
+    padding: 20px 0;
     background: linear-gradient(135deg, var(--charcoal) 0%, var(--plum) 50%, var(--rose) 100%);
     text-align: center;
     position: relative;
@@ -4657,7 +4840,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 ================================================================ */
 .hero-section {
     position: relative;
-    height: 580px;
+    height: 450px;
     overflow: hidden;
 }
 
@@ -5394,7 +5577,7 @@ tbody tr:hover { background: var(--rose-ultra); }
    FINAL CTA SECTION
 ================================================================ */
 .final-cta-section {
-    padding: 80px 20px;
+    padding: 20px 20px;
     background: linear-gradient(135deg, var(--charcoal, #1e1a1c) 0%, #2a1520 50%, #180f1c 100%);
     text-align: center;
     position: relative;
@@ -5843,137 +6026,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 
 .overlay.active { display: block; opacity: 1; }
 
-/* ================================================================
-   CART DRAWER
-================================================================ */
-.cart-drawer {
-    position: fixed;
-    top: 0;
-    right: -450px;
-    width: 450px;
-    height: 100%;
-    background: white;
-    box-shadow: -4px 0 40px rgba(20,5,15,0.16);
-    transition: right 0.3s ease;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    padding: 10px 10px;
-}
 
-.cart-drawer.active { right: 0; }
-
-.drawer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid rgba(192,56,94,0.10);
-}
-
-.drawer-header h3 {
-    font-family: var(--font-display, Georgia, serif);
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--charcoal, #1e1a1c);
-}
-
-.close-drawer {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--mist, #8e7e85);
-    transition: color 0.2s;
-}
-
-.close-drawer:hover { color: var(--rose, #c0385e); }
-
-.cart-items {
-    flex: 1;
-    overflow-y: auto;
-    min-height: 0;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.cart-items::-webkit-scrollbar { display: none; }
-
-.reviews-carousel, .cart-marquee, .payment-icons, .cart-footer { flex-shrink: 0; }
-
-.cart-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    border-bottom: 1px solid rgba(192,56,94,0.08);
-    padding-bottom: 10px;
-}
-
-.cart-item img {
-    width: 70px; height: 70px;
-    object-fit: cover;
-    margin-right: 10px;
-    border-radius: 8px;
-}
-
-.cart-item h4 { flex-grow: 1; font-size: 1rem; }
-.cart-item p { font-size: 0.9rem; margin-right: 10px; color: var(--rose, #c0385e); font-weight: 600; }
-
-.quantity { display: flex; align-items: center; gap: 5px; }
-
-.quantity button {
-    background: var(--rose-pale, #fce8ef);
-    color: var(--rose, #c0385e);
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-weight: 700;
-    transition: all 0.2s;
-}
-
-.quantity button:hover { background: var(--rose, #c0385e); color: #fff; }
-
-.remove-item {
-    background: none;
-    border: none;
-    color: rgb(241,16,16);
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.remove-item:hover { transform: scale(1.15); }
-
-.cart-footer {
-    margin-top: 15px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(192,56,94,0.10);
-    background: white;
-}
-
-.subtotal { font-weight: bold; }
-
-.checkout {
-    width: 100%;
-    margin-top: 10px;
-    padding: 12px;
-    background: linear-gradient(135deg, var(--rose, #c0385e), var(--plum, #7b3f6e));
-    color: white;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 600;
-    transition: all 0.3s;
-    box-shadow: 0 4px 14px rgba(192,56,94,0.28);
-}
-
-.checkout:hover {
-    background: linear-gradient(135deg, var(--plum, #7b3f6e), var(--rose, #c0385e));
-    box-shadow: 0 6px 22px rgba(192,56,94,0.42);
-    transform: translateY(-1px);
-}
 
 /* ================================================================
    WISHLIST MODAL

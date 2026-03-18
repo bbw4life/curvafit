@@ -316,7 +316,6 @@ section + section { margin-top: var(--section-gap) !important; }
 .sanaica-banner p  { color:rgba(255,255,255,0.86) !important; }
 .success-hero h1 { color:var(--gold-light) !important; }
 .success-hero p   { color:rgba(255,255,255,0.86) !important; }
-.paul-banner h1 { color:#f0e8f5; }
 
 @media (max-width:768px) {
     .home-hero-banner { min-height:76vh; }
@@ -1176,7 +1175,7 @@ section + section { margin-top: var(--section-gap) !important; }
    FINAL CTA
 ───────────────────────────────────────────── */
 .final-cta-section {
-    padding:72px 0;
+    padding:20px 0;
     background:linear-gradient(135deg, var(--charcoal) 0%, var(--plum) 52%, var(--rose) 100%);
     text-align:center;
     position:relative;
@@ -1211,9 +1210,6 @@ section + section { margin-top: var(--section-gap) !important; }
 .educational-section,
 .timeline-journey-section,
 .submit-story-section { padding:var(--section-pad) 0; }
-
-.paul-banner { background-size:cover; background-position:center; min-height:380px; display:flex; align-items:center; justify-content:center; text-align:center; position:relative; }
-.paul-banner h1 { color:#f0e8f5; }
 
 /* Trust/Success banners */
 .trust-banner-section .banner-image, .success-banner-section .banner-image {
@@ -1525,7 +1521,6 @@ section + section { margin-top: var(--section-gap) !important; }
 .value-card:hover { transform:translateY(-8px); box-shadow:var(--shadow-lift); border-color:var(--border-mid); }
 
 .why-different-section { padding:var(--section-pad) 0; background:#fff; }
-.comparison-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; max-width:780px; margin:0 auto; border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow-mid); }
 .comparison-header { font-weight:700; text-align:center; padding:13px; background:linear-gradient(135deg, var(--rose), var(--plum)); color:#fff; font-size:0.86rem; letter-spacing:0.06em; }
 .comparison-item { padding:13px; border:1px solid var(--border); text-align:center; background:#fff; font-size:0.90rem; color:var(--slate); transition:var(--transition); cursor:default; }
 .comparison-item:hover { background:var(--rose-ultra); color:var(--charcoal); transform:scale(1.02); z-index:1; position:relative; }
@@ -1559,10 +1554,6 @@ section + section { margin-top: var(--section-gap) !important; }
 /* ─────────────────────────────────────────────
    CONTACT PAGE
 ───────────────────────────────────────────── */
-.contact-banner { background-size:cover; background-position:center; min-height:420px; display:flex; align-items:center; justify-content:center; text-align:center; position:relative; }
-.contact-banner h1 { color:#f0e8f5; }
-.contact-banner h2 { color:#fff; margin:9px 0; }
-.contact-banner p  { color:rgba(255,255,255,0.80); max-width:580px; margin:0 auto; }
 
 .contact-options-section { padding:var(--section-pad) 0; background:var(--rose-ultra); }
 .options-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:26px; }
@@ -1805,7 +1796,6 @@ details p { padding:14px 22px 18px; border-top:1px solid var(--border); font-siz
     :root { --section-pad:38px; --section-pad-sm:22px; }
     .gallery-grid, .coaches-grid, .blog-grid { grid-template-columns:1fr; }
     .story-grid, .founder-grid, .community-grid { grid-template-columns:1fr; }
-    .comparison-grid { grid-template-columns:1fr; }
     .split-layout { flex-direction:column; }
     .parallax-background { background-attachment:scroll !important; }
     .partner-logos img { height:62px; width:62px; }
@@ -1813,8 +1803,7 @@ details p { padding:14px 22px 18px; border-top:1px solid var(--border); font-siz
     .toc-list li { flex:1 1 100%; }
     .community-text { padding-left:0; text-align:center; }
     .community-section h2 { font-size:2rem; }
-    .paul-banner { min-height:460px; }
-    .about-banner, .blog-banner, .contact-banner, .careers-banner { min-height:420px; }
+    .about-banner, .blog-banner, .careers-banner { min-height:420px; }
     .popular-carousel { flex-direction:column; }
     .category-filters { flex-direction:row; }
     .interaction-grid, .groups-grid, .badges-grid, .stories-grid, .stat-grid, .forum-grid { grid-template-columns:1fr; }
@@ -1833,4 +1822,110 @@ details p { padding:14px 22px 18px; border-top:1px solid var(--border); font-siz
 @media (min-width:769px) {
     .privacy-content { display:grid; grid-template-columns:1fr 3fr; gap:26px; }
     .privacy-toc { position:sticky; top:88px; align-self:start; }
+}
+
+/* ── Why We're Different — Comparison Grid RESPONSIVE FIX ── */
+.comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    max-width: 780px;
+    margin: 0 auto;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-mid);
+    background: var(--border); /* la couleur des séparateurs */
+}
+
+.comparison-header {
+    font-weight: 700;
+    text-align: center;
+    padding: 13px;
+    background: linear-gradient(135deg, var(--rose), var(--plum));
+    color: #fff;
+    font-size: 0.86rem;
+    letter-spacing: 0.06em;
+}
+
+.comparison-item {
+    padding: 13px;
+    text-align: center;
+    background: #fff;
+    font-size: 0.90rem;
+    color: var(--slate);
+    transition: var(--transition);
+    cursor: default;
+}
+
+.comparison-item:hover {
+    background: var(--rose-ultra);
+    color: var(--charcoal);
+}
+
+/* ── MOBILE FIX ── */
+@media (max-width: 640px) {
+    .comparison-grid {
+        grid-template-columns: 1fr;
+        background: transparent;
+        gap: 8px;
+    }
+
+    /* Cache les headers sur mobile, on les recréé via ::before */
+    .comparison-header:first-child {
+        display: none;
+    }
+
+    .comparison-header:nth-child(2) {
+        display: none;
+    }
+
+    /* Chaque paire de items devient une ligne */
+    .comparison-item {
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-soft);
+        position: relative;
+        padding: 10px 14px;
+    }
+
+    /* Items de gauche (Traditional) — fond neutre */
+    .comparison-item:nth-child(odd) {
+        background: #fff5f7;
+        border-left: 3px solid #dc3545;
+        color: var(--slate);
+        font-size: 0.84rem;
+    }
+
+    .comparison-item:nth-child(odd)::before {
+        content: '✗ Traditional: ';
+        font-weight: 700;
+        color: #dc3545;
+        font-size: 0.72rem;
+        display: block;
+        margin-bottom: 2px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    /* Items de droite (CurvaFit) — fond rose */
+    .comparison-item:nth-child(even) {
+        background: linear-gradient(135deg, var(--rose-pale), #f0e8f4);
+        border-left: 3px solid var(--rose);
+        color: var(--charcoal);
+        font-weight: 600;
+        font-size: 0.84rem;
+        margin-top: -4px;
+        border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    .comparison-item:nth-child(even)::before {
+        content: '✓ CurvaFit: ';
+        font-weight: 700;
+        color: var(--rose);
+        font-size: 0.72rem;
+        display: block;
+        margin-bottom: 2px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
 }

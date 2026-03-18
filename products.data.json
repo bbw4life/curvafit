@@ -1527,36 +1527,35 @@
      "duo_discount": 10, 
      "trio_discount": 20 }
 },
-  {
+ {
     "type": "settings",
     "tax_rate": 0.1,
     "shipping_cost": 10.00,
+    "cart_drawer": {
+      "countdown_minutes": 10,
+      "countdown_text": "⚡ Offer expires in:",
+      "countdown_suffix": "min",
+      "free_shipping_threshold": 75,
+      "progress_message": "Add ${remaining} more for FREE shipping!",
+      "progress_success_message": "🎉 You've unlocked FREE shipping!",
+      "promo_buy_quantity": 3,
+      "promo_get_quantity": 1,
+      "promo_initial_message": "Buy {buy} items, get {get} FREE!",
+      "promo_progress_message": "Add {remaining} more, get {get} FREE!",
+      "promo_complete_message": "🎁 Congrats! You get {get} FREE item!",
+      "banner_slides": [
+        { "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb4.jpg?v=1768321817", "text": "You are BEAUTIFUL just as you are!" },
+        { "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb_3.jpg?v=1768321816", "text": "Your confidence is your superpower." },
+        { "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb_1.jpg?v=1768321816", "text": "BBW = Bold, Beautiful, Worthy!" }
+      ],
+      "banner_slide_duration_ms": 5000
+    },
     "promos": [
-      {
-        "code": "PAUL81",
-        "items": 10,
-        "percent": 40
-      },
-      {
-        "code": "CURVA15",
-        "items": 4,
-        "percent": 20
-      },
-      {
-        "code": "FITNESS25",
-        "items": 5,
-        "percent": 25
-      },
-      {
-        "code": "BUNDLEFREE",
-        "items": 6,
-        "percent": 30
-      },
-      {
-        "code": "CURVA40",
-        "items": 7,
-        "percent": 40
-      }
+      { "code": "PAUL81",     "items": 10, "percent": 40 },
+      { "code": "CURVA15",    "items": 4,  "percent": 20 },
+      { "code": "FITNESS25",  "items": 5,  "percent": 25 },
+      { "code": "BUNDLEFREE", "items": 6,  "percent": 30 },
+      { "code": "CURVA40",    "items": 7,  "percent": 40 }
     ],
     "enable_media_zoom": "yes"
   }

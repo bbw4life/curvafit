@@ -1771,86 +1771,80 @@
 <script src="/script.js"></script>
 <script src="/products.js"></script>
 <div class="overlay"></div>
-<div class="cart-drawer">
+    <div class="cart-drawer">
     <div class="drawer-header">
         <h3>Your Cart</h3>
-        <button class="close-drawer">X</button>
+        <button class="close-drawer">✕</button>
     </div>
-    <div class="cart-items"></div>
-    <div class="empty-cart" style="display: none;">
-        <h3>Your cart is empty</h3>
-        <p>Continue shopping to add items.</p>
-        <a href="/shop.html" class="cta button-3d">Shop Now</a>
-    </div>
-    <div class="reviews-carousel">
-        <div class="review-item">
-            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/cuv_5.jpg?v=1771453843" alt="Avatar" class="review-avatar">
-            <div class="review-content">
-                <h4>Jane Doe</h4>
-                <div class="review-stars">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
+    <div class="cart-drawer__body">
+        <!-- Produits du panier -->
+        <div class="cart-items"></div>
+
+        <!-- Panier vide -->
+        <div class="empty-cart" style="display:none;">
+            <div class="empty-cart__icon">🛒</div>
+            <h3>Your cart is empty</h3>
+            <p>Add products to start shopping.</p>
+            <a href="shop.html" class="cta button-3d">Shop Now</a>
+        </div>
+
+        <!-- Reviews -->
+        <div class="reviews-carousel">
+            <div class="review-item">
+                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/cuv_5.jpg?v=1771453843" alt="Avatar" class="review-avatar">
+                <div class="review-content">
+                    <h4>Jane Doe</h4>
+                    <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p>"Great products, highly recommend!"</p>
+                    <span class="review-date">2 days ago</span>
+                    <span class="verified-badge"><i class="fab fa-google"></i></span>
                 </div>
-                <p>"Great products, highly recommend!"</p>
-                <span class="review-date">2 days ago</span>
-                <span class="verified-badge"><i class="fab fa-google"></i></span>
+            </div>
+            <div class="review-item">
+                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/cuv_2.jpg?v=1771453353" alt="Avatar" class="review-avatar">
+                <div class="review-content">
+                    <h4>Emily Smith</h4>
+                    <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p>"Excellent quality and fast shipping."</p>
+                    <span class="review-date">1 week ago</span>
+                    <span class="verified-badge"><i class="fab fa-google"></i></span>
+                </div>
+            </div>
+            <div class="review-item">
+                <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style.webp?v=1771457385" alt="Avatar" class="review-avatar">
+                <div class="review-content">
+                    <h4>Sara Johnson</h4>
+                    <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p>"Love the gear, perfect for my workouts."</p>
+                    <span class="review-date">3 days ago</span>
+                    <span class="verified-badge"><i class="fab fa-google"></i></span>
+                </div>
             </div>
         </div>
-        <div class="review-item">
-            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/cuv_2.jpg?v=1771453353" alt="Avatar" class="review-avatar">
-            <div class="review-content">
-                <h4>Emily Smith</h4>
-                <div class="review-stars">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                </div>
-                <p>"Excellent quality and fast shipping."</p>
-                <span class="review-date">1 week ago</span>
-                <span class="verified-badge"><i class="fab fa-google"></i></span>
+
+        <!-- Marquee -->
+        <div class="marquee-container cart-marquee">
+            <div class="marquee-content">
+                <span>Free Shipping on Orders Over $50!</span>
+                <span>Secure Checkout Guaranteed!</span>
+                <span>30-Day Money Back Guarantee!</span>
+                <span>Shop Now and Save Big!</span>
             </div>
         </div>
-        <div class="review-item">
-            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style.webp?v=1771457385" alt="Avatar" class="review-avatar">
-            <div class="review-content">
-                <h4>Sara Johnson</h4>
-                <div class="review-stars">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                </div>
-                <p>"Love the gear, perfect for my workouts."</p>
-                <span class="review-date">3 days ago</span>
-                <span class="verified-badge"><i class="fab fa-google"></i></span>
-            </div>
+
+        <!-- Icônes paiement -->
+        <div class="payment-icons">
+            <i class="fab fa-cc-visa"></i>
+            <i class="fab fa-cc-mastercard"></i>
+            <i class="fab fa-cc-paypal"></i>
+            <i class="fab fa-cc-amex"></i>
+            <i class="fab fa-cc-discover"></i>
+            <i class="fab fa-cc-apple-pay"></i>
+            <i class="fab fa-google-pay"></i>
+            <i class="fab fa-cc-stripe"></i>
         </div>
     </div>
-    <div class="marquee-container cart-marquee">
-        <div class="marquee-content">
-            <span>Free Shipping on Orders Over $50!</span>
-            <span>Secure Checkout Guaranteed!</span>
-            <span>30-Day Money Back Guarantee!</span>
-            <span>Shop Now and Save Big!</span>
-        </div>
-    </div>
-    <div class="payment-icons">
-    <i class="fab fa-cc-visa"></i>
-    <i class="fab fa-cc-mastercard"></i>
-    <i class="fab fa-cc-paypal"></i>
-    <i class="fab fa-cc-amex"></i>
-    <i class="fab fa-cc-discover"></i>
-    <i class="fab fa-cc-apple-pay"></i>
-    <i class="fab fa-google-pay"></i>
-    <i class="fab fa-cc-stripe"></i>
-</div>
-    <div class="cart-footer">
+    <div class="cart-drawer__footer">
         <p class="subtotal">Subtotal: $0.00</p>
         <button class="checkout">Checkout</button>
     </div>
