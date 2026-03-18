@@ -1956,27 +1956,43 @@ document.addEventListener('DOMContentLoaded', () => {
  
       if (data.history && Array.isArray(data.history) && data.history.length > 0) {
  
-        // ── Récupère le vrai nom de couleur depuis products.data.json ──
-        // Cherche le produit par item.id, puis le variant par item.cj_variant_id → champ color
-        function getColorFromProducts(item) {
-          const prods = window.__allProducts || [];
-          // 1. Trouver le produit par son id
-          const product = prods.find(p => String(p.id) === String(item.id || item.product_id || ''));
-          if (product && product.variants && product.variants.length > 0) {
-            // 2. Trouver le variant exact par cj_variant_id (= vid dans products.data.json)
-            const variantId = item.cj_variant_id || item.vid || '';
-            if (variantId) {
-              const variant = product.variants.find(v => String(v.vid) === String(variantId));
+        // ══════════════════════════════════════════════════════════════
+        // RÉCUPÉRATION DE LA COULEUR — toutes les sources possibles
+        //
+        // PayPal sauvegarde : description = "Pink|https://image..."
+        //                     sku         = "CJ_PINK_XL"
+        //
+        // On cherche dans cet ordre :
+        // 1. item.color                    (champ direct backend)
+        // 2. item.description avant le |   (format PayPal)
+        // 3. item.sku → vid dans products  (PayPal sku = cj_variant_id)
+        // 4. item.cj_variant_id → vid      (champ direct)
+        // ══════════════════════════════════════════════════════════════
+        function resolveColor(item, prods) {
+          // 1. Champ direct color
+          if (item.color && item.color !== 'N/A' && item.color.trim() !== '') return item.color.trim();
+ 
+          // 2. PayPal : description = "ColorName|imageUrl"
+          if (item.description && typeof item.description === 'string') {
+            const part = item.description.split('|')[0].trim();
+            if (part && part !== 'N/A' && part !== '') return part;
+          }
+ 
+          // 3. PayPal sku OU cj_variant_id → chercher le vid dans products.data.json
+          const vidToFind = item.sku || item.cj_variant_id || item.vid || '';
+          const productId = item.id || item.product_id || '';
+          if (vidToFind && prods && prods.length > 0) {
+            const product = prods.find(p => String(p.id) === String(productId));
+            if (product && product.variants) {
+              const variant = product.variants.find(v => String(v.vid) === String(vidToFind));
               if (variant && variant.color) return variant.color;
             }
-            // 3. Fallback : premier variant du produit si un seul choix
-            if (product.variants.length === 1 && product.variants[0].color) {
-              return product.variants[0].color;
-            }
           }
-          // 4. Dernier recours : champ direct du backend
-          const direct = item.variant_color || item.color || item.variant_name || '';
-          if (direct && direct !== 'N/A') return direct;
+ 
+          // 4. Autres champs fallback
+          const fallback = item.variant_color || item.variant_name || '';
+          if (fallback && fallback !== 'N/A') return fallback;
+ 
           return '';
         }
  
@@ -1990,7 +2006,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return isInside ? `product${idx + 1}.html` : `products/product${idx + 1}.html`;
         }
  
-        // ── Construction du HTML ──
+        // ── Construction du DOM — sans innerHTML pour éviter l'écrasement des listeners ──
         historyContainer.innerHTML = '<h2>Order History</h2>';
         const sorted = [...data.history].reverse();
  
@@ -2000,9 +2016,7 @@ document.addEventListener('DOMContentLoaded', () => {
  
           const orderHeader = document.createElement('div');
           orderHeader.className = 'order-header';
-          orderHeader.innerHTML = `
-            <strong>Date: ${order.date}</strong>
-            <strong>Total: $${parseFloat(order.total || 0).toFixed(2)}</strong>`;
+          orderHeader.innerHTML = `<strong>Date: ${order.date}</strong><strong>Total: $${parseFloat(order.total || 0).toFixed(2)}</strong>`;
           entry.appendChild(orderHeader);
  
           const orderQty = document.createElement('p');
@@ -2015,7 +2029,11 @@ document.addEventListener('DOMContentLoaded', () => {
           order.items.forEach(item => {
             const itemId = item.id || item.product_id || '';
  
-            // Créer l'élément cliquable
+            // Résoudre la couleur immédiatement si products déjà chargés
+            const prods = window.__allProducts || [];
+            const resolvedColor = resolveColor(item, prods);
+ 
+            // Élément cliquable
             const itemEl = document.createElement('div');
             itemEl.className = 'order-item-clickable';
             itemEl.style.cssText = 'cursor:pointer;display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #eee;';
@@ -2029,35 +2047,46 @@ document.addEventListener('DOMContentLoaded', () => {
               itemEl.appendChild(img);
             }
  
-            // Infos texte — couleur récupérée depuis products.data.json
+            // Bloc texte
             const infoDiv = document.createElement('div');
  
-            // La couleur : on essaie d'abord depuis products.data.json
-            // Si __allProducts pas encore chargé, on met un placeholder et on met à jour après
-            const colorPlaceholder = document.createElement('span');
-            colorPlaceholder.className = 'item-color-line';
-            colorPlaceholder.dataset.itemId = itemId;
-            colorPlaceholder.dataset.variantId = item.cj_variant_id || item.vid || '';
+            const titleEl = document.createElement('strong');
+            titleEl.className = 'order-item-title';
+            titleEl.style.cursor = 'pointer';
+            titleEl.textContent = item.title;
+            infoDiv.appendChild(titleEl);
+            infoDiv.appendChild(document.createElement('br'));
  
-            infoDiv.innerHTML = `<strong class="order-item-title" style="cursor:pointer;">${item.title}</strong><br>`;
-            infoDiv.appendChild(colorPlaceholder);
+            // Span couleur — stocke les données pour remplissage différé si besoin
+            const colorSpan = document.createElement('span');
+            colorSpan.className = 'item-color-line';
+            colorSpan.dataset.itemId = itemId;
+            colorSpan.dataset.sku = item.sku || '';
+            colorSpan.dataset.variantId = item.cj_variant_id || item.vid || '';
+            colorSpan.dataset.description = item.description || '';
+            colorSpan.dataset.directColor = item.color || '';
+ 
+            if (resolvedColor) {
+              colorSpan.innerHTML = `Color: <strong>${resolvedColor}</strong>`;
+            }
+            infoDiv.appendChild(colorSpan);
+            infoDiv.appendChild(document.createElement('br'));
  
             const priceSpan = document.createElement('span');
             priceSpan.textContent = `Price: $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}`;
-            infoDiv.appendChild(document.createElement('br'));
             infoDiv.appendChild(priceSpan);
  
             itemEl.appendChild(infoDiv);
             orderItemsDiv.appendChild(itemEl);
  
-            // Clic → redirection vers la page produit
+            // ── CLIC : listener direct, jamais écrasé ──
             itemEl.addEventListener('click', function () {
               if (!itemId) return;
               const url = getUrlFromId(itemId);
               if (url) {
                 window.location.href = url;
               } else {
-                console.warn(`Product ID="${itemId}" not found`);
+                console.warn(`Product ID="${itemId}" not found in products.data.json`);
               }
             });
           });
@@ -2066,41 +2095,32 @@ document.addEventListener('DOMContentLoaded', () => {
           historyContainer.appendChild(entry);
         });
  
-        // ── Remplir les couleurs une fois products.data.json disponible ──
-        function fillColors() {
+        // ── Si products pas encore chargés au moment du render, on remplit les couleurs dès qu'ils arrivent ──
+        function fillPendingColors() {
+          const prods = window.__allProducts || [];
           historyContainer.querySelectorAll('.item-color-line').forEach(span => {
-            const itemId = span.dataset.itemId;
-            const variantId = span.dataset.variantId;
-            const prods = window.__allProducts || [];
-            const product = prods.find(p => String(p.id) === String(itemId));
-            let colorName = '';
-            if (product && product.variants) {
-              const variant = variantId
-                ? product.variants.find(v => String(v.vid) === String(variantId))
-                : null;
-              colorName = (variant && variant.color) ? variant.color : '';
-              // Si pas trouvé via vid, prendre le premier variant si unique
-              if (!colorName && product.variants.length === 1) {
-                colorName = product.variants[0].color || '';
-              }
-            }
-            if (colorName) {
-              span.innerHTML = `Color: <strong>${colorName}</strong><br>`;
-            } else {
-              span.innerHTML = '';
-            }
+            if (span.innerHTML !== '') return; // déjà rempli
+            const fakeItem = {
+              id:            span.dataset.itemId,
+              sku:           span.dataset.sku,
+              cj_variant_id: span.dataset.variantId,
+              description:   span.dataset.description,
+              color:         span.dataset.directColor
+            };
+            const color = resolveColor(fakeItem, prods);
+            if (color) span.innerHTML = `Color: <strong>${color}</strong>`;
           });
         }
  
         if (window.__allProducts && window.__allProducts.length > 0) {
-          fillColors();
+          fillPendingColors();
         } else {
           let tries = 0;
           const wait = setInterval(() => {
             tries++;
             if (window.__allProducts && window.__allProducts.length > 0) {
               clearInterval(wait);
-              fillColors();
+              fillPendingColors();
             } else if (tries > 50) {
               clearInterval(wait);
             }
