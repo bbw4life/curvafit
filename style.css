@@ -5115,13 +5115,11 @@ tbody tr:hover { background: var(--rose-ultra); }
 
 .product-card .current-price {
     font-family: var(--font-body, 'DM Sans', sans-serif);
-    font-size: 1.15rem;
     font-weight: 600;
     color: var(--rose, #c0385e);
 }
 
 .product-card .compare-price {
-    font-size: 0.9rem;
     text-decoration: line-through;
     color: var(--mist, #8e7e85);
 }
@@ -5978,13 +5976,11 @@ tbody tr:hover { background: var(--rose-ultra); }
 }
 
 .product-card .current-price {
-    font-size: 1.2rem;
     font-weight: bold;
     color: var(--rose, #c0385e);
 }
 
 .product-card .compare-price {
-    font-size: 1rem;
     text-decoration: line-through;
     color: #999;
 }
@@ -6102,6 +6098,16 @@ tbody tr:hover { background: var(--rose-ultra); }
     font-weight: 600;
     transition: all 0.3s;
     box-shadow: 0 4px 14px rgba(192,56,94,0.25);
+}
+
+.wishlist-item .current-price {
+    font-size: 1.1rem !important;
+    color: #e91e63 !important;
+}
+
+.wishlist-item .compare-price {
+    font-size: 1rem !important;
+    color: #aaaaaa !important;
 }
 
 .add-all-to-cart:hover {

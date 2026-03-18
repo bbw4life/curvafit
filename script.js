@@ -1290,23 +1290,46 @@ document.addEventListener('DOMContentLoaded', () => {
     _countdownStarted = true;
 
     const totalSeconds = (parseInt(cd.countdown_minutes) || 10) * 60;
-    const suffix       = cd.countdown_suffix || '';
+    const suffix = cd.countdown_suffix || '';
+    const STORAGE_KEY = 'drawerCountdownEnd';
 
     function runCycle() {
-      let remaining = totalSeconds;
+      // Vérifie si un timer actif existe encore dans localStorage
+      const savedEnd = localStorage.getItem(STORAGE_KEY);
+      const now = Date.now();
+
+      let endTime;
+      if (savedEnd && parseInt(savedEnd) > now) {
+        // Timer existant pas encore expiré → on le reprend
+        endTime = parseInt(savedEnd);
+      } else {
+        // Nouveau cycle
+        endTime = now + totalSeconds * 1000;
+        localStorage.setItem(STORAGE_KEY, endTime);
+      }
+
       if (_countdownTimer) clearInterval(_countdownTimer);
       _countdownTimer = setInterval(() => {
         const timeEl = document.getElementById('drawerCountdownTime');
-        if (timeEl) {
-          const m = Math.floor(remaining / 60), s = remaining % 60;
-          timeEl.textContent = `${m}:${s < 10 ? '0' : ''}${s} ${suffix}`;
-        }
+        const remaining = Math.floor((endTime - Date.now()) / 1000);
+
         if (remaining <= 0) {
+          if (timeEl) timeEl.textContent = `0:00 ${suffix}`;
           clearInterval(_countdownTimer);
-          setTimeout(runCycle, 10000);
+          // Nouveau cycle après 3 secondes
+          setTimeout(() => {
+            localStorage.removeItem(STORAGE_KEY);
+            _countdownStarted = false;
+            runCycle();
+          }, 3000);
           return;
         }
-        remaining--;
+
+        if (timeEl) {
+          const m = Math.floor(remaining / 60);
+          const s = remaining % 60;
+          timeEl.textContent = `${m}:${s < 10 ? '0' : ''}${s} ${suffix}`;
+        }
       }, 1000);
     }
 
@@ -1921,7 +1944,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="order-header"><strong>Date : ${order.date}</strong><strong>Total : $${parseFloat(order.total||0).toFixed(2)}</strong></div>
             <p><strong>Quantité totale :</strong> ${order.totalQuantity||0} produits</p>
             <div class="order-items">${order.items.map(item => `
-              <div class="order-item-clickable" onclick="handleOrderItemClick('${item.id||''}')">
+              <div class="order-item-clickable" data-id="${item.id || ''}">
                 ${item.image_variant ? `<img src="${upgradeShopifyImageUrl(item.image_variant)}" class="order-item-image">` : ''}
                 <div>
                   <strong class="order-item-title">${item.title}</strong><br>
@@ -1932,18 +1955,48 @@ document.addEventListener('DOMContentLoaded', () => {
             </div></div>`;
         });
         historyContainer.innerHTML = html;
-        setTimeout(() => {
-          document.addEventListener('click', function(e) {
-            const clickable = e.target.closest('.order-item-clickable');
-            if (!clickable) return;
-            const id = clickable.dataset.id;
-            if (!id) return;
-            e.stopImmediatePropagation();
-            const url = window.getProductUrl(id);
-            if (url === 'shop.html') { console.error(`❌ ID=${id} NON TROUVÉ`); return; }
-            window.location.href = url;
+
+        // Attendre que getProductUrl soit disponible puis attacher les listeners
+        function attachOrderItemListeners() {
+          document.querySelectorAll('.order-item-clickable').forEach(el => {
+            // évite double-binding
+            if (el.dataset.bound) return;
+            el.dataset.bound = '1';
+
+            el.addEventListener('click', function() {
+              const id = this.dataset.id;
+              if (!id) return;
+
+              if (typeof window.getProductUrl !== 'function') {
+                console.warn('getProductUrl pas encore prêt, retry...');
+                setTimeout(() => this.click(), 300);
+                return;
+              }
+
+              const url = window.getProductUrl(id);
+              if (!url || url === 'shop.html') {
+                console.error(`❌ Produit ID=${id} introuvable`);
+                return;
+              }
+              window.location.href = url;
+            });
+
+            el.style.cursor = 'pointer';
           });
-        }, 300);
+        }
+
+        // Tente immédiatement, puis réessaie si products pas encore chargés
+        attachOrderItemListeners();
+        if (typeof window.getProductUrl !== 'function') {
+          const retryInterval = setInterval(() => {
+            if (typeof window.getProductUrl === 'function') {
+              clearInterval(retryInterval);
+              attachOrderItemListeners();
+            }
+          }, 200);
+          // Arrête après 5 secondes max
+          setTimeout(() => clearInterval(retryInterval), 5000);
+        }
       } else {
         historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
       }

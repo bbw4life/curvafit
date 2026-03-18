@@ -13,23 +13,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Titre
       const mainTitle = document.querySelector('.paul-main-title');
       if (mainTitle) mainTitle.textContent = product.title;
 
-      // Prix + Compare
       const compareEl = document.querySelector('.compare-price');
       const currentEl = document.querySelector('.current-price');
       if (compareEl) compareEl.textContent = '$' + Number(product.compare_price || 0).toFixed(2);
       if (currentEl) currentEl.textContent = '$' + Number(product.price || 0).toFixed(2);
 
-      // Sizes (CSS intact)
       const sizeSelect = document.getElementById('size-select');
       if (sizeSelect && product.sizes && Array.isArray(product.sizes)) {
         sizeSelect.innerHTML = product.sizes.map(size => `<option value="${size}">${size}</option>`).join('');
       }
 
-      // Colors + image par couleur + variant_id CJ
       const colorContainer = document.querySelector('.color-swatches');
       if (colorContainer && product.colors && Array.isArray(product.colors)) {
         colorContainer.innerHTML = '';
@@ -44,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
           colorContainer.appendChild(sw);
         });
 
-        // Image de la première couleur
         if (product.colors[0] && product.colors[0].image) {
           updateMainImageForColor(product.colors[0].image);
         }
@@ -91,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ====================== TON CODE ORIGINAL (100% conservé) ======================
-  // Thumbnails and Main Slider
   const thumbnails = document.querySelectorAll('.thumbnail-item');
   const mainImages = document.querySelectorAll('.main-image');
   const prevArrow = document.querySelector('.slider-arrow.prev');
@@ -121,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateMainImage(newIndex);
   });
 
-  // Swipe for mobile
   let startX = 0;
   const slider = document.querySelector('.main-image-slider');
   slider.addEventListener('touchstart', e => startX = e.touches[0].clientX);
@@ -133,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Quantity Buttons
   const qtyMinus = document.querySelector('.quantity .qty-minus');
   const qtyPlus = document.querySelector('.quantity .qty-plus');
   const qtyInput = document.querySelector('.quantity input');
@@ -142,12 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
     qtyPlus.addEventListener('click', () => { qtyInput.value++; });
   }
 
-  // Add to Cart (laissé tel quel)
   const addToCartBtn = document.querySelector('.product-content .add-to-cart');
   if (addToCartBtn) {
     addToCartBtn.addEventListener('click', (e) => {
       const quantity = parseInt(qtyInput ? qtyInput.value : 1);
-      addToCart(e); // fonction existante dans script.js
+      addToCart(e);
     });
   }
 
@@ -196,13 +187,9 @@ document.addEventListener('DOMContentLoaded', () => {
     paulContainer.addEventListener('mouseleave', () => slideTimer = setInterval(nextSlide, intervalTime));
   }
 
+  function redirectToReviews(app) {}
 
-  function redirectToReviews(app) {
-    // Implement if needed
-  }
-
-
-  // Stories (inchangé)
+  // Stories
   const container = document.getElementById('paul-story-container-block1');
   const popup = document.getElementById('paul-story-popup-block1');
   if (popup && container) {
@@ -283,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Size Chart (inchangé)
+  // Size Chart
   const wrapper = document.getElementById('size-chart-paul-guide-wrapper-1');
   if (wrapper) {
     const toggle = wrapper.querySelector('.size-chart-paul-guide-toggle');
@@ -358,11 +345,47 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateLiveViewers, updateFrequency);
   updateLiveViewers();
 
+  // ====================== MOD 4 : TESTIMONIALS SLIDER (mobile auto) ======================
+  (function() {
+    var cards = document.querySelectorAll('.pp-testimonial-card');
+    var dots  = document.querySelectorAll('.pp-testimonials-dot');
+    if (!cards.length) return;
+
+    var current = 0;
+    var timer;
+
+    function showCard(index) {
+      cards.forEach(function(c) { c.classList.remove('pp-t-active'); });
+      dots.forEach(function(d)  { d.classList.remove('active'); });
+      cards[index].classList.add('pp-t-active');
+      if (dots[index]) dots[index].classList.add('active');
+      current = index;
+    }
+
+    function startAuto() {
+      clearInterval(timer);
+      timer = setInterval(function() {
+        showCard((current + 1) % cards.length);
+      }, 4000);
+    }
+
+    // Init
+    showCard(0);
+    startAuto();
+
+    // Dots cliquables
+    dots.forEach(function(dot, i) {
+      dot.addEventListener('click', function() {
+        showCard(i);
+        startAuto(); // reset le timer
+      });
+    });
+  })();
+
 });
 
 
-
-
+// ====================== HORS DOMContentLoaded ======================
 
 const writeButton = document.getElementById('write-review');
 const reviewForm = document.getElementById('review-form');
@@ -370,7 +393,6 @@ const reviewsList = document.querySelector('.reviews-list');
 const totalReviewsSpan = document.getElementById('total-reviews');
 const readMoreBtn = document.getElementById('read-more');
 
-// ===================== BEAUTIFUL CENTERED POPUP (ENGLISH) =====================
 function showErrorPopup(message, isSuccess = false) {
     const popup = document.getElementById('custom-popup');
     const icon = document.getElementById('popup-icon');
@@ -393,10 +415,7 @@ function showErrorPopup(message, isSuccess = false) {
     }
 
     popup.classList.add('show');
-
     closeBtn.onclick = () => popup.classList.remove('show');
-    
-    
     setTimeout(() => {
         if (popup.classList.contains('show')) popup.classList.remove('show');
     }, 8000);
@@ -436,17 +455,13 @@ writeButton.addEventListener('click', () => {
 
 const form = reviewForm.querySelector('form');
 
-// Fonction pour afficher la review INSTANTANÉMENT (optimistic UI)
 function addOptimisticReview(name, rating, title, text) {
     const newReview = document.createElement('div');
     newReview.className = 'review-card dynamic-review';
-    
     const avatarLetter = name.charAt(0).toUpperCase();
     const stars = '★'.repeat(rating);
-    
     const now = new Date();
     const dateStr = `${now.getFullYear()}-${now.toLocaleString('en-US', { month: 'short' })}-${now.getDate().toString().padStart(2, '0')}`;
-    
     newReview.innerHTML = `
         <div class="avatar">${avatarLetter}</div>
         <h4>${name}</h4>
@@ -462,9 +477,7 @@ function addOptimisticReview(name, rating, title, text) {
 
 async function loadDynamicReviews() {
     if (!window.currentProductId) return;
-
     document.querySelectorAll('.review-card.dynamic-review').forEach(el => el.remove());
-
     try {
         const res = await fetch('/.netlify/functions/save-reviews', {
             method: 'POST',
@@ -472,14 +485,12 @@ async function loadDynamicReviews() {
             body: JSON.stringify({ action: 'get-reviews', productId: window.currentProductId })
         });
         const data = await res.json();
-
         if (data.success && data.reviews) {
             data.reviews.forEach(review => {
                 const newReview = document.createElement('div');
                 newReview.className = 'review-card dynamic-review';
                 const avatarLetter = review.fullName.charAt(0).toUpperCase();
                 const stars = '★'.repeat(review.rating);
-
                 newReview.innerHTML = `
                     <div class="avatar">${avatarLetter}</div>
                     <h4>${review.fullName}</h4>
@@ -500,7 +511,6 @@ async function loadDynamicReviews() {
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
-
     const name = document.getElementById('review-name').value.trim();
     const email = document.getElementById('review-email').value.trim();
     const rating = parseInt(document.getElementById('review-rating').value);
@@ -513,8 +523,6 @@ form.addEventListener('submit', async (e) => {
     }
 
     const productId = window.currentProductId || 'unknown';
-
-    // ← IMMÉDIAT : on ajoute la review + on ferme le formulaire AVANT même d'envoyer
     addOptimisticReview(name, rating, title, text);
     form.reset();
     reviewForm.style.display = 'none';
@@ -534,11 +542,9 @@ form.addEventListener('submit', async (e) => {
                 productId: productId
             })
         });
-
         const data = await res.json();
-
         if (data.success) {
-            showErrorPopup("", true);           // ← BEAU MESSAGE MARKETING
+            showErrorPopup("", true);
             loadDynamicReviews();
         } else {
             showErrorPopup("Error: " + (data.error || "Unknown"));
@@ -552,16 +558,12 @@ form.addEventListener('submit', async (e) => {
 
 updateSummary();
 
-
-
-// ── Scroll reveal pour les nouvelles cartes premium ──
+// ── Scroll reveal ──
 (function() {
     var newElements = document.querySelectorAll(
         '.pp-why-card, .pp-testimonial-card, .pp-ba-col, .pp-guarantee-item, .pp-benefits-block, .pp-urgency-bar, .pp-trust-strip'
     );
-
     if (!newElements.length) return;
-
     var observer = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
             if (entry.isIntersecting) {
@@ -571,74 +573,51 @@ updateSummary();
             }
         });
     }, { threshold: 0.08 });
-
     newElements.forEach(function(el) {
         el.style.opacity = '0';
         el.style.transform = 'translateY(22px) scale(0.98)';
         el.style.transition = 'opacity 0.55s cubic-bezier(0.4,0,0.2,1), transform 0.55s cubic-bezier(0.4,0,0.2,1)';
         observer.observe(el);
     });
-
-    // Stagger why cards
     document.querySelectorAll('.pp-why-card').forEach(function(el, i) {
         el.style.transitionDelay = (i * 0.10) + 's';
     });
-
-    // Stagger testimonial cards
     document.querySelectorAll('.pp-testimonial-card').forEach(function(el, i) {
         el.style.transitionDelay = (i * 0.12) + 's';
     });
 })();
 
-// ── Urgency bar — mise à jour du compteur toutes les 24h ──
+// ── Urgency bar ──
 (function() {
     var urgencyBar = document.querySelector('.pp-urgency-bar strong');
     if (!urgencyBar) return;
-
     var STORAGE_KEY = 'pp_urgency_data';
     var MIN_COUNT = 35;
     var MAX_COUNT = 74;
     var MS_24H = 24 * 60 * 60 * 1000;
-
     function getRandomCount() {
         return Math.floor(Math.random() * (MAX_COUNT - MIN_COUNT + 1)) + MIN_COUNT;
     }
-
     function loadOrGenerate() {
         var raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
             try {
                 var data = JSON.parse(raw);
-                var now = Date.now();
-                if (now - data.timestamp < MS_24H) {
-                    return data.count;
-                }
+                if (Date.now() - data.timestamp < MS_24H) return data.count;
             } catch(e) {}
         }
-        // Génère un nouveau nombre et le sauvegarde
         var newCount = getRandomCount();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({
-            count: newCount,
-            timestamp: Date.now()
-        }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ count: newCount, timestamp: Date.now() }));
         return newCount;
     }
-
-    // Affiche le compteur
     var count = loadOrGenerate();
     urgencyBar.textContent = count + ' people';
-
-    // Planifie la prochaine mise à jour dans exactement 24h
     var raw = localStorage.getItem(STORAGE_KEY);
     var savedTimestamp = raw ? JSON.parse(raw).timestamp : Date.now();
     var msUntilNext = MS_24H - (Date.now() - savedTimestamp);
-
     setTimeout(function() {
         var newCount = getRandomCount();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({
-            count: newCount,
-            timestamp: Date.now()
-        }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ count: newCount, timestamp: Date.now() }));
         urgencyBar.textContent = newCount + ' people';
     }, msUntilNext);
 })();
