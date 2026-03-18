@@ -196,21 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
     paulContainer.addEventListener('mouseleave', () => slideTimer = setInterval(nextSlide, intervalTime));
   }
 
-  // Star Rating JS
-  const starsContainers = document.querySelectorAll('.unique-stars');
-  starsContainers.forEach(stars => {
-    const rating = parseFloat(stars.dataset.rating);
-    for (let i = 0; i < 5; i++) {
-      const star = document.createElement('div');
-      star.classList.add('unique-star');
-      if (i < Math.floor(rating)) {
-        star.classList.add('full');
-      } else if (i < rating) {
-        star.classList.add('half');
-      }
-      stars.appendChild(star);
-    }
-  });
 
   function redirectToReviews(app) {
     // Implement if needed
@@ -566,3 +551,94 @@ form.addEventListener('submit', async (e) => {
 });
 
 updateSummary();
+
+
+
+// ── Scroll reveal pour les nouvelles cartes premium ──
+(function() {
+    var newElements = document.querySelectorAll(
+        '.pp-why-card, .pp-testimonial-card, .pp-ba-col, .pp-guarantee-item, .pp-benefits-block, .pp-urgency-bar, .pp-trust-strip'
+    );
+
+    if (!newElements.length) return;
+
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0) scale(1)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.08 });
+
+    newElements.forEach(function(el) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(22px) scale(0.98)';
+        el.style.transition = 'opacity 0.55s cubic-bezier(0.4,0,0.2,1), transform 0.55s cubic-bezier(0.4,0,0.2,1)';
+        observer.observe(el);
+    });
+
+    // Stagger why cards
+    document.querySelectorAll('.pp-why-card').forEach(function(el, i) {
+        el.style.transitionDelay = (i * 0.10) + 's';
+    });
+
+    // Stagger testimonial cards
+    document.querySelectorAll('.pp-testimonial-card').forEach(function(el, i) {
+        el.style.transitionDelay = (i * 0.12) + 's';
+    });
+})();
+
+// ── Urgency bar — mise à jour du compteur toutes les 24h ──
+(function() {
+    var urgencyBar = document.querySelector('.pp-urgency-bar strong');
+    if (!urgencyBar) return;
+
+    var STORAGE_KEY = 'pp_urgency_data';
+    var MIN_COUNT = 35;
+    var MAX_COUNT = 74;
+    var MS_24H = 24 * 60 * 60 * 1000;
+
+    function getRandomCount() {
+        return Math.floor(Math.random() * (MAX_COUNT - MIN_COUNT + 1)) + MIN_COUNT;
+    }
+
+    function loadOrGenerate() {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            try {
+                var data = JSON.parse(raw);
+                var now = Date.now();
+                if (now - data.timestamp < MS_24H) {
+                    return data.count;
+                }
+            } catch(e) {}
+        }
+        // Génère un nouveau nombre et le sauvegarde
+        var newCount = getRandomCount();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            count: newCount,
+            timestamp: Date.now()
+        }));
+        return newCount;
+    }
+
+    // Affiche le compteur
+    var count = loadOrGenerate();
+    urgencyBar.textContent = count + ' people';
+
+    // Planifie la prochaine mise à jour dans exactement 24h
+    var raw = localStorage.getItem(STORAGE_KEY);
+    var savedTimestamp = raw ? JSON.parse(raw).timestamp : Date.now();
+    var msUntilNext = MS_24H - (Date.now() - savedTimestamp);
+
+    setTimeout(function() {
+        var newCount = getRandomCount();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            count: newCount,
+            timestamp: Date.now()
+        }));
+        urgencyBar.textContent = newCount + ' people';
+    }, msUntilNext);
+})();

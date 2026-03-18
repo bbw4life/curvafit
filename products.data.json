@@ -12,6 +12,8 @@
   "single_discount": 7,
   "duo_discount": 10,
   "trio_discount": 20,
+  "rating": 3.6,
+  "reviews_count": 209,
   "title": "Butterfly Sleep Memory Neck Pillow Slow Rebound ",
   "description": "Ergonomic butterfly-shaped memory foam pillow with slow rebound technology. Features two sides: Horn side aligns head, shoulders and back in neutral position to relieve neck pain; Roll side with scientific natural curve design suits most sleepers. Provides cervical orthopedic support, neck massage, relieves pressure points, improves sleep quality and posture. Perfect for side, back, stomach and combination sleepers.",
   "price": 29.26,
@@ -1498,6 +1500,8 @@
   "single_discount": 0,
   "duo_discount": 10,
   "trio_discount": 20,
+  "rating": 4.8,
+  "reviews_count": 128,
   "title": "Gym Bag",
   "description": "Spacious gym bag with reinforced handles and wet pocket separation. Built for curvy women who need durable, roomy storage.",
   "price": 34.99,
@@ -1535,11 +1539,11 @@
       "countdown_minutes": 10,
       "countdown_text": "⚡ Offer expires in:",
       "countdown_suffix": "min",
-      "free_shipping_threshold": 75,
+      "free_shipping_threshold": 120,
       "progress_message": "Add ${remaining} more for FREE shipping!",
       "progress_success_message": "🎉 You've unlocked FREE shipping!",
-      "promo_buy_quantity": 3,
-      "promo_get_quantity": 1,
+      "promo_buy_quantity": 5,
+      "promo_get_quantity": 2,
       "promo_initial_message": "Buy {buy} items, get {get} FREE!",
       "promo_progress_message": "Add {remaining} more, get {get} FREE!",
       "promo_complete_message": "🎁 Congrats! You get {get} FREE item!",
@@ -1549,6 +1553,15 @@
         { "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb_1.jpg?v=1768321816", "text": "BBW = Bold, Beautiful, Worthy!" }
       ],
       "banner_slide_duration_ms": 5000
+    },
+    "social_links": {
+      "facebook": "https://facebook.com/curvafit",
+      "instagram": "https://instagram.com/curvafit",
+      "tiktok": "https://tiktok.com/@curvafit",
+      "pinterest": "https://pinterest.com/curvafit",
+      "youtube": "https://youtube.com/@curvafit",
+      "whatsapp": "https://wa.me/XXXXXXXX",
+      "twitter": "https://x.com/curvafit"
     },
     "promos": [
       { "code": "PAUL81",     "items": 10, "percent": 40 },

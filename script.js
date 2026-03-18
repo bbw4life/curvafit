@@ -1,4 +1,84 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+
+
+  // ====================== QUALITÉ MAXIMALE IMAGES SHOPIFY ======================
+  // UNIQUEMENT sur cdn.shopify.com - remplace les variantes de taille par _master
+  // Ne touche PAS aux autres URLs (CDN externes, CJ, etc.)
+  function upgradeShopifyImageUrl(url) {
+    if (!url || typeof url !== 'string') return url;
+    if (!url.includes('cdn.shopify.com')) return url; // securite : Shopify CDN seulement
+    if (url.startsWith('data:') || url.includes('_master.')) return url;
+    // Remplace uniquement si une variante de taille Shopify connue est presente
+    return url.replace(
+      /_(pico|icon|thumb|small|compact|medium|large|grande|original|1024x1024|2048x2048|\d+x\d+|\d+x|x\d+)(\.(?:jpg|jpeg|png|webp|gif))(\?|$)/gi,
+      '_master$2$3'
+    );
+  }
+  // ====================== FIN QUALITE MAXIMALE ======================
+
+  // ====================== IMAGES NETTES (ANTI-FLOU GLOBAL) ======================
+  (function injectSharpImageStyles() {
+    const style = document.createElement('style');
+    style.id = 'sharp-images-style';
+    style.textContent = `
+      img,
+      .main-image img,
+      .thumbnail-item img,
+      .mini-media-image,
+      .product-card img,
+      .wishlist-img,
+      .cart-item img,
+      .order-item-image,
+      .paul-banner-image,
+      .francenel-milliadaire-banner-image,
+      .hero-slide,
+      .paul-banner-slide img,
+      .mini-media-slider img,
+      .variant-preview img,
+      .review-item img,
+      .hero-thumb img,
+      [class*="banner"] img,
+      [class*="slider"] img,
+      [class*="product"] img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+        -ms-interpolation-mode: nearest-neighbor;
+        filter: none !important;
+        -webkit-filter: none !important;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        will-change: transform;
+        max-width: 100%;
+        height: auto;
+      }
+
+      img {
+        image-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Supprime tout blur appliqué via filter ou backdrop-filter sur les images */
+      img[style*="blur"],
+      img[class*="blur"] {
+        filter: none !important;
+        -webkit-filter: none !important;
+      }
+
+      /* Force la qualité haute résolution sur les écrans Retina / HiDPI */
+      @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        img {
+          image-rendering: -webkit-optimize-contrast;
+          image-rendering: auto;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  })();
+  // ====================== FIN IMAGES NETTES ======================
+
   let products = [];
 
   // ====================== POPUP ======================
@@ -33,13 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
     media.forEach((src, index) => {
       const thumb = document.createElement('div');
       thumb.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
-      thumb.innerHTML = `<img src="${src}" alt="Thumbnail ${index+1}" loading="lazy">`;
+      const sharpSrc = upgradeShopifyImageUrl(src);
+      thumb.innerHTML = `<img src="${sharpSrc}" alt="Thumbnail ${index+1}" loading="lazy">`;
       thumb.addEventListener('click', () => changeMainImage(index));
       thumbsContainer.appendChild(thumb);
       const mainDiv = document.createElement('div');
       mainDiv.className = `main-image ${index === 0 ? 'active' : ''}`;
-      mainDiv.dataset.originalSrc = src;
-      mainDiv.innerHTML = `<img src="${src}" alt="Main Image" loading="lazy">`;
+      mainDiv.dataset.originalSrc = sharpSrc;
+      mainDiv.innerHTML = `<img src="${sharpSrc}" alt="Main Image" loading="lazy">`;
       mainSlider.insertBefore(mainDiv, mainSlider.querySelector('.slider-arrow.next'));
     });
     mainSlider.querySelector('.prev').onclick = () => changeMainImage('prev');
@@ -76,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
     slider.innerHTML = '';
     media.forEach((src, i) => {
       const img = document.createElement('img');
-      img.src = src;
+      img.src = upgradeShopifyImageUrl(src);
       img.className = `mini-media-image ${i === 0 ? 'active' : ''}`;
       img.loading = 'lazy';
       slider.appendChild(img);
@@ -110,6 +191,31 @@ document.addEventListener('DOMContentLoaded', () => {
       const settings = products.find(p => p.type === "settings") || {};
       const enableMediaZoom = (settings.enable_media_zoom || "no").toLowerCase() === "yes";
 
+      // ====================== NOUVEAU : SOCIAL LINKS ======================
+      // Injecte les liens réseaux sociaux depuis settings.social_links dans tous les footers
+      const socialLinks = settings.social_links || {};
+      const socialMap = {
+        'fa-facebook-f':  socialLinks.facebook,
+        'fa-instagram':   socialLinks.instagram,
+        'fa-tiktok':      socialLinks.tiktok,
+        'fa-pinterest-p': socialLinks.pinterest,
+        'fa-youtube':     socialLinks.youtube,
+        'fa-whatsapp':    socialLinks.whatsapp,
+        'fa-x-twitter':   socialLinks.twitter
+      };
+      document.querySelectorAll('.footer-social a').forEach(a => {
+        const icon = a.querySelector('i');
+        if (!icon) return;
+        for (const [cls, url] of Object.entries(socialMap)) {
+          if (icon.classList.contains(cls) && url) {
+            a.href = url;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+          }
+        }
+      });
+      // ====================== FIN SOCIAL LINKS ======================
+
       // Comparison table
       const comparisonTable = document.querySelector('.comparison-table tbody');
       if (comparisonTable) {
@@ -135,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
           card.querySelector('.compare-price').textContent = `$${product.compare_price.toFixed(2)}`;
           card.querySelector('p').textContent = product.description;
           const img = card.querySelector('img');
-          if (img) { img.src = product.image; img.alt = product.title; }
+          if (img) { img.src = upgradeShopifyImageUrl(product.image); img.alt = product.title; }
           card.dataset.title = product.title;
           card.dataset.price = product.price;
           card.dataset.comparePrice = product.compare_price;
@@ -176,6 +282,48 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("✅ Product ID chargé pour les reviews :", window.currentProductId);
         if (typeof loadDynamicReviews === 'function') loadDynamicReviews();
         const prod = products.find(p => p.id === pid);
+
+        // ====================== NOUVEAU : RATING & REVIEWS COUNT ======================
+        // Injecte la note et le nombre de reviews depuis le JSON dans le bloc stars
+        if (prod) {
+          const rating = prod.rating || 4.8;
+          const reviewsCount = prod.reviews_count || 0;
+
+          const ratingEl = document.querySelector('.unique-stars');
+          const ratingTextEl = document.querySelector('.unique-rating-text');
+          const reviewsCountEl = document.querySelector('.unique-reviews');
+
+          if (ratingEl) {
+            ratingEl.dataset.rating = rating;
+            ratingEl.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+              const star = document.createElement('span');
+              star.classList.add('unique-star');
+              if (i + 1 <= Math.floor(rating)) {
+                star.classList.add('full');
+              } else if (i < rating && i + 1 > rating) {
+                star.classList.add('half');
+              }
+              ratingEl.appendChild(star);
+            }
+          }
+          if (ratingTextEl) ratingTextEl.textContent = rating.toFixed(1) + ' / 5';
+          if (reviewsCountEl) reviewsCountEl.textContent = reviewsCount + ' reviews';
+
+          // Scroll vers reviews au clic sur étoiles / rating text / reviews count
+          const scrollToReviews = () => {
+            const reviewsSection = document.getElementById('reviews-section');
+            if (reviewsSection) reviewsSection.scrollIntoView({ behavior: 'smooth' });
+          };
+          if (ratingEl) ratingEl.style.cursor = 'pointer';
+          if (ratingEl) ratingEl.addEventListener('click', scrollToReviews);
+          if (ratingTextEl) ratingTextEl.style.cursor = 'pointer';
+          if (ratingTextEl) ratingTextEl.addEventListener('click', scrollToReviews);
+          if (reviewsCountEl) reviewsCountEl.style.cursor = 'pointer';
+          if (reviewsCountEl) reviewsCountEl.addEventListener('click', scrollToReviews);
+        }
+        // ====================== FIN RATING & REVIEWS COUNT ======================
+
         if (prod && prod.media) {
           populateMainProductMedia(prod.media);
           const colorContainer = document.querySelector('.color-swatches');
@@ -875,7 +1023,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const paymentIcons        = cartDrawer.querySelector('.payment-icons');
     const cartFooter          = cartDrawer.querySelector('.cart-drawer__footer');
 
-    // FIX 1 — sections boost
     const countdown   = cartDrawer.querySelector('.cart-drawer__countdown');
     const progressBar = cartDrawer.querySelector('.cart-drawer__progress-container');
     const promoMsg    = cartDrawer.querySelector('.cart-promo-message');
@@ -888,7 +1035,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (cartMarquee)         cartMarquee.style.display         = 'none';
       if (paymentIcons)        paymentIcons.style.display        = 'none';
       if (cartFooter)          cartFooter.style.display          = 'none';
-      // Sections boost — toutes cachées quand panier vide
       if (countdown)   countdown.style.display   = 'none';
       if (progressBar) progressBar.style.display = 'none';
       if (promoMsg)    promoMsg.style.display     = 'none';
@@ -1001,7 +1147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let quantity = 1;
     const qtyInput = container.querySelector('.quantity input');
     if (qtyInput) quantity = parseInt(qtyInput.value);
-    let selectedSize = null, selectedColor = null, itemImage = product.image, cjVariantId = null;
+    let selectedSize = null, selectedColor = null, itemImage = upgradeShopifyImageUrl(product.image), cjVariantId = null;
     if (isProductPage) {
       const sizeSelect = document.getElementById('size-select');
       const activeSwatch = document.querySelector('.color-swatches .swatch.active');
@@ -1010,11 +1156,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if ((product.colors && product.colors.length > 0 && !selectedColor) || (product.sizes && product.sizes.length > 0 && !selectedSize)) {
         showErrorPopup("Please select a color first."); return;
       }
-      if (selectedColor) { const colorObj = product.colors.find(c => c.name === selectedColor); if (colorObj && colorObj.image) itemImage = colorObj.image; }
+      if (selectedColor) { const colorObj = product.colors.find(c => c.name === selectedColor); if (colorObj && colorObj.image) itemImage = upgradeShopifyImageUrl(colorObj.image); }
     } else {
       if (product.colors && product.colors.length > 0) {
         selectedColor = product.colors[0].name;
-        if (product.colors[0].image) itemImage = product.colors[0].image;
+        if (product.colors[0].image) itemImage = upgradeShopifyImageUrl(product.colors[0].image);
       }
       if (product.sizes && product.sizes.length > 0) selectedSize = product.sizes[0];
     }
@@ -1047,7 +1193,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const comparePriceHTML = product.compare_price && product.compare_price > product.price
           ? `<p class="compare-price">$${parseFloat(product.compare_price).toFixed(2)}</p>` : '';
         wishlistItem.innerHTML = `
-          <img src="${product.image}" alt="${product.title}" class="wishlist-img">
+          <img src="${upgradeShopifyImageUrl(product.image)}" alt="${product.title}" class="wishlist-img">
           <h4 class="wishlist-title">${product.title}</h4>
           <p>$${parseFloat(product.price).toFixed(2)}</p>
           ${comparePriceHTML}
@@ -1105,7 +1251,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ================================================================
-  //   CART DRAWER EXTRAS — tout depuis data.json, inject dans .cart-drawer__body
+  //   CART DRAWER EXTRAS
   // ================================================================
   let _countdownTimer   = null;
   let _countdownStarted = false;
@@ -1140,7 +1286,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const textEl = el.querySelector('.cart-drawer__countdown-text');
     if (textEl) textEl.textContent = cd.countdown_text;
 
-    // FIX 3 — ne relance pas si le timer tourne déjà
     if (_countdownStarted) return;
     _countdownStarted = true;
 
@@ -1158,7 +1303,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (remaining <= 0) {
           clearInterval(_countdownTimer);
-          // Attend 10 secondes puis repart
           setTimeout(runCycle, 10000);
           return;
         }
@@ -1182,11 +1326,15 @@ document.addEventListener('DOMContentLoaded', () => {
       container = document.createElement('div');
       container.className = 'cart-drawer__progress-container';
       container.innerHTML = `
-        <span class="cart-drawer__progress-message"></span>
-        <div class="cart-drawer__progress-bar">
-          <div class="cart-drawer__progress-fill"></div>
-          <span class="cart-drawer__progress-truck"><i class="fi fi-rr-truck-side"></i></span>
-        </div>`;
+      <span class="cart-drawer__progress-message"></span>
+      <div class="cart-drawer__progress-bar">
+        <div class="cart-drawer__progress-fill"></div>
+        <span class="cart-drawer__progress-truck">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17v-2.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+          </svg>
+        </span>
+      </div>`;
       const countdown = body.querySelector('.cart-drawer__countdown');
       if (countdown) countdown.insertAdjacentElement('afterend', container);
       else body.insertAdjacentElement('afterbegin', container);
@@ -1265,7 +1413,7 @@ document.addEventListener('DOMContentLoaded', () => {
       banner.dataset.built = '1';
       const slidesHTML = slides.map((s, i) => `
         <div class="paul-banner-slide${i === 0 ? ' active' : ''}">
-          <img src="${s.image}" alt="${s.text}" class="paul-banner-image" loading="lazy">
+          <img src="${upgradeShopifyImageUrl(s.image)}" alt="${s.text}" class="paul-banner-image" loading="lazy">
           <h2 class="paul-banner-title">${s.text}</h2>
         </div>`).join('');
       const dotsHTML = slides.map((s, i) =>
@@ -1522,7 +1670,7 @@ document.addEventListener('DOMContentLoaded', () => {
     heroSlides.forEach((src, i) => {
       const div = document.createElement('div');
       div.className = 'hero-slide' + (i === 0 ? ' active' : '');
-      div.style.backgroundImage = `url('${src}')`;
+      div.style.backgroundImage = `url('${upgradeShopifyImageUrl(src)}')`;
       hero.appendChild(div);
     });
     const thumbsWrap = document.createElement('div');
@@ -1530,7 +1678,7 @@ document.addEventListener('DOMContentLoaded', () => {
     heroSlides.forEach((src, i) => {
       const thumb = document.createElement('div');
       thumb.className = 'hero-thumb' + (i === 0 ? ' active' : '');
-      const img = document.createElement('img'); img.src = src; img.alt = 'Slide ' + (i + 1);
+      const img = document.createElement('img'); img.src = upgradeShopifyImageUrl(src); img.alt = 'Slide ' + (i + 1);
       thumb.appendChild(img);
       thumb.addEventListener('click', () => heroGoTo(i));
       thumbsWrap.appendChild(thumb);
@@ -1641,7 +1789,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (paulPopupOverlay) paulPopupOverlay.classList.remove('active');
   }
 
-  if (trigger) { trigger.addEventListener('click', (e) => { e.preventDefault(); if (localStorage.getItem('isLoggedIn') === 'true') window.location.href = 'account.html'; else openPaulPopup(); }); }
+  if (trigger) { trigger.addEventListener('click', (e) => { e.preventDefault(); if (localStorage.getItem('isLoggedIn') === 'true') window.location.href = '/account.html'; else openPaulPopup(); }); }
   if (closeBtn) closeBtn.addEventListener('click', closePaulPopup);
   if (paulPopupOverlay) paulPopupOverlay.addEventListener('click', (e) => { if (e.target === paulPopupOverlay && !isAccountPage) closePaulPopup(); });
   if (goToSignup) goToSignup.addEventListener('click', () => { loginForm.style.display = 'none'; signupForm.style.display = 'block'; });
@@ -1707,7 +1855,7 @@ document.addEventListener('DOMContentLoaded', () => {
           localStorage.setItem('userAddress', addressStr || 'No default address set');
           window.showToast(`Welcome ${data.user.firstName} !`);
           paulPopupOverlay.classList.remove('active');
-          if (isAccountPage) location.reload(); else window.location.href = 'account.html'; window.location.href = '/account.html';
+          if (isAccountPage) location.reload(); else window.location.href = '/account.html';
         } else { loginBtn.textContent = originalText; loginBtn.disabled = false; window.showToast("Incorrect email or password"); }
       } catch (err) { loginBtn.textContent = originalText; loginBtn.disabled = false; window.showToast("Network error"); }
     });
@@ -1774,7 +1922,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <p><strong>Quantité totale :</strong> ${order.totalQuantity||0} produits</p>
             <div class="order-items">${order.items.map(item => `
               <div class="order-item-clickable" onclick="handleOrderItemClick('${item.id||''}')">
-                ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image">` : ''}
+                ${item.image_variant ? `<img src="${upgradeShopifyImageUrl(item.image_variant)}" class="order-item-image">` : ''}
                 <div>
                   <strong class="order-item-title">${item.title}</strong><br>
                   Couleur variante : ${item.variant_color||'N/A'}<br>
