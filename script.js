@@ -1944,7 +1944,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="order-header"><strong>Date : ${order.date}</strong><strong>Total : $${parseFloat(order.total||0).toFixed(2)}</strong></div>
             <p><strong>Quantité totale :</strong> ${order.totalQuantity||0} produits</p>
             <div class="order-items">${order.items.map(item => `
-              <div class="order-item-clickable" data-id="${item.id || ''}">
+              <div class="order-item-clickable" onclick="handleOrderItemClick('${item.id||''}')">
                 ${item.image_variant ? `<img src="${upgradeShopifyImageUrl(item.image_variant)}" class="order-item-image">` : ''}
                 <div>
                   <strong class="order-item-title">${item.title}</strong><br>
@@ -1955,48 +1955,18 @@ document.addEventListener('DOMContentLoaded', () => {
             </div></div>`;
         });
         historyContainer.innerHTML = html;
-
-        // Attendre que getProductUrl soit disponible puis attacher les listeners
-        function attachOrderItemListeners() {
-          document.querySelectorAll('.order-item-clickable').forEach(el => {
-            // évite double-binding
-            if (el.dataset.bound) return;
-            el.dataset.bound = '1';
-
-            el.addEventListener('click', function() {
-              const id = this.dataset.id;
-              if (!id) return;
-
-              if (typeof window.getProductUrl !== 'function') {
-                console.warn('getProductUrl pas encore prêt, retry...');
-                setTimeout(() => this.click(), 300);
-                return;
-              }
-
-              const url = window.getProductUrl(id);
-              if (!url || url === 'shop.html') {
-                console.error(`❌ Produit ID=${id} introuvable`);
-                return;
-              }
-              window.location.href = url;
-            });
-
-            el.style.cursor = 'pointer';
+        setTimeout(() => {
+          document.addEventListener('click', function(e) {
+            const clickable = e.target.closest('.order-item-clickable');
+            if (!clickable) return;
+            const id = clickable.dataset.id;
+            if (!id) return;
+            e.stopImmediatePropagation();
+            const url = window.getProductUrl(id);
+            if (url === 'shop.html') { console.error(`❌ ID=${id} NON TROUVÉ`); return; }
+            window.location.href = url;
           });
-        }
-
-        // Tente immédiatement, puis réessaie si products pas encore chargés
-        attachOrderItemListeners();
-        if (typeof window.getProductUrl !== 'function') {
-          const retryInterval = setInterval(() => {
-            if (typeof window.getProductUrl === 'function') {
-              clearInterval(retryInterval);
-              attachOrderItemListeners();
-            }
-          }, 200);
-          // Arrête après 5 secondes max
-          setTimeout(() => clearInterval(retryInterval), 5000);
-        }
+        }, 300);
       } else {
         historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
       }
@@ -2055,8 +2025,26 @@ window.addEventListener('load', () => {
 
   window.handleOrderItemClick = function(id) {
     if (!id) return;
-    const url = window.getProductUrl ? window.getProductUrl(id) : 'shop.html';
-    if (url === 'shop.html') { if (typeof showErrorPopup === 'function') showErrorPopup(`Produit ID=${id} introuvable`); return; }
-    window.location.href = url;
-  };
+    if (typeof window.getProductUrl === 'function') {
+        const url = window.getProductUrl(id);
+        if (url === 'shop.html') { console.error(`❌ ID=${id} introuvable`); return; }
+        window.location.href = url;
+        return;
+    }
+    const maxWait = 5000;
+    const interval = 100;
+    let waited = 0;
+    const retry = setInterval(() => {
+        waited += interval;
+        if (typeof window.getProductUrl === 'function') {
+            clearInterval(retry);
+            const url = window.getProductUrl(id);
+            if (url === 'shop.html') { console.error(`❌ ID=${id} introuvable`); return; }
+            window.location.href = url;
+        } else if (waited >= maxWait) {
+            clearInterval(retry);
+            console.error('getProductUrl jamais disponible');
+        }
+    }, interval);
+};
 });

@@ -2182,7 +2182,7 @@ a { text-decoration: none; color: inherit; }
     font-size: 0.82rem;
     font-weight: 600;
     color: var(--rose-light);
-    border-bottom: 1px solid rgba(192,56,94,0.40);
+    border-bottom: 1px solid rgba(192,56,94,0.40) !important;
     transition: var(--transition);
 }
 
@@ -6101,12 +6101,12 @@ tbody tr:hover { background: var(--rose-ultra); }
 }
 
 .wishlist-item .current-price {
-    font-size: 1.1rem !important;
+    font-size: 1.5rem !important;
     color: #e91e63 !important;
 }
 
 .wishlist-item .compare-price {
-    font-size: 1rem !important;
+    font-size: 1.2rem !important;
     color: #aaaaaa !important;
 }
 
