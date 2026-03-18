@@ -192,7 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const enableMediaZoom = (settings.enable_media_zoom || "no").toLowerCase() === "yes";
 
       // ====================== NOUVEAU : SOCIAL LINKS ======================
-      // Injecte les liens réseaux sociaux depuis settings.social_links dans tous les footers
       const socialLinks = settings.social_links || {};
       const socialMap = {
         'fa-facebook-f':  socialLinks.facebook,
@@ -283,8 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof loadDynamicReviews === 'function') loadDynamicReviews();
         const prod = products.find(p => p.id === pid);
 
-        // ====================== NOUVEAU : RATING & REVIEWS COUNT ======================
-        // Injecte la note et le nombre de reviews depuis le JSON dans le bloc stars
+        // ====================== RATING & REVIEWS COUNT ======================
         if (prod) {
           const rating = prod.rating || 4.8;
           const reviewsCount = prod.reviews_count || 0;
@@ -310,7 +308,6 @@ document.addEventListener('DOMContentLoaded', () => {
           if (ratingTextEl) ratingTextEl.textContent = rating.toFixed(1) + ' / 5';
           if (reviewsCountEl) reviewsCountEl.textContent = reviewsCount + ' reviews';
 
-          // Scroll vers reviews au clic sur étoiles / rating text / reviews count
           const scrollToReviews = () => {
             const reviewsSection = document.getElementById('reviews-section');
             if (reviewsSection) reviewsSection.scrollIntoView({ behavior: 'smooth' });
@@ -1294,16 +1291,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const STORAGE_KEY = 'drawerCountdownEnd';
 
     function runCycle() {
-      // Vérifie si un timer actif existe encore dans localStorage
       const savedEnd = localStorage.getItem(STORAGE_KEY);
       const now = Date.now();
 
       let endTime;
       if (savedEnd && parseInt(savedEnd) > now) {
-        // Timer existant pas encore expiré → on le reprend
         endTime = parseInt(savedEnd);
       } else {
-        // Nouveau cycle
         endTime = now + totalSeconds * 1000;
         localStorage.setItem(STORAGE_KEY, endTime);
       }
@@ -1316,7 +1310,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (remaining <= 0) {
           if (timeEl) timeEl.textContent = `0:00 ${suffix}`;
           clearInterval(_countdownTimer);
-          // Nouveau cycle après 3 secondes
           setTimeout(() => {
             localStorage.removeItem(STORAGE_KEY);
             _countdownStarted = false;
@@ -1885,216 +1878,247 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ACCOUNT PAGE
- if (isAccountPage) {
-        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-        if (!isLoggedIn) {
-            const hideStyle = document.createElement('style');
-            hideStyle.innerHTML = `
-                body > *:not(#paulPopup) { display: none !important; }
-                #paulPopup { display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 999999 !important; }
-            `;
-            document.head.appendChild(hideStyle);
-            setTimeout(() => {
-                openPaulPopup();
-                const closeBtnPopup = document.querySelector('.paul-close');
-                if (closeBtnPopup) {
-                    closeBtnPopup.style.pointerEvents = 'none';
-                    closeBtnPopup.style.opacity = '0.3';
-                    closeBtnPopup.title = 'Vous devez vous connecter pour accéder à votre compte';
-                }
-            }, 100);
-            return;
+  if (isAccountPage) {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    if (!isLoggedIn) {
+      const hideStyle = document.createElement('style');
+      hideStyle.innerHTML = `
+        body > *:not(#paulPopup) { display: none !important; }
+        #paulPopup { display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 999999 !important; }
+      `;
+      document.head.appendChild(hideStyle);
+      setTimeout(() => {
+        openPaulPopup();
+        const closeBtnPopup = document.querySelector('.paul-close');
+        if (closeBtnPopup) {
+          closeBtnPopup.style.pointerEvents = 'none';
+          closeBtnPopup.style.opacity = '0.3';
+          closeBtnPopup.title = 'You must log in to access your account';
         }
-        document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
-        document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
-        document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
-        document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
-        loadAccountStats();
+      }, 100);
+      return;
     }
-    window.openSavedItems = () => {
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            showToast("Connectez-vous pour voir vos articles sauvegardés");
-            return;
-        }
-        localStorage.setItem('autoOpenCart', 'true');
-        window.location.href = 'shop.html';
-    };
-       async function loadAccountStats() {
+    document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
+    document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
+    document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
+    document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
+    loadAccountStats();
+  }
+
+  window.openSavedItems = () => {
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      showToast("Please log in to view your saved items");
+      return;
+    }
+    localStorage.setItem('autoOpenCart', 'true');
+    window.location.href = 'shop.html';
+  };
+
+  async function loadAccountStats() {
     const email = localStorage.getItem('userEmail');
     if (!email) return;
     try {
-        const res = await fetch('/.netlify/functions/save-account', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'get-stats', email })
-        });
-        const data = await res.json();
-        // Member since + points
-        const memberSinceEl = document.getElementById('member-since');
-        if (memberSinceEl) memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
-        const points = data.points || 0;
-        let levelText = 'Basic Member';
-        if (points >= 100 && points < 200) levelText = 'Member pro';
-        else if (points >= 200) levelText = 'Member super pro';
-        const levelEl = document.getElementById('membership-level');
-        const pointsEl = document.getElementById('membership-points');
-        if (levelEl) levelEl.textContent = levelText;
-        if (pointsEl) pointsEl.textContent = `${points} pts`;
-        console.log(`✅ Stats chargées - Reviews Written = ${data.reviewsCount}`);
-        // Stats normales
-        const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
-        if (statValues.length >= 3) {
-            statValues[0].textContent = data.orders || 0;
-            statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
-            statValues[3].textContent = data.reviewsCount || 0;
-        }
-        document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
-        const historyContainer = document.querySelector('.order-history');
-        if (!historyContainer) {
-            console.warn("⚠️ .order-history non trouvé dans le DOM");
-            return;
-        }
-        if (data.history && Array.isArray(data.history) && data.history.length > 0) {
-            let html = `<h2>Order History</h2>`;
-            const sorted = [...data.history].reverse();
-            sorted.forEach(order => {
-                html += `
-                    <div class="order-entry">
-                        <div class="order-header">
-                            <strong>Date : ${order.date}</strong>
-                            <strong>Total : $${parseFloat(order.total || 0).toFixed(2)}</strong>
-                        </div>
-                        <p><strong>Quantité totale :</strong> ${order.totalQuantity || 0} produits</p>
-                        <div class="order-items">
-                            ${order.items.map(item => `
-                      <div class="order-item-clickable" 
-                          onclick="handleOrderItemClick('${item.id || ''}')">
-                                    ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image">` : ''}
-                                    <div>
-                                        <strong class="order-item-title">${item.title}</strong><br>
-                                        Couleur variante : ${item.variant_color || 'N/A'}<br>
-                                        Prix : $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            });
-            historyContainer.innerHTML = html;
-            // ====================== DELEGATION SUR DOCUMENT (méthode infaillible) ======================
-            setTimeout(() => {
-                console.log("✅ Delegation Order History activée sur document");
-                document.addEventListener('click', function(e) {
-                    const clickable = e.target.closest('.order-item-clickable');
-                    if (!clickable) return;
-                    const id = clickable.dataset.id;
-                    if (!id) return;
-                    e.stopImmediatePropagation();
-                    const url = window.getProductUrl(id);
-                    console.log(`🖱️ CLIC DÉTECTÉ → ID=${id} | URL=${url}`);
-                    if (url === 'shop.html') {
-                        console.error(`❌ ID=${id} NON TROUVÉ dans products.data.json`);
-                        showErrorPopup(`Produit ID=${id} introuvable`);
-                        return;
-                    }
-                    window.location.href = url;
-                });
-            }, 300);
-        } else {
-            historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
-        }
-    } catch (e) {
-        console.error("Stats load error", e);
-    }
-}
-    window.saveAddress = async () => {
-        const email = localStorage.getItem('userEmail');
-        const line1 = document.getElementById('addr-line1').value.trim();
-        const line2 = document.getElementById('addr-line2').value.trim();
-        const city = document.getElementById('addr-city').value.trim();
-        const state = document.getElementById('addr-state').value.trim();
-        const zip = document.getElementById('addr-zip').value.trim();
-        const addressStr = [line1, line2, city, state, zip].filter(Boolean).join(', ');
-        try {
-            const res = await fetch('/.netlify/functions/save-account', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'update-address', email, line1, line2, city, state, zip })
-            });
-            const data = await res.json();
-            if (data.success) {
-                localStorage.setItem('userAddress', addressStr || 'No default address set');
-                document.getElementById('user-address').textContent = addressStr || 'No default address set';
-                showToast("Address saved successfully!");
-                closeAccountPopup('address-popup');
-            } else {
-                showToast("Error: " + data.error);
-            }
-        } catch (err) {
-            showToast("Network error while saving address");
-        }
-    };
-    window.updatePassword = async () => {
-        const email = document.getElementById('security-email').value.trim();
-        const newPassword = document.getElementById('new-password').value.trim();
-        if (!email || !newPassword) return showToast("Email and new password are required");
-        try {
-            const res = await fetch('/.netlify/functions/save-account', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'update-password', email, newPassword })
-            });
-            const data = await res.json();
-            if (data.success) {
-                showToast("Password updated successfully!");
-                closeAccountPopup('password-popup');
-            } else {
-                showToast("Error: " + data.error);
-            }
-        } catch (err) {
-            showToast("Network error while updating password");
-        }
-    };
-    window.trackOrder = () => {
-        const num = document.getElementById('tracking-number').value.trim();
-        const result = document.getElementById('track-result');
-        if (!num) {
-            result.textContent = "Please enter a tracking number";
-            return;
-        }
-        result.textContent = `✅ Order ${num} tracked - Estimated arrival: 3-5 days`;
-        setTimeout(() => closeAccountPopup('track-popup'), 4000);
-    };
-    window.logout = () => {
-        localStorage.clear();
-        window.location.href = 'index.html';
-    };
-});
-window.addEventListener('load', () => {
-    const pathname = window.location.pathname.toLowerCase();
-    const isAccountPage = /account/i.test(pathname);
-    if (isAccountPage && localStorage.getItem('isLoggedIn') !== 'true') {
-        const hideStyle = document.createElement('style');
-        hideStyle.innerHTML = `
-            body > *:not(#paulPopup) { display: none !important; }
-            #paulPopup { display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 999999 !important; }
-        `;
-        document.head.appendChild(hideStyle);
-        setTimeout(() => {
-            const overlay = document.getElementById('paulPopup');
-            if (overlay) overlay.classList.add('active');
-        }, 150);
-    }
-    // ====================== CLIC ORDER HISTORY (méthode directe et infaillible) ======================
-  window.handleOrderItemClick = function(id) {
-      if (!id) return;
-      const url = window.getProductUrl ? window.getProductUrl(id) : 'shop.html';
-      console.log(`🖱️ Order History clic → ID=${id} | URL=${url}`);
-      if (url === 'shop.html') {
-          showErrorPopup(`Produit ID=${id} introuvable`);
-          return;
+      const res = await fetch('/.netlify/functions/save-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'get-stats', email })
+      });
+      const data = await res.json();
+
+      // Member since + points
+      const memberSinceEl = document.getElementById('member-since');
+      if (memberSinceEl) memberSinceEl.textContent = `Member since ${data.memberSince || 'January 2026'}`;
+      const points = data.points || 0;
+      let levelText = 'Basic Member';
+      if (points >= 100 && points < 200) levelText = 'Member pro';
+      else if (points >= 200) levelText = 'Member super pro';
+      const levelEl = document.getElementById('membership-level');
+      const pointsEl = document.getElementById('membership-points');
+      if (levelEl) levelEl.textContent = levelText;
+      if (pointsEl) pointsEl.textContent = `${points} pts`;
+      console.log(`✅ Stats loaded - Reviews Written = ${data.reviewsCount}`);
+
+      // Stats
+      const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
+      if (statValues.length >= 3) {
+        statValues[0].textContent = data.orders || 0;
+        statValues[1].textContent = `$${(data.totalSpent || 0).toFixed(2)}`;
+        statValues[3].textContent = data.reviewsCount || 0;
       }
-      window.location.href = url;
+      document.querySelector('[data-wishlist-count]').textContent = data.quantityInCart || 0;
+
+      const historyContainer = document.querySelector('.order-history');
+      if (!historyContainer) {
+        console.warn("⚠️ .order-history not found in DOM");
+        return;
+      }
+
+      if (data.history && Array.isArray(data.history) && data.history.length > 0) {
+        let html = `<h2>Order History</h2>`;
+        const sorted = [...data.history].reverse();
+        sorted.forEach(order => {
+          // ====================== FIX 3: TEXTES EN ANGLAIS ======================
+          html += `
+            <div class="order-entry">
+              <div class="order-header">
+                <strong>Date: ${order.date}</strong>
+                <strong>Total: $${parseFloat(order.total || 0).toFixed(2)}</strong>
+              </div>
+              <p><strong>Total quantity:</strong> ${order.totalQuantity || 0} item(s)</p>
+              <div class="order-items">
+                ${order.items.map(item => {
+                  // ====================== FIX 1: VARIANT COLOR FALLBACK ======================
+                  // Priorité : variant_color → color → extraire du vid → 'Not specified'
+                  const variantColor = item.variant_color || item.color || item.variant_name ||
+                    (item.vid ? item.vid.replace(/^[^_]+_([^_]+)_.*$/, '$1') : '') || 'Not specified';
+
+                  // ====================== FIX 2: data-id correctement injecté ======================
+                  const itemId = item.id || item.product_id || '';
+                  return `
+                    <div class="order-item-clickable" data-id="${itemId}" style="cursor:pointer;">
+                      ${item.image_variant ? `<img src="${item.image_variant}" class="order-item-image">` : ''}
+                      <div>
+                        <strong class="order-item-title">${item.title}</strong><br>
+                        Color: ${variantColor}<br>
+                        Price: $${parseFloat(item.price || 0).toFixed(2)} × ${item.quantity}
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        });
+        historyContainer.innerHTML = html;
+
+        // ====================== FIX 2: DELEGATION CLIC CORRIGÉE ======================
+        // On utilise la délégation sur historyContainer directement (plus fiable)
+        historyContainer.addEventListener('click', function(e) {
+          const clickable = e.target.closest('.order-item-clickable');
+          if (!clickable) return;
+          const id = clickable.dataset.id;
+          if (!id) {
+            console.warn('order-item-clickable: data-id manquant');
+            return;
+          }
+          // S'assurer que products est chargé avant de rediriger
+          if (!window.getProductUrl) {
+            console.warn('getProductUrl pas encore disponible, retry...');
+            setTimeout(() => {
+              const url = window.getProductUrl ? window.getProductUrl(id) : 'shop.html';
+              if (url && url !== 'shop.html') window.location.href = url;
+            }, 500);
+            return;
+          }
+          const url = window.getProductUrl(id);
+          console.log(`🖱️ Order History click → ID=${id} | URL=${url}`);
+          if (!url || url === 'shop.html') {
+            console.error(`❌ Product ID=${id} not found in products.data.json`);
+            return;
+          }
+          window.location.href = url;
+        });
+
+      } else {
+        historyContainer.innerHTML = `<h2>Order History</h2><p>No orders yet</p>`;
+      }
+    } catch (e) {
+      console.error("Stats load error", e);
+    }
+  }
+
+  window.saveAddress = async () => {
+    const email = localStorage.getItem('userEmail');
+    const line1 = document.getElementById('addr-line1').value.trim();
+    const line2 = document.getElementById('addr-line2').value.trim();
+    const city = document.getElementById('addr-city').value.trim();
+    const state = document.getElementById('addr-state').value.trim();
+    const zip = document.getElementById('addr-zip').value.trim();
+    const addressStr = [line1, line2, city, state, zip].filter(Boolean).join(', ');
+    try {
+      const res = await fetch('/.netlify/functions/save-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update-address', email, line1, line2, city, state, zip })
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem('userAddress', addressStr || 'No default address set');
+        document.getElementById('user-address').textContent = addressStr || 'No default address set';
+        showToast("Address saved successfully!");
+        closeAccountPopup('address-popup');
+      } else {
+        showToast("Error: " + data.error);
+      }
+    } catch (err) {
+      showToast("Network error while saving address");
+    }
+  };
+
+  window.updatePassword = async () => {
+    const email = document.getElementById('security-email').value.trim();
+    const newPassword = document.getElementById('new-password').value.trim();
+    if (!email || !newPassword) return showToast("Email and new password are required");
+    try {
+      const res = await fetch('/.netlify/functions/save-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update-password', email, newPassword })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("Password updated successfully!");
+        closeAccountPopup('password-popup');
+      } else {
+        showToast("Error: " + data.error);
+      }
+    } catch (err) {
+      showToast("Network error while updating password");
+    }
+  };
+
+  window.trackOrder = () => {
+    const num = document.getElementById('tracking-number').value.trim();
+    const result = document.getElementById('track-result');
+    if (!num) {
+      result.textContent = "Please enter a tracking number";
+      return;
+    }
+    result.textContent = `✅ Order ${num} tracked - Estimated arrival: 3-5 days`;
+    setTimeout(() => closeAccountPopup('track-popup'), 4000);
+  };
+
+  window.logout = () => {
+    localStorage.clear();
+    window.location.href = 'index.html';
+  };
+});
+
+window.addEventListener('load', () => {
+  const pathname = window.location.pathname.toLowerCase();
+  const isAccountPage = /account/i.test(pathname);
+  if (isAccountPage && localStorage.getItem('isLoggedIn') !== 'true') {
+    const hideStyle = document.createElement('style');
+    hideStyle.innerHTML = `
+      body > *:not(#paulPopup) { display: none !important; }
+      #paulPopup { display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 999999 !important; }
+    `;
+    document.head.appendChild(hideStyle);
+    setTimeout(() => {
+      const overlay = document.getElementById('paulPopup');
+      if (overlay) overlay.classList.add('active');
+    }, 150);
+  }
+
+  // ====================== handleOrderItemClick (global, backup) ======================
+  window.handleOrderItemClick = function(id) {
+    if (!id) return;
+    const url = window.getProductUrl ? window.getProductUrl(id) : 'shop.html';
+    console.log(`🖱️ Order History click → ID=${id} | URL=${url}`);
+    if (!url || url === 'shop.html') {
+      console.error(`❌ Product ID=${id} not found`);
+      return;
+    }
+    window.location.href = url;
   };
 });
