@@ -1,9 +1,3 @@
-/* ================================================================
-   ACCOUNT PAGE — Premium CurvaFit Edition
-   Palette: rose #b83058 | plum #6b3460 | gold #c4943a | cream #fffbf9
-   Fonts: Cormorant Garamond (display) + DM Sans (body)
-================================================================ */
-
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 /* ── Root variables ── */
@@ -36,27 +30,27 @@
 .account-main {
   background: linear-gradient(160deg, #fdf6f0 0%, #f5edf5 50%, #f0f0f7 100%);
   min-height: 100vh;
-  padding: 0 0 10px;
+  padding: 0 0 5px;
 }
 
 .account-background {
   width: 100%;
-  padding-top: 32px;
-  padding-bottom: 40px;
+  padding-top: 10px;
+  padding-bottom: 4px;
   background: transparent;
   box-sizing: border-box;
 }
 
 @media screen and (min-width: 750px) {
   .account-background {
-    padding-top: 48px;
-    padding-bottom: 56px;
+    padding-top: 10px;
+    padding-bottom: 5px;
   }
 }
 
 /* ── Account container ── */
 .customer.account {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
   padding: 0 20px;
   background: transparent;
