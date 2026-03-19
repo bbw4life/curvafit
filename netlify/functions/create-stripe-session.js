@@ -16,17 +16,12 @@ exports.handler = async (event) => {
       if (!price || !qty || price <= 0) throw new Error("Invalid item");
       subtotal += price * qty;
 
-      const variantParts = [];
-      if (item.color) variantParts.push(`Color: ${item.color}`);
-      if (item.size) variantParts.push(`Size: ${item.size}`);
-
       return {
         price_data: {
           currency: 'usd',
           product_data: { 
             name: item.title,
-            images: item.image ? [item.image] : [],
-            ...(variantParts.length > 0 && { description: variantParts.join(' | ') })
+            images: item.image ? [item.image] : []
           },
           unit_amount: Math.round(price * 100)
         },
@@ -51,12 +46,17 @@ exports.handler = async (event) => {
       },
       quantity: 1
     });
-
-    const eproloData = cart.map(item => ({
-      variantsid: item.cj_variant_id || ''
+    const itemsMetadata = cart.map(item => ({
+      id:            item.id            || '',
+      title:         item.title         || '',
+      price:         item.price         || 0,
+      quantity:      item.quantity      || 1,
+      color:         item.color         || '',
+      size:          item.size          || '',
+      cj_variant_id: item.cj_variant_id || '',
+      image:         item.image         || '',
+      image_variant: item.image         || ''
     }));
-
-    const imagesData = cart.map(item => item.image || '');
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -65,9 +65,9 @@ exports.handler = async (event) => {
       success_url: `${process.env.BASE_URL}/thankyou.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.BASE_URL}/checkout.html`,
       metadata: {
-        eprolo_data: JSON.stringify(eproloData),
-        shipping: JSON.stringify(shipping),
-        images: JSON.stringify(imagesData)
+        // items_data contient tout ce qu'il faut pour order history
+        items_data: JSON.stringify(itemsMetadata),
+        shipping:   JSON.stringify(shipping)
       }
     });
 

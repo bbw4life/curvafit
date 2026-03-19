@@ -1,4 +1,3 @@
-// checkout.js
 document.addEventListener('DOMContentLoaded', () => {
     let cart = [];
     try {
@@ -29,20 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const popup = document.getElementById('error-popup');
         const popupText = document.getElementById('popup-message');
         const closeBtn = document.getElementById('popup-close');
-
-        if (!popup || !popupText || !closeBtn) {
-            console.error("Popup HTML non trouvé ! Ajoute le HTML + CSS du popup.");
-            return;
-        }
-
+        if (!popup || !popupText || !closeBtn) { console.error("Popup HTML manquant !"); return; }
         popupText.textContent = message;
         popup.classList.add('show');
-
         closeBtn.onclick = () => popup.classList.remove('show');
-
-        setTimeout(() => {
-            if (popup.classList.contains('show')) popup.classList.remove('show');
-        }, 10000);
+        setTimeout(() => { if (popup.classList.contains('show')) popup.classList.remove('show'); }, 10000);
     }
     // ====================== FIN POPUP ======================
 
@@ -63,21 +53,49 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCart();
       });
 
+    // ====================== CORRECTION 2 ======================
+    // Pré-remplissage des champs depuis localStorage (données compte)
+    // On teste plusieurs IDs possibles pour chaque champ car
+    // le HTML peut avoir 'address2' OU 'address-line2' selon la version
     if (localStorage.getItem('isLoggedIn') === 'true') {
-        document.getElementById('first-name').value = localStorage.getItem('userFirstName') || '';
-        document.getElementById('last-name').value = localStorage.getItem('userLastName') || '';
-        document.getElementById('email').value = localStorage.getItem('userEmail') || '';
-        document.getElementById('address').value = localStorage.getItem('userAddressLine1') || '';
-        const address2Input = document.getElementById('address2') || document.getElementById('address-line2');
-        if (address2Input) address2Input.value = localStorage.getItem('userLine2') || '';
-        document.getElementById('city').value = localStorage.getItem('userCity') || '';
-        document.getElementById('state').value = localStorage.getItem('userState') || '';
-        document.getElementById('postal-code').value = localStorage.getItem('userZip') || '';
+        const setField = (id, value) => {
+            const el = document.getElementById(id);
+            if (el && value) el.value = value;
+        };
+
+        setField('first-name',   localStorage.getItem('userFirstName')    || '');
+        setField('last-name',    localStorage.getItem('userLastName')     || '');
+        setField('email',        localStorage.getItem('userEmail')        || '');
+        setField('address',      localStorage.getItem('userAddressLine1') || '');
+        setField('city',         localStorage.getItem('userCity')         || '');
+        setField('state',        localStorage.getItem('userState')        || '');
+        setField('postal-code',  localStorage.getItem('userZip')          || '');
+
+        // address2 peut avoir plusieurs IDs selon la version du HTML
+        const line2 = localStorage.getItem('userLine2') || '';
+        setField('address2',      line2);
+        setField('address-line2', line2);
+        setField('addr-line2',    line2);
+
+        // Pays
         const countrySelect = document.getElementById('country');
-        if (countrySelect && localStorage.getItem('userCountry')) {
-            countrySelect.value = localStorage.getItem('userCountry');
+        const savedCountry = localStorage.getItem('userCountry');
+        if (countrySelect && savedCountry) {
+            // On attend que les pays soient chargés (loadCountries est async)
+            // On utilise un MutationObserver ou un petit polling
+            const trySetCountry = () => {
+                const opt = Array.from(countrySelect.options).find(o => o.value === savedCountry);
+                if (opt) {
+                    countrySelect.value = savedCountry;
+                    countrySelect.dispatchEvent(new Event('change'));
+                }
+            };
+            // Essaie tout de suite, puis après chargement des options
+            trySetCountry();
+            setTimeout(trySetCountry, 1500);
         }
     }
+    // ====================== FIN CORRECTION 2 ======================
 
     function renderCart() {
         if (!cart.length) {
@@ -103,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = item.image || '';
             img.alt = item.title || 'Product';
             img.loading = "lazy";
-            let sizeHtml = item.size ? `<p>Size: ${item.size}</p>` : '';
+            let sizeHtml  = item.size  ? `<p>Size: ${item.size}</p>`  : '';
             let colorHtml = item.color ? `<p>Color: ${item.color}</p>` : '';
             const info = document.createElement('div');
             info.innerHTML = `
@@ -158,17 +176,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const phoneCode = document.getElementById('phone-code').value.trim();
         const phoneNumber = document.getElementById('phone').value.trim();
         const fullPhone = (phoneCode + phoneNumber).replace(/\s+/g, '');
+
+        // Cherche address2 sous les deux IDs possibles
+        const address2El = document.getElementById('address2') || document.getElementById('address-line2');
+
         return {
-            firstName: document.getElementById('first-name').value.trim(),
-            lastName: document.getElementById('last-name').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            phone: fullPhone,
-            country: selectedOption.value.trim(),
-            countryCode: selectedOption.dataset.cca2 || '',
-            city: document.getElementById('city').value.trim(),
-            state: document.getElementById('state').value.trim(),
-            postalCode: document.getElementById('postal-code').value.trim(),
-            address: document.getElementById('address').value.trim(),
+            firstName:       document.getElementById('first-name').value.trim(),
+            lastName:        document.getElementById('last-name').value.trim(),
+            email:           document.getElementById('email').value.trim(),
+            phone:           fullPhone,
+            country:         selectedOption.value.trim(),
+            countryCode:     selectedOption.dataset.cca2 || '',
+            city:            document.getElementById('city').value.trim(),
+            state:           document.getElementById('state').value.trim(),
+            postalCode:      document.getElementById('postal-code').value.trim(),
+            address:         document.getElementById('address').value.trim(),
+            address2:        address2El ? address2El.value.trim() : '',
             shipping_method: document.querySelector('.shipping-option.selected')?.dataset.method || 'Standard Shipping',
         };
     }
@@ -221,8 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok || !data.sessionId) throw new Error(data.error || 'Stripe session failed');
                 localStorage.setItem("pendingOrder", "stripe");
                 await stripe.redirectToCheckout({ sessionId: data.sessionId });
-            }
-            else {
+            } else {
                 const bodyData = {
                     cart: discountedCart,
                     shipping: shippingData,
@@ -253,11 +275,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const refundModal = document.getElementById('refund-modal');
     const shippingModal = document.getElementById('shipping-modal');
     const closes = document.querySelectorAll('.close');
-    refundLink.addEventListener('click', (e) => { e.preventDefault(); refundModal.style.display = 'flex'; });
-    shippingLink.addEventListener('click', (e) => { e.preventDefault(); shippingModal.style.display = 'flex'; });
+    if (refundLink) refundLink.addEventListener('click', (e) => { e.preventDefault(); refundModal.style.display = 'flex'; });
+    if (shippingLink) shippingLink.addEventListener('click', (e) => { e.preventDefault(); shippingModal.style.display = 'flex'; });
     closes.forEach(close => close.addEventListener('click', () => {
-        refundModal.style.display = 'none';
-        shippingModal.style.display = 'none';
+        if (refundModal) refundModal.style.display = 'none';
+        if (shippingModal) shippingModal.style.display = 'none';
     }));
     window.addEventListener('click', (e) => {
         if (e.target === refundModal) refundModal.style.display = 'none';
@@ -281,9 +303,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 option.dataset.cca2 = country.cca2;
                 countrySelect.appendChild(option);
             });
-        } catch (err) {
-            console.error("Country load error", err);
-        }
+            // Re-tente de sélectionner le pays sauvegardé après chargement
+            const savedCountry = localStorage.getItem('userCountry');
+            if (savedCountry && localStorage.getItem('isLoggedIn') === 'true') {
+                const opt = Array.from(countrySelect.options).find(o => o.value === savedCountry);
+                if (opt) { countrySelect.value = savedCountry; countrySelect.dispatchEvent(new Event('change')); }
+            }
+        } catch (err) { console.error("Country load error", err); }
     }
 
     countrySelect.addEventListener('change', async function () {
@@ -305,6 +331,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     option.textContent = city;
                     citySelect.appendChild(option);
                 });
+            }
+            // Pré-sélectionne la ville sauvegardée
+            const savedCity = localStorage.getItem('userCity');
+            if (savedCity && localStorage.getItem('isLoggedIn') === 'true') {
+                const cityOpt = Array.from(citySelect.options).find(o => o.value === savedCity);
+                if (cityOpt) citySelect.value = savedCity;
             }
         } catch (err) {
             console.error("City load error", err);
@@ -339,11 +371,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 suggestedDiv.style.display = 'none';
             }
         }
-        if (hasBundle) {
-            promoMessage.textContent = "Promo codes are not available with bundle purchases.";
-            promoMessage.style.color = 'red';
-        } else {
-            promoMessage.textContent = '';
+        if (promoMessage) {
+            if (hasBundle) {
+                promoMessage.textContent = "Promo codes are not available with bundle purchases.";
+                promoMessage.style.color = 'red';
+            } else {
+                promoMessage.textContent = '';
+            }
         }
     }
 
@@ -359,14 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateTotals() {
         const subtotal = getSubtotal();
-        let bundleSavings = 0;
-        let hasBundle = false;
-        cart.forEach(item => {
-            if (item.fromBundle) {
-                hasBundle = true;
-                bundleSavings += (item.compare_price ? (item.compare_price - item.price) * item.quantity : 0);
-            }
-        });
+        let hasBundle = cart.some(item => item.fromBundle);
         const taxes = subtotal * TAX_RATE;
         const finalTotal = subtotal + taxes + SHIPPING_COST - discountAmount;
         document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
@@ -376,10 +403,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const promoLine = document.getElementById('promo-line');
         const discountEl = document.getElementById('discount-amount');
         if (discountAmount > 0) {
-            promoLine.style.display = 'block';
-            discountEl.textContent = `-$${discountAmount.toFixed(2)}`;
+            if (promoLine) promoLine.style.display = 'block';
+            if (discountEl) discountEl.textContent = `-$${discountAmount.toFixed(2)}`;
         } else {
-            promoLine.style.display = 'none';
+            if (promoLine) promoLine.style.display = 'none';
         }
     }
 
