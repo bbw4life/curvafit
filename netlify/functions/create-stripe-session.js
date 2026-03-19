@@ -4,7 +4,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 exports.handler = async (event) => {
   try {
     if (!event.body) throw new Error("No data received");
-    
+
     const { cart, shipping, shipping_cost = "10.00", tax = "0.00" } = JSON.parse(event.body);
 
     if (!Array.isArray(cart) || cart.length === 0) throw new Error("Invalid cart data");
@@ -15,11 +15,10 @@ exports.handler = async (event) => {
       const qty = parseInt(item.quantity);
       if (!price || !qty || price <= 0) throw new Error("Invalid item");
       subtotal += price * qty;
-
       return {
         price_data: {
           currency: 'usd',
-          product_data: { 
+          product_data: {
             name: item.title,
             images: item.image ? [item.image] : []
           },
@@ -30,44 +29,38 @@ exports.handler = async (event) => {
     });
 
     lineItems.push({
-      price_data: {
-        currency: 'usd',
-        product_data: { name: 'Shipping' },
-        unit_amount: Math.round(parseFloat(shipping_cost) * 100)
-      },
+      price_data: { currency: 'usd', product_data: { name: 'Shipping' }, unit_amount: Math.round(parseFloat(shipping_cost) * 100) },
+      quantity: 1
+    });
+    lineItems.push({
+      price_data: { currency: 'usd', product_data: { name: 'Taxes' }, unit_amount: Math.round(parseFloat(tax) * 100) },
       quantity: 1
     });
 
-    lineItems.push({
-      price_data: {
-        currency: 'usd',
-        product_data: { name: 'Taxes' },
-        unit_amount: Math.round(parseFloat(tax) * 100)
-      },
-      quantity: 1
-    });
-    const itemsMetadata = cart.map(item => ({
-      id:            item.id            || '',
-      title:         item.title         || '',
-      price:         item.price         || 0,
-      quantity:      item.quantity      || 1,
-      color:         item.color         || '',
-      size:          item.size          || '',
-      cj_variant_id: item.cj_variant_id || '',
-      image:         item.image         || '',
-      image_variant: item.image         || ''
-    }));
+    // Inchangé — garde la compatibilité avec le fulfillment CJ
+    const eproloData = cart.map(item => ({ variantsid: item.cj_variant_id || '' }));
+    const imagesData = cart.map(item => item.image || '');
+
+    // NOUVEAU — couleur, taille, et image du variant choisi
+    // item.image côté client est déjà l'image de la couleur sélectionnée
+    // (script.js → addToCart → itemImage = image de la couleur)
+    const colorsData       = cart.map(item => item.color || '');
+    const sizesData        = cart.map(item => item.size  || '');
+    const imagesVariant    = cart.map(item => item.image || '');
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
       success_url: `${process.env.BASE_URL}/thankyou.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.BASE_URL}/checkout.html`,
+      cancel_url:  `${process.env.BASE_URL}/checkout.html`,
       metadata: {
-        // items_data contient tout ce qu'il faut pour order history
-        items_data: JSON.stringify(itemsMetadata),
-        shipping:   JSON.stringify(shipping)
+        eprolo_data:    JSON.stringify(eproloData),
+        shipping:       JSON.stringify(shipping),
+        images:         JSON.stringify(imagesData),
+        colors:         JSON.stringify(colorsData),     // NOUVEAU
+        sizes:          JSON.stringify(sizesData),      // NOUVEAU
+        images_variant: JSON.stringify(imagesVariant)   // NOUVEAU
       }
     });
 
@@ -76,6 +69,7 @@ exports.handler = async (event) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ success: true, sessionId: session.id })
     };
+
   } catch (error) {
     console.error("[STRIPE SESSION ERROR]", error.message);
     return {
