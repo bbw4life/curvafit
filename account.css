@@ -808,3 +808,7 @@
     padding: 26px 16px 22px !important;
   }
 }
+
+.footer-brand a {
+    color: #6b3460 !important;
+}
