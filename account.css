@@ -812,3 +812,9 @@
 .footer-brand a {
     color: #6b3460 !important;
 }
+
+.account-background 
+footer .copyright {
+  margin-top: 24px;
+  padding-top: 20px;
+}
