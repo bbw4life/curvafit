@@ -3472,6 +3472,10 @@ body {
 .close-drawer:hover { color: #c0385e; background: rgba(192,56,94,0.07); }
 
 .cart-drawer__body {
+    box-sizing: border-box;
+}
+
+.cart-drawer__body {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
@@ -3639,20 +3643,24 @@ body {
 .empty-cart h3 { font-size: 1.1rem; margin-bottom: 8px; color: #1e1a1c; }
 .empty-cart p  { color: #8e7e85; margin-bottom: 22px; font-size: 0.9rem; }
 
+
+
 .reviews-carousel {
-    padding: 10px 16px;
+    padding: 10px 0px;
     border-top: 1px solid #f5ecf0;
     min-height: 85px;
-}
-
-
-.reviews-carousel {
-    margin: 12px 0 8px;
+    margin: 10px;
     position: relative;
+    max-width: 100%;
+    
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .review-item {
     display: none;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .review-item.active {
@@ -3665,6 +3673,8 @@ body {
     border-radius: 14px;
     padding: 12px 14px 10px;
     position: relative;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .review-top {
@@ -3672,6 +3682,8 @@ body {
     align-items: center;
     gap: 10px;
     margin-bottom: 8px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .review-avatar {
@@ -3686,6 +3698,8 @@ body {
 
 .review-meta {
     flex: 1;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .review-meta h4 {
@@ -3693,6 +3707,9 @@ body {
     font-weight: 700;
     margin: 0 0 2px;
     color: #111;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .review-stars {
@@ -3726,6 +3743,7 @@ body {
     font-style: italic;
     margin: 0 0 6px;
     line-height: 1.45;
+    word-break: break-word;
 }
 
 .review-date {
