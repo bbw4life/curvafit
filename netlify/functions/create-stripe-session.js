@@ -16,12 +16,17 @@ exports.handler = async (event) => {
       if (!price || !qty || price <= 0) throw new Error("Invalid item");
       subtotal += price * qty;
 
+      const variantParts = [];
+      if (item.color) variantParts.push(`Color: ${item.color}`);
+      if (item.size) variantParts.push(`Size: ${item.size}`);
+
       return {
         price_data: {
           currency: 'usd',
           product_data: { 
             name: item.title,
-            images: item.image ? [item.image] : []
+            images: item.image ? [item.image] : [],
+            ...(variantParts.length > 0 && { description: variantParts.join(' | ') })
           },
           unit_amount: Math.round(price * 100)
         },
