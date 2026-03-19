@@ -204,16 +204,30 @@ document.addEventListener('DOMContentLoaded', () => {
         'fa-x-twitter':   socialLinks.twitter
       };
       document.querySelectorAll('.footer-social a').forEach(a => {
-        const icon = a.querySelector('i');
-        if (!icon) return;
-        for (const [cls, url] of Object.entries(socialMap)) {
-          if (icon.classList.contains(cls) && url) {
-            a.href = url;
-            a.target = '_blank';
-            a.rel = 'noopener noreferrer';
-          }
-        }
-      });
+  const icon = a.querySelector('i');
+  if (!icon) return;
+  for (const [cls, url] of Object.entries(socialMap)) {
+    if (url && icon.classList.contains(cls)) {
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      break;
+    }
+  }
+});
+
+// Fallback : si les icônes sont directement sur le <a> (pas dans un <i>)
+document.querySelectorAll('.footer-social a').forEach(a => {
+  if (a.href && a.href !== window.location.href && a.href !== '#') return;
+  for (const [cls, url] of Object.entries(socialMap)) {
+    if (url && a.classList.contains(cls)) {
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      break;
+    }
+  }
+});
       // ====================== FIN SOCIAL LINKS ======================
  
       // Comparison table
@@ -739,7 +753,29 @@ document.addEventListener('DOMContentLoaded', () => {
   // ====================== HAMBURGER ======================
   const hamburger = document.querySelector('.hamburger-menu');
   const nav = document.querySelector('.main-nav');
-  if (hamburger && nav) hamburger.addEventListener('click', () => nav.classList.toggle('active'));
+  if (hamburger && nav) {
+  hamburger.addEventListener('click', () => {
+    nav.classList.toggle('active');
+    const isOpen = nav.classList.contains('active');
+    const icon = hamburger.querySelector('i');
+    if (icon) {
+      icon.classList.toggle('fi-rr-menu-burger', !isOpen);
+      icon.classList.toggle('fi-rr-cross', isOpen);
+    }
+  });
+
+  // Fermer en cliquant ailleurs sur mobile
+  document.addEventListener('click', (e) => {
+    if (!hamburger.contains(e.target) && !nav.contains(e.target)) {
+      nav.classList.remove('active');
+      const icon = hamburger.querySelector('i');
+      if (icon) {
+        icon.classList.add('fi-rr-menu-burger');
+        icon.classList.remove('fi-rr-cross');
+      }
+    }
+  });
+}
  
   // ====================== SEARCH ======================
   const searchIcon = document.querySelector('.search-icon');

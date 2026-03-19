@@ -1,0 +1,130 @@
+[
+  {
+    "id": "featured",
+    "title": "How to Build Lasting Healthy Habits Without Overwhelm",
+    "category": "Sustainable Habits",
+    "selector": "#featured-article",
+    "url": "/blog/article1.html",
+    "excerpt": "Gentle strategies to create sustainable routines for curvy women."
+  },
+  {
+    "id": "article2",
+    "title": "The Science of Sustainable Weight Loss for Curvy Bodies",
+    "category": "Weight Loss Science",
+    "selector": ".blog-card[data-category='weight-loss-science']",
+    "url": "/blog/article2.html",
+    "excerpt": "Evidence-based methods that promote gradual, healthy changes."
+  },
+  {
+    "id": "article3",
+    "title": "Nourishing Meals That Honor Your Curves",
+    "category": "Nutrition for Curvy Women",
+    "selector": ".blog-card[data-category='nutrition-for-curvy-women']",
+    "url": "/blog/article3.html",
+    "excerpt": "Balanced nutrition tips focused on satisfaction and energy."
+  },
+  {
+    "id": "article4",
+    "title": "Cultivating Body Confidence Through Daily Affirmations",
+    "category": "Mindset & Confidence",
+    "selector": ".blog-card[data-category='mindset-confidence']",
+    "url": "/blog/article4.html",
+    "excerpt": "Simple practices to shift your mindset and embrace your beauty."
+  },
+  {
+    "id": "article5",
+    "title": "Understanding and Overcoming Emotional Eating Triggers",
+    "category": "Emotional Eating",
+    "selector": ".blog-card[data-category='emotional-eating']",
+    "url": "/blog/article5.html",
+    "excerpt": "Gentle approaches to manage emotional hunger."
+  },
+  {
+    "id": "article6",
+    "title": "Managing PCOS Symptoms with Gentle Lifestyle Changes",
+    "category": "Hormones & PCOS",
+    "selector": ".blog-card[data-category='hormones-pcos']",
+    "url": "/blog/article6.html",
+    "excerpt": "Balancing hormones through nutrition and movement."
+  },
+  {
+    "id": "article7",
+    "title": "Your First Steps to Fitness: A Beginner's Guide for Curvy Women",
+    "category": "Beginner Guides",
+    "selector": ".blog-card[data-category='beginner-guides']",
+    "url": "/blog/article7.html",
+    "excerpt": "Easy-to-follow tips to start your wellness journey."
+  },
+  {
+    "id": "article8",
+    "title": "Effective Home Workouts Tailored for Curvy Figures",
+    "category": "Home Workouts",
+    "selector": ".blog-card[data-category='home-workouts']",
+    "url": "/blog/article8.html",
+    "excerpt": "Low-impact exercises you can do at home."
+  },
+  {
+    "id": "article9",
+    "title": "Real Journeys: How One Curvy Woman Found Balance",
+    "category": "Real Stories",
+    "selector": ".blog-card[data-category='real-stories']",
+    "url": "/blog/article9.html",
+    "excerpt": "Inspiring story of transformation through self-compassion."
+  },
+  {
+    "id": "article10",
+    "title": "Creating Routines That Last: Habits for Lifelong Wellness",
+    "category": "Sustainable Habits",
+    "selector": ".blog-card[data-category='sustainable-habits']",
+    "url": "/blog/article10.html",
+    "excerpt": "Build habits without the pressure of perfection."
+  },
+  {
+    "id": "article11",
+    "title": "5 Tips for Consistent Exercise as a Curvy Woman",
+    "category": "Most Popular",
+    "selector": "#most-popular",
+    "url": "/blog/article11.html",
+    "excerpt": "12k views — Top tips for staying consistent."
+  },
+  {
+    "id": "article12",
+    "title": "Inspiring Plus-Size Fitness Influencers to Follow",
+    "category": "Most Popular",
+    "selector": "#most-popular",
+    "url": "/blog/article12.html",
+    "excerpt": "10k views — Women who inspire every day."
+  },
+  {
+    "id": "article13",
+    "title": "Curvy Fitness Bucket List: Challenges to Try",
+    "category": "Most Popular",
+    "selector": "#most-popular",
+    "url": "/blog/article13.html",
+    "excerpt": "8k views — Fun challenges for every level."
+  },
+  {
+    "id": "article15",
+    "title": "Cute Workout Clothes for Curvy Gals",
+    "category": "Editor's Picks",
+    "selector": "#editors-picks",
+    "url": "/blog/article15.html",
+    "excerpt": "Feel confident in gear designed for your curves."
+  },
+  {
+    "id": "article16",
+    "title": "Pilates for Plus-Size Beginners",
+    "category": "Editor's Picks",
+    "selector": "#editors-picks",
+    "url": "/blog/article16.html",
+    "excerpt": "Gentle movements to build core strength."
+  },
+  {
+    "id": "article17",
+    "title": "Strength Training Essentials for Curvy Women",
+    "category": "Editor's Picks",
+    "selector": "#editors-picks",
+    "url": "/blog/article17.html",
+    "excerpt": "Build muscle and boost metabolism safely."
+  }
+]

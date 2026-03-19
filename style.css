@@ -2473,7 +2473,7 @@ a { text-decoration: none; color: inherit; }
 
 .promise-inner {
     background: linear-gradient(135deg, var(--rose), var(--plum));
-    padding: 60px 40px;
+    padding: 10px 10px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -2535,11 +2535,11 @@ a { text-decoration: none; color: inherit; }
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 24px;
-    margin-bottom: 48px;
+    margin-bottom: 20px;
 }
 
 .pillar-card {
-    padding: 36px 28px 28px;
+    padding: 20px 10px 20px;
     background: #fff;
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
@@ -2574,7 +2574,7 @@ a { text-decoration: none; color: inherit; }
     line-height: 1;
     background: linear-gradient(135deg, var(--rose-pale), #f3e5f5);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-text-fill-color: #ada9a9;
     background-clip: text;
     margin-bottom: 12px;
     display: block;
@@ -2608,11 +2608,11 @@ a { text-decoration: none; color: inherit; }
 }
 
 .pillars-section .index-stats .container {
-    background: #fff;
+    background: #ffffff;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-soft);
-    padding: 32px 24px;
+    padding: 20px 12px;
 }
 
 /* ─────────────────────────────────────────────
@@ -2630,8 +2630,8 @@ a { text-decoration: none; color: inherit; }
 }
 
 .myth-card {
-    background: #fff;
-    padding: 28px 24px;
+    background: #ffffff;
+    padding: 10px 8px;
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-soft);
@@ -2720,7 +2720,7 @@ a { text-decoration: none; color: inherit; }
     background: rgba(255,255,255,0.08);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.15);
-    padding: 36px 24px 28px;
+    padding: 15px 10px 15px;
     border-radius: var(--radius-md);
     transition: var(--transition);
 }
@@ -2814,12 +2814,12 @@ a { text-decoration: none; color: inherit; }
    Progress chart inside
 ───────────────────────────────────────────── */
 .progress-chart-container {
-    margin-top: 48px;
+    margin-top: 10px;
     background: #fff;
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-soft);
-    padding: 32px;
+    padding: 12px;
     max-width: 760px;
     margin-left: auto;
     margin-right: auto;
@@ -4177,7 +4177,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 }
 
 .nutrition-pillar-grid .pillar-card {
-    padding: 32px 24px 26px;
+    padding: 10px 8px 10px;
     background: #fff;
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
@@ -4211,7 +4211,7 @@ tbody tr:hover { background: var(--rose-ultra); }
     line-height: 1;
     background: linear-gradient(135deg, var(--rose-pale), #f3e5f5);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-text-fill-color: #ffd5de;
     background-clip: text;
     margin-bottom: 10px;
     display: block;
@@ -5111,6 +5111,7 @@ tbody tr:hover { background: var(--rose-ultra); }
     justify-content: center;
     gap: 10px;
     margin-bottom: 12px;
+    font-size: 1.7rem !important;
 }
 
 .product-card .current-price {
@@ -5122,6 +5123,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 .product-card .compare-price {
     text-decoration: line-through;
     color: var(--mist, #8e7e85);
+    font-size: 1.5rem !important;
 }
 
 .product-card .cta {

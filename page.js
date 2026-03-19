@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
 // Blog Category Filtering
 document.addEventListener('DOMContentLoaded', () => {
     const filterButtons = document.querySelectorAll('.category-filters button');

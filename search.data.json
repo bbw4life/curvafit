@@ -1,0 +1,683 @@
+[
+  {
+    "title": "Home",
+    "url": "index.html",
+    "keywords": [
+      "home",
+      "accueil",
+      "curvafit",
+      "weight loss",
+      "curvy women",
+      "start"
+    ],
+    "type": "page",
+    "icon": "🏠"
+  },
+  {
+    "title": "Method — The CurvaFit Approach",
+    "url": "method.html",
+    "keywords": [
+      "method",
+      "approach",
+      "how it works",
+      "process",
+      "program",
+      "system",
+      "méthode"
+    ],
+    "type": "page",
+    "icon": "⚙️"
+  },
+  {
+    "title": "Programs — Weight Loss Plans",
+    "url": "programs.html",
+    "keywords": [
+      "programs",
+      "plans",
+      "workout",
+      "beginner",
+      "intermediate",
+      "maintenance",
+      "slimmer",
+      "curve",
+      "programme",
+      "plan"
+    ],
+    "type": "page",
+    "icon": "🏋️"
+  },
+  {
+    "title": "Nutrition — Healthy Eating Guide",
+    "url": "nutrition.html",
+    "keywords": [
+      "nutrition",
+      "food",
+      "eating",
+      "diet",
+      "meals",
+      "recipes",
+      "healthy",
+      "nourriture",
+      "alimentation"
+    ],
+    "type": "page",
+    "icon": "🍎"
+  },
+  {
+    "title": "Shop — Gear for Curvy Women",
+    "url": "shop.html",
+    "keywords": [
+      "shop",
+      "store",
+      "buy",
+      "gear",
+      "products",
+      "boutique",
+      "acheter"
+    ],
+    "type": "page",
+    "icon": "🛍️"
+  },
+  {
+    "title": "Success Stories",
+    "url": "success.html",
+    "keywords": [
+      "success",
+      "stories",
+      "results",
+      "transformations",
+      "before after",
+      "témoignages",
+      "résultats"
+    ],
+    "type": "page",
+    "icon": "🏆"
+  },
+  {
+    "title": "Community — Curvy Support Circle",
+    "url": "community.html",
+    "keywords": [
+      "community",
+      "sisterhood",
+      "support",
+      "circle",
+      "group",
+      "members",
+      "communauté"
+    ],
+    "type": "page",
+    "icon": "👭"
+  },
+  {
+    "title": "Blog",
+    "url": "/blog/blog.html",
+    "keywords": [
+      "blog",
+      "articles",
+      "tips",
+      "insights",
+      "wellness",
+      "stories",
+      "conseils"
+    ],
+    "type": "page",
+    "icon": "✍️"
+  },
+  {
+    "title": "About CurvaFit",
+    "url": "about.html",
+    "keywords": [
+      "about",
+      "who we are",
+      "mission",
+      "team",
+      "story",
+      "à propos"
+    ],
+    "type": "page",
+    "icon": "ℹ️"
+  },
+  {
+    "title": "Contact Us",
+    "url": "contact.html",
+    "keywords": [
+      "contact",
+      "support",
+      "help",
+      "email",
+      "message",
+      "aide"
+    ],
+    "type": "page",
+    "icon": "✉️"
+  },
+  {
+    "title": "FAQ — Frequently Asked Questions",
+    "url": "faq.html",
+    "keywords": [
+      "faq",
+      "questions",
+      "answers",
+      "help",
+      "how to",
+      "beginner",
+      "foire aux questions"
+    ],
+    "type": "page",
+    "icon": "❓"
+  },
+  {
+    "title": "Privacy Policy",
+    "url": "policies/privacy.html",
+    "keywords": [
+      "privacy",
+      "policy",
+      "data",
+      "gdpr",
+      "confidentialité"
+    ],
+    "type": "policy",
+    "icon": "🔒"
+  },
+  {
+    "title": "Terms & Conditions",
+    "url": "policies/terms.html",
+    "keywords": [
+      "terms",
+      "conditions",
+      "legal",
+      "agreement",
+      "cgu"
+    ],
+    "type": "policy",
+    "icon": "📄"
+  },
+  {
+    "title": "Refund Policy",
+    "url": "policies/refund.html",
+    "keywords": [
+      "refund",
+      "return",
+      "money back",
+      "remboursement",
+      "retour"
+    ],
+    "type": "policy",
+    "icon": "↩️"
+  },
+  {
+    "title": "Medical Disclaimer",
+    "url": "disclaimer.html",
+    "keywords": [
+      "disclaimer",
+      "medical",
+      "health",
+      "avertissement"
+    ],
+    "type": "policy",
+    "icon": "🏥"
+  },
+  {
+    "title": "Careers",
+    "url": "careers.html",
+    "keywords": [
+      "careers",
+      "jobs",
+      "hiring",
+      "work with us",
+      "emploi"
+    ],
+    "type": "page",
+    "icon": "💼"
+  },
+  {
+    "title": "My Account",
+    "url": "account.html",
+    "keywords": [
+      "account",
+      "login",
+      "profile",
+      "orders",
+      "history",
+      "compte",
+      "connexion"
+    ],
+    "type": "page",
+    "icon": "👤"
+  },
+  {
+    "title": "Checkout",
+    "url": "checkout.html",
+    "keywords": [
+      "checkout",
+      "payment",
+      "order",
+      "buy",
+      "paiement",
+      "commande"
+    ],
+    "type": "page",
+    "icon": "💳"
+  },
+  {
+    "title": "Soft Start Curve Slimmer — Beginner Program",
+    "url": "programs.html",
+    "keywords": [
+      "soft start",
+      "beginner",
+      "gentle",
+      "slimmer",
+      "entry level",
+      "débutant"
+    ],
+    "type": "program",
+    "icon": "🌱"
+  },
+  {
+    "title": "Deeper Curve Refiner — Intermediate Program",
+    "url": "programs.html",
+    "keywords": [
+      "curve refiner",
+      "intermediate",
+      "deeper",
+      "progress",
+      "intermédiaire"
+    ],
+    "type": "program",
+    "icon": "⭐"
+  },
+  {
+    "title": "Forever Fit Maintainer — Maintenance Program",
+    "url": "programs.html",
+    "keywords": [
+      "forever fit",
+      "maintenance",
+      "maintain",
+      "sustain",
+      "maintien"
+    ],
+    "type": "program",
+    "icon": "🌟"
+  },
+  {
+    "title": "Kind Tips for Steady Slimming",
+    "url": "/blog/blog.html",
+    "keywords": [
+      "tips",
+      "slimming",
+      "weight loss",
+      "steady",
+      "gentle",
+      "wellness",
+      "conseils minceur"
+    ],
+    "type": "blog",
+    "icon": "✍️"
+  },
+  {
+    "title": "Busting Food Fables for Curves",
+    "url": "/blog/blog.html",
+    "keywords": [
+      "food",
+      "myths",
+      "fables",
+      "nutrition",
+      "curves",
+      "diet myths",
+      "mythes alimentaires"
+    ],
+    "type": "blog",
+    "icon": "✍️"
+  },
+  {
+    "title": "Inspiring Curve Stories",
+    "url": "/blog/blog.html",
+    "keywords": [
+      "stories",
+      "inspiration",
+      "success",
+      "curves",
+      "transformation",
+      "histoires inspirantes"
+    ],
+    "type": "blog",
+    "icon": "✍️"
+  },
+  {
+    "title": "Resistance Bands",
+    "url": "products/product1.html",
+    "keywords": [
+      "resistance bands",
+      "bands",
+      "workout",
+      "strength",
+      "exercise",
+      "bandes élastiques"
+    ],
+    "type": "product",
+    "icon": "🏋️"
+  },
+  {
+    "title": "Supportive Yoga Mat",
+    "url": "products/product2.html",
+    "keywords": [
+      "yoga mat",
+      "mat",
+      "yoga",
+      "floor",
+      "exercise",
+      "tapis de yoga"
+    ],
+    "type": "product",
+    "icon": "🧘"
+  },
+  {
+    "title": "Curve-Loving Leggings",
+    "url": "products/product3.html",
+    "keywords": [
+      "leggings",
+      "apparel",
+      "clothing",
+      "curvy",
+      "pants",
+      "workout wear",
+      "vêtements"
+    ],
+    "type": "product",
+    "icon": "👖"
+  },
+  {
+    "title": "Breathable Sports Bra",
+    "url": "products/product4.html",
+    "keywords": [
+      "sports bra",
+      "bra",
+      "top",
+      "curvy",
+      "support",
+      "workout",
+      "brassière"
+    ],
+    "type": "product",
+    "icon": "👕"
+  },
+  {
+    "title": "Hydration Bottle",
+    "url": "products/product5.html",
+    "keywords": [
+      "water bottle",
+      "hydration",
+      "bottle",
+      "drink",
+      "insulated",
+      "bouteille"
+    ],
+    "type": "product",
+    "icon": "💧"
+  },
+  {
+    "title": "Workout Towel",
+    "url": "products/product6.html",
+    "keywords": [
+      "towel",
+      "workout towel",
+      "sweat",
+      "gym",
+      "microfiber",
+      "serviette"
+    ],
+    "type": "product",
+    "icon": "🧺"
+  },
+  {
+    "title": "Fitness Tracker",
+    "url": "products/product7.html",
+    "keywords": [
+      "fitness tracker",
+      "watch",
+      "tracker",
+      "steps",
+      "heart rate",
+      "bracelet connecté"
+    ],
+    "type": "product",
+    "icon": "⌚"
+  },
+  {
+    "title": "Protein Shaker",
+    "url": "products/product8.html",
+    "keywords": [
+      "protein shaker",
+      "shaker",
+      "bottle",
+      "nutrition",
+      "shake",
+      "shaker protéiné"
+    ],
+    "type": "product",
+    "icon": "🥤"
+  },
+  {
+    "title": "Dumbbell Set",
+    "url": "products/product9.html",
+    "keywords": [
+      "dumbbells",
+      "weights",
+      "strength",
+      "training",
+      "adjustable",
+      "haltères"
+    ],
+    "type": "product",
+    "icon": "🏋️"
+  },
+  {
+    "title": "Jump Rope",
+    "url": "products/product10.html",
+    "keywords": [
+      "jump rope",
+      "cardio",
+      "skipping",
+      "rope",
+      "corde à sauter"
+    ],
+    "type": "product",
+    "icon": "🪢"
+  },
+  {
+    "title": "Foam Roller",
+    "url": "products/product11.html",
+    "keywords": [
+      "foam roller",
+      "recovery",
+      "massage",
+      "muscle",
+      "relief",
+      "rouleau de massage"
+    ],
+    "type": "product",
+    "icon": "🟤"
+  },
+  {
+    "title": "Yoga Blocks",
+    "url": "products/product12.html",
+    "keywords": [
+      "yoga blocks",
+      "yoga",
+      "blocks",
+      "support",
+      "pose",
+      "blocs de yoga"
+    ],
+    "type": "product",
+    "icon": "🧱"
+  },
+  {
+    "title": "Ankle Weights",
+    "url": "products/product13.html",
+    "keywords": [
+      "ankle weights",
+      "weights",
+      "cardio",
+      "walk",
+      "fitness",
+      "lests de cheville"
+    ],
+    "type": "product",
+    "icon": "🏋️"
+  },
+  {
+    "title": "Cooling Towel",
+    "url": "products/product14.html",
+    "keywords": [
+      "cooling towel",
+      "cool",
+      "sweat",
+      "sport",
+      "refreshing",
+      "serviette rafraîchissante"
+    ],
+    "type": "product",
+    "icon": "❄️"
+  },
+  {
+    "title": "Massage Ball",
+    "url": "products/product15.html",
+    "keywords": [
+      "massage ball",
+      "massage",
+      "recovery",
+      "muscle",
+      "relief",
+      "balle de massage"
+    ],
+    "type": "product",
+    "icon": "⚽"
+  },
+  {
+    "title": "Gym Bag",
+    "url": "products/product16.html",
+    "keywords": [
+      "gym bag",
+      "bag",
+      "sport bag",
+      "storage",
+      "carry",
+      "sac de sport"
+    ],
+    "type": "product",
+    "icon": "👜"
+  },
+  {
+    "title": "Butterfly Sleep Memory Neck Pillow",
+    "url": "products/product1.html",
+    "keywords": [
+      "pillow",
+      "neck pillow",
+      "memory foam",
+      "sleep",
+      "cervical",
+      "oreiller"
+    ],
+    "type": "product",
+    "icon": "🛏️"
+  },
+  {
+    "title": "Gentle Movements for Your Shape",
+    "url": "programs.html",
+    "keywords": [
+      "movements",
+      "exercise",
+      "gentle",
+      "workout",
+      "shape",
+      "mouvements doux"
+    ],
+    "type": "feature",
+    "icon": "🤸"
+  },
+  {
+    "title": "Nourishing Food Wisdom",
+    "url": "nutrition.html",
+    "keywords": [
+      "food",
+      "nutrition",
+      "nourishing",
+      "meals",
+      "wisdom",
+      "nourriture"
+    ],
+    "type": "feature",
+    "icon": "🥗"
+  },
+  {
+    "title": "Sisterly Encouragement — Community",
+    "url": "community.html",
+    "keywords": [
+      "sisterhood",
+      "encouragement",
+      "support",
+      "community",
+      "women",
+      "soutien"
+    ],
+    "type": "feature",
+    "icon": "💕"
+  },
+  {
+    "title": "Progress Tracking",
+    "url": "index.html#progress-evolution",
+    "keywords": [
+      "progress",
+      "tracking",
+      "chart",
+      "data",
+      "evolution",
+      "suivi"
+    ],
+    "type": "feature",
+    "icon": "📊"
+  },
+  {
+    "title": "Coach Anna — Strength Expert",
+    "url": "programs.html",
+    "keywords": [
+      "coach anna",
+      "coach",
+      "strength",
+      "trainer",
+      "expert",
+      "entraîneur"
+    ],
+    "type": "coach",
+    "icon": "👩‍🏫"
+  },
+  {
+    "title": "Coach Maria — Nutrition Expert",
+    "url": "nutrition.html",
+    "keywords": [
+      "coach maria",
+      "nutrition",
+      "food",
+      "coach",
+      "diet",
+      "nutritionniste"
+    ],
+    "type": "coach",
+    "icon": "👩‍🍳"
+  },
+  {
+    "title": "Coach Lisa — Yoga & Wellness",
+    "url": "programs.html",
+    "keywords": [
+      "coach lisa",
+      "yoga",
+      "wellness",
+      "calm",
+      "mindfulness",
+      "bien-être"
+    ],
+    "type": "coach",
+    "icon": "🧘"
+  }
+]

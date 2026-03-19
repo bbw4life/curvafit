@@ -1328,8 +1328,7 @@ details[open] .chevron {
     .feature-item img { width: 40px; height: 40px; }
     .feature-item p { font-size: 12px; }
 }
- 
-/* ── MOD 3: paul-images-block — supprime l'espace vide sous l'image ── */
+
 .paul-images-block {
     width: 100%;
     overflow: hidden;
@@ -1366,21 +1365,21 @@ details[open] .chevron {
     border: 1px solid rgba(233, 30, 99, 0.12);
     box-shadow: 0 6px 20px rgba(103, 58, 183, 0.10);
     transition: box-shadow 0.28s ease, transform 0.28s ease;
-    display: flex;           /* MOD 3: flex column pour coller image et texte */
+    display: flex;
     flex-direction: column;
 }
 .slide-item:hover {
     box-shadow: 0 14px 36px rgba(103, 58, 183, 0.20);
     transform: translateY(-5px);
 }
-/* MOD 3: image-wrapper en flex-shrink:0 → ne crée pas d'espace fantôme */
 .image-wrapper {
     width: 100%;
     overflow: hidden;
-    height: 38vh;
+    aspect-ratio: 4 / 3;
+    height: auto;
     background: #f9f0f5;
-    flex-shrink: 0;   /* MOD 3 */
-    line-height: 0;   /* MOD 3: supprime l'espace inline sous l'img */
+    flex-shrink: 0;
+    line-height: 0;
 }
 .slide-image {
     width: 100%;
@@ -1414,10 +1413,12 @@ details[open] .chevron {
 @media (min-width: 768px) {
     .slide-item { width: calc((100% - 20px) / 2.5); max-width: none; }
     .images-slider-track { gap: 14px; padding: 6px 2px 12px; }
+    .image-wrapper { aspect-ratio: 3 / 2; }
 }
 @media (min-width: 1025px) {
     .slide-item { width: calc((100% - 32px) / 2.4); max-width: none; }
     .images-slider-track { gap: 16px; padding: 6px 0 12px; }
+    .image-wrapper { aspect-ratio: 3 / 2; }
 }
  
 /* ── Shipping Icons ── */
@@ -3433,7 +3434,7 @@ body {
     background: #fff;
     box-shadow: -4px 0 40px rgba(20,5,15,0.18);
     transition: right 0.32s cubic-bezier(0.4,0,0.2,1);
-    z-index: 1000;
+    z-index: 10000;
     display: flex;
     flex-direction: column;
 }
