@@ -1,10 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
- 
- 
- 
-  // ====================== QUALITÉ MAXIMALE IMAGES SHOPIFY ======================
-  // UNIQUEMENT sur cdn.shopify.com - remplace les variantes de taille par _master
-  // Ne touche PAS aux autres URLs (CDN externes, CJ, etc.)
   function upgradeShopifyImageUrl(url) {
     if (!url || typeof url !== 'string') return url;
     if (!url.includes('cdn.shopify.com')) return url; // securite : Shopify CDN seulement
@@ -15,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
       '_master$2$3'
     );
   }
-  // ====================== FIN QUALITE MAXIMALE ======================
  
   // ====================== IMAGES NETTES (ANTI-FLOU GLOBAL) ======================
   (function injectSharpImageStyles() {
@@ -1784,6 +1777,44 @@ document.querySelectorAll('.footer-social a').forEach(a => {
     setTimeout(() => { if (typeof openCartDrawer === 'function') openCartDrawer(); }, 1200);
   }
  
+(function initHeaderParticles() {
+  function create() {
+    const header = document.querySelector('.sticky-header');
+    if (!header) return;
+
+    const container = document.createElement('div');
+    container.className = 'header-particles';
+    header.appendChild(container);
+
+    const types = ['type-rose', 'type-gold', 'type-plum', 'type-petal', 'type-star'];
+    const count = 22;
+
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'header-particle ' + types[i % types.length];
+
+      const left     = Math.random() * 100;
+      const duration = 4 + Math.random() * 6;
+      const delay    = Math.random() * 6;
+
+      p.style.cssText = `
+        left: ${left}%;
+        bottom: 0;
+        animation-duration: ${duration}s;
+        animation-delay: -${delay}s;
+      `;
+
+      container.appendChild(p);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', create);
+  } else {
+    create();
+  }
+})();
+
 });
  
 // ====================== SWATCH SCROLL MOBILE ======================
@@ -2266,3 +2297,4 @@ window.addEventListener('load', () => {
     window.location.href = url;
   };
 });
+
