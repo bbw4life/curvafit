@@ -15,7 +15,7 @@
   },
   {
     "title": "Method — The CurvaFit Approach",
-    "url": "method.html",
+    "url": "/method.html",
     "keywords": [
       "method",
       "approach",
@@ -30,7 +30,7 @@
   },
   {
     "title": "Programs — Weight Loss Plans",
-    "url": "programs.html",
+    "url": "/programs.html",
     "keywords": [
       "programs",
       "plans",
@@ -48,7 +48,7 @@
   },
   {
     "title": "Nutrition — Healthy Eating Guide",
-    "url": "nutrition.html",
+    "url": "/nutrition.html",
     "keywords": [
       "nutrition",
       "food",
@@ -65,7 +65,7 @@
   },
   {
     "title": "Shop — Gear for Curvy Women",
-    "url": "shop.html",
+    "url": "/shop.html",
     "keywords": [
       "shop",
       "store",
@@ -80,7 +80,7 @@
   },
   {
     "title": "Success Stories",
-    "url": "success.html",
+    "url": "/success.html",
     "keywords": [
       "success",
       "stories",
@@ -95,7 +95,7 @@
   },
   {
     "title": "Community — Curvy Support Circle",
-    "url": "community.html",
+    "url": "/community.html",
     "keywords": [
       "community",
       "sisterhood",
@@ -125,7 +125,7 @@
   },
   {
     "title": "About CurvaFit",
-    "url": "about.html",
+    "url": "/about.html",
     "keywords": [
       "about",
       "who we are",
@@ -139,7 +139,7 @@
   },
   {
     "title": "Contact Us",
-    "url": "contact.html",
+    "url": "/contact.html",
     "keywords": [
       "contact",
       "support",
@@ -153,7 +153,7 @@
   },
   {
     "title": "FAQ — Frequently Asked Questions",
-    "url": "faq.html",
+    "url": "/faq.html",
     "keywords": [
       "faq",
       "questions",
@@ -168,7 +168,7 @@
   },
   {
     "title": "Privacy Policy",
-    "url": "policies/privacy.html",
+    "url": "/policies/privacy.html",
     "keywords": [
       "privacy",
       "policy",
@@ -181,7 +181,7 @@
   },
   {
     "title": "Terms & Conditions",
-    "url": "policies/terms.html",
+    "url": "/policies/terms.html",
     "keywords": [
       "terms",
       "conditions",
@@ -194,7 +194,7 @@
   },
   {
     "title": "Refund Policy",
-    "url": "policies/refund.html",
+    "url": "/policies/refund.html",
     "keywords": [
       "refund",
       "return",
@@ -207,7 +207,7 @@
   },
   {
     "title": "Medical Disclaimer",
-    "url": "disclaimer.html",
+    "url": "/disclaimer.html",
     "keywords": [
       "disclaimer",
       "medical",
@@ -219,7 +219,7 @@
   },
   {
     "title": "Careers",
-    "url": "careers.html",
+    "url": "/careers.html",
     "keywords": [
       "careers",
       "jobs",
@@ -232,7 +232,7 @@
   },
   {
     "title": "My Account",
-    "url": "account.html",
+    "url": "/account.html",
     "keywords": [
       "account",
       "login",
@@ -247,7 +247,7 @@
   },
   {
     "title": "Checkout",
-    "url": "checkout.html",
+    "url": "/checkout.html",
     "keywords": [
       "checkout",
       "payment",
@@ -261,7 +261,7 @@
   },
   {
     "title": "Soft Start Curve Slimmer — Beginner Program",
-    "url": "programs.html",
+    "url": "/programs.html",
     "keywords": [
       "soft start",
       "beginner",
@@ -275,7 +275,7 @@
   },
   {
     "title": "Deeper Curve Refiner — Intermediate Program",
-    "url": "programs.html",
+    "url": "/programs.html",
     "keywords": [
       "curve refiner",
       "intermediate",
@@ -288,7 +288,7 @@
   },
   {
     "title": "Forever Fit Maintainer — Maintenance Program",
-    "url": "programs.html",
+    "url": "/programs.html",
     "keywords": [
       "forever fit",
       "maintenance",
@@ -345,7 +345,7 @@
   },
   {
     "title": "Resistance Bands",
-    "url": "products/product1.html",
+    "url": "/products/product1.html",
     "keywords": [
       "resistance bands",
       "bands",
@@ -359,7 +359,7 @@
   },
   {
     "title": "Supportive Yoga Mat",
-    "url": "products/product2.html",
+    "url": "/products/product2.html",
     "keywords": [
       "yoga mat",
       "mat",
@@ -373,7 +373,7 @@
   },
   {
     "title": "Curve-Loving Leggings",
-    "url": "products/product3.html",
+    "url": "/products/product3.html",
     "keywords": [
       "leggings",
       "apparel",
@@ -388,7 +388,7 @@
   },
   {
     "title": "Breathable Sports Bra",
-    "url": "products/product4.html",
+    "url": "/products/product4.html",
     "keywords": [
       "sports bra",
       "bra",
@@ -403,7 +403,7 @@
   },
   {
     "title": "Hydration Bottle",
-    "url": "products/product5.html",
+    "url": "/products/product5.html",
     "keywords": [
       "water bottle",
       "hydration",
@@ -417,7 +417,7 @@
   },
   {
     "title": "Workout Towel",
-    "url": "products/product6.html",
+    "url": "/products/product6.html",
     "keywords": [
       "towel",
       "workout towel",
@@ -431,7 +431,7 @@
   },
   {
     "title": "Fitness Tracker",
-    "url": "products/product7.html",
+    "url": "/products/product7.html",
     "keywords": [
       "fitness tracker",
       "watch",
@@ -445,7 +445,7 @@
   },
   {
     "title": "Protein Shaker",
-    "url": "products/product8.html",
+    "url": "/products/product8.html",
     "keywords": [
       "protein shaker",
       "shaker",
@@ -459,7 +459,7 @@
   },
   {
     "title": "Dumbbell Set",
-    "url": "products/product9.html",
+    "url": "/products/product9.html",
     "keywords": [
       "dumbbells",
       "weights",
@@ -473,7 +473,7 @@
   },
   {
     "title": "Jump Rope",
-    "url": "products/product10.html",
+    "url": "/products/product10.html",
     "keywords": [
       "jump rope",
       "cardio",
@@ -486,7 +486,7 @@
   },
   {
     "title": "Foam Roller",
-    "url": "products/product11.html",
+    "url": "/products/product11.html",
     "keywords": [
       "foam roller",
       "recovery",
@@ -514,7 +514,7 @@
   },
   {
     "title": "Ankle Weights",
-    "url": "products/product13.html",
+    "url": "/products/product13.html",
     "keywords": [
       "ankle weights",
       "weights",
@@ -528,7 +528,7 @@
   },
   {
     "title": "Cooling Towel",
-    "url": "products/product14.html",
+    "url": "/products/product14.html",
     "keywords": [
       "cooling towel",
       "cool",
@@ -542,7 +542,7 @@
   },
   {
     "title": "Massage Ball",
-    "url": "products/product15.html",
+    "url": "/products/product15.html",
     "keywords": [
       "massage ball",
       "massage",
@@ -556,7 +556,7 @@
   },
   {
     "title": "Gym Bag",
-    "url": "products/product16.html",
+    "url": "/products/product16.html",
     "keywords": [
       "gym bag",
       "bag",
@@ -570,7 +570,7 @@
   },
   {
     "title": "Butterfly Sleep Memory Neck Pillow",
-    "url": "products/product1.html",
+    "url": "/products/product1.html",
     "keywords": [
       "pillow",
       "neck pillow",
@@ -584,7 +584,7 @@
   },
   {
     "title": "Gentle Movements for Your Shape",
-    "url": "programs.html",
+    "url": "/programs.html",
     "keywords": [
       "movements",
       "exercise",
@@ -598,7 +598,7 @@
   },
   {
     "title": "Nourishing Food Wisdom",
-    "url": "nutrition.html",
+    "url": "/nutrition.html",
     "keywords": [
       "food",
       "nutrition",
@@ -612,7 +612,7 @@
   },
   {
     "title": "Sisterly Encouragement — Community",
-    "url": "community.html",
+    "url": "/community.html",
     "keywords": [
       "sisterhood",
       "encouragement",
@@ -626,7 +626,7 @@
   },
   {
     "title": "Progress Tracking",
-    "url": "index.html#progress-evolution",
+    "url": "/index.html#progress-evolution",
     "keywords": [
       "progress",
       "tracking",
@@ -640,7 +640,7 @@
   },
   {
     "title": "Coach Anna — Strength Expert",
-    "url": "programs.html",
+    "url": "/programs.html",
     "keywords": [
       "coach anna",
       "coach",
@@ -654,7 +654,7 @@
   },
   {
     "title": "Coach Maria — Nutrition Expert",
-    "url": "nutrition.html",
+    "url": "/nutrition.html",
     "keywords": [
       "coach maria",
       "nutrition",
@@ -668,7 +668,7 @@
   },
   {
     "title": "Coach Lisa — Yoga & Wellness",
-    "url": "programs.html",
+    "url": "/programs.html",
     "keywords": [
       "coach lisa",
       "yoga",
