@@ -2675,18 +2675,6 @@ body {
     .marquee-content span { font-size: 1.2rem; margin-right: 1rem; }
 }
  
-/* ── Sanaica Paul Shop Marquee ── */
-.sanaica-paul-shop {
-    width: 100%;
-    overflow: hidden;
-    background-color: #000000;
-    padding: 0;
-    z-index: 10;
-    position: relative;
-}
-@media (max-width: 768px) {
-    .marquee-content span { font-size: 1.2rem; margin-right: 1rem; }
-}
  
 /* ── Popup ── */
 .popup {

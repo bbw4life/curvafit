@@ -3212,10 +3212,6 @@ a { text-decoration: none; color: inherit; }
     line-height: 1.7;
 }
 
-/* ─────────────────────────────────────────────
-   MARQUEE (method page version only)
-   NB: .marque-textuel-groupe-section is in style.css
-───────────────────────────────────────────── */
 
 /* ─────────────────────────────────────────────
    RESPONSIVE
@@ -3969,7 +3965,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 
 /* Marquee Section - Vérification et ajustement mineur */
 .marquee-section {
-  background: #000;
+  background: #000 ;
   padding: 0.5rem 0.5rem;
   border-bottom: 1px solid #333;
   overflow: hidden;
@@ -5104,7 +5100,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 .sanaica-paul-shop,
 .paul-shop-marquee {
     background: linear-gradient(135deg, var(--rose, #c0385e), var(--plum, #7b3f6e));
-    padding: 13px 0;
+    padding: 5px 0;
     overflow: hidden;
 }
 
@@ -5112,10 +5108,10 @@ tbody tr:hover { background: var(--rose-ultra); }
 .paul-shop-marquee .marquee-content span {
     color: rgba(255,255,255,0.95);
     font-family: var(--font-body, 'DM Sans', sans-serif);
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 500;
     letter-spacing: 0.04em;
-    padding: 0 24px;
+    padding: 0 10px;
     white-space: nowrap;
 }
 
