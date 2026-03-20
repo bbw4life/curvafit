@@ -6556,3 +6556,142 @@ tbody tr:hover { background: var(--rose-ultra); }
 @media (max-width: 480px) {
     .product-grid { grid-template-columns: 1fr; }
 }
+
+/* ============================================================
+   SEARCH GLOBAL — curva-search.css
+   ============================================================ */
+.curva-search-dropdown {
+  position: fixed;
+  z-index: 999999;
+  background: linear-gradient(160deg, #fff8f5 0%, #fdf0f6 50%, #f8f0ff 100%);
+  border: 1.5px solid rgba(184, 48, 88, 0.18);
+  border-radius: 18px;
+  box-shadow:
+    0 24px 64px rgba(107, 52, 96, 0.22),
+    0 4px 20px rgba(184, 48, 88, 0.10),
+    0 0 0 1px rgba(255,255,255, 0.90) inset;
+  overflow: hidden;
+  min-width: 370px;
+  max-width: 500px;
+  max-height: 440px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  display: none;
+  font-family: inherit;
+}
+
+.curva-search-dropdown::-webkit-scrollbar {
+  display: none;
+}
+
+.curva-search-dropdown.open {
+  display: block;
+  animation: searchFadeIn .18s ease;
+}
+
+@keyframes searchFadeIn {
+  from { opacity: 0; transform: translateY(-6px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Group header ── */
+.curva-search-header {
+  padding: 10px 16px 6px;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  color: #b83058;
+  background: linear-gradient(90deg, rgba(184,48,88,.07), transparent);
+  border-bottom: 1px solid rgba(184, 48, 88, 0.10);
+  border-top: 1px solid rgba(184, 48, 88, 0.06);
+}
+.curva-search-header:first-child {
+  border-top: none;
+}
+
+/* ── Item row ── */
+.curva-search-item {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  align-items: center;
+  gap: 0;
+  padding: 12px 14px 12px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(184, 48, 88, 0.07);
+  transition: background .15s ease;
+  text-decoration: none;
+  color: inherit;
+  overflow-x: hidden;
+}
+
+.curva-search-item:last-child {
+  border-bottom: none;
+}
+
+.curva-search-item:hover,
+.curva-search-item.active {
+  background: linear-gradient(90deg, rgba(184,48,88,.08), rgba(107,52,96,.05));
+}
+
+/* ── Icon ── */
+.curva-search-icon {
+  font-size: 16px;
+  width: 36px;
+  text-align: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ── Text ── */
+.curva-search-text {
+  min-width: 0;
+  overflow-x: hidden;
+  padding-right: 10px;
+}
+
+.curva-search-title {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #2a1a22;
+  white-space: normal;
+  overflow-x: hidden;
+  word-break: break-word;
+  line-height: 1.45;
+  display: block;
+}
+
+.curva-search-title mark {
+  background: rgba(184, 48, 88, 0.15);
+  color: #b83058;
+  border-radius: 3px;
+  padding: 0 3px;
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* ── Badge ── */
+.curva-search-badge {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #7b3f6e;
+  background: rgba(123, 63, 110, 0.10);
+  border: 1px solid rgba(123, 63, 110, 0.20);
+  border-radius: 20px;
+  padding: 3px 9px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: .04em;
+  line-height: 1;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+/* ── Empty ── */
+.curva-search-empty {
+  padding: 22px 18px;
+  font-size: 13px;
+  color: #9a7a88;
+  text-align: center;
+}

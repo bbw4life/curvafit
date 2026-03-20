@@ -76,111 +76,11 @@
     div.className = 'curva-search-dropdown';
     div.setAttribute('role', 'listbox');
     document.body.appendChild(div);
-
-    const style = document.createElement('style');
-    style.id = 'curva-search-style';
-    style.textContent = `
-      .curva-search-dropdown {
-        position: fixed;
-        z-index: 999999;
-        background: #fff;
-        border: 1.5px solid rgba(192,56,94,.18);
-        border-radius: 14px;
-        box-shadow: 0 16px 48px rgba(30,10,20,.16), 0 0 0 1px rgba(192,56,94,.08);
-        overflow: hidden;
-        min-width: 320px;
-        max-width: 480px;
-        max-height: 420px;
-        overflow-y: auto;
-        scrollbar-width: none;
-       -ms-overflow-style: none;
-        display: none;
-        font-family: inherit;
-      }
-       .curva-search-dropdown::-webkit-scrollbar { display: none; }
-
-      .curva-search-dropdown.open { display: block; }
-      .curva-search-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 11px 16px;
-        cursor: pointer;
-        border-bottom: 1px solid rgba(0,0,0,.05);
-        transition: background .15s ease;
-        text-decoration: none;
-        color: inherit;
-      }
-      .curva-search-item:last-child { border-bottom: none; }
-      .curva-search-item:hover,
-      .curva-search-item.active { background: rgba(192,56,94,.07); }
-      .curva-search-icon {
-        font-size: 18px;
-        width: 28px;
-        text-align: center;
-        flex-shrink: 0;
-      }
-      .curva-search-text { flex: 1; min-width: 0; }
-      .curva-search-title {
-        font-size: 14px;
-        font-weight: 500;
-        color: #1a1a1a;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .curva-search-title mark {
-        background: rgba(192,56,94,.18);
-        color: #c0385e;
-        border-radius: 2px;
-        padding: 0 1px;
-        font-weight: 600;
-      }
-      .curva-search-badge {
-        font-size: 10px;
-        font-weight: 500;
-        color: #7b3f6e;
-        background: rgba(123,63,110,.10);
-        border-radius: 20px;
-        padding: 2px 8px;
-        white-space: nowrap;
-        flex-shrink: 0;
-      }
-      .curva-search-empty {
-        padding: 18px 16px;
-        font-size: 13px;
-        color: #888;
-        text-align: center;
-      }
-      .curva-search-header {
-        padding: 8px 16px 4px;
-        font-size: 10px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: .08em;
-        color: #c0385e;
-        background: rgba(192,56,94,.04);
-        border-bottom: 1px solid rgba(192,56,94,.08);
-      }
-      @media (prefers-color-scheme: dark) {
-        .curva-search-dropdown { background: #1e1218; border-color: rgba(192,56,94,.25); }
-        .curva-search-item { border-bottom-color: rgba(255,255,255,.06); }
-        .curva-search-item:hover, .curva-search-item.active { background: rgba(192,56,94,.12); }
-        .curva-search-title { color: #f0e8ec; }
-        .curva-search-badge { background: rgba(123,63,110,.22); color: #d4a0c0; }
-        .curva-search-empty { color: #888; }
-        .curva-search-header { background: rgba(192,56,94,.08); color: #e08ab0; }
-      }
-    `;
-    if (!document.getElementById('curva-search-style')) {
-      document.head.appendChild(style);
-    }
     return div;
   }
 
   function positionDropdown(input, dropdown) {
     const rect = input.getBoundingClientRect();
-    const scrollY = window.scrollY || window.pageYOffset;
     dropdown.style.top  = (rect.bottom + 6) + 'px';
     dropdown.style.left = rect.left + 'px';
     dropdown.style.width = Math.max(rect.width, 320) + 'px';
