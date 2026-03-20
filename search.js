@@ -80,11 +80,24 @@
   }
 
   function positionDropdown(input, dropdown) {
-    const rect = input.getBoundingClientRect();
-    dropdown.style.top  = (rect.bottom + 6) + 'px';
-    dropdown.style.left = rect.left + 'px';
-    dropdown.style.width = Math.max(rect.width, 320) + 'px';
+  const rect = input.getBoundingClientRect();
+  const viewportWidth = window.innerWidth;
+  const dropWidth = Math.min(Math.max(rect.width, 340), 500);
+
+  let left = rect.left;
+
+  if (left + dropWidth > viewportWidth - 8) {
+    left = viewportWidth - dropWidth - 8;
   }
+
+  if (left < 8) {
+    left = 8;
+  }
+
+  dropdown.style.top   = (rect.bottom + 6) + 'px';
+  dropdown.style.left  = left + 'px';
+  dropdown.style.width = dropWidth + 'px';
+}
 
   function renderDropdown(dropdown, results, query) {
     dropdown.innerHTML = '';

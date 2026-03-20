@@ -6695,3 +6695,12 @@ tbody tr:hover { background: var(--rose-ultra); }
   color: #9a7a88;
   text-align: center;
 }
+@media (max-width: 480px) {
+  .curva-search-dropdown {
+    min-width: unset !important;
+    max-width: unset !important;
+    left: 8px !important;
+    right: 8px !important;
+    width: calc(100vw - 16px) !important;
+  }
+}
