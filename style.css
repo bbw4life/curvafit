@@ -2555,9 +2555,9 @@ a { text-decoration: none; color: inherit; }
     background: none; border: none; cursor: pointer;
     color: #fff;
     display: flex; align-items: center; justify-content: center;
-    width: 34px; height: 34px;
+    width: 27px !important; height: 27px !important;
 }
-#play-pause-btn svg { width: 28px; height: 28px; }
+#play-pause-btn svg { width: 24px; height: 24px; }
 #audio-element { display: none; }
 
 /* ── Glassmorphism ── */
@@ -4153,27 +4153,6 @@ tbody tr:hover { background: var(--rose-ultra); }
     transform: translateY(0) scale(1);
 }
 
-/* ── Audio Player ── */
-.draggable-audio-player {
-    position: fixed;
-    left: 20px; bottom: 20px;
-    background: linear-gradient(135deg, var(--rose), var(--plum));
-    border-radius: 50%;
-    padding: 6px;
-    cursor: move;
-    z-index: 1000;
-    box-shadow: 0 6px 20px rgba(192,56,94,0.40);
-    transition: box-shadow 0.3s;
-}
-.draggable-audio-player:hover { box-shadow: 0 10px 30px rgba(192,56,94,0.55); }
-#play-pause-btn {
-    background: none; border: none; cursor: pointer;
-    color: #fff;
-    display: flex; align-items: center; justify-content: center;
-    width: 34px; height: 34px;
-}
-#play-pause-btn svg { width: 28px; height: 28px; }
-#audio-element { display: none; }
 
 /* ─────────────────────────────────────────────
    WHY DIETS FAIL
@@ -9394,14 +9373,14 @@ tbody tr:hover { background: var(--rose-ultra); }
     background 0.2s ease;
 }
 
-.fnav-top     { top: -26px; left: 50%;   transition-delay: 0.05s; }
-.fnav-right   { top: 50%;   left: 68px;  transition-delay: 0.1s;  }
-.fnav-bottom  { top: 76px;  left: 50%;   transition-delay: 0.05s; }
-.fnav-left    { top: 50%;   left: -20px; transition-delay: 0.1s;  }
+.fnav-top     { top: -20px; left: 50%;   transition-delay: 0.05s; }
+.fnav-right   { top: 50%;   left: 60px;  transition-delay: 0.1s;  }
+.fnav-bottom  { top: 60px;  left: 50%;   transition-delay: 0.05s; }
+.fnav-left    { top: 60%;   left: -20px; transition-delay: 0.1s;  }
 
 .fnav-refresh {
   top: -26px;
-  left: 68px;
+  left: 60px;
   width: 36px;
   height: 36px;
   font-size: 0.8rem;
@@ -9480,10 +9459,9 @@ tbody tr:hover { background: var(--rose-ultra); }
 .fnav-left:hover::after,
 .fnav-refresh:hover::after { opacity: 1; }
 
-/* ── Mobile ── */
 @media (max-width: 768px) {
   #floating-nav {
-    bottom: 20px !important;
+    bottom: 30px !important;
     right: 20px !important;
   }
 
@@ -9499,16 +9477,16 @@ tbody tr:hover { background: var(--rose-ultra); }
     font-size: 0.88rem;
   }
 
-  .fnav-top     { top: -22px; left: 50%;   }
-  .fnav-right   { top: 50%;   left: 62px;  }
-  .fnav-bottom  { top: 68px;  left: 50%;   }
-  .fnav-left    { top: 50%;   left: -18px; }
+.fnav-top     { top: -5px; left: 50%;   }
+.fnav-right   { top: 50%;   left: 50px;  }
+.fnav-bottom  { top: 55px;  left: 50%;   }
+.fnav-left    { top: 60%;   left: -5px;  }
 
   .fnav-refresh {
     top: -22px;
-    left: 62px;
-    width: 32px;
-    height: 32px;
+    left: 45px;
+    width: 30px;
+    height: 30px;
   }
 
   .fnav-btn::after,

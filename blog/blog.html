@@ -359,5 +359,28 @@
             Votre navigateur ne supporte pas l'élément audio.
         </audio>
     </div>
+      <!-- ══ FLOATING NAV ══ -->
+<div id="floating-nav">
+  <button class="fnav-toggle" id="fnav-toggle">
+    <i class="fi fi-rr-apps"></i>
+  </button>
+  <div class="fnav-wheel" id="fnav-wheel">
+    <button class="fnav-btn fnav-top"     title="Scroll to top"     onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <i class="fi fi-rr-angle-up"></i>
+    </button>
+    <button class="fnav-btn fnav-right"   title="Next page"         id="fnav-next">
+      <i class="fi fi-rr-angle-right"></i>
+    </button>
+    <button class="fnav-btn fnav-bottom"  title="Scroll to bottom"  onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">
+      <i class="fi fi-rr-angle-down"></i>
+    </button>
+    <button class="fnav-btn fnav-left"    title="Previous page"     onclick="history.back()">
+      <i class="fi fi-rr-angle-left"></i>
+    </button>
+    <button class="fnav-btn fnav-refresh" title="Refresh"           onclick="location.reload()">
+      <i class="fi fi-rr-refresh"></i>
+    </button>
+  </div>
+</div>
 </body>
 </html>
