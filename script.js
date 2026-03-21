@@ -2634,9 +2634,30 @@ if (storyForm) {
     btn.textContent = 'Sending...';
     btn.disabled = true;
 
-    const fields  = storyForm.querySelectorAll('input, select, textarea');
-    const nameAge = fields[0].value.split(',');
+    const fields    = storyForm.querySelectorAll('input, select, textarea');
+    const nameAge   = fields[0].value.split(',');
+    const fileInput = storyForm.querySelector('input[type="file"]');
 
+    // ── Convertir la photo en base64 si présente ──
+    let photoBase64 = '';
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      const file = fileInput.files[0];
+      if (file.size > 500000) {
+        btn.textContent = '❌ Photo too large (max 500kb)';
+        btn.disabled = false;
+        return;
+      }
+      photoBase64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload  = () => resolve(reader.result);
+        reader.onerror = () => resolve('');
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // fields index :
+    // 0 = firstName+age | 1 = email | 2 = startWeight | 3 = program (select)
+    // 4 = duration | 5 = result | 6 = story (textarea) | 7 = file | 8 = checkbox
     const payload = {
       firstName:   nameAge[0]?.trim() || fields[0].value.trim(),
       age:         nameAge[1]?.trim() || '',
@@ -2644,7 +2665,9 @@ if (storyForm) {
       startWeight: fields[2].value.trim(),
       program:     fields[3].value,
       duration:    fields[4].value.trim(),
-      story:       fields[5].value.trim(),
+      result:      fields[5].value.trim(),
+      story:       fields[6].value.trim(),
+      photo:       photoBase64,
       anonymous:   storyForm.querySelector('input[type="checkbox"]')?.checked ? 'true' : 'false'
     };
 
@@ -2681,12 +2704,14 @@ function buildStoryCard(s) {
   const tag     = PROGRAM_TAG[s.program] || { cls: 'dt-tag--beginner', icon: '🌱' };
   const nameStr = s.age ? `${s.firstName}, ${s.age}` : s.firstName;
 
+  const avatarHTML = s.photo
+    ? `<img src="${s.photo}" alt="${s.firstName}" class="dt-header-img">`
+    : `<div class="dt-avatar-placeholder"><i class="fi fi-rr-user"></i></div>`;
+
   return `
     <div class="dt-card dt-card--community">
       <div class="dt-header">
-        <div class="dt-avatar-placeholder">
-          <i class="fi fi-rr-user"></i>
-        </div>
+        ${avatarHTML}
         <div>
           <h3>${nameStr}</h3>
           <span class="dt-tag ${tag.cls}">${tag.icon} ${s.program}</span>

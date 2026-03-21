@@ -19,32 +19,33 @@ function formatDate() {
 
 // ── SAVE ──────────────────────────────────────────────────────────────
 async function saveStory(body) {
-  const { firstName, age, email, startWeight, program, duration, result, story, anonymous } = body;
+  const { firstName, age, email, startWeight, program, duration, result, story, photo, anonymous } = body;
 
   if (!firstName || !email || !startWeight || !program || !story) {
     throw new Error('Required fields missing');
   }
 
-  const auth  = getAuth();
+  const auth   = getAuth();
   const sheets = google.sheets({ version: 'v4', auth });
 
   const values = [[
     firstName.trim(),
-    age        || '',
+    age         || '',
     email.trim().toLowerCase(),
     startWeight,
     program,
-    duration   || '',
-    result     || '',
+    duration    || '',
+    result      || '',
     story.trim(),
-    anonymous === true || anonymous === 'true' ? 'yes' : 'no',
-    'pending',       // status: pending | approved
-    formatDate()
+    photo       || '',   // colonne I — base64 image
+    anonymous === true || anonymous === 'true' ? 'yes' : 'no',  // colonne J
+    'pending',           // colonne K — status
+    formatDate()         // colonne L
   ]];
 
   await sheets.spreadsheets.values.append({
     spreadsheetId:   process.env.GOOGLE_SHARE_STORY_ID,
-    range:           `${SHEET_NAME}!A:K`,
+    range:           `${SHEET_NAME}!A:L`,
     valueInputOption:'RAW',
     insertDataOption:'INSERT_ROWS',
     resource: { values }
@@ -60,23 +61,23 @@ async function fetchStories() {
 
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.GOOGLE_SHARE_STORY_ID,
-    range:         `${SHEET_NAME}!A:K`
+    range:         `${SHEET_NAME}!A:L`
   });
 
   const rows = res.data.values || [];
-  // rows: [firstName, age, email, startWeight, program, duration, result, story, anonymous, status, date]
 
   const stories = rows
-    .filter(r => r[9] && r[9].toLowerCase() === 'approved')
+    .filter(r => r[10] && r[10].toLowerCase() === 'approved') // colonne K = index 10
     .map(r => ({
-      firstName:   r[8] === 'yes' ? 'Anonymous' : (r[0] || 'Anonymous'),
+      firstName:   r[9] === 'yes' ? 'Anonymous' : (r[0] || 'Anonymous'), // colonne J = index 9
       age:         r[1] || '',
       startWeight: r[3] || '',
       program:     r[4] || '',
       duration:    r[5] || '',
       result:      r[6] || '',
       story:       r[7] || '',
-      date:        r[10] || ''
+      photo:       r[8] || '',   // colonne I = index 8
+      date:        r[11] || ''   // colonne L = index 11
     }));
 
   return { success: true, stories };
