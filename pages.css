@@ -1618,6 +1618,49 @@ section#hero.faq-hero,
 .submit-story-section input:focus, .submit-story-section textarea:focus { border-color:var(--rose); box-shadow:0 0 0 3px rgba(184,48,88,0.08); }
 .submit-story-section label { text-align:left; font-size:0.83rem; font-weight:600; color:var(--slate); }
 
+@media (max-width: 768px) {
+  .submit-story-section form {
+    padding: 0 3px;
+  }
+
+  .submit-story-section input,
+  .submit-story-section textarea,
+  .submit-story-section select {
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  /* ── FIX checkbox + label ── */
+  .submit-story-section .form-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    text-align: left;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    padding-right: 14px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .submit-story-section .form-checkbox input[type="checkbox"] {
+    width: auto;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  /* ── FIX file input ── */
+  .submit-story-section input[type="file"] {
+    font-size: 0.78rem;
+    padding: 8px 10px;
+  }
+
+  /* ── FIX form-row ── */
+  .submit-story-section .form-row {
+    flex-direction: column;
+    gap: 13px;
+  }
+}
 /* ─────────────────────────────────────────────
    COMMUNITY PAGE
 ───────────────────────────────────────────── */
@@ -3775,30 +3818,7 @@ details p { padding:14px 22px 18px; border-top:1px solid var(--border); font-siz
     margin-bottom: 12px;
 }
 .dt-mental i { color: var(--rose); flex-shrink: 0; margin-top: 2px; }
-@media (max-width: 768px) {
-  .dt-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dt-card {
-    padding: 18px 14px;
-    margin: 0;
-  }
-
-  .dt-numbers {
-    gap: 4px;
-    padding: 10px 8px;
-  }
-
-  .dt-num span {
-    font-size: 1rem;
-  }
-
-  .dt-header img {
-    width: 44px;
-    height: 44px;
-  }
-}
+@media (max-width: 768px) { .dt-grid { grid-template-columns: 1fr; } }
 
 /* ── FULL JOURNEY ── */
 .full-journey-section {
