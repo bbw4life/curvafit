@@ -3775,7 +3775,30 @@ details p { padding:14px 22px 18px; border-top:1px solid var(--border); font-siz
     margin-bottom: 12px;
 }
 .dt-mental i { color: var(--rose); flex-shrink: 0; margin-top: 2px; }
-@media (max-width: 768px) { .dt-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) {
+  .dt-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dt-card {
+    padding: 18px 14px;
+    margin: 0;
+  }
+
+  .dt-numbers {
+    gap: 4px;
+    padding: 10px 8px;
+  }
+
+  .dt-num span {
+    font-size: 1rem;
+  }
+
+  .dt-header img {
+    width: 44px;
+    height: 44px;
+  }
+}
 
 /* ── FULL JOURNEY ── */
 .full-journey-section {
