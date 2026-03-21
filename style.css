@@ -623,19 +623,23 @@ a { text-decoration: none; color: inherit; }
     .search-icon { margin-left: 16px; }
 }
 
+
+
+
 /* ─────────────────────────────────────────────
    HERO
 ───────────────────────────────────────────── */
 .home-hero-banner {
     background-size: cover;
     background-position: center top;
-    min-height: 88vh;
     display: flex;
+    min-height: 52vh;
     align-items: center;
     justify-content: center;
     text-align: center;
     position: relative;
     overflow: hidden;
+    padding: 16px 5px 6px !important;
 }
 
 .gradient-overlay {
@@ -653,7 +657,7 @@ a { text-decoration: none; color: inherit; }
 .hero-content {
     position: relative;
     z-index: 1;
-    max-width: 600px;
+    max-width: 600px !important;
     padding: 0 32px;
     animation: heroFadeUp 1.1s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
@@ -675,7 +679,7 @@ a { text-decoration: none; color: inherit; }
     text-transform: uppercase;
     padding: 8px 20px;
     border-radius: 100px;
-    margin-bottom: 24px;
+    margin-bottom: 14px;
 }
 
 .hero-content h1 {
@@ -684,7 +688,7 @@ a { text-decoration: none; color: inherit; }
     font-weight: 700;
     color: #fff;
     text-shadow: 0 2px 16px rgba(0,0,0,0.25);
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     line-height: 1.12;
     letter-spacing: -0.02em;
 }
@@ -695,14 +699,14 @@ a { text-decoration: none; color: inherit; }
     font-weight: 400;
     font-style: italic;
     color: var(--gold-light);
-    margin-bottom: 22px;
+    margin-bottom: 14px;
     text-shadow: 0 1px 6px rgba(0,0,0,0.20);
 }
 
 .hero-content p {
     font-size: clamp(0.95rem, 1.8vw, 1.1rem);
     color: rgba(255,255,255,0.88);
-    margin-bottom: 36px;
+    margin-bottom: 20px;
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
@@ -715,7 +719,7 @@ a { text-decoration: none; color: inherit; }
     gap: 16px;
     justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
 }
 
 .hero-trust-row {
@@ -739,7 +743,7 @@ a { text-decoration: none; color: inherit; }
 
 .scroll-indicator {
     position: absolute;
-    bottom: 32px; left: 50%;
+    bottom: 12px; left: 50%;
     transform: translateX(-50%);
     color: rgba(255,255,255,0.6);
     font-size: 1.1rem;
@@ -750,6 +754,71 @@ a { text-decoration: none; color: inherit; }
 @keyframes bounceY {
     0%, 100% { transform: translateX(-50%) translateY(0); }
     50%       { transform: translateX(-50%) translateY(-10px); }
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+    .home-hero-banner {
+        min-height: 44vh !important;
+        padding: 12px 5px 6px !important;
+    }
+
+    .hero-content {
+        padding: 0 16px;
+    }
+
+    .hero-badge {
+        margin-bottom: 10px;
+        padding: 5px 12px;
+        font-size: 0.70rem;
+    }
+
+    .hero-content h1 {
+        font-size: clamp(1.7rem, 6.5vw, 2.4rem);
+        margin-bottom: 8px;
+    }
+
+    .hero-content h2 {
+        font-size: clamp(0.95rem, 3.5vw, 1.2rem);
+        margin-bottom: 10px;
+    }
+
+    .hero-content p {
+        margin-bottom: 14px;
+        font-size: 0.88rem;
+        line-height: 1.60;
+    }
+
+    /* ── 2 boutons sur une seule ligne ── */
+    .hero-cta-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 14px;
+        flex-wrap: unset;
+    }
+
+    .hero-cta-group .primary-cta,
+    .hero-cta-group .secondary-cta {
+        width: 100%;
+        text-align: center;
+        padding: 11px 10px;
+        font-size: 0.80rem;
+        white-space: nowrap;
+    }
+
+    .hero-trust-row {
+        gap: 10px;
+    }
+
+    .hero-trust-row span {
+        font-size: 0.72rem;
+    }
+
+    .scroll-indicator {
+        bottom: 8px;
+        font-size: 0.90rem;
+    }
 }
 
 /* ─────────────────────────────────────────────
@@ -8675,3 +8744,6 @@ tbody tr:hover { background: var(--rose-ultra); }
         .nutrition-final-cta p { font-size: 0.98rem; color: rgba(255,255,255,0.72); max-width: 520px; margin: 0 auto 28px; line-height: 1.72; }
         .nutrition-final-cta .reassurance { font-size: 0.80rem; color: rgba(255,255,255,0.50); margin-top: 16px; }
 
+
+
+    
