@@ -28,6 +28,9 @@ async function saveStory(body) {
   const auth   = getAuth();
   const sheets = google.sheets({ version: 'v4', auth });
 
+  // Colonnes : A=firstName, B=age, C=email, D=startWeight, E=program,
+  //            F=duration, G=result, H=story, I=rating, J=photo,
+  //            K=anonymous, L=status, M=date
   const values = [[
     firstName.trim(),
     age         || '',
@@ -37,11 +40,11 @@ async function saveStory(body) {
     duration    || '',
     result      || '',
     story.trim(),
-    rating      || '5',  // colonne I
-    photo       || '',   // colonne J
-    anonymous === true || anonymous === 'true' ? 'yes' : 'no', // colonne K
-    'pending',           // colonne L
-    formatDate()         // colonne M
+    rating      || '5',
+    photo       || '',
+    anonymous === true || anonymous === 'true' ? 'yes' : 'no',
+    'pending',
+    formatDate()
   ]];
 
   await sheets.spreadsheets.values.append({
@@ -67,19 +70,21 @@ async function fetchStories() {
 
   const rows = res.data.values || [];
 
+  // A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7, I=8, J=9, K=10, L=11, M=12
   const stories = rows
-    .filter(r => r[11] && r[11].toLowerCase() === 'approved') // colonne L = index 11
+    .slice(1) // skip header row
+    .filter(r => r[11] && r[11].toString().toLowerCase() === 'approved')
     .map(r => ({
-      firstName:   r[10] === 'yes' ? 'Anonymous' : (r[0] || 'Anonymous'), // colonne K = index 10
+      firstName:   r[10] && r[10].toString().toLowerCase() === 'yes' ? 'Anonymous' : (r[0] || 'Anonymous'),
       age:         r[1]  || '',
       startWeight: r[3]  || '',
       program:     r[4]  || '',
       duration:    r[5]  || '',
       result:      r[6]  || '',
       story:       r[7]  || '',
-      rating:      r[8]  || '5',  // colonne I = index 8
-      photo:       r[9]  || '',   // colonne J = index 9
-      date:        r[12] || ''    // colonne M = index 12
+      rating:      r[8]  || '5',
+      photo:       r[9]  || '',
+      date:        r[12] || ''
     }));
 
   return { success: true, stories };
