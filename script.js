@@ -2666,20 +2666,37 @@ if (storyForm) {
     const nameAge   = fields[0].value.split(',');
     const fileInput = storyForm.querySelector('input[type="file"]');
 
-    // ── Convertir la photo en base64 si présente ──
-    let photoBase64 = '';
-    if (fileInput && fileInput.files && fileInput.files[0]) {
-      photoBase64 = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload  = () => resolve(reader.result);
-        reader.onerror = () => resolve('');
-        reader.readAsDataURL(fileInput.files[0]);
-      });
-    }
+    // ── Convertir et compresser la photo ──
+let photoBase64 = '';
+if (fileInput && fileInput.files && fileInput.files[0]) {
+  photoBase64 = await new Promise((resolve) => {
+    const file   = fileInput.files[0];
+    const img    = new Image();
+    const url    = URL.createObjectURL(file);
 
-    // fields index :
-    // 0 = firstName+age | 1 = email | 2 = startWeight | 3 = program (select)
-    // 4 = duration | 5 = result | 6 = story (textarea) | 7 = file | 8 = checkbox
+    img.onload = () => {
+      // Redimensionner à max 200x200px
+      const MAX  = 200;
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+      else       { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+
+      const canvas  = document.createElement('canvas');
+      canvas.width  = w;
+      canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+
+      // Qualité 0.6 = ~15-20kb en base64
+      const compressed = canvas.toDataURL('image/jpeg', 0.6);
+      URL.revokeObjectURL(url);
+      resolve(compressed);
+    };
+
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(''); };
+    img.src = url;
+  });
+}
+
     const payload = {
       firstName:   nameAge[0]?.trim() || fields[0].value.trim(),
       age:         nameAge[1]?.trim() || '',
