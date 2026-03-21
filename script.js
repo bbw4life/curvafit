@@ -9,6 +9,55 @@ document.addEventListener('DOMContentLoaded', () => {
       '_master$2$3'
     );
   }
+
+
+  // ══ FLOATING NAV ══
+const fnavToggle = document.getElementById('fnav-toggle');
+const fnavWheel  = document.getElementById('fnav-wheel');
+
+if (fnavToggle && fnavWheel) {
+  fnavToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = fnavWheel.classList.toggle('open');
+    fnavToggle.classList.toggle('open', isOpen);
+  });
+
+  // Fermer en cliquant ailleurs
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#floating-nav')) {
+      fnavWheel.classList.remove('open');
+      fnavToggle.classList.remove('open');
+    }
+  });
+
+  const PAGE_ORDER = [
+  '/index.html',
+  '/method.html',
+  '/programs.html',
+  '/nutrition.html',
+  '/shop.html',
+  '/success.html',
+  '/community.html',
+  '/about.html',
+  '/contact.html',
+  '/blog/blog.html',
+  '/faq.html',
+  '/account.html'
+];
+
+document.getElementById('fnav-next').addEventListener('click', () => {
+  const currentPath = window.location.pathname;
+
+  // Trouver la page courante dans l'ordre
+  const idx = PAGE_ORDER.findIndex(p => currentPath.endsWith(p) || currentPath === p);
+
+  const nextPage = idx !== -1 && idx < PAGE_ORDER.length - 1
+    ? PAGE_ORDER[idx + 1]
+    : PAGE_ORDER[0];
+
+  window.location.href = nextPage;
+});
+}
  
   // ====================== IMAGES NETTES (ANTI-FLOU GLOBAL) ======================
   (function injectSharpImageStyles() {
@@ -2695,10 +2744,7 @@ if (storyForm) {
       });
     }
 
-    // fields index :
-    // 0 = firstName+age | 1 = email | 2 = startWeight | 3 = program (select)
-    // 4 = duration | 5 = result | 6 = story (textarea) | 7 = rating hidden
-    // 8 = file | 9 = checkbox
+   
     const payload = {
       firstName:   nameAge[0]?.trim() || fields[0].value.trim(),
       age:         nameAge[1]?.trim() || '',
