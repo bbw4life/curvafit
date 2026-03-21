@@ -19,7 +19,7 @@ function formatDate() {
 
 // ── SAVE ──────────────────────────────────────────────────────────────
 async function saveStory(body) {
-  const { firstName, age, email, startWeight, program, duration, result, story, photo, anonymous } = body;
+  const { firstName, age, email, startWeight, program, duration, result, story, rating, photo, anonymous } = body;
 
   if (!firstName || !email || !startWeight || !program || !story) {
     throw new Error('Required fields missing');
@@ -37,15 +37,16 @@ async function saveStory(body) {
     duration    || '',
     result      || '',
     story.trim(),
-    photo       || '',   // colonne I — base64 image
-    anonymous === true || anonymous === 'true' ? 'yes' : 'no',  // colonne J
-    'pending',           // colonne K — status
-    formatDate()         // colonne L
+    rating      || '5',  // colonne I
+    photo       || '',   // colonne J
+    anonymous === true || anonymous === 'true' ? 'yes' : 'no', // colonne K
+    'pending',           // colonne L
+    formatDate()         // colonne M
   ]];
 
   await sheets.spreadsheets.values.append({
     spreadsheetId:   process.env.GOOGLE_SHARE_STORY_ID,
-    range:           `${SHEET_NAME}!A:L`,
+    range:           `${SHEET_NAME}!A:M`,
     valueInputOption:'RAW',
     insertDataOption:'INSERT_ROWS',
     resource: { values }
@@ -61,23 +62,24 @@ async function fetchStories() {
 
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.GOOGLE_SHARE_STORY_ID,
-    range:         `${SHEET_NAME}!A:L`
+    range:         `${SHEET_NAME}!A:M`
   });
 
   const rows = res.data.values || [];
 
   const stories = rows
-    .filter(r => r[10] && r[10].toLowerCase() === 'approved') // colonne K = index 10
+    .filter(r => r[11] && r[11].toLowerCase() === 'approved') // colonne L = index 11
     .map(r => ({
-      firstName:   r[9] === 'yes' ? 'Anonymous' : (r[0] || 'Anonymous'), // colonne J = index 9
-      age:         r[1] || '',
-      startWeight: r[3] || '',
-      program:     r[4] || '',
-      duration:    r[5] || '',
-      result:      r[6] || '',
-      story:       r[7] || '',
-      photo:       r[8] || '',   // colonne I = index 8
-      date:        r[11] || ''   // colonne L = index 11
+      firstName:   r[10] === 'yes' ? 'Anonymous' : (r[0] || 'Anonymous'), // colonne K = index 10
+      age:         r[1]  || '',
+      startWeight: r[3]  || '',
+      program:     r[4]  || '',
+      duration:    r[5]  || '',
+      result:      r[6]  || '',
+      story:       r[7]  || '',
+      rating:      r[8]  || '5',  // colonne I = index 8
+      photo:       r[9]  || '',   // colonne J = index 9
+      date:        r[12] || ''    // colonne M = index 12
     }));
 
   return { success: true, stories };

@@ -2626,6 +2626,34 @@ window.addEventListener('load', () => {
 
 const storyForm = document.getElementById('story-form');
 if (storyForm) {
+
+  // ── Gestion des étoiles ──
+  const ratingStars = document.querySelectorAll('#story-rating i');
+  const ratingInput = document.getElementById('story-rating-value');
+  if (ratingStars.length) {
+    ratingStars.forEach(star => {
+      star.addEventListener('click', () => {
+        const val = parseInt(star.dataset.val);
+        ratingInput.value = val;
+        ratingStars.forEach((s, i) => {
+          s.className = i < val ? 'fi fi-sr-star' : 'fi fi-rr-star';
+        });
+      });
+      star.addEventListener('mouseover', () => {
+        const val = parseInt(star.dataset.val);
+        ratingStars.forEach((s, i) => {
+          s.className = i < val ? 'fi fi-sr-star' : 'fi fi-rr-star';
+        });
+      });
+      star.addEventListener('mouseout', () => {
+        const val = parseInt(ratingInput.value);
+        ratingStars.forEach((s, i) => {
+          s.className = i < val ? 'fi fi-sr-star' : 'fi fi-rr-star';
+        });
+      });
+    });
+  }
+
   storyForm.addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -2641,17 +2669,11 @@ if (storyForm) {
     // ── Convertir la photo en base64 si présente ──
     let photoBase64 = '';
     if (fileInput && fileInput.files && fileInput.files[0]) {
-      const file = fileInput.files[0];
-      if (file.size > 500000) {
-        btn.textContent = '❌ Photo too large (max 500kb)';
-        btn.disabled = false;
-        return;
-      }
       photoBase64 = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload  = () => resolve(reader.result);
         reader.onerror = () => resolve('');
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(fileInput.files[0]);
       });
     }
 
@@ -2667,6 +2689,7 @@ if (storyForm) {
       duration:    fields[4].value.trim(),
       result:      fields[5].value.trim(),
       story:       fields[6].value.trim(),
+      rating:      document.getElementById('story-rating-value')?.value || '5',
       photo:       photoBase64,
       anonymous:   storyForm.querySelector('input[type="checkbox"]')?.checked ? 'true' : 'false'
     };
@@ -2682,6 +2705,9 @@ if (storyForm) {
       if (data.success) {
         btn.textContent = '✅ Story sent!';
         storyForm.reset();
+        // Reset étoiles visuellement
+        ratingStars.forEach(s => s.className = 'fi fi-rr-star');
+        if (ratingInput) ratingInput.value = '5';
         setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 4000);
       } else {
         throw new Error(data.error || 'Unknown error');
@@ -2726,8 +2752,9 @@ function buildStoryCard(s) {
       </div>` : ''}
       <p class="dt-quote">"${s.story}"</p>
       <div class="rating">
-        <i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i>
-        <i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i>
+        ${[1,2,3,4,5].map(i =>
+          `<i class="${i <= parseInt(s.rating || 5) ? 'fi fi-sr-star' : 'fi fi-rr-star'}"></i>`
+        ).join('')}
       </div>
       ${s.date ? `<small class="dt-date">Shared on ${s.date}</small>` : ''}
     </div>`;
