@@ -1816,6 +1816,9 @@ document.querySelectorAll('.footer-social a').forEach(a => {
 })();
 
 });
+
+
+
  
 // ====================== SWATCH SCROLL MOBILE ======================
 document.addEventListener('click', function(e) {
@@ -2297,4 +2300,256 @@ window.addEventListener('load', () => {
     window.location.href = url;
   };
 });
+
+
+
+
+
+
+/* ================================================================
+   FAQ SMART SEARCH — à ajouter dans page.js
+   Fonctionnement :
+   - Charge faq-data.json
+   - Affiche des suggestions en temps réel sous la barre de recherche
+   - Au clic sur une suggestion → scroll vers la question + ouvre l'accordion
+================================================================ */
+
+(function () {
+
+    // ── 1. Ne s'exécute que sur la page FAQ ──
+    const searchInput = document.getElementById('faq-search-input');
+    if (!searchInput) return;
+
+    // ── 2. Variables ──
+    let faqData = [];
+    let selectedIndex = -1;
+    let dropdown = null;
+
+    // ── 3. Créer le dropdown de suggestions ──
+    function createDropdown() {
+        dropdown = document.createElement('div');
+        dropdown.id = 'faq-suggestions-dropdown';
+        dropdown.setAttribute('role', 'listbox');
+        searchInput.parentElement.style.position = 'relative';
+        searchInput.parentElement.appendChild(dropdown);
+    }
+
+    // ── 4. Charger faq-data.json ──
+    fetch('faq-data.json')
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            faqData = data;
+            createDropdown();
+            bindEvents();
+        })
+        .catch(function () {
+            // Si le JSON ne charge pas, le search inline existant continue de fonctionner
+            console.warn('CurvaFit FAQ: faq-data.json not found, smart search disabled.');
+        });
+
+    // ── 5. Filtrer les résultats ──
+    function filterData(query) {
+        if (!query || query.length < 2) return [];
+        var q = query.toLowerCase();
+        return faqData.filter(function (item) {
+            return item.question.toLowerCase().includes(q) ||
+                   item.category.toLowerCase().includes(q);
+        }).slice(0, 7); // max 7 suggestions
+    }
+
+    // ── 6. Highlight du texte trouvé ──
+    function highlight(text, query) {
+        if (!query) return text;
+        var regex = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+        return text.replace(regex, '<mark>$1</mark>');
+    }
+
+    // ── 7. Afficher les suggestions ──
+    function showSuggestions(results, query) {
+        dropdown.innerHTML = '';
+        selectedIndex = -1;
+
+        if (results.length === 0) {
+            dropdown.classList.remove('faq-dd--open');
+            return;
+        }
+
+        results.forEach(function (item, index) {
+            var li = document.createElement('div');
+            li.className = 'faq-dd-item';
+            li.setAttribute('role', 'option');
+            li.setAttribute('data-index', index);
+            li.setAttribute('data-section', item.section);
+            li.setAttribute('data-id', item.id);
+
+            li.innerHTML =
+                '<span class="faq-dd-cat">' + item.category + '</span>' +
+                '<span class="faq-dd-text">' + highlight(item.question, query) + '</span>' +
+                '<span class="faq-dd-arrow">↓</span>';
+
+            li.addEventListener('mousedown', function (e) {
+                e.preventDefault(); // empêche le blur avant le click
+                goToQuestion(item);
+            });
+
+            dropdown.appendChild(li);
+        });
+
+        dropdown.classList.add('faq-dd--open');
+    }
+
+    // ── 8. Fermer le dropdown ──
+    function closeDropdown() {
+        if (dropdown) {
+            dropdown.classList.remove('faq-dd--open');
+            selectedIndex = -1;
+        }
+    }
+
+    // ── 9. Aller vers la question ──
+    function goToQuestion(item) {
+        closeDropdown();
+        searchInput.value = item.question;
+
+        // Trouver la section
+        var section = document.getElementById(item.section);
+        if (!section) return;
+
+        // Trouver le bon accordion-item dans cette section
+        var accordionItems = section.querySelectorAll('.accordion-item');
+        var targetItem = null;
+
+        accordionItems.forEach(function (acc) {
+            var btn = acc.querySelector('.accordion-header');
+            if (btn && btn.textContent.trim().toLowerCase().includes(
+                item.question.toLowerCase().substring(0, 30)
+            )) {
+                targetItem = acc;
+            }
+        });
+
+        // Si pas trouvé par texte exact, prendre le premier de la section
+        if (!targetItem && accordionItems.length > 0) {
+            var idx = faqData.filter(function(d){ return d.section === item.section; })
+                             .findIndex(function(d){ return d.id === item.id; });
+            targetItem = accordionItems[idx] || accordionItems[0];
+        }
+
+        // Ouvrir l'accordion item
+        if (targetItem) {
+            // Fermer tous les autres dans la même section
+            section.querySelectorAll('.accordion-item.active').forEach(function (a) {
+                a.classList.remove('active');
+                var content = a.querySelector('.accordion-content');
+                if (content) content.style.display = 'none';
+            });
+
+            // Ouvrir le cible
+            targetItem.classList.add('active');
+            var content = targetItem.querySelector('.accordion-content');
+            if (content) content.style.display = 'block';
+
+            // Scroll avec offset pour le sticky header
+            setTimeout(function () {
+                var offset = 120;
+                var top = targetItem.getBoundingClientRect().top + window.pageYOffset - offset;
+                window.scrollTo({ top: top, behavior: 'smooth' });
+
+                // Highlight visuel temporaire
+                targetItem.classList.add('faq-item--highlight');
+                setTimeout(function () {
+                    targetItem.classList.remove('faq-item--highlight');
+                }, 2000);
+            }, 100);
+        }
+    }
+
+    // ── 10. Navigation clavier dans les suggestions ──
+    function navigateDropdown(direction) {
+        var items = dropdown.querySelectorAll('.faq-dd-item');
+        if (!items.length) return;
+
+        if (selectedIndex >= 0) {
+            items[selectedIndex].classList.remove('faq-dd-item--active');
+        }
+
+        selectedIndex += direction;
+
+        if (selectedIndex < 0) selectedIndex = items.length - 1;
+        if (selectedIndex >= items.length) selectedIndex = 0;
+
+        items[selectedIndex].classList.add('faq-dd-item--active');
+        items[selectedIndex].scrollIntoView({ block: 'nearest' });
+    }
+
+    // ── 11. Lier les events ──
+    function bindEvents() {
+
+        // Frappe dans la barre
+        searchInput.addEventListener('input', function () {
+            var query = this.value.trim();
+            var results = filterData(query);
+            showSuggestions(results, query);
+
+            // Clear button
+            var clearBtn = document.getElementById('faq-search-clear');
+            if (clearBtn) clearBtn.style.display = query ? 'block' : 'none';
+        });
+
+        // Clavier
+        searchInput.addEventListener('keydown', function (e) {
+            if (!dropdown.classList.contains('faq-dd--open')) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                navigateDropdown(1);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                navigateDropdown(-1);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedIndex >= 0) {
+                    var items = dropdown.querySelectorAll('.faq-dd-item');
+                    if (items[selectedIndex]) {
+                        var section = items[selectedIndex].getAttribute('data-section');
+                        var id = items[selectedIndex].getAttribute('data-id');
+                        var item = faqData.find(function (d) { return d.id === id; });
+                        if (item) goToQuestion(item);
+                    }
+                }
+            } else if (e.key === 'Escape') {
+                closeDropdown();
+            }
+        });
+
+        // Fermer au clic ailleurs
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('#faq-search-input') &&
+                !e.target.closest('#faq-suggestions-dropdown')) {
+                closeDropdown();
+            }
+        });
+
+        // Clear button
+        var clearBtn = document.getElementById('faq-search-clear');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function () {
+                searchInput.value = '';
+                this.style.display = 'none';
+                closeDropdown();
+                var countEl = document.getElementById('faq-search-count');
+                if (countEl) countEl.style.display = 'none';
+                // Réafficher toutes les questions
+                document.querySelectorAll('.accordion-item').forEach(function (i) {
+                    i.style.display = '';
+                });
+                document.querySelectorAll('.faq-category').forEach(function (c) {
+                    c.style.display = '';
+                });
+            });
+        }
+    }
+
+})();
+
 

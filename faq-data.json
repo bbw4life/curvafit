@@ -1,0 +1,260 @@
+[
+  {
+    "id": "gs-1",
+    "question": "Do I need any fitness experience to start?",
+    "category": "Getting Started",
+    "section": "getting-started"
+  },
+  {
+    "id": "gs-2",
+    "question": "What weight do I need to be to join CurvaFit?",
+    "category": "Getting Started",
+    "section": "getting-started"
+  },
+  {
+    "id": "gs-3",
+    "question": "How do I know which program is right for me?",
+    "category": "Getting Started",
+    "section": "getting-started"
+  },
+  {
+    "id": "gs-4",
+    "question": "What do I need at home to get started?",
+    "category": "Getting Started",
+    "section": "getting-started"
+  },
+  {
+    "id": "gs-5",
+    "question": "How long before I see real results?",
+    "category": "Getting Started",
+    "section": "getting-started"
+  },
+  {
+    "id": "pr-1",
+    "question": "How do CurvaFit programs work?",
+    "category": "Programs",
+    "section": "programs-structure"
+  },
+  {
+    "id": "pr-2",
+    "question": "Are the workouts beginner-friendly?",
+    "category": "Programs",
+    "section": "programs-structure"
+  },
+  {
+    "id": "pr-3",
+    "question": "Do I need equipment?",
+    "category": "Programs",
+    "section": "programs-structure"
+  },
+  {
+    "id": "pr-4",
+    "question": "How long are the workouts?",
+    "category": "Programs",
+    "section": "programs-structure"
+  },
+  {
+    "id": "pr-5",
+    "question": "Can I switch programs mid-way?",
+    "category": "Programs",
+    "section": "programs-structure"
+  },
+  {
+    "id": "pr-6",
+    "question": "What happens after I reach my goal weight?",
+    "category": "Programs",
+    "section": "programs-structure"
+  },
+  {
+    "id": "pr-7",
+    "question": "Can I do this at home without a gym?",
+    "category": "Programs",
+    "section": "programs-structure"
+  },
+  {
+    "id": "wl-1",
+    "question": "How much weight can I realistically lose per month?",
+    "category": "Weight Loss",
+    "section": "weight-loss-results"
+  },
+  {
+    "id": "wl-2",
+    "question": "Is weight loss guaranteed?",
+    "category": "Weight Loss",
+    "section": "weight-loss-results"
+  },
+  {
+    "id": "wl-3",
+    "question": "Why is my weight not moving even though I'm following the plan?",
+    "category": "Weight Loss",
+    "section": "weight-loss-results"
+  },
+  {
+    "id": "wl-4",
+    "question": "Will this work if I have a slow metabolism?",
+    "category": "Weight Loss",
+    "section": "weight-loss-results"
+  },
+  {
+    "id": "wl-5",
+    "question": "Are results sustainable long-term?",
+    "category": "Weight Loss",
+    "section": "weight-loss-results"
+  },
+  {
+    "id": "nt-1",
+    "question": "Do I have to count calories every single day?",
+    "category": "Nutrition",
+    "section": "nutrition-diet"
+  },
+  {
+    "id": "nt-2",
+    "question": "Can I eat carbs and still lose weight?",
+    "category": "Nutrition",
+    "section": "nutrition-diet"
+  },
+  {
+    "id": "nt-3",
+    "question": "Why does CurvaFit focus so much on protein?",
+    "category": "Nutrition",
+    "section": "nutrition-diet"
+  },
+  {
+    "id": "nt-4",
+    "question": "Can I follow the program if I'm vegetarian or vegan?",
+    "category": "Nutrition",
+    "section": "nutrition-diet"
+  },
+  {
+    "id": "nt-5",
+    "question": "Is it okay to eat out while on the program?",
+    "category": "Nutrition",
+    "section": "nutrition-diet"
+  },
+  {
+    "id": "nt-6",
+    "question": "Is this a crash diet?",
+    "category": "Nutrition",
+    "section": "nutrition-diet"
+  },
+  {
+    "id": "sf-1",
+    "question": "Should I consult my doctor before starting?",
+    "category": "Safety & Medical",
+    "section": "safety-health"
+  },
+  {
+    "id": "sf-2",
+    "question": "Is CurvaFit safe if I have PCOS?",
+    "category": "Safety & Medical",
+    "section": "safety-health"
+  },
+  {
+    "id": "sf-3",
+    "question": "Can I follow the program if I have type 2 diabetes?",
+    "category": "Safety & Medical",
+    "section": "safety-health"
+  },
+  {
+    "id": "sf-4",
+    "question": "Is this safe during menopause?",
+    "category": "Safety & Medical",
+    "section": "safety-health"
+  },
+  {
+    "id": "sf-5",
+    "question": "I have knee pain — can I still exercise?",
+    "category": "Safety & Medical",
+    "section": "safety-health"
+  },
+  {
+    "id": "sf-6",
+    "question": "Can I do the program if I have limited mobility?",
+    "category": "Safety & Medical",
+    "section": "safety-health"
+  },
+  {
+    "id": "cm-1",
+    "question": "Is the community really safe and judgment-free?",
+    "category": "Community",
+    "section": "community-support"
+  },
+  {
+    "id": "cm-2",
+    "question": "What if I'm too embarrassed to share my starting weight?",
+    "category": "Community",
+    "section": "community-support"
+  },
+  {
+    "id": "cm-3",
+    "question": "Can I be anonymous in the community?",
+    "category": "Community",
+    "section": "community-support"
+  },
+  {
+    "id": "cm-4",
+    "question": "What happens if someone is rude or body-shaming in the group?",
+    "category": "Community",
+    "section": "community-support"
+  },
+  {
+    "id": "cm-5",
+    "question": "Do I get coaching support?",
+    "category": "Community",
+    "section": "community-support"
+  },
+  {
+    "id": "py-1",
+    "question": "What payment methods are accepted?",
+    "category": "Billing & Refunds",
+    "section": "payments-access"
+  },
+  {
+    "id": "py-2",
+    "question": "What is your refund policy?",
+    "category": "Billing & Refunds",
+    "section": "payments-access"
+  },
+  {
+    "id": "py-3",
+    "question": "Are there hidden fees after purchase?",
+    "category": "Billing & Refunds",
+    "section": "payments-access"
+  },
+  {
+    "id": "py-4",
+    "question": "Do I get lifetime access?",
+    "category": "Billing & Refunds",
+    "section": "payments-access"
+  },
+  {
+    "id": "py-5",
+    "question": "Can I upgrade to a higher program later?",
+    "category": "Billing & Refunds",
+    "section": "payments-access"
+  },
+  {
+    "id": "tc-1",
+    "question": "I didn't receive my login email after purchase.",
+    "category": "Technical",
+    "section": "technical-questions"
+  },
+  {
+    "id": "tc-2",
+    "question": "I forgot my password.",
+    "category": "Technical",
+    "section": "technical-questions"
+  },
+  {
+    "id": "tc-3",
+    "question": "Videos are not loading properly.",
+    "category": "Technical",
+    "section": "technical-questions"
+  },
+  {
+    "id": "tc-4",
+    "question": "How do I access the platform on my phone?",
+    "category": "Technical",
+    "section": "technical-questions"
+  }
+]

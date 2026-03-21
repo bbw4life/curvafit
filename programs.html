@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Discover CurvaFit's premium plus size fitness programs for structured transformation. Tailored weight loss plans for curvy women.">
-    <meta property="og:title" content="CurvaFit Programs - Structured Weight Loss for Curvy Women">
+    <meta name="description" content="Find your CurvaFit program — Beginner, Intermediate, or Maintenance. Science-based weight loss programs for plus-size women, 100% at home.">
+    <meta property="og:title" content="CurvaFit Programs - Which Level Is Right for You?">
     <meta property="og:url" content="https://www.curvafit.com/programs.html">
     <meta property="og:type" content="website">
-    <title>CurvaFit Programs - Premium Plus Size Fitness Programs</title>
+    <title>CurvaFit Programs - Find Your Level | Beginner · Intermediate · Maintenance</title>
     <link rel="icon" href="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/favicon.jpg?v=1771465266" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="/animations.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.5.1/uicons-solid-rounded/css/uicons-solid-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-straight/css/uicons-regular-straight.css">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -49,99 +50,335 @@
 
     <main>
 
-        <!-- PROGRAM TIERS -->
-        <section id="program-tiers" class="program-tiers-section">
+        <!-- ══════════════════════════════════════════
+             PAGE INTRO — no hero, just clean anchor bar
+        ══════════════════════════════════════════ -->
+        <section class="programs-intro-section">
             <div class="container">
                 <div class="section-header">
                     <span class="section-label">Choose Your Path</span>
-                    <h2>Choose Your Structured Path to Transformation</h2>
-                    <p class="section-subtitle">Three precision-built programs. One goal: your best, most confident body.</p>
+                    <h2>Find the Program Built for Your Level</h2>
+                    <p class="section-subtitle">Three programs. One science-based method. Your decision depends on where you are starting from — not where you want to end up.</p>
                 </div>
-                <div class="tiers-grid">
-                    <!-- Foundation -->
-                    <div class="program-card">
-                        <div class="prog-tier-label">Beginner</div>
-                        <div class="prog-icon-wrap"><i class="fi fi-rr-seedling"></i></div>
-                        <h3>Foundation</h3>
-                        <p class="slogan">Build Your Base with Gentle Precision</p>
-                        <div class="prog-meta">
-                            <span><i class="fi fi-rr-clock"></i> 8 Weeks</span>
-                            <span><i class="fi fi-rr-chart-line-up"></i> Beginner</span>
+                <div class="programs-anchor-bar">
+                    <a href="#program-beginner" class="anchor-btn anchor-btn--beginner">
+                        <span class="anchor-icon">🌱</span>
+                        <span class="anchor-label">Beginner</span>
+                        <span class="anchor-sub">Weeks 1–8</span>
+                    </a>
+                    <div class="anchor-arrow">→</div>
+                    <a href="#program-intermediate" class="anchor-btn anchor-btn--intermediate">
+                        <span class="anchor-icon">🔥</span>
+                        <span class="anchor-label">Intermediate</span>
+                        <span class="anchor-sub">Months 2–4</span>
+                    </a>
+                    <div class="anchor-arrow">→</div>
+                    <a href="#program-maintenance" class="anchor-btn anchor-btn--maintenance">
+                        <span class="anchor-icon">🌟</span>
+                        <span class="anchor-label">Maintenance</span>
+                        <span class="anchor-sub">Month 5+</span>
+                    </a>
+                </div>
+                <p class="intro-quiz-hint">Not sure which level is right for you? <a href="#quiz-section">Take the 60-second quiz ↓</a></p>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════
+             QUIZ — unique interactive section
+        ══════════════════════════════════════════ -->
+        <section id="quiz-section" class="quiz-section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">60-Second Quiz</span>
+                    <h2>Which Program Is Right for You?</h2>
+                    <p class="section-subtitle">Answer 4 honest questions. We'll tell you exactly which level fits your body and your starting point.</p>
+                </div>
+                <div class="quiz-card" id="quiz-card">
+
+                    <!-- Q1 -->
+                    <div class="quiz-step active" id="q1">
+                        <div class="quiz-progress"><div class="quiz-progress-fill" style="width:25%"></div></div>
+                        <p class="quiz-step-label">Question 1 of 4</p>
+                        <h3>Have you exercised regularly in the past?</h3>
+                        <div class="quiz-options">
+                            <button class="quiz-opt" data-q="q1" data-val="0">Never or almost never</button>
+                            <button class="quiz-opt" data-q="q1" data-val="1">Occasionally (a few times per month)</button>
+                            <button class="quiz-opt" data-q="q1" data-val="2">Yes, regularly (3+ times per week)</button>
                         </div>
-                        <ul>
-                            <li>Customized beginner workouts adapted for curves</li>
-                            <li>Basic nutrition framework</li>
-                            <li>Video library access</li>
-                            <li>Weekly progress tracking</li>
-                            <li>Community support</li>
-                        </ul>
-                        <div class="prog-price">$99</div>
-                        <a href="#signup" class="cta button-3d prog-cta">Start Foundation</a>
                     </div>
 
-                    <!-- Advanced Sculpt - Featured -->
-                    <div class="program-card program-card--featured">
-                        <div class="badge-paul">Most Popular</div>
-                        <div class="prog-tier-label prog-tier-label--featured">Intermediate</div>
-                        <div class="prog-icon-wrap prog-icon-wrap--featured"><i class="fi fi-rr-dumbbell"></i></div>
-                        <h3>Advanced Sculpt</h3>
-                        <p class="slogan">Sculpt with Strategic Intensity</p>
-                        <div class="prog-meta">
-                            <span><i class="fi fi-rr-clock"></i> 12 Weeks</span>
-                            <span><i class="fi fi-rr-chart-line-up"></i> Intermediate</span>
+                    <!-- Q2 -->
+                    <div class="quiz-step" id="q2">
+                        <div class="quiz-progress"><div class="quiz-progress-fill" style="width:50%"></div></div>
+                        <p class="quiz-step-label">Question 2 of 4</p>
+                        <h3>How much weight are you looking to lose?</h3>
+                        <div class="quiz-options">
+                            <button class="quiz-opt" data-q="q2" data-val="0">5–10 kg (goal is nearly there)</button>
+                            <button class="quiz-opt" data-q="q2" data-val="1">10–20 kg (significant change needed)</button>
+                            <button class="quiz-opt" data-q="q2" data-val="2">20 kg or more (major transformation)</button>
                         </div>
-                        <ul>
-                            <li>Progressive overload training plans</li>
-                            <li>Hormone-aware nutrition strategy</li>
-                            <li>Full video library</li>
-                            <li>Weekly progression tracking</li>
-                            <li>Private community access</li>
-                            <li>Mobility protocols</li>
-                        </ul>
-                        <div class="prog-price prog-price--featured">$149</div>
-                        <a href="#signup" class="cta button-3d prog-cta">Join Advanced Sculpt</a>
                     </div>
 
-                    <!-- Elite -->
-                    <div class="program-card">
-                        <div class="prog-tier-label prog-tier-label--elite">Advanced</div>
-                        <div class="prog-icon-wrap"><i class="fi fi-rr-crown"></i></div>
-                        <h3>Elite Transformation</h3>
-                        <p class="slogan">Achieve Mastery with Elite Systems</p>
-                        <div class="prog-meta">
-                            <span><i class="fi fi-rr-clock"></i> 16 Weeks+</span>
-                            <span><i class="fi fi-rr-chart-line-up"></i> Advanced</span>
+                    <!-- Q3 -->
+                    <div class="quiz-step" id="q3">
+                        <div class="quiz-progress"><div class="quiz-progress-fill" style="width:75%"></div></div>
+                        <p class="quiz-step-label">Question 3 of 4</p>
+                        <h3>What is your biggest obstacle right now?</h3>
+                        <div class="quiz-options">
+                            <button class="quiz-opt" data-q="q3" data-val="0">Joint pain or physical discomfort during exercise</button>
+                            <button class="quiz-opt" data-q="q3" data-val="1">Motivation and consistency</button>
+                            <button class="quiz-opt" data-q="q3" data-val="1">Not knowing what to eat</button>
+                            <button class="quiz-opt" data-q="q3" data-val="2">I've hit a plateau and need more intensity</button>
                         </div>
-                        <ul>
-                            <li>Advanced biomechanics-adapted workouts</li>
-                            <li>Comprehensive hormonal nutrition blueprint</li>
-                            <li>Unlimited video library</li>
-                            <li>Real-time progression tracking</li>
-                            <li>Exclusive community & direct coaching</li>
-                            <li>Enhanced psychological reinforcement modules</li>
-                        </ul>
-                        <div class="prog-price">$199</div>
-                        <a href="#signup" class="cta button-3d prog-cta">Secure Elite Transformation</a>
                     </div>
+
+                    <!-- Q4 -->
+                    <div class="quiz-step" id="q4">
+                        <div class="quiz-progress"><div class="quiz-progress-fill" style="width:100%"></div></div>
+                        <p class="quiz-step-label">Question 4 of 4</p>
+                        <h3>What is your primary goal right now?</h3>
+                        <div class="quiz-options">
+                            <button class="quiz-opt" data-q="q4" data-val="0">Start safely and build healthy habits from scratch</button>
+                            <button class="quiz-opt" data-q="q4" data-val="1">Accelerate fat loss with more structure and intensity</button>
+                            <button class="quiz-opt" data-q="q4" data-val="2">I've reached my goal — I want to maintain it permanently</button>
+                        </div>
+                    </div>
+
+                    <!-- Result -->
+                    <div class="quiz-result" id="quiz-result">
+                        <div class="quiz-result-icon" id="result-icon">🌱</div>
+                        <h3>Your Recommended Level:</h3>
+                        <div class="quiz-result-badge" id="result-badge">Beginner</div>
+                        <p class="quiz-result-text" id="result-text"></p>
+                        <a href="#program-beginner" class="button-3d" id="result-cta">See My Program →</a>
+                        <button class="quiz-restart" id="quiz-restart">Retake Quiz</button>
+                    </div>
+
                 </div>
             </div>
         </section>
 
-        <!-- COMPARISON TABLE -->
+        <!-- ══════════════════════════════════════════
+             PROGRAM TIERS — 3 full cards
+        ══════════════════════════════════════════ -->
+        <section id="program-tiers" class="program-tiers-section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">The 3 Programs</span>
+                    <h2>Every Program. Every Detail.</h2>
+                    <p class="section-subtitle">Not marketing bullets. The exact content, structure, and expected results of each program — so you know exactly what you are buying.</p>
+                </div>
+                <div class="tiers-grid">
+
+                    <!-- BEGINNER -->
+                    <div class="program-card" id="program-beginner">
+                        <div class="prog-tier-label">🌱 Beginner · Weeks 1–8</div>
+                        <div class="prog-icon-wrap"><i class="fi fi-rr-seedling"></i></div>
+                        <h3>Soft Start — Curve Slimmer</h3>
+                        <p class="slogan">"Build the habits that make everything else possible."</p>
+                        <div class="prog-meta">
+                            <span><i class="fi fi-rr-clock"></i> 8 Weeks</span>
+                            <span><i class="fi fi-rr-walking"></i> Low-Impact</span>
+                            <span><i class="fi fi-rr-home"></i> 100% At Home</span>
+                        </div>
+
+                        <!-- For who -->
+                        <div class="prog-forwho">
+                            <div class="prog-forwho-label">This program is for you if:</div>
+                            <ul>
+                                <li><i class="fi fi-rr-check"></i> You have never followed a structured fitness program before</li>
+                                <li><i class="fi fi-rr-check"></i> You have joint pain or discomfort that limits movement</li>
+                                <li><i class="fi fi-rr-check"></i> You want to start gently and build sustainable habits first</li>
+                                <li><i class="fi fi-rr-check"></i> You need to lose 10 kg or more</li>
+                            </ul>
+                        </div>
+
+                        <!-- What's inside week by week -->
+                        <div class="prog-weekly">
+                            <div class="prog-weekly-label">What happens each week:</div>
+                            <div class="prog-week-item">
+                                <span class="prog-week-num">Wk 1–2</span>
+                                <span class="prog-week-desc">Nutrition only + 15-min daily walk. Eliminate liquid sugars. Set sleep schedule. No exercise pressure.</span>
+                            </div>
+                            <div class="prog-week-item">
+                                <span class="prog-week-num">Wk 3–4</span>
+                                <span class="prog-week-desc">Walk increases to 30 min. First floor exercises introduced (2× per week, 20 min). Protein focus begins.</span>
+                            </div>
+                            <div class="prog-week-item">
+                                <span class="prog-week-num">Wk 5–6</span>
+                                <span class="prog-week-desc">3× floor workouts per week. Plateau management protocol. Weekly progress log activated.</span>
+                            </div>
+                            <div class="prog-week-item">
+                                <span class="prog-week-num">Wk 7–8</span>
+                                <span class="prog-week-desc">Consolidation. Habits reviewed. Optional transition assessment to Intermediate program.</span>
+                            </div>
+                        </div>
+
+                        <!-- Included -->
+                        <ul>
+                            <li>8-week protein-first meal plan (3 meals/day)</li>
+                            <li>Floor workout video library (20–25 min sessions)</li>
+                            <li>Daily walking progression guide</li>
+                            <li>Weekly multi-metric progress tracker</li>
+                            <li>Community access (10,000+ members)</li>
+                            <li>Method Science PDF guide</li>
+                            <li>Sleep & cortisol management protocol</li>
+                        </ul>
+
+                        <div class="prog-results-badge">
+                            <i class="fi fi-rr-chart-line-up"></i>
+                            Expected: <strong>−2 to 4 kg/month</strong> with full consistency
+                        </div>
+
+                        <div class="prog-price">$99</div>
+                        <a href="#signup" class="cta button-3d prog-cta">Start Soft Start →</a>
+                    </div>
+
+                    <!-- INTERMEDIATE — Featured -->
+                    <div class="program-card program-card--featured" id="program-intermediate">
+                        <div class="badge-paul">Most Popular</div>
+                        <div class="prog-tier-label prog-tier-label--featured">🔥 Intermediate · Months 2–4</div>
+                        <div class="prog-icon-wrap prog-icon-wrap--featured"><i class="fi fi-rr-dumbbell"></i></div>
+                        <h3>Deeper Curve Refiner</h3>
+                        <p class="slogan">"Accelerate fat loss while your body adapts to real strength."</p>
+                        <div class="prog-meta">
+                            <span><i class="fi fi-rr-clock"></i> 12 Weeks</span>
+                            <span><i class="fi fi-rr-dumbbell"></i> Moderate Intensity</span>
+                            <span><i class="fi fi-rr-home"></i> 100% At Home</span>
+                        </div>
+
+                        <div class="prog-forwho">
+                            <div class="prog-forwho-label">This program is for you if:</div>
+                            <ul>
+                                <li><i class="fi fi-rr-check"></i> You have completed 4+ weeks of Beginner or have a fitness base</li>
+                                <li><i class="fi fi-rr-check"></i> You can walk 30 min daily without joint pain</li>
+                                <li><i class="fi fi-rr-check"></i> You want to accelerate fat loss with more structure</li>
+                                <li><i class="fi fi-rr-check"></i> You are ready to add light resistance training</li>
+                            </ul>
+                        </div>
+
+                        <div class="prog-weekly">
+                            <div class="prog-weekly-label">What happens each week:</div>
+                            <div class="prog-week-item">
+                                <span class="prog-week-num">Wk 1–3</span>
+                                <span class="prog-week-desc">Calorie deficit increases to 400–500 cal/day. Protein raised to 1.0g/kg. 4× weekly sessions introduced.</span>
+                            </div>
+                            <div class="prog-week-item">
+                                <span class="prog-week-num">Wk 4–6</span>
+                                <span class="prog-week-desc">Resistance bands added (optional). Session length increases to 30–35 min. Cortisol tracking integrated.</span>
+                            </div>
+                            <div class="prog-week-item">
+                                <span class="prog-week-num">Wk 7–9</span>
+                                <span class="prog-week-desc">Progressive overload on floor exercises. Mid-program assessment. Sleep optimization deepened.</span>
+                            </div>
+                            <div class="prog-week-item">
+                                <span class="prog-week-num">Wk 10–12</span>
+                                <span class="prog-week-desc">Peak phase. Results consolidation. Transition to Maintenance assessment and calorie recalibration.</span>
+                            </div>
+                        </div>
+
+                        <ul>
+                            <li>12-week high-protein meal plan (optimized for 400–500 cal deficit)</li>
+                            <li>Full workout video library (25–35 min sessions, 4×/week)</li>
+                            <li>Resistance band training guide (optional equipment)</li>
+                            <li>Weekly multi-metric tracker + plateau resolution protocol</li>
+                            <li>Priority community access + weekly live challenges</li>
+                            <li>Cortisol management + sleep optimization deep-dive</li>
+                            <li>Method Science PDF guide (advanced edition)</li>
+                            <li>Mid-program coach review at week 6</li>
+                        </ul>
+
+                        <div class="prog-results-badge prog-results-badge--featured">
+                            <i class="fi fi-rr-chart-line-up"></i>
+                            Expected: <strong>−3 to 5 kg/month</strong> with full consistency
+                        </div>
+
+                        <div class="prog-price prog-price--featured">$149</div>
+                        <a href="#signup" class="cta button-3d prog-cta">Start Deeper Refiner →</a>
+                    </div>
+
+                    <!-- MAINTENANCE -->
+                    <div class="program-card" id="program-maintenance">
+                        <div class="prog-tier-label prog-tier-label--elite">🌟 Maintenance · Month 5+</div>
+                        <div class="prog-icon-wrap"><i class="fi fi-rr-shield-check"></i></div>
+                        <h3>Forever Fit — Maintainer</h3>
+                        <p class="slogan">"Keep your results for life. No yo-yo. No regain. Just permanence."</p>
+                        <div class="prog-meta">
+                            <span><i class="fi fi-rr-infinity"></i> Ongoing</span>
+                            <span><i class="fi fi-rr-chart-line-up"></i> Stabilization</span>
+                            <span><i class="fi fi-rr-home"></i> 100% At Home</span>
+                        </div>
+
+                        <div class="prog-forwho">
+                            <div class="prog-forwho-label">This program is for you if:</div>
+                            <ul>
+                                <li><i class="fi fi-rr-check"></i> You have reached your goal weight or are within 2–3 kg of it</li>
+                                <li><i class="fi fi-rr-check"></i> You want to stop losing and start maintaining permanently</li>
+                                <li><i class="fi fi-rr-check"></i> You have yo-yo dieted before and want to break the cycle for good</li>
+                                <li><i class="fi fi-rr-check"></i> You want a flexible, sustainable long-term lifestyle structure</li>
+                            </ul>
+                        </div>
+
+                        <div class="prog-weekly">
+                            <div class="prog-weekly-label">How the transition works:</div>
+                            <div class="prog-week-item">
+                                <span class="prog-week-num">Wk 1–2</span>
+                                <span class="prog-week-desc">Calorie increase begins: +100 cal/week. Weight monitored closely. Deficit officially ends.</span>
+                            </div>
+                            <div class="prog-week-item">
+                                <span class="prog-week-num">Wk 3–4</span>
+                                <span class="prog-week-desc">+200 cal total from baseline. Meal structure becomes flexible within protein targets. Exercise reduces to 2–3×/week.</span>
+                            </div>
+                            <div class="prog-week-item">
+                                <span class="prog-week-num">Wk 5–6</span>
+                                <span class="prog-week-desc">New maintenance calorie level confirmed. Full lifestyle integration. No strict tracking required.</span>
+                            </div>
+                            <div class="prog-week-item">
+                                <span class="prog-week-num">Month 2+</span>
+                                <span class="prog-week-desc">Ongoing check-ins. Flexible nutrition. 2–3 sessions/week to preserve muscle and metabolic rate permanently.</span>
+                            </div>
+                        </div>
+
+                        <ul>
+                            <li>Anti-yo-yo calorie recalibration protocol (+100 cal/week over 4–6 weeks)</li>
+                            <li>Flexible maintenance meal strategy (no strict counting)</li>
+                            <li>2–3×/week muscle-preservation workout plan</li>
+                            <li>Long-term habit reinforcement framework</li>
+                            <li>Community access — maintenance group (women at same stage)</li>
+                            <li>Monthly check-in system to catch early regain signals</li>
+                        </ul>
+
+                        <div class="prog-results-badge">
+                            <i class="fi fi-rr-shield-check"></i>
+                            Goal: <strong>Zero regain</strong> — permanent stabilization
+                        </div>
+
+                        <div class="prog-price">$79</div>
+                        <a href="#signup" class="cta button-3d prog-cta">Start Forever Fit →</a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════
+             COMPARISON TABLE — technical side-by-side
+        ══════════════════════════════════════════ -->
         <section id="comparison-table" class="comparison-table-section">
             <div class="container">
                 <div class="section-header">
                     <span class="section-label">Side by Side</span>
-                    <h2>Program Comparison: Find Your Perfect Structure</h2>
+                    <h2>Program Comparison — Every Detail</h2>
+                    <p class="section-subtitle">All three programs use the same science-based method. What changes is the intensity, duration, and objective.</p>
                 </div>
                 <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
-                                <th>Feature</th>
-                                <th>Foundation</th>
-                                <th class="col-featured">Advanced Sculpt</th>
-                                <th>Elite Transformation</th>
+                                <th>What Matters</th>
+                                <th>Soft Start<br><small style="font-weight:400;font-size:0.75rem;">Beginner</small></th>
+                                <th class="col-featured">Deeper Refiner<br><small style="font-weight:400;font-size:0.75rem;">Intermediate ⭐</small></th>
+                                <th>Forever Fit<br><small style="font-weight:400;font-size:0.75rem;">Maintenance</small></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -149,61 +386,91 @@
                                 <td>Duration</td>
                                 <td>8 Weeks</td>
                                 <td class="col-featured">12 Weeks</td>
-                                <td>16 Weeks + Priority</td>
+                                <td>Ongoing</td>
                             </tr>
                             <tr>
-                                <td>Custom Training Plan</td>
+                                <td>Weekly sessions</td>
+                                <td>2–3</td>
+                                <td class="col-featured">4–5</td>
+                                <td>2–3</td>
+                            </tr>
+                            <tr>
+                                <td>Session length</td>
+                                <td>20–25 min</td>
+                                <td class="col-featured">25–35 min</td>
+                                <td>20–30 min</td>
+                            </tr>
+                            <tr>
+                                <td>Daily calorie deficit</td>
+                                <td>300–400 cal</td>
+                                <td class="col-featured">400–500 cal</td>
+                                <td>0 (maintenance)</td>
+                            </tr>
+                            <tr>
+                                <td>Protein target</td>
+                                <td>0.8g / kg</td>
+                                <td class="col-featured">1.0g / kg</td>
+                                <td>1.0g / kg</td>
+                            </tr>
+                            <tr>
+                                <td>Expected monthly fat loss</td>
+                                <td>2–4 kg</td>
+                                <td class="col-featured">3–5 kg</td>
+                                <td>0 (stabilization)</td>
+                            </tr>
+                            <tr>
+                                <td>Equipment needed</td>
+                                <td>None</td>
+                                <td class="col-featured">Optional bands</td>
+                                <td>None</td>
+                            </tr>
+                            <tr>
+                                <td>Meal plans included</td>
                                 <td><i class="fi fi-sr-check check-icon"></i></td>
                                 <td class="col-featured"><i class="fi fi-sr-check check-icon"></i></td>
                                 <td><i class="fi fi-sr-check check-icon"></i></td>
                             </tr>
                             <tr>
-                                <td>Nutrition Framework</td>
-                                <td>Basic</td>
-                                <td class="col-featured">Advanced</td>
-                                <td>Elite</td>
-                            </tr>
-                            <tr>
-                                <td>Video Library</td>
-                                <td>Limited</td>
-                                <td class="col-featured">Full</td>
-                                <td>Unlimited</td>
-                            </tr>
-                            <tr>
-                                <td>Weekly Progression Tracking</td>
+                                <td>Workout video library</td>
                                 <td><i class="fi fi-sr-check check-icon"></i></td>
                                 <td class="col-featured"><i class="fi fi-sr-check check-icon"></i></td>
                                 <td><i class="fi fi-sr-check check-icon"></i></td>
                             </tr>
                             <tr>
-                                <td>Private Community Access</td>
-                                <td><span class="dash-icon">—</span></td>
+                                <td>Community access</td>
+                                <td><i class="fi fi-sr-check check-icon"></i></td>
                                 <td class="col-featured"><i class="fi fi-sr-check check-icon"></i></td>
                                 <td><i class="fi fi-sr-check check-icon"></i></td>
                             </tr>
                             <tr>
-                                <td>Direct Coaching Access</td>
-                                <td><span class="dash-icon">—</span></td>
-                                <td class="col-featured"><span class="dash-icon">—</span></td>
-                                <td><i class="fi fi-sr-check check-icon"></i></td>
-                            </tr>
-                            <tr>
-                                <td>Mobility Protocol</td>
-                                <td><span class="dash-icon">—</span></td>
+                                <td>Resistance training</td>
+                                <td><i class="fi fi-rr-minus dash-icon"></i></td>
                                 <td class="col-featured"><i class="fi fi-sr-check check-icon"></i></td>
                                 <td><i class="fi fi-sr-check check-icon"></i></td>
                             </tr>
                             <tr>
-                                <td>Hormonal Strategy</td>
-                                <td><span class="dash-icon">—</span></td>
-                                <td class="col-featured"><i class="fi fi-sr-check check-icon"></i></td>
+                                <td>Plateau resolution protocol</td>
                                 <td><i class="fi fi-sr-check check-icon"></i></td>
+                                <td class="col-featured"><i class="fi fi-sr-check check-icon"></i></td>
+                                <td><i class="fi fi-rr-minus dash-icon"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Anti-yo-yo maintenance protocol</td>
+                                <td><i class="fi fi-rr-minus dash-icon"></i></td>
+                                <td class="col-featured">Included at end</td>
+                                <td><i class="fi fi-sr-check check-icon"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Mid-program coach review</td>
+                                <td><i class="fi fi-rr-minus dash-icon"></i></td>
+                                <td class="col-featured"><i class="fi fi-sr-check check-icon"></i></td>
+                                <td><i class="fi fi-rr-minus dash-icon"></i></td>
                             </tr>
                             <tr class="price-row">
                                 <td>Price</td>
                                 <td>$99</td>
                                 <td class="col-featured">$149</td>
-                                <td>$199</td>
+                                <td>$79</td>
                             </tr>
                         </tbody>
                     </table>
@@ -211,180 +478,242 @@
             </div>
         </section>
 
-        <!-- SYSTEM BREAKDOWN -->
+        <!-- ══════════════════════════════════════════
+             WEEK-BY-WEEK BEGINNER DETAIL — unique section
+        ══════════════════════════════════════════ -->
+        <section id="week-by-week" class="week-by-week-section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">Inside the Beginner Program</span>
+                    <h2>Your First 8 Weeks — Exactly What Happens</h2>
+                    <p class="section-subtitle">The Beginner program is our most popular starting point. Here is the complete week-by-week breakdown so there are zero surprises.</p>
+                </div>
+                <div class="wbw-timeline">
+                    <div class="wbw-item">
+                        <div class="wbw-week">Week 1</div>
+                        <div class="wbw-content">
+                            <h3>Nutrition Reset Only</h3>
+                            <p>No exercise pressure this week. Focus entirely on food: eliminate all liquid sugars, start 3 structured meals per day, drink 2L of water. Walk 15 minutes at a comfortable pace. Set your consistent sleep time.</p>
+                            <div class="wbw-expect">Expected: −0.5 to 1.5 kg (water weight, reduced bloating)</div>
+                        </div>
+                    </div>
+                    <div class="wbw-item">
+                        <div class="wbw-week">Week 2</div>
+                        <div class="wbw-content">
+                            <h3>Walking Progression</h3>
+                            <p>Daily walk increases to 20–25 minutes. Protein target introduced: 0.8g per kg of body weight. Meal plan fully activated. First weekly weight log (Monday morning, post-bathroom).</p>
+                            <div class="wbw-expect">Expected: Body starting to stabilize. Real fat burn beginning.</div>
+                        </div>
+                    </div>
+                    <div class="wbw-item">
+                        <div class="wbw-week">Week 3</div>
+                        <div class="wbw-content">
+                            <h3>First Floor Exercises Introduced</h3>
+                            <p>2 floor workout sessions this week (20 min each): glute bridges, wall push-ups, seated leg raises. Walking now 30 minutes daily. Sleep log activated — tracking hours and morning hunger score.</p>
+                            <div class="wbw-expect">Expected: −1 to 2 kg total. Clothes start to feel different.</div>
+                        </div>
+                    </div>
+                    <div class="wbw-item">
+                        <div class="wbw-week">Week 4</div>
+                        <div class="wbw-content">
+                            <h3>Habit Lock-In Week</h3>
+                            <p>3 floor workout sessions. Walking maintained at 30 min. This week is about proving the habits are real — not just motivation. Energy scores logged (1–10). Waist measured for the first time since start.</p>
+                            <div class="wbw-expect">Expected: Energy score rising. Waist measurably smaller.</div>
+                        </div>
+                    </div>
+                    <div class="wbw-item">
+                        <div class="wbw-week">Week 5–6</div>
+                        <div class="wbw-content">
+                            <h3>Plateau Management Protocol Active</h3>
+                            <p>Most women experience their first weight plateau here. This is expected — it means the body is adapting. Protocol activated: audit protein intake, improve sleep quality, consider 5-min walk addition. No calorie reduction.</p>
+                            <div class="wbw-expect">Expected: Plateau broken within 7–10 days with adjustment.</div>
+                        </div>
+                    </div>
+                    <div class="wbw-item">
+                        <div class="wbw-week">Week 7–8</div>
+                        <div class="wbw-content">
+                            <h3>Consolidation + Transition Assessment</h3>
+                            <p>Full review of all 8 weeks: weight loss total, waist reduction, energy improvement, sleep quality. Assessment questionnaire determines readiness for Intermediate program. Option to extend Beginner by 4 more weeks if needed.</p>
+                            <div class="wbw-expect">Expected total: −4 to 8 kg. Habits permanently established.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════
+             SYSTEM BREAKDOWN — kept from original, upgraded
+        ══════════════════════════════════════════ -->
         <section id="system-breakdown" class="system-breakdown-section">
             <div class="container">
                 <div class="section-header">
-                    <span class="section-label">What's Different</span>
-                    <h2>What Makes These Programs Different?</h2>
-                    <p class="section-subtitle">Every pillar of our system is engineered for curvy bodies — not adapted as an afterthought.</p>
+                    <span class="section-label">What's Inside Every Program</span>
+                    <h2>5 Deliverables You Get in Every Program</h2>
+                    <p class="section-subtitle">Every program — Beginner, Intermediate, or Maintenance — includes these five core components. What differs is the depth and intensity.</p>
                 </div>
                 <div class="breakdown-blocks">
                     <div class="breakdown-block">
-                        <div class="breakdown-icon"><i class="fi fi-rr-user"></i></div>
-                        <h3>Biomechanics Adapted for Curves</h3>
-                        <p>Programs engineered with precise biomechanics tailored to plus-size physiology. Joint-friendly angles and load distributions that align with curvy body structures, promoting sustainable progress without compromise.</p>
-                        <p>Draws from advanced kinesiology principles for targeted muscle engagement that enhances fat loss in key areas while building a foundation for long-term mobility.</p>
+                        <div class="breakdown-icon"><i class="fi fi-rr-apple-whole"></i></div>
+                        <h3>Weekly Protein-First Meal Plans</h3>
+                        <p>Pre-calculated menus for 3 meals per day. Each meal hits your protein target and keeps you within your calorie deficit automatically. No calorie counting required — just follow the plan.</p>
+                        <p>Meals use real, accessible food: chicken, eggs, fish, legumes, brown rice, oats, vegetables. Prep time under 20 minutes per meal. Adaptations for vegetarian and lactose-free diets included.</p>
                     </div>
                     <div class="breakdown-block">
-                        <div class="breakdown-icon"><i class="fi fi-rr-apple-whole"></i></div>
-                        <h3>Hormone-Aware Nutrition Strategy</h3>
-                        <p>Hormone-balancing protocols integrated into every meal framework. Nutrient timing and macronutrient ratios stabilize insulin, cortisol, and estrogen levels — primed for fat loss and muscle preservation.</p>
-                        <p>Evidence-based food selections that support thyroid function and metabolic health, avoiding restrictive calorie counting while maintaining energy.</p>
+                        <div class="breakdown-icon"><i class="fi fi-rr-video-camera"></i></div>
+                        <h3>Home Workout Video Library</h3>
+                        <p>Every exercise filmed from start to finish with a plus-size instructor demonstrating correct form. Each video includes a lower-intensity modification for women with joint pain or limited mobility.</p>
+                        <p>Sessions range from 20 to 35 minutes. No equipment required for Beginner and Maintenance programs. Optional resistance band variations for Intermediate.</p>
                     </div>
                     <div class="breakdown-block">
                         <div class="breakdown-icon"><i class="fi fi-rr-chart-line-up"></i></div>
-                        <h3>Progressive Overload Blueprint</h3>
-                        <p>A meticulously designed progressive overload system that systematically increases challenge levels to drive continuous adaptation. Data-driven metrics track and adjust intensity for steady gains.</p>
-                        <p>Periodization techniques cycling through build-up and recovery phases, preventing overtraining while optimizing results for curvy bodies.</p>
+                        <h3>Multi-Metric Weekly Tracker</h3>
+                        <p>Track five metrics every Monday: weight, waist circumference, hip measurement, energy score (1–10), and sleep hours. The tracker generates a visual trend line so you see real progress — not just daily fluctuations.</p>
+                        <p>Plateau alert system built in: if no progress over 10 days, the protocol sends you adjustment recommendations automatically.</p>
                     </div>
                     <div class="breakdown-block">
-                        <div class="breakdown-icon"><i class="fi fi-rr-brain"></i></div>
-                        <h3>Psychological Reinforcement System</h3>
-                        <p>A robust psychological framework that reinforces mindset and habit formation, addressing the mental barriers unique to plus-size fitness journeys. Daily affirmations and cognitive strategies build unshakeable discipline.</p>
-                        <p>Behavioral psychology creates neural pathways for consistency, transforming motivation into structured routine with accountability mechanisms.</p>
+                        <div class="breakdown-icon"><i class="fi fi-rr-users"></i></div>
+                        <h3>Private Community Access</h3>
+                        <p>Access to the CurvaFit private community of 10,000+ women at all levels. Weekly group challenges, daily check-in threads, and peer accountability that research confirms increases success rates by 65%.</p>
+                        <p>Moderated by certified coaches — no spam, no toxic diet culture. A space built specifically for plus-size women at every stage.</p>
+                    </div>
+                    <div class="breakdown-block">
+                        <div class="breakdown-icon"><i class="fi fi-rr-document"></i></div>
+                        <h3>Method Science PDF Guide</h3>
+                        <p>A complete explanation of the biology behind every recommendation. Why 300–500 cal deficit. Why protein protects muscle. How cortisol stores belly fat. How sleep controls hunger hormones.</p>
+                        <p>Understanding the science is what prevents you from quitting when it gets hard — because you know exactly why the discomfort is temporary and the results are inevitable.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- TRANSFORMATION TIMELINE -->
-        <section id="transformation-timeline" class="transformation-timeline-section">
-            <div class="container">
-                <div class="section-header">
-                    <span class="section-label section-label--light">Week by Week</span>
-                    <h2>12-Week Transformation Timeline</h2>
-                    <p class="section-subtitle" style="color:rgba(255,255,255,0.7)">What to expect at each phase of your journey.</p>
-                </div>
-                <div class="timeline-phases">
-                    <div class="phase">
-                        <div class="phase-header">
-                            <div class="phase-number">Phase 1</div>
-                            <h3>Foundation & Adaptation <span>Weeks 1–3</span></h3>
-                        </div>
-                        <div class="phase-grid">
-                            <div class="phase-item">
-                                <span class="phase-tag phase-tag--body">Physical</span>
-                                <p>Improved posture, reduced joint discomfort, noticeable fat reduction in key areas.</p>
-                            </div>
-                            <div class="phase-item">
-                                <span class="phase-tag phase-tag--strength">Strength</span>
-                                <p>Basic movement mastery, increased core stability, enhanced daily energy levels.</p>
-                            </div>
-                            <div class="phase-item">
-                                <span class="phase-tag phase-tag--mind">Mindset</span>
-                                <p>Building confidence in routines, reduced overwhelm, emerging sense of control.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="phase">
-                        <div class="phase-header">
-                            <div class="phase-number">Phase 2</div>
-                            <h3>Strength & Sculpt <span>Weeks 4–8</span></h3>
-                        </div>
-                        <div class="phase-grid">
-                            <div class="phase-item">
-                                <span class="phase-tag phase-tag--body">Physical</span>
-                                <p>Noticeable muscle definition, accelerated fat reduction, better mobility.</p>
-                            </div>
-                            <div class="phase-item">
-                                <span class="phase-tag phase-tag--strength">Strength</span>
-                                <p>Progressive lifts, improved endurance, ability to handle complex movements.</p>
-                            </div>
-                            <div class="phase-item">
-                                <span class="phase-tag phase-tag--mind">Mindset</span>
-                                <p>Heightened motivation from visible results, stronger habit formation, increased resilience.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="phase">
-                        <div class="phase-header">
-                            <div class="phase-number">Phase 3</div>
-                            <h3>Refinement & Confidence <span>Weeks 9–12</span></h3>
-                        </div>
-                        <div class="phase-grid">
-                            <div class="phase-item">
-                                <span class="phase-tag phase-tag--body">Physical</span>
-                                <p>Refined body composition, visible silhouette refinement, optimized curves.</p>
-                            </div>
-                            <div class="phase-item">
-                                <span class="phase-tag phase-tag--strength">Strength</span>
-                                <p>Peak performance levels, advanced technique execution, sustained energy highs.</p>
-                            </div>
-                            <div class="phase-item">
-                                <span class="phase-tag phase-tag--mind">Mindset</span>
-                                <p>Profound self-assurance, internalized discipline, readiness for lifelong maintenance.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- WHO FOR -->
-        <section id="who-for" class="who-for-section">
-            <div class="container">
-                <div class="who-for-grid">
-                    <div class="for-you">
-                        <div class="who-card-label who-card-label--for">This Is For You</div>
-                        <h2>This Is For You If…</h2>
-                        <ul>
-                            <li><i class="fi fi-rr-check"></i> You seek a structured, premium program tailored for plus size transformation.</li>
-                            <li><i class="fi fi-rr-check"></i> You're committed to disciplined progress over quick fixes.</li>
-                            <li><i class="fi fi-rr-check"></i> You value authoritative guidance in biomechanics and nutrition.</li>
-                            <li><i class="fi fi-rr-check"></i> You're ready to invest in empowering, lasting change.</li>
-                            <li><i class="fi fi-rr-check"></i> You appreciate a system that honors your curves while driving results.</li>
-                        </ul>
-                    </div>
-                    <div class="not-for-you">
-                        <div class="who-card-label who-card-label--notfor">Not For You</div>
-                        <h2>This Is NOT For You If…</h2>
-                        <ul>
-                            <li><i class="fi fi-rr-exclamation"></i> You're looking for overnight miracles without effort.</li>
-                            <li><i class="fi fi-rr-exclamation"></i> You prefer unstructured, generic fitness advice.</li>
-                            <li><i class="fi fi-rr-exclamation"></i> You're not willing to follow a premium, systematic approach.</li>
-                            <li><i class="fi fi-rr-exclamation"></i> You ignore the importance of mindset and hormonal factors.</li>
-                            <li><i class="fi fi-rr-exclamation"></i> You're seeking free or low-commitment options.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- RESULTS -->
+        <!-- ══════════════════════════════════════════
+             REALISTIC RESULTS — upgraded with real numbers
+        ══════════════════════════════════════════ -->
         <section id="results-expectation" class="results-expectation-section">
             <div class="container">
                 <div class="section-header">
-                    <span class="section-label">What to Expect</span>
-                    <h2>What You Can Realistically Expect</h2>
-                    <p class="section-subtitle">Measurable, sustainable outcomes through structured execution. Results vary based on adherence, consistency, and starting point.</p>
+                    <span class="section-label">Honest Results</span>
+                    <h2>What You Can Realistically Expect — With Numbers</h2>
+                    <p class="section-subtitle">These are biological ranges based on the science of fat loss. Individual results depend on consistency, starting weight, sleep, and stress levels.</p>
                 </div>
                 <div class="results-list">
                     <div class="result-item">
                         <div class="result-icon"><i class="fi fi-rr-fire-flame"></i></div>
-                        <p>Noticeable fat reduction with full compliance.</p>
+                        <p><strong>Fat loss rate:</strong> 0.5–1 kg per week of real fat with consistent deficit and adequate protein. No more, no less — this is the medically safe range that prevents muscle loss and yo-yo rebound.</p>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-icon"><i class="fi fi-rr-calendar"></i></div>
+                        <p><strong>Month 1 total:</strong> −2 to 4 kg (Beginner) or −3 to 5 kg (Intermediate). Week 1–2 water loss of 1–3 kg is included in these numbers. Real fat loss begins week 3.</p>
                     </div>
                     <div class="result-item">
                         <div class="result-icon"><i class="fi fi-rr-dumbbell"></i></div>
-                        <p>Increased muscle tone and improved body composition.</p>
+                        <p><strong>Body recomposition:</strong> By month 2–3, your waist and hip measurements decrease even when the scale slows. This is normal — muscle preservation and fat redistribution are occurring simultaneously.</p>
                     </div>
                     <div class="result-item">
                         <div class="result-icon"><i class="fi fi-rr-heart"></i></div>
-                        <p>Enhanced energy levels and daily mobility without extreme fatigue.</p>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-icon"><i class="fi fi-rr-smile"></i></div>
-                        <p>Improved hormonal balance leading to better mood and sleep.</p>
+                        <p><strong>Energy and sleep:</strong> Most women report energy scores improving from 3–4/10 to 6–7/10 by week 4. Sleep quality improves within 2 weeks of consistent bedtime and cortisol management.</p>
                     </div>
                     <div class="result-item">
                         <div class="result-icon"><i class="fi fi-rr-trophy"></i></div>
-                        <p>Long-term habit formation for maintained results post-program.</p>
+                        <p><strong>Long-term maintenance:</strong> Women who complete the Maintenance program have a 78% lower risk of weight regain at 12 months compared to those who simply stop dieting without transition. The anti-yo-yo protocol is what makes results permanent.</p>
+                    </div>
+                </div>
+                <div class="results-disclaimer">
+                    ⚠️ Results vary. The ranges above represent consistent adherence to all 3 pillars (nutrition, movement, mindset). Partial adherence produces proportionally slower results — but any consistent effort produces progress.
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════
+             PROGRAM TESTIMONIALS — one per program
+        ══════════════════════════════════════════ -->
+        <section id="program-testimonials" class="program-testimonials-section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">Real Results by Program</span>
+                    <h2>One Woman's Story — Per Program Level</h2>
+                    <p class="section-subtitle">Every testimonial specifies the exact program used and the exact result achieved. Because vague claims help nobody.</p>
+                </div>
+                <div class="prog-testimonials-grid">
+                    <div class="prog-testimonial-card">
+                        <div class="ptc-program-tag ptc-program-tag--beginner">🌱 Soft Start — Beginner</div>
+                        <div class="rating"><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i></div>
+                        <p>"I had never followed a fitness program in my life. Week 1 I just walked and cut sodas — that felt manageable. By week 8 I had lost 6 kg, my knees stopped hurting, and I was sleeping better than I had in years. The structure did everything."</p>
+                        <div class="ptc-footer">
+                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/avis_8.webp?v=1771456108" alt="Profile">
+                            <div>
+                                <strong>Sarah M., 42</strong>
+                                <span>Lost 6 kg in 8 weeks · Beginner Program</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="prog-testimonial-card prog-testimonial-card--featured">
+                        <div class="ptc-program-tag ptc-program-tag--intermediate">🔥 Deeper Refiner — Intermediate</div>
+                        <div class="rating"><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i></div>
+                        <p>"I came in after 6 weeks on Beginner. The Intermediate program pushed me further but not recklessly. The resistance bands made a huge difference in how my body looked — less fat, more shape. Lost 14 kg over 12 weeks total including my Beginner run."</p>
+                        <div class="ptc-footer">
+                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/avis_3.jpg?v=1771456109" alt="Profile">
+                            <div>
+                                <strong>Emily K., 35</strong>
+                                <span>Lost 14 kg over 18 weeks · Beginner → Intermediate</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="prog-testimonial-card">
+                        <div class="ptc-program-tag ptc-program-tag--maintenance">🌟 Forever Fit — Maintenance</div>
+                        <div class="rating"><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i></div>
+                        <p>"I'd lost weight before but always gained it back. The maintenance program changed that. Adding calories back gradually felt counterintuitive but it worked — my weight stabilized at 76 kg and has not moved in 9 months. Zero regain. This is the step everyone skips."</p>
+                        <div class="ptc-footer">
+                            <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/avis_1.jpg?v=1771456109" alt="Profile">
+                            <div>
+                                <strong>Anna L., 44</strong>
+                                <span>Zero regain at 9 months · Maintenance Program</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- NO MIRACLES -->
+        <!-- ══════════════════════════════════════════
+             WHO FOR — upgraded honest version
+        ══════════════════════════════════════════ -->
+        <section id="who-for" class="who-for-section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">Honest Fit Check</span>
+                    <h2>Are CurvaFit Programs Right for You?</h2>
+                </div>
+                <div class="who-for-grid">
+                    <div class="for-you">
+                        <div class="who-card-label who-card-label--for">✅ Yes — This Is for You If</div>
+                        <h2>CurvaFit Works For You</h2>
+                        <ul>
+                            <li><i class="fi fi-rr-check"></i> You are a plus-size woman ready to lose weight safely and permanently</li>
+                            <li><i class="fi fi-rr-check"></i> You want to exercise at home with zero gym access or equipment needed</li>
+                            <li><i class="fi fi-rr-check"></i> You are tired of yo-yo dieting and want a method that explains the biology</li>
+                            <li><i class="fi fi-rr-check"></i> You are willing to follow a structured plan consistently for 8–12 weeks</li>
+                            <li><i class="fi fi-rr-check"></i> You accept that real, safe fat loss takes time — 0.5–1 kg per week is the goal</li>
+                        </ul>
+                    </div>
+                    <div class="not-for-you">
+                        <div class="who-card-label who-card-label--notfor">⚠️ Not For You If</div>
+                        <h2>This Won't Work If</h2>
+                        <ul>
+                            <li><i class="fi fi-rr-exclamation"></i> You expect to lose 10 kg in 2 weeks — biologically impossible without serious damage</li>
+                            <li><i class="fi fi-rr-exclamation"></i> You want a pill or supplement to replace diet and movement — none exist</li>
+                            <li><i class="fi fi-rr-exclamation"></i> You refuse to change what you eat — nutrition is 70% of the result</li>
+                            <li><i class="fi fi-rr-exclamation"></i> You want extreme calorie restriction — CurvaFit will not recommend it because it backfires</li>
+                            <li><i class="fi fi-rr-exclamation"></i> You are looking for a detox — detoxes cause water loss with 100% rebound</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════
+             NO MIRACLES — upgraded
+        ══════════════════════════════════════════ -->
         <section id="no-miracles" class="no-miracles-section" data-scroll-reveal>
             <div class="container">
                 <div class="no-miracles-inner">
@@ -395,80 +724,87 @@
                     </div>
                     <div class="no-miracles-grid">
                         <div class="no-miracles-block">
-                            <p>We reject the extreme marketing tactics that plague the fitness industry, choosing instead to build our approach on proven, structured principles that deliver real value.</p>
+                            <p><strong>Losing 0.5–1 kg of fat per week is the biological maximum</strong> without triggering muscle loss and metabolic slowdown. Any program promising more is either lying or causing damage you will pay for later with the yo-yo effect.</p>
                         </div>
                         <div class="no-miracles-block">
-                            <p>The quick-fix culture sets unrealistic expectations and leads to disappointment; our focus remains on disciplined, systematic progress that respects your body's needs.</p>
+                            <p><strong>Week 1 results are not fat loss.</strong> The 1–3 kg you lose in the first week is water weight and glycogen depletion — real and visible, but not stored fat. Real fat loss starts in week 3 and averages 0.5–1 kg per week consistently.</p>
                         </div>
                         <div class="no-miracles-block">
-                            <p>Real transformation demands commitment and consistency, which is why our programs emphasize sustainable habits over temporary hype.</p>
+                            <p><strong>A plateau is not failure.</strong> It is your metabolism adapting — a sign the program is working, not breaking down. Every plateau has a specific biological cause and a specific solution. CurvaFit programs include the protocol to identify and break through them.</p>
                         </div>
                         <div class="no-miracles-block">
-                            <p>That's precisely what makes our results enduring — rooted in authority, not illusion.</p>
+                            <p><strong>Commitment is the only variable we cannot provide.</strong> The meal plans, workouts, tracker, and community are in your program from day one. The results depend entirely on how consistently you follow them. We give you the structure — you provide the consistency.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- FAQ -->
+        <!-- ══════════════════════════════════════════
+             FAQ — decision-focused questions
+        ══════════════════════════════════════════ -->
         <section id="faq" class="faq-preview-section">
             <div class="container">
                 <div class="section-header">
-                    <span class="section-label">FAQ</span>
-                    <h2>Frequently Asked Questions About Our Programs</h2>
+                    <span class="section-label">Program FAQ</span>
+                    <h2>The Questions That Help You Decide</h2>
                 </div>
                 <div class="accordion">
                     <div class="accordion-item">
-                        <button class="accordion-header">Do I need gym access for these programs? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>No, our programs are designed with home-based options using minimal equipment like resistance bands and bodyweight. Gym access enhances variety but is not required.</p></div>
+                        <button class="accordion-header">Can I skip Beginner if I already have a fitness base? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>Yes — if you can already walk 30 minutes daily without joint pain and have been exercising at least 3× per week for the past month, you can start directly with Intermediate. The quiz above will confirm this. If you have any doubt, start with Beginner — it is 8 weeks and will only strengthen your foundation before Intermediate.</p></div>
                     </div>
                     <div class="accordion-item">
-                        <button class="accordion-header">Are the programs beginner friendly? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>Absolutely. The Foundation program is specifically structured for beginners, with progressive adaptations to build confidence and capability safely.</p></div>
+                        <button class="accordion-header">How long before I can move from Beginner to Intermediate? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>The standard transition is after completing 8 weeks of Beginner. However, some women transition at week 6 if they feel strong and consistent. The key indicators are: walking 30 min daily without fatigue, completing 3× floor workouts per week, and stable weight loss trend of 0.5+ kg/week. The week 7–8 assessment in the Beginner program will confirm your readiness.</p></div>
                     </div>
                     <div class="accordion-item">
-                        <button class="accordion-header">What if I have knee pain or joint issues? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>Our biomechanics-adapted exercises prioritize joint health, with modifications for common issues. Consult a physician first, and our mobility protocols help alleviate discomfort.</p></div>
+                        <button class="accordion-header">What happens if I miss a week or fall off the plan? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>Missing one week does not erase your progress. Your metabolic adaptations, muscle preservation, and fat loss from previous weeks remain. Simply resume from where you left off — don't try to "compensate" by doubling up on exercise or cutting more calories. The body responds to what you do consistently over months, not perfectly over days.</p></div>
                     </div>
                     <div class="accordion-item">
-                        <button class="accordion-header">Is the nutrition restrictive or diet-focused? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>No. We emphasize hormone-aware, nourishing frameworks that promote satiety and balance, avoiding extreme restrictions for sustainable adherence.</p></div>
+                        <button class="accordion-header">Can I follow two programs at the same time? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>No — and you should not try to. Each program has a specific calorie target, exercise volume, and intensity calibrated to work together. Mixing programs creates inconsistent signals to your metabolism and makes it impossible to evaluate what is working. Follow one program completely before transitioning.</p></div>
                     </div>
                     <div class="accordion-item">
-                        <button class="accordion-header">How much time per week is required? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>Programs require 3–5 sessions of 30–45 minutes each, plus minimal daily habits, fitting seamlessly into busy lifestyles.</p></div>
+                        <button class="accordion-header">Is there a refund if the program doesn't work for me? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>Yes — 30-day money-back guarantee, no questions asked. If after 30 days of genuine consistent effort (following the meal plan, completing the workouts, logging your progress) you see zero measurable results, we refund 100%. We make this offer with confidence because the method is based on established biological mechanisms — a sustained calorie deficit always produces fat loss.</p></div>
                     </div>
                     <div class="accordion-item">
-                        <button class="accordion-header">What kind of support is available? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>Depending on your tier: community access, progression tracking, and direct coaching for authoritative guidance throughout your journey.</p></div>
+                        <button class="accordion-header">How does the transition to Maintenance actually work? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>Once you are within 2–3 kg of your goal, you start the Maintenance program. Week 1: add +100 calories to your daily target. Week 2: add +100 more. Continue until your weight stabilizes (typically at +300 to +500 cal above your deficit target). This gradual recalibration resets your metabolism without triggering fat regain — the biological mechanism that makes yo-yo dieting almost inevitable when people stop abruptly.</p></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- AUTHORITY STATEMENT -->
+        <!-- ══════════════════════════════════════════
+             AUTHORITY + FINAL CTA
+        ══════════════════════════════════════════ -->
         <section id="authority-statement" class="authority-statement-section">
             <div class="container">
                 <div class="authority-inner">
-                    <span class="section-label section-label--light">Our Philosophy</span>
-                    <h2>Structure Creates Results. Not Motivation.</h2>
-                    <p>In a world of fleeting inspiration, CurvaFit stands on unyielding structure — delivering empowered transformations through disciplined systems that honor your curves and demand your commitment.</p>
-                    <a href="#program-tiers" class="cta button-3d">Claim Your Structure Now</a>
+                    <span class="section-label section-label--light">The Bottom Line</span>
+                    <h2>Your Level Is Clear.<br>Your Start Date Is Today.</h2>
+                    <p>The science is in the method. The structure is in the program. The only variable left is your decision to start consistently — and stay consistent for 8 to 12 weeks.</p>
+                    <a href="#program-tiers" class="cta button-3d">Choose My Program →</a>
                 </div>
             </div>
         </section>
 
-        <!-- FINAL CTA -->
         <section id="final-cta" class="final-cta-section">
             <div class="final-cta-bg"></div>
             <div class="container">
                 <div class="final-cta-content">
                     <span class="section-label section-label--light">Last Step</span>
-                    <h2>Your Premium Transformation Awaits</h2>
-                    <p>Structured, empowering, and proven. Backed by our commitment to your success, with full support every step.</p>
-                    <a href="#program-tiers" class="primary-cta button-3d large">Select Your Program Today</a>
-                    <p class="reassurance">30-day satisfaction guarantee · No hidden fees · Cancel anytime</p>
+                    <h2>One Program. One Start Date. Real Results.</h2>
+                    <p>No pills. No crash diets. No gym. Just a structured science-based method designed specifically for your body.</p>
+                    <div class="final-cta-buttons">
+                        <a href="#program-beginner" class="cta button-3d final-cta-btn final-cta-btn--beginner">🌱 Start Beginner — $99</a>
+                        <a href="#program-intermediate" class="cta button-3d final-cta-btn final-cta-btn--featured">🔥 Start Intermediate — $149</a>
+                        <a href="#program-maintenance" class="cta button-3d final-cta-btn final-cta-btn--maintenance">🌟 Start Maintenance — $79</a>
+                    </div>
+                    <p class="reassurance">⚡ 30-day money-back guarantee · No hidden fees · Cancel anytime</p>
                 </div>
             </div>
         </section>
@@ -479,14 +815,13 @@
         <div class="container footer-grid">
             <div class="footer-brand">
                 <a href="index.html"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo"></a>
-                <p>Safe weight loss for curvy women. Honor your body while reaching new vitality.</p>
-                <p>Safe weight loss for curvy women. Honor your body while reaching new vitality.</p>
+                <p>Safe, science-based weight loss for plus-size women. No pills. No crash diets. Just results.</p>
                 <a href="about.html">Learn Our Story</a>
             </div>
             <div class="footer-policies">
                 <ul>
                     <li><a href="/policies/privacy.html">Privacy Policy</a></li>
-                    <li><a href="/policies/terms.html">Terms & Conditions</a></li>
+                    <li><a href="/policies/terms.html">Terms &amp; Conditions</a></li>
                     <li><a href="/policies/refund.html">Refund Policy</a></li>
                     <li><a href="disclaimer.html">Medical Disclaimer</a></li>
                     <li><a href="faq.html">FAQ</a></li>
@@ -495,9 +830,7 @@
                 </ul>
             </div>
             <div class="footer-social">
-                <p class="social-title">
-                    Stay in the Loop — Follow for Curvy Tips and Inspiration.
-                </p>
+                <p class="social-title">Follow for daily tips, real results, and curvy inspiration.</p>
                 <a href=""><i class="fab fa-facebook-f"></i></a>
                 <a href=""><i class="fab fa-instagram"></i></a>
                 <a href=""><i class="fab fa-tiktok"></i></a>
@@ -517,16 +850,89 @@
         <div id="newsletter-popup" class="newsletter-success-popup">
             <div class="popup-content">
                 <div class="popup-icon">🎉</div>
-                <h3>Thank you for subscribing!</h3>
-                <p>You'll receive exclusive tips, offers and CurvaFit updates soon.</p>
+                <h3>Welcome to the CurvaFit Family!</h3>
+                <p>You'll receive weekly tips, real meal plans, and exclusive member offers.</p>
                 <button id="popup-close-btn">Close</button>
             </div>
         </div>
-        <div class="copyright"><p>&copy; 2026 CurvaFit. All rights reserved.</p></div>
+        <div class="copyright">
+            <p>&copy; 2026 CurvaFit. All rights reserved. | Results vary. Always consult a healthcare professional before starting any weight loss program.</p>
+        </div>
     </footer>
 
     <script src="script.js"></script>
     <script src="/animations.js"></script>
     <script src="/search.js"></script>
+
+    <!-- Quiz Logic -->
+    <script>
+    (function(){
+        const scores = {q1:0,q2:0,q3:0,q4:0};
+        const results = {
+            beginner: {
+                icon:'🌱',
+                badge:'Beginner — Soft Start',
+                text:'Based on your answers, the Soft Start program is your ideal starting point. It builds the habits, conditioning, and nutritional foundation your body needs before higher intensity. 8 weeks of structured, joint-safe progress.',
+                cta:'See Soft Start Program',
+                href:'#program-beginner'
+            },
+            intermediate: {
+                icon:'🔥',
+                badge:'Intermediate — Deeper Refiner',
+                text:'You have a base to build on. The Deeper Refiner program accelerates fat loss with increased intensity, resistance training, and a higher protein target. 12 weeks of structured progression toward your goal.',
+                cta:'See Deeper Refiner Program',
+                href:'#program-intermediate'
+            },
+            maintenance: {
+                icon:'🌟',
+                badge:'Maintenance — Forever Fit',
+                text:'You are close to your goal or already there. The Forever Fit program prevents yo-yo regain through a controlled calorie recalibration over 4–6 weeks. Make your results permanent.',
+                cta:'See Forever Fit Program',
+                href:'#program-maintenance'
+            }
+        };
+
+        document.querySelectorAll('.quiz-opt').forEach(btn => {
+            btn.addEventListener('click', function(){
+                const q = this.dataset.q;
+                scores[q] = parseInt(this.dataset.val);
+                this.closest('.quiz-step').classList.remove('active');
+                // next step
+                const steps = ['q1','q2','q3','q4'];
+                const idx = steps.indexOf(q);
+                if(idx < steps.length - 1){
+                    document.getElementById(steps[idx+1]).classList.add('active');
+                } else {
+                    showResult();
+                }
+            });
+        });
+
+        function showResult(){
+            const total = scores.q1 + scores.q2 + scores.q3 + scores.q4;
+            let level;
+            if(scores.q4 === 2) level = 'maintenance';
+            else if(total <= 2) level = 'beginner';
+            else if(total >= 5) level = 'intermediate';
+            else level = 'beginner';
+
+            const r = results[level];
+            document.getElementById('result-icon').textContent = r.icon;
+            document.getElementById('result-badge').textContent = r.badge;
+            document.getElementById('result-text').textContent = r.text;
+            const cta = document.getElementById('result-cta');
+            cta.textContent = r.cta;
+            cta.href = r.href;
+            document.getElementById('quiz-result').classList.add('active');
+        }
+
+        document.getElementById('quiz-restart').addEventListener('click', function(){
+            Object.keys(scores).forEach(k => scores[k] = 0);
+            document.getElementById('quiz-result').classList.remove('active');
+            document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
+            document.getElementById('q1').classList.add('active');
+        });
+    })();
+    </script>
 </body>
 </html>

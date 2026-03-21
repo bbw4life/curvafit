@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CurvaFit's nutrition guidance for curvy women focuses on hormone-aware eating, metabolic support, and sustainable habits to achieve healthy weight loss without restriction.">
-    <meta property="og:title" content="CurvaFit - Nutrition for Curvy Women">
-    <meta property="og:description" content="Explore structured nutrition plans designed for plus-size physiology, emphasizing blood sugar stability, protein priority, and anti-inflammatory support.">
-    <meta property="og:url" content="https://www.curvafit.com/nutrition.html">
-    <meta property="og:type" content="website">
+    <meta name="description" content="CurvaFit Nutrition — Learn how to eat well, lose fat safely, and stop yo-yo dieting. Practical, honest nutrition guide designed for plus-size women.">
     <title>CurvaFit - Nutrition for Curvy Women</title>
     <link rel="icon" href="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/favicon.jpg?v=1771465266" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
@@ -15,17 +11,19 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="/animations.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.5.1/uicons-solid-rounded/css/uicons-solid-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-straight/css/uicons-regular-straight.css">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <header class="sticky-header">
+        <div class="header-particles" id="header-particles"></div>
         <div class="header-container">
             <div class="search-icon"><i class="fi fi-rr-search"></i></div>
             <div class="search-bar">
                 <input type="text" placeholder="Search programs, nutrition, shop..." list="search-suggestions">
                 <datalist id="search-suggestions">
-                    <option value="Programs"><option value="Nutrition"><option value="Shop"><option value="Community"><option value="Blog"><option value="Success Stories">
+                    <option value="Programs"><option value="Nutrition"><option value="Shop"><option value="Community"><option value="Blog">
                 </datalist>
                 <i class="fi fi-rr-search submit-search"></i>
             </div>
@@ -50,128 +48,97 @@
 
     <main>
 
-        <!-- MARQUEE TOP -->
+        <!-- MARQUEE -->
         <section class="marque-textuel-groupe-section">
             <div class="marquee-container">
                 <div class="marquee-content">
-                    <span>Curvy women thriving with hormone-balanced nutrition!</span>
-                    <span>Stable blood sugar for sustainable energy!</span>
-                    <span>Protein-first meals to preserve muscle!</span>
-                    <span>No more yo-yo dieting — real metabolic support!</span>
-                    <span>Anti-inflammatory foods for better recovery!</span>
-                    <span>Structured eating without restriction!</span>
-                    <span>Empowering plus-size women daily!</span>
-                    <span>Carb timing for optimal fat loss!</span>
-                    <span>Consistency over crash diets!</span>
-                    <span>Real science, real results!</span>
-                    <span>Curves supported by smart nutrition!</span>
-                    <span>Progress without pressure!</span>
+                    <span>Nutrition is 70% of your weight loss result</span>
+                    <span>You don't need to starve — you need structure</span>
+                    <span>Protein keeps you full AND preserves your muscle</span>
+                    <span>Liquid sugar is your biggest hidden enemy</span>
+                    <span>Eating 3 real meals beats snacking all day</span>
+                    <span>Water reduces fake hunger — drink 2L daily</span>
+                    <span>Carbs are not the enemy — the amount is</span>
+                    <span>Safe fat loss = 300 to 500 calorie deficit per day</span>
+                    <span>Stress eating is biology — not weakness</span>
+                    <span>Real food beats diet pills every single time</span>
+                    <span>Nutrition is 70% of your weight loss result</span>
+                    <span>You don't need to starve — you need structure</span>
                 </div>
             </div>
         </section>
 
-        <!-- HERO -->
-        <section id="hero" class="home-hero-banner paul-banner success-hero" style="background-image: url('https://cdn.shopify.com/s/files/1/0643/8263/2041/files/nutrition.jpg?v=1772576064');">
-            <div class="gradient-overlay"></div>
-            <div class="hero-content" data-scroll-reveal>
-                <div class="hero-badge">✦ Science-Backed · Hormone-Aware · Sustainable</div>
-                <h1>Nourish Your Curves,<br>Fuel Your Transformation</h1>
-                <h2>Smart Nutrition for Plus-Size Women</h2>
-                <p>Forget restriction. Discover a structured, satisfying approach to eating that works with your hormones, metabolism, and lifestyle.</p>
-                <div class="hero-cta-group">
-                    <a href="programs.html" class="primary-cta button-3d">Start Your Journey</a>
-                    <a href="method.html" class="secondary-cta button-3d">Explore the Method</a>
+        <!-- PAGE INTRO -->
+        <section class="nutrition-intro-section">
+            <div class="container">
+                <span class="section-label">The Real Guide</span>
+                <h1>Nutrition Is 70% of<br>Your Weight Loss</h1>
+                <p>This page is not a diet. It is a complete education on how food actually works in a plus-size body — so you can make decisions that produce lasting fat loss without destroying your health, your metabolism, or your relationship with food.</p>
+                <div class="nutrition-anchor-bar">
+                    <a href="#calorie-deficit" class="nutr-anchor"><i class="fi fi-rr-fire"></i> Calorie Deficit</a>
+                    <a href="#protein" class="nutr-anchor"><i class="fi fi-rr-meat"></i> Protein Power</a>
+                    <a href="#macros" class="nutr-anchor"><i class="fi fi-rr-chart-pie"></i> Macronutrients</a>
+                    <a href="#hidden-calories" class="nutr-anchor"><i class="fi fi-rr-glass"></i> Hidden Calories</a>
+                    <a href="#meal-plan" class="nutr-anchor"><i class="fi fi-rr-calendar"></i> 7-Day Plan</a>
+                    <a href="#hydration" class="nutr-anchor"><i class="fi fi-rr-water"></i> Hydration</a>
+                    <a href="#emotional-eating" class="nutr-anchor"><i class="fi fi-rr-heart"></i> Emotional Eating</a>
+                    <a href="#errors" class="nutr-anchor"><i class="fi fi-rr-exclamation"></i> 5 Mistakes</a>
                 </div>
             </div>
-            <div class="scroll-indicator"><i class="fi fi-rr-arrow-down"></i></div>
         </section>
 
-        <!-- WHY DIETS FAIL -->
-        <section id="diets-fail" class="diets-fail-section" data-scroll-reveal>
+        <!-- KEY TRUTH BANNER -->
+        <div class="nutrition-key-truth">
+            <div class="container">
+                <p>The science is simple: <strong>eat less than you burn = fat loss.</strong> But HOW you do it determines if you keep the results forever.</p>
+            </div>
+        </div>
+
+        <!-- ═══ CALORIE DEFICIT ═══ -->
+        <section id="calorie-deficit" class="calorie-deficit-section" data-scroll-reveal>
             <div class="container">
                 <div class="section-header">
-                    <span class="section-label">The Root Problem</span>
-                    <h2>Why Most Diets Fail Plus-Size Women</h2>
-                    <p class="section-subtitle">Generic diets were never designed for your unique physiology. Here's why they keep letting you down.</p>
+                    <span class="section-label">The Foundation</span>
+                    <h2>The Calorie Deficit — Explained Without Lies</h2>
+                    <p class="section-subtitle">This is the only mechanism that produces fat loss. Everything else is a detail inside this mechanism.</p>
                 </div>
-                <ul class="diets-fail-list">
-                    <li data-scroll-reveal>
-                        <div class="df-icon"><i class="fi fi-rr-exclamation"></i></div>
-                        <div class="df-text">Calorie obsession overlooks hormonal fluctuations, leading to metabolic adaptation where the body conserves energy.</div>
-                    </li>
-                    <li data-scroll-reveal>
-                        <div class="df-icon"><i class="fi fi-rr-exclamation"></i></div>
-                        <div class="df-text">Ignoring estrogen dominance in curvy bodies can exacerbate insulin resistance and fat storage.</div>
-                    </li>
-                    <li data-scroll-reveal>
-                        <div class="df-icon"><i class="fi fi-rr-exclamation"></i></div>
-                        <div class="df-text">Extreme restriction triggers cortisol spikes, promoting abdominal fat retention.</div>
-                    </li>
-                    <li data-scroll-reveal>
-                        <div class="df-icon"><i class="fi fi-rr-exclamation"></i></div>
-                        <div class="df-text">Yo-yo dieting damages thyroid function, slowing basal metabolic rate over time.</div>
-                    </li>
-                    <li data-scroll-reveal>
-                        <div class="df-icon"><i class="fi fi-rr-exclamation"></i></div>
-                        <div class="df-text">Under-eating impairs muscle preservation, reducing overall calorie burn capacity.</div>
-                    </li>
-                    <li data-scroll-reveal>
-                        <div class="df-icon"><i class="fi fi-rr-exclamation"></i></div>
-                        <div class="df-text">Generic plans fail to address curvy-specific fat distribution patterns influenced by genetics and hormones.</div>
-                    </li>
-                    <li data-scroll-reveal>
-                        <div class="df-icon"><i class="fi fi-rr-exclamation"></i></div>
-                        <div class="df-text">Neglecting hydration can exacerbate metabolic slowdown and increase false hunger signals.</div>
-                    </li>
-                    <li data-scroll-reveal>
-                        <div class="df-icon"><i class="fi fi-rr-exclamation"></i></div>
-                        <div class="df-text">Overlooking sleep quality affects hormone regulation, leading to poorer food choices and slower progress.</div>
-                    </li>
-                </ul>
-            </div>
-        </section>
-
-        <!-- CURVY METABOLISM -->
-        <section id="curvy-metabolism" class="curvy-metabolism-section" data-scroll-reveal>
-            <div class="container">
-                <div class="metabolism-layout">
-                    <div class="metabolism-content">
-                        <div class="section-header" style="text-align:left; margin-bottom:24px;">
-                            <span class="section-label">Biology First</span>
-                            <h2>The Curvy Metabolism Reality</h2>
-                        </div>
-                        <p>Plus-size women often experience distinct metabolic patterns due to body composition and hormonal profiles. Insulin sensitivity can be lower, leading to easier fat storage from carbohydrates. Higher estrogen levels influence fat distribution, particularly in hips and thighs. Stress-induced cortisol elevates blood sugar, promoting fat retention.</p>
-                        <p>Thyroid function plays a key role in regulating metabolism, and imbalances can slow energy expenditure. These factors create a physiology that requires targeted nutrition rather than blanket calorie cuts.</p>
-                        <p>Additionally, leptin resistance can occur in plus-size individuals, making it harder to feel full — which our nutrition plans address through satiating meal structures and balanced macronutrients.</p>
+                <div class="deficit-layout">
+                    <div class="deficit-content">
+                        <p>Your body burns a certain number of calories every day just to keep you alive — breathing, heart beating, digesting food, staying warm. This is called your <strong>Total Daily Energy Expenditure (TDEE)</strong>.</p>
+                        <p>When you eat <strong>fewer calories than your TDEE</strong>, your body has to find energy from somewhere else. It turns to stored fat. That is fat loss. It is not magic — it is biology.</p>
+                        <p>For a plus-size woman, the safe and effective deficit is <strong>300 to 500 calories per day below your TDEE</strong>. This produces 0.5 to 1 kg of real fat loss per week — without triggering famine mode, muscle loss, or hormonal damage.</p>
+                        <p>A deficit larger than 500 cal/day tells your body you are starving. It responds by slowing your metabolism, breaking down muscle for fuel, and storing every calorie more aggressively once you eat normally again. That is the yo-yo cycle — and it is entirely preventable.</p>
+                        <p><strong>You do not need to count every calorie.</strong> You need to understand the principle — and then use structured meals designed to stay within the right range automatically.</p>
                     </div>
-                    <div class="metabolism-visual">
-                        <div class="metabolism-stat-stack">
-                            <div class="metabo-stat">
-                                <div class="metabo-stat-icon"><i class="fi fi-rr-shield-check"></i></div>
+                    <div class="deficit-visual">
+                        <div class="deficit-scale">
+                            <div class="deficit-scale-title">What Each Deficit Level Actually Does</div>
+                            <div class="deficit-row">
+                                <div class="deficit-dot deficit-dot--warn"></div>
                                 <div>
-                                    <strong>Estrogen</strong>
-                                    <span>Influences hip &amp; thigh fat distribution</span>
+                                    <div class="deficit-row-label">Too small: −100 to −200 cal</div>
+                                    <div class="deficit-row-val">Very slow progress · easy to maintain long-term</div>
                                 </div>
                             </div>
-                            <div class="metabo-stat">
-                                <div class="metabo-stat-icon"><i class="fi fi-rr-chart-line-up"></i></div>
+                            <div class="deficit-row">
+                                <div class="deficit-dot deficit-dot--sweet"></div>
                                 <div>
-                                    <strong>Insulin Sensitivity</strong>
-                                    <span>Targeted carb timing prevents storage spikes</span>
+                                    <div class="deficit-row-label">✅ Sweet spot: −300 to −500 cal</div>
+                                    <div class="deficit-row-val">0.5–1 kg/week of fat · safe · sustainable · no muscle loss</div>
                                 </div>
                             </div>
-                            <div class="metabo-stat">
-                                <div class="metabo-stat-icon"><i class="fi fi-rr-brain"></i></div>
+                            <div class="deficit-row">
+                                <div class="deficit-dot deficit-dot--danger"></div>
                                 <div>
-                                    <strong>Cortisol</strong>
-                                    <span>Stress management reduces abdominal retention</span>
+                                    <div class="deficit-row-label">⚠️ Dangerous: −800 to −1200 cal</div>
+                                    <div class="deficit-row-val">Muscle loss · famine mode · hormonal damage · yo-yo guaranteed</div>
                                 </div>
                             </div>
-                            <div class="metabo-stat">
-                                <div class="metabo-stat-icon"><i class="fi fi-rr-heart"></i></div>
+                            <div class="deficit-row">
+                                <div class="deficit-dot deficit-dot--grey"></div>
                                 <div>
-                                    <strong>Leptin</strong>
-                                    <span>Satiating meals improve hunger signaling</span>
+                                    <div class="deficit-row-label">Week 1 "weight loss"</div>
+                                    <div class="deficit-row-val">−1 to 3 kg of water weight · not actual fat · always returns</div>
                                 </div>
                             </div>
                         </div>
@@ -180,98 +147,65 @@
             </div>
         </section>
 
-        <!-- SCULPT FRAMEWORK -->
-        <section id="sculpt-framework" class="sculpt-framework-section" data-scroll-reveal>
+        <!-- ═══ PROTEIN ═══ -->
+        <section id="protein" class="protein-section" data-scroll-reveal>
             <div class="container">
-                <div class="section-header">
-                    <span class="section-label">The System</span>
-                    <h2>The Sculpt Confidence Nutrition Framework</h2>
-                    <p class="section-subtitle">Six evidence-based pillars that work together to create a metabolic advantage for curvy bodies.</p>
-                </div>
-                <div class="pillar-grid nutrition-pillar-grid">
-                    <div class="pillar-card">
-                        <div class="npillar-number">01</div>
-                        <div class="npillar-icon"><i class="fi fi-rr-clock"></i></div>
-                        <h3>Hormone-Aware Eating</h3>
-                        <p>Balances meals to support estrogen and insulin regulation, reducing fat storage signals through timed nutrient intake.</p>
-                    </div>
-                    <div class="pillar-card">
-                        <div class="npillar-number">02</div>
-                        <div class="npillar-icon"><i class="fi fi-rr-meat"></i></div>
-                        <h3>Protein Priority Structure</h3>
-                        <p>Prioritizes protein to maintain muscle mass and boost satiety, aiding metabolic rate preservation during weight loss.</p>
-                    </div>
-                    <div class="pillar-card">
-                        <div class="npillar-number">03</div>
-                        <div class="npillar-icon"><i class="fi fi-rr-chart-line-up"></i></div>
-                        <h3>Blood Sugar Stabilization</h3>
-                        <p>Combines fibers and proteins to prevent spikes, supporting steady energy and reducing cravings driven by glucose fluctuations.</p>
-                    </div>
-                    <div class="pillar-card">
-                        <div class="npillar-number">04</div>
-                        <div class="npillar-icon"><i class="fi fi-rr-calendar"></i></div>
-                        <h3>Strategic Carbohydrate Timing</h3>
-                        <p>Places carbs around activity to fuel without excess storage, aligning with curvy insulin responses.</p>
-                    </div>
-                    <div class="pillar-card">
-                        <div class="npillar-number">05</div>
-                        <div class="npillar-icon"><i class="fi fi-rr-shield-check"></i></div>
-                        <h3>Recovery & Anti-Inflammation</h3>
-                        <p>Incorporates omega-3s and antioxidants to combat inflammation, enhancing recovery and hormonal balance.</p>
-                    </div>
-                    <div class="pillar-card">
-                        <div class="npillar-number">06</div>
-                        <div class="npillar-icon"><i class="fi fi-rr-water-bottle"></i></div>
-                        <h3>Hydration Focus</h3>
-                        <p>Emphasizes adequate water intake to support metabolic processes and reduce false hunger signals.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- MACRONUTRIENT PHILOSOPHY -->
-        <section id="macronutrient-philosophy" class="macronutrient-philosophy-section" data-scroll-reveal>
-            <div class="container">
-                <div class="macro-layout">
-                    <div class="macro-text">
-                        <div class="section-header" style="text-align:left; margin-bottom:24px;">
-                            <span class="section-label">The Balance</span>
-                            <h2>Macronutrient Philosophy</h2>
+                <div class="protein-layout">
+                    <div class="protein-intro">
+                        <span class="section-label">The #1 Rule</span>
+                        <h2>Protein at Every Meal — Non-Negotiable</h2>
+                        <p>When you eat in a calorie deficit without enough protein, your body doesn't just burn fat. It burns muscle. Less muscle means a slower metabolism — which means you burn fewer calories at rest, making future weight loss harder and harder.</p>
+                        <p>Protein solves this. It forces your body to preserve muscle while burning fat. It also digests slowly — you stay full for 3 to 4 hours after a meal. Fewer hunger attacks. Fewer unplanned snacks. Fewer calories consumed overall.</p>
+                        <p>There is also a metabolic bonus: digesting protein burns more calories than digesting carbs or fat. Your body works harder to process it — this is called the thermic effect.</p>
+                        <div class="protein-target">
+                            <div class="protein-target-num">0.8–1g</div>
+                            <p>of protein per kilogram of body weight every day. A 90 kg woman needs <strong>72–90g of protein daily</strong>. Spread across 3 meals: 24–30g per meal.</p>
                         </div>
-                        <p>Protein is essential for preserving lean mass in plus-size women, supporting a higher metabolic rate and reducing hunger signals. Carbohydrates provide necessary energy but are timed to avoid insulin overload, preventing fat storage.</p>
-                        <p>Healthy fats are crucial for hormone production, including those regulating metabolism and inflammation. Extreme restriction can signal the body to slow metabolism as a survival mechanism — our approach emphasizes balanced intake to sustain progress.</p>
-                        <p>Micronutrients play a vital role in enzymatic reactions that support metabolism, and our plans include diverse food sources for comprehensive nutrient coverage.</p>
                     </div>
-                    <div class="macro-visual">
-                        <div class="macro-donut-label">Recommended Macro Split</div>
-                        <div class="macro-bars">
-                            <div class="macro-bar-item">
-                                <span class="macro-bar-name">Protein</span>
-                                <div class="macro-bar-track">
-                                    <div class="macro-bar-fill macro-bar-fill--protein" style="width:40%"></div>
-                                </div>
-                                <span class="macro-bar-pct">40%</span>
+                    <div>
+                        <div class="section-header" style="text-align:left; margin-bottom:18px;">
+                            <span class="section-label">Best Protein Sources</span>
+                        </div>
+                        <div class="protein-foods">
+                            <div class="protein-food-card">
+                                <span class="protein-food-emoji">🍗</span>
+                                <h4>Chicken Breast</h4>
+                                <span>31g per 100g</span>
                             </div>
-                            <div class="macro-bar-item">
-                                <span class="macro-bar-name">Vegetables &amp; Fiber</span>
-                                <div class="macro-bar-track">
-                                    <div class="macro-bar-fill macro-bar-fill--fiber" style="width:30%"></div>
-                                </div>
-                                <span class="macro-bar-pct">30%</span>
+                            <div class="protein-food-card">
+                                <span class="protein-food-emoji">🥚</span>
+                                <h4>Whole Eggs</h4>
+                                <span>6g per egg</span>
                             </div>
-                            <div class="macro-bar-item">
-                                <span class="macro-bar-name">Healthy Fats</span>
-                                <div class="macro-bar-track">
-                                    <div class="macro-bar-fill macro-bar-fill--fat" style="width:20%"></div>
-                                </div>
-                                <span class="macro-bar-pct">20%</span>
+                            <div class="protein-food-card">
+                                <span class="protein-food-emoji">🐟</span>
+                                <h4>Tuna / Salmon</h4>
+                                <span>25–28g per 100g</span>
                             </div>
-                            <div class="macro-bar-item">
-                                <span class="macro-bar-name">Timed Carbs</span>
-                                <div class="macro-bar-track">
-                                    <div class="macro-bar-fill macro-bar-fill--carb" style="width:10%"></div>
-                                </div>
-                                <span class="macro-bar-pct">10%</span>
+                            <div class="protein-food-card">
+                                <span class="protein-food-emoji">🫘</span>
+                                <h4>Lentils / Beans</h4>
+                                <span>9g per 100g cooked</span>
+                            </div>
+                            <div class="protein-food-card">
+                                <span class="protein-food-emoji">🥛</span>
+                                <h4>Greek Yogurt</h4>
+                                <span>10g per 100g</span>
+                            </div>
+                            <div class="protein-food-card">
+                                <span class="protein-food-emoji">🧀</span>
+                                <h4>Cottage Cheese</h4>
+                                <span>11g per 100g</span>
+                            </div>
+                            <div class="protein-food-card">
+                                <span class="protein-food-emoji">🌿</span>
+                                <h4>Tofu</h4>
+                                <span>8g per 100g</span>
+                            </div>
+                            <div class="protein-food-card">
+                                <span class="protein-food-emoji">🐠</span>
+                                <h4>Sardines</h4>
+                                <span>25g per 100g</span>
                             </div>
                         </div>
                     </div>
@@ -279,352 +213,671 @@
             </div>
         </section>
 
-        <!-- SAMPLE DAY -->
-        <section id="sample-day" class="sample-day-section" data-scroll-reveal>
+        <!-- ═══ MACRONUTRIENTS ═══ -->
+        <section id="macros" class="macros-explained-section" data-scroll-reveal>
             <div class="container">
                 <div class="section-header">
-                    <span class="section-label section-label--light">Daily Structure</span>
-                    <h2>Sample Structured Day</h2>
-                    <p class="section-subtitle" style="color:rgba(255,255,255,0.70)">A full day of hormone-balanced, satisfying meals designed for your curves.</p>
+                    <span class="section-label">Understand Your Food</span>
+                    <h2>What Every Nutrient Actually Does</h2>
+                    <p class="section-subtitle">No food group is your enemy. Understanding the role of each one lets you use them correctly — without restriction, without guilt.</p>
                 </div>
-                <div class="meal-timeline">
-                    <div class="meal-card">
-                        <div class="meal-time">7:00 AM</div>
-                        <div class="meal-icon"><i class="fi fi-rr-sun"></i></div>
-                        <h3>Breakfast</h3>
-                        <p>Greek yogurt with berries, nuts, and a protein shake — provides stable energy and blood sugar control.</p>
-                        <div class="meal-tag">High Protein · Low GI</div>
-                    </div>
-                    <div class="meal-connector"></div>
-                    <div class="meal-card">
-                        <div class="meal-time">12:30 PM</div>
-                        <div class="meal-icon"><i class="fi fi-rr-salad"></i></div>
-                        <h3>Lunch</h3>
-                        <p>Grilled chicken salad with mixed greens, avocado, and olive oil dressing — balances protein and fats for satiety.</p>
-                        <div class="meal-tag">Protein · Healthy Fats</div>
-                    </div>
-                    <div class="meal-connector"></div>
-                    <div class="meal-card">
-                        <div class="meal-time">3:30 PM</div>
-                        <div class="meal-icon"><i class="fi fi-rr-apple-whole"></i></div>
-                        <h3>Snack</h3>
-                        <p>Apple with almond butter — offers fiber and healthy fats to curb mid-day hunger.</p>
-                        <div class="meal-tag">Fiber · Energy</div>
-                    </div>
-                    <div class="meal-connector"></div>
-                    <div class="meal-card">
-                        <div class="meal-time">7:00 PM</div>
-                        <div class="meal-icon"><i class="fi fi-rr-fish"></i></div>
-                        <h3>Dinner</h3>
-                        <p>Salmon with quinoa and steamed vegetables — supports anti-inflammation and hormone health.</p>
-                        <div class="meal-tag">Anti-Inflammatory · Omega-3</div>
-                    </div>
-                    <div class="meal-connector"></div>
-                    <div class="meal-card">
-                        <div class="meal-time">9:30 PM</div>
-                        <div class="meal-icon"><i class="fi fi-rr-moon"></i></div>
-                        <h3>Evening Snack</h3>
-                        <p>Cottage cheese with cucumber slices — provides protein for overnight recovery and muscle maintenance.</p>
-                        <div class="meal-tag">Recovery · Casein</div>
-                    </div>
+                <div class="macro-table-wrapper">
+                    <table class="macro-table">
+                        <thead>
+                            <tr>
+                                <th>Nutrient</th>
+                                <th>Real Role in Your Body</th>
+                                <th>Best Sources</th>
+                                <th>If You Eat Too Little</th>
+                                <th>Target</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>🍗 Protein</td>
+                                <td>Preserves muscle · kills hunger · boosts metabolism through thermic effect</td>
+                                <td>Chicken, eggs, fish, Greek yogurt, lentils, tofu</td>
+                                <td>Muscle loss, slower metabolism, constant hunger, slower fat loss</td>
+                                <td><span class="macro-pct">35–40%</span></td>
+                            </tr>
+                            <tr>
+                                <td>🌾 Carbohydrates</td>
+                                <td>Primary energy source for brain and muscles — not fattening on their own</td>
+                                <td>Oats, brown rice, sweet potato, legumes, whole fruits</td>
+                                <td>Fatigue, brain fog, poor workout performance, irritability</td>
+                                <td><span class="macro-pct">30–35%</span></td>
+                            </tr>
+                            <tr>
+                                <td>🥑 Healthy Fats</td>
+                                <td>Hormone production, brain function, slow digestion, long satiety</td>
+                                <td>Avocado, olive oil, nuts, fatty fish, chia seeds</td>
+                                <td>Hormonal disruption, dry skin, mood swings, vitamin deficiency</td>
+                                <td><span class="macro-pct">20–25%</span></td>
+                            </tr>
+                            <tr>
+                                <td>🥦 Fiber</td>
+                                <td>Slows sugar absorption, feeds gut bacteria, reduces hunger signals</td>
+                                <td>All vegetables, fruits, oats, chia seeds, beans, lentils</td>
+                                <td>Constipation, blood sugar spikes, increased cravings</td>
+                                <td><span class="macro-pct">25–30g/day</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="transformation-block" style="margin-top:24px;">
+                    <p>⚡ <strong>Key principle:</strong> No nutrient is forbidden. Carbs are not fattening — excess total calories are. Fat does not make you fat — the wrong total intake does. Structure your plate correctly and you lose fat without restriction.</p>
                 </div>
             </div>
         </section>
 
-        <!-- NUTRITION IMAGES -->
-        <section id="nutrition-images" class="nutrition-images-section" data-scroll-reveal>
+        <!-- ═══ HIDDEN CALORIES ═══ -->
+        <section id="hidden-calories" class="hidden-calories-section" data-scroll-reveal>
             <div class="container">
                 <div class="section-header">
-                    <span class="section-label">Visual Inspiration</span>
-                    <h2>Nutrition Inspiration</h2>
-                    <p class="section-subtitle">Visual examples of healthy meals tailored for curvy women to inspire your nutrition journey.</p>
+                    <span class="section-label">The Silent Saboteur</span>
+                    <h2>Hidden Calories That Block Your Progress</h2>
+                    <p class="section-subtitle">You might be eating "healthy" and still not losing weight because of these invisible calorie sources that nobody counts.</p>
                 </div>
-                <div class="image-grid">
-                    <div class="image-grid-item">
-                        <img src="https://www.eatingwell.com/thmb/toa6tI-wLmgsEf4IfQQbwmq8fDg=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/EW-Group-Meal-Plans-Day-06-3x2-d8909c6f293a4464917cdb35e443bb88.jpg" alt="7-day meal plan">
-                        <div class="image-caption">7-Day Meal Plan</div>
-                    </div>
-                    <div class="image-grid-item">
-                        <img src="https://i.ytimg.com/vi/3j4wkRiNStM/sddefault.jpg" alt="Healthy breakfast meal prep">
-                        <div class="image-caption">Healthy Breakfast Prep</div>
-                    </div>
-                    <div class="image-grid-item">
-                        <img src="https://www.eatingwell.com/thmb/xk3OkvTcNawM9lNHyxnue-yi88c=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/5-Vegetables-That-Are-Healthier-Raw-Than-Cooked-According-to-Dietitians-6adc2280f0f449599db07f9c93ca488b.jpg" alt="Vegetables healthier raw">
-                        <div class="image-caption">Raw vs Cooked Vegetables</div>
-                    </div>
-                    <div class="image-grid-item">
-                        <img src="https://thumbs.dreamstime.com/b/cheerful-woman-enjoying-cooking-moment-bright-kitchen-filled-fresh-ingredients-plus-size-preparing-delicious-meal-350820947.jpg" alt="Plus size woman preparing meal">
-                        <div class="image-caption">Cooking with Confidence</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- MARQUEE ICONS -->
-        <section class="marquee-section">
-            <div class="container">
-                <div class="section-header">
-                    <span class="section-label">Community</span>
-                    <h2>Empowering Curvy Nutrition Icons</h2>
-                    <p class="section-subtitle">Icons representing key elements of structured nutrition for plus-size women.</p>
-                </div>
-                <div class="marquee">
-                    <div class="marquee-group left">
-                        <img src="https://cdn-icons-png.flaticon.com/128/1048/1048953.png" alt="Dumbbell icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2936/2936886.png" alt="Healthy food icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2965/2965567.png" alt="Yoga pose icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2331/2331970.png" alt="Water bottle icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/3079/3079165.png" alt="Measuring tape icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2647/2647579.png" alt="Workout icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/1685/1685574.png" alt="Running icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/1046/1046857.png" alt="Healthy heart icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2965/2965667.png" alt="Fitness app icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/3050/3050155.png" alt="Healthy lifestyle icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/1048/1048953.png" alt="Dumbbell icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2936/2936886.png" alt="Healthy food icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2965/2965567.png" alt="Yoga pose icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2331/2331970.png" alt="Water bottle icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/3079/3079165.png" alt="Measuring tape icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2647/2647579.png" alt="Workout icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/1685/1685574.png" alt="Running icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/1046/1046857.png" alt="Healthy heart icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2965/2965667.png" alt="Fitness app icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/3050/3050155.png" alt="Healthy lifestyle icon">
-                    </div>
-                    <div class="marquee-group right">
-                        <img src="https://cdn-icons-png.flaticon.com/128/3774/3774299.png" alt="Workout trainer icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2965/2965879.png" alt="Healthy meal icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/1685/1685571.png" alt="Stretching icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/3774/3774336.png" alt="Gym training icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/3079/3079053.png" alt="Body measurement icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2965/2965634.png" alt="Salad bowl icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/1046/1046769.png" alt="Healthy lifestyle icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2965/2965845.png" alt="Fitness progress icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2965/2965863.png" alt="Workout plan icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2647/2647572.png" alt="Active lifestyle icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/3774/3774299.png" alt="Workout trainer icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2965/2965879.png" alt="Healthy meal icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/1685/1685571.png" alt="Stretching icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/3774/3774336.png" alt="Gym training icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/3079/3079053.png" alt="Body measurement icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2965/2965634.png" alt="Salad bowl icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/1046/1046769.png" alt="Healthy lifestyle icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2965/2965845.png" alt="Fitness progress icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2965/2965863.png" alt="Workout plan icon">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2647/2647572.png" alt="Active lifestyle icon">
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- WHAT WE DON'T DO -->
-        <section id="what-we-dont-do" class="what-we-dont-do-section" data-scroll-reveal>
-            <div class="container">
-                <div class="section-header">
-                    <span class="section-label">Our Commitment</span>
-                    <h2>What We DON'T Do</h2>
-                    <p class="section-subtitle">We reject the harmful patterns that dominate the diet industry.</p>
-                </div>
-                <ul class="dont-do-list">
-                    <li data-scroll-reveal>
-                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
-                        <div class="dont-text">We don't starve you with sub-1500 calorie plans that damage metabolism.</div>
-                    </li>
-                    <li data-scroll-reveal>
-                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
-                        <div class="dont-text">We don't eliminate entire food groups, avoiding nutrient deficiencies.</div>
-                    </li>
-                    <li data-scroll-reveal>
-                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
-                        <div class="dont-text">We don't sell detox myths; the body handles detoxification naturally.</div>
-                    </li>
-                    <li data-scroll-reveal>
-                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
-                        <div class="dont-text">We don't push 1200-calorie diets unsuitable for active plus-size women.</div>
-                    </li>
-                    <li data-scroll-reveal>
-                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
-                        <div class="dont-text">We don't promote unsustainable extremes that lead to rebound weight gain.</div>
-                    </li>
-                    <li data-scroll-reveal>
-                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
-                        <div class="dont-text">We don't recommend unproven supplements without scientific backing.</div>
-                    </li>
-                    <li data-scroll-reveal>
-                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
-                        <div class="dont-text">We don't ignore individual preferences, ensuring plans are enjoyable.</div>
-                    </li>
-                </ul>
-            </div>
-        </section>
-
-        <!-- EMOTIONAL RELATIONSHIP -->
-        <section id="emotional-relationship" class="emotional-relationship-section" data-scroll-reveal>
-            <div class="container">
-                <div class="emotional-layout">
-                    <div class="emotional-content">
-                        <div class="section-header" style="text-align:left; margin-bottom:24px;">
-                            <span class="section-label">Mindful Eating</span>
-                            <h2>Emotional Relationship With Food</h2>
+                <div class="hidden-cal-grid">
+                    <div class="hidden-cal-card">
+                        <div class="hidden-cal-header">
+                            <div class="hidden-cal-icon">🥤</div>
+                            <h3>Fruit Juice</h3>
                         </div>
-                        <p>Many plus-size women experience guilt cycles from societal pressures, leading to emotional eating as a stress response. Restrictive patterns often result in binge episodes due to deprivation signals. Shame around food choices can hinder progress.</p>
-                        <p>Our framework rebuilds trust by emphasizing structured, satisfying meals that reduce emotional triggers and foster a neutral, functional view of nutrition.</p>
-                        <p>Building mindfulness around eating helps break these cycles, and we incorporate strategies like journaling to improve emotional awareness and long-term adherence.</p>
+                        <div class="hidden-cal-amount">~250 cal</div>
+                        <p>A 500ml glass of "natural" orange juice contains as much sugar as a Coca-Cola. The fiber is gone — only sugar remains. Your body treats it as liquid candy and stores it as fat.</p>
+                        <div class="hidden-cal-swap"><i class="fi fi-rr-check"></i> Swap: water with lemon, or eat the actual fruit</div>
                     </div>
-                    <div class="emotional-cards">
-                        <div class="emotional-card">
-                            <div class="ec-icon"><i class="fi fi-rr-broken-heart"></i></div>
-                            <h4>The Cycle We Break</h4>
-                            <p>Guilt → Restriction → Binge → Shame → Repeat</p>
+                    <div class="hidden-cal-card">
+                        <div class="hidden-cal-header">
+                            <div class="hidden-cal-icon">☕</div>
+                            <h3>Sweetened Coffee</h3>
                         </div>
-                        <div class="emotional-card emotional-card--positive">
-                            <div class="ec-icon"><i class="fi fi-rr-heart"></i></div>
-                            <h4>The New Pattern</h4>
-                            <p>Structure → Satisfaction → Progress → Confidence → Thrive</p>
+                        <div class="hidden-cal-amount">~300 cal</div>
+                        <p>A café latte with syrup or flavored iced coffee can contain 300–450 calories — more than a full meal. Most women drink 2 per day without registering them as food.</p>
+                        <div class="hidden-cal-swap"><i class="fi fi-rr-check"></i> Swap: black coffee or coffee with unsweetened plant milk</div>
+                    </div>
+                    <div class="hidden-cal-card">
+                        <div class="hidden-cal-header">
+                            <div class="hidden-cal-icon">🍷</div>
+                            <h3>Alcohol</h3>
+                        </div>
+                        <div class="hidden-cal-amount">~500 cal</div>
+                        <p>2 glasses of wine = 300 cal. A cocktail = 200–350 cal. And alcohol pauses fat burning completely — your body prioritizes it as a toxin before burning anything else.</p>
+                        <div class="hidden-cal-swap"><i class="fi fi-rr-check"></i> Swap: sparkling water with lime at social events</div>
+                    </div>
+                    <div class="hidden-cal-card">
+                        <div class="hidden-cal-header">
+                            <div class="hidden-cal-icon">🫙</div>
+                            <h3>Sauces &amp; Dressings</h3>
+                        </div>
+                        <div class="hidden-cal-amount">~200 cal</div>
+                        <p>2 tablespoons of mayo, Caesar dressing, or ketchup can add 150–250 calories to a meal you thought was light. The salad was fine — the dressing was the problem.</p>
+                        <div class="hidden-cal-swap"><i class="fi fi-rr-check"></i> Swap: lemon juice, vinegar, mustard, or herbs</div>
+                    </div>
+                    <div class="hidden-cal-card">
+                        <div class="hidden-cal-header">
+                            <div class="hidden-cal-icon">🍪</div>
+                            <h3>"Healthy" Snacks</h3>
+                        </div>
+                        <div class="hidden-cal-amount">~350 cal</div>
+                        <p>Granola bars, "protein" bars, trail mix, and dried fruit are often 200–400 cal per portion with minimal real protein. They don't fill you — they just add calories invisibly.</p>
+                        <div class="hidden-cal-swap"><i class="fi fi-rr-check"></i> Swap: boiled egg, plain yogurt, or a piece of fresh fruit</div>
+                    </div>
+                    <div class="hidden-cal-card">
+                        <div class="hidden-cal-header">
+                            <div class="hidden-cal-icon">🥄</div>
+                            <h3>Cooking Oil</h3>
+                        </div>
+                        <div class="hidden-cal-amount">~120 cal/tbsp</div>
+                        <p>Just 1 tablespoon of oil = 120 calories. If you pour oil freely while cooking, you add 300–400 invisible calories to an otherwise balanced meal without noticing.</p>
+                        <div class="hidden-cal-swap"><i class="fi fi-rr-check"></i> Swap: measure oil with a teaspoon, or use a non-stick pan</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ 7-DAY MEAL PLAN ═══ -->
+        <section id="meal-plan" class="meal-plan-section" data-scroll-reveal>
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">Eat This Week</span>
+                    <h2>Real 7-Day Meal Plan for Plus-Size Women</h2>
+                    <p class="section-subtitle">Real food. Accessible ingredients. Prep under 20 minutes per meal. Designed to create your 300–500 calorie deficit automatically — no counting required.</p>
+                </div>
+                <div class="week-tabs">
+                    <button class="week-tab active" data-day="monday">Monday</button>
+                    <button class="week-tab" data-day="tuesday">Tuesday</button>
+                    <button class="week-tab" data-day="wednesday">Wednesday</button>
+                    <button class="week-tab" data-day="thursday">Thursday</button>
+                    <button class="week-tab" data-day="friday">Friday</button>
+                    <button class="week-tab" data-day="saturday">Saturday</button>
+                    <button class="week-tab" data-day="sunday">Sunday</button>
+                </div>
+
+                <!-- MONDAY -->
+                <div class="day-plan-grid active" id="day-monday">
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌅 Breakfast</h3><span class="day-cal-badge">~420 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">7:00</span><span class="day-meal-desc">Oats (40g) cooked in water + 2 boiled eggs + 1 banana + black coffee or unsweetened tea</span><span class="day-meal-cal">~420</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>☀️ Lunch</h3><span class="day-cal-badge">~520 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">12:30</span><span class="day-meal-desc">150g grilled chicken breast + 150g brown rice + steamed broccoli + 1 tsp olive oil + lemon juice</span><span class="day-meal-cal">~520</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌙 Dinner</h3><span class="day-cal-badge">~380 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">19:00</span><span class="day-meal-desc">Vegetable soup (zucchini, carrots, tomato) + 2 boiled eggs or 100g tuna + 1 slice whole grain bread</span><span class="day-meal-cal">~380</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header" style="background:linear-gradient(135deg,#27ae60,#1a8a50);"><h3>💧 Day Total</h3><span class="day-cal-badge">~1,320 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">All day</span><span class="day-meal-desc">2 liters of water minimum. Optional snack if hungry at 15:30: 1 apple or plain yogurt (+100–150 cal)</span><span class="day-meal-cal">0</span></div>
                         </div>
                     </div>
                 </div>
+
+                <!-- TUESDAY -->
+                <div class="day-plan-grid" id="day-tuesday">
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌅 Breakfast</h3><span class="day-cal-badge">~380 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">7:00</span><span class="day-meal-desc">3-egg omelette with spinach and tomato (½ tsp oil) + 1 slice whole grain toast + black coffee</span><span class="day-meal-cal">~380</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>☀️ Lunch</h3><span class="day-cal-badge">~500 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">12:30</span><span class="day-meal-desc">150g salmon fillet (baked) + 150g sweet potato (boiled) + mixed green salad with lemon dressing</span><span class="day-meal-cal">~500</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌙 Dinner</h3><span class="day-cal-badge">~360 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">19:00</span><span class="day-meal-desc">150g cooked lentils + sautéed onion + tomatoes + cumin + 1 cup steamed spinach</span><span class="day-meal-cal">~360</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header" style="background:linear-gradient(135deg,#27ae60,#1a8a50);"><h3>💧 Day Total</h3><span class="day-cal-badge">~1,240 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">All day</span><span class="day-meal-desc">2 liters of water. Optional: 1 handful of unsalted almonds at 15:30 (+160 cal)</span><span class="day-meal-cal">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WEDNESDAY -->
+                <div class="day-plan-grid" id="day-wednesday">
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌅 Breakfast</h3><span class="day-cal-badge">~400 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">7:00</span><span class="day-meal-desc">200g plain Greek yogurt (0–2%) + 1 tbsp oats + 100g fresh berries + black coffee or herbal tea</span><span class="day-meal-cal">~400</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>☀️ Lunch</h3><span class="day-cal-badge">~510 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">12:30</span><span class="day-meal-desc">Chicken wrap: 120g grilled chicken + whole wheat tortilla + lettuce + tomato + mustard (no mayo)</span><span class="day-meal-cal">~510</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌙 Dinner</h3><span class="day-cal-badge">~350 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">19:00</span><span class="day-meal-desc">2 boiled eggs + large green salad (cucumber, lettuce, tomato) + 1 tbsp olive oil + vinegar</span><span class="day-meal-cal">~350</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header" style="background:linear-gradient(135deg,#27ae60,#1a8a50);"><h3>💧 Day Total</h3><span class="day-cal-badge">~1,260 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">All day</span><span class="day-meal-desc">Rest or walk day. Optional yogurt at 15:30 (+80 cal). Log your weight in the morning.</span><span class="day-meal-cal">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- THURSDAY -->
+                <div class="day-plan-grid" id="day-thursday">
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌅 Breakfast</h3><span class="day-cal-badge">~430 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">7:00</span><span class="day-meal-desc">2 slices whole grain bread + 2 scrambled eggs (½ tsp oil) + tomato slices + black coffee</span><span class="day-meal-cal">~430</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>☀️ Lunch</h3><span class="day-cal-badge">~480 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">12:30</span><span class="day-meal-desc">Tuna bowl: 150g canned tuna + 100g brown rice + lettuce + corn + lemon + 1 tsp olive oil</span><span class="day-meal-cal">~480</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌙 Dinner</h3><span class="day-cal-badge">~370 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">19:00</span><span class="day-meal-desc">Grilled fish (120g) + 200g steamed vegetables (carrots, zucchini, green beans) + herbs</span><span class="day-meal-cal">~370</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header" style="background:linear-gradient(135deg,#27ae60,#1a8a50);"><h3>💧 Day Total</h3><span class="day-cal-badge">~1,280 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">All day</span><span class="day-meal-desc">Floor workout day. Eat within 1 hour after exercise for muscle recovery.</span><span class="day-meal-cal">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FRIDAY -->
+                <div class="day-plan-grid" id="day-friday">
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌅 Breakfast</h3><span class="day-cal-badge">~390 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">7:00</span><span class="day-meal-desc">Oats (35g) + 1 boiled egg + 1 tbsp natural peanut butter (no sugar) + 1 orange + coffee</span><span class="day-meal-cal">~390</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>☀️ Lunch</h3><span class="day-cal-badge">~530 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">12:30</span><span class="day-meal-desc">150g turkey breast + 150g mashed sweet potato + 1 cup steamed green beans</span><span class="day-meal-cal">~530</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌙 Dinner</h3><span class="day-cal-badge">~340 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">19:00</span><span class="day-meal-desc">Black bean soup (300ml) with tomato, onion, cumin + 1 small whole grain roll + water</span><span class="day-meal-cal">~340</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header" style="background:linear-gradient(135deg,#27ae60,#1a8a50);"><h3>💧 Day Total</h3><span class="day-cal-badge">~1,260 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">All day</span><span class="day-meal-desc">End of week review. Weigh yourself this morning. Optional: walk + yoga session.</span><span class="day-meal-cal">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SATURDAY -->
+                <div class="day-plan-grid" id="day-saturday">
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌅 Breakfast</h3><span class="day-cal-badge">~460 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">8:30</span><span class="day-meal-desc">Veggie omelette: 3 eggs + peppers + mushrooms + spinach + small coffee with a splash of milk</span><span class="day-meal-cal">~460</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>☀️ Lunch</h3><span class="day-cal-badge">~550 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">13:00</span><span class="day-meal-desc">Chicken rice bowl: 130g grilled chicken + 120g rice + cucumber + corn + lime juice + light soy sauce</span><span class="day-meal-cal">~550</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌙 Dinner</h3><span class="day-cal-badge">~380 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">19:30</span><span class="day-meal-desc">Grilled shrimp (150g) + 1 cup quinoa + steamed asparagus + lemon herb dressing</span><span class="day-meal-cal">~380</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header" style="background:linear-gradient(135deg,#27ae60,#1a8a50);"><h3>💧 Day Total</h3><span class="day-cal-badge">~1,390 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">All day</span><span class="day-meal-desc">Saturday = social. If eating out: grilled over fried · water over soda · skip the bread basket.</span><span class="day-meal-cal">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUNDAY -->
+                <div class="day-plan-grid" id="day-sunday">
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌅 Breakfast</h3><span class="day-cal-badge">~400 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">9:00</span><span class="day-meal-desc">Avocado toast (1 slice whole grain + ½ avocado) + 2 poached eggs + cherry tomatoes + coffee</span><span class="day-meal-cal">~400</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>☀️ Lunch</h3><span class="day-cal-badge">~490 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">13:30</span><span class="day-meal-desc">Red lentil stew (tomato + onion + garlic + turmeric) + 1 small whole grain pita bread</span><span class="day-meal-cal">~490</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header"><h3>🌙 Dinner</h3><span class="day-cal-badge">~350 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">19:00</span><span class="day-meal-desc">Light chicken broth soup + 100g shredded chicken + spinach + ginger + 1 slice whole grain bread</span><span class="day-meal-cal">~350</span></div>
+                        </div>
+                    </div>
+                    <div class="day-plan-card">
+                        <div class="day-plan-header" style="background:linear-gradient(135deg,#27ae60,#1a8a50);"><h3>🥗 Prep Day</h3><span class="day-cal-badge">~1,240 cal</span></div>
+                        <div class="day-plan-meals">
+                            <div class="day-meal-row"><span class="day-meal-time">Evening</span><span class="day-meal-desc">Meal prep for the week: cook a batch of rice, boil 6 eggs, grill chicken. Sunday prep = weekday success.</span><span class="day-meal-cal">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="transformation-block" style="margin-top:28px;">
+                    <p>⚠️ <strong>Important:</strong> These plans are built around 1,200–1,400 cal/day — a sustainable deficit for most plus-size women. Your exact needs depend on your height, weight, and activity level. If you feel consistently dizzy or exhausted, add one protein snack per day. <strong>Never go below 1,200 cal without medical supervision.</strong></p>
+                </div>
             </div>
         </section>
 
-        <!-- NUTRITION EVOLUTION -->
-        <section id="nutrition-evolution" class="nutrition-evolution-section" data-scroll-reveal>
+        <!-- ═══ HYDRATION ═══ -->
+        <section id="hydration" class="hydration-section" data-scroll-reveal>
             <div class="container">
                 <div class="section-header">
-                    <span class="section-label">12-Week Plan</span>
-                    <h2>The 12-Week Nutrition Evolution</h2>
+                    <span class="section-label">Zero Calories, Maximum Impact</span>
+                    <h2>Hydration — The Most Underrated Fat Loss Tool</h2>
                 </div>
-                <div class="phase-grid nutrition-phase-grid">
-                    <div class="phase-card">
-                        <div class="phase-card-number">Phase 1</div>
-                        <div class="phase-card-icon"><i class="fi fi-rr-seedling"></i></div>
-                        <h3>Stabilize</h3>
-                        <span class="phase-weeks">Weeks 1–4</span>
-                        <p>Focus on blood sugar control and protein intake to reduce cravings and establish baseline habits.</p>
+                <div class="hydration-layout">
+                    <div class="hydration-content">
+                        <p>Most women drink far too little water — and they confuse thirst for hunger. A glass of water before a meal can reduce how much you eat by up to 13%. Drinking 2 liters of water daily increases your metabolic rate by 24–30% for up to 1.5 hours after drinking.</p>
+                        <p>Water also reduces water retention — which sounds paradoxical, but it is true. When your body is dehydrated, it holds onto every drop as a survival mechanism. When you drink consistently, it releases stored water and bloating decreases noticeably within a week.</p>
+                        <p>What counts toward your 2 liters: plain water, sparkling water, unsweetened herbal tea, and broths. What does not count: coffee (mild diuretic), alcohol, juice, or sweetened drinks.</p>
+                        <p><strong>If you struggle to drink enough:</strong> place a 1-liter bottle on your desk, drink 500ml within 30 minutes of waking up, and finish your second liter by 7pm. Your skin, energy, digestion, and fat loss will all improve within 10 days.</p>
                     </div>
-                    <div class="phase-card">
-                        <div class="phase-card-number">Phase 2</div>
-                        <div class="phase-card-icon"><i class="fi fi-rr-chart-line-up"></i></div>
-                        <h3>Optimize</h3>
-                        <span class="phase-weeks">Weeks 5–8</span>
-                        <p>Incorporate carb timing and anti-inflammatory foods to enhance metabolic efficiency.</p>
-                    </div>
-                    <div class="phase-card">
-                        <div class="phase-card-number">Phase 3</div>
-                        <div class="phase-card-icon"><i class="fi fi-rr-diamond"></i></div>
-                        <h3>Refine</h3>
-                        <span class="phase-weeks">Weeks 9–12</span>
-                        <p>Adjust portions and variety for sustained fat loss while maintaining energy and muscle.</p>
-                    </div>
-                    <div class="phase-card phase-card--maintain">
-                        <div class="phase-card-number">Phase 4</div>
-                        <div class="phase-card-icon"><i class="fi fi-rr-infinity"></i></div>
-                        <h3>Maintain</h3>
-                        <span class="phase-weeks">Beyond Week 12</span>
-                        <p>Transition to lifelong habits with flexible adjustments for continued success and adaptability.</p>
+                    <div class="hydration-visual">
+                        <div class="water-timeline">
+                            <div class="water-timeline-title">Your Daily Water Schedule</div>
+                            <div class="water-time-row">
+                                <span class="water-time">7:00 AM</span>
+                                <span class="water-amount">💧</span>
+                                <span class="water-desc">500ml on waking — before coffee, before food. Activates digestion and reduces cortisol.</span>
+                            </div>
+                            <div class="water-time-row">
+                                <span class="water-time">10:00 AM</span>
+                                <span class="water-amount">💧</span>
+                                <span class="water-desc">250ml mid-morning. If you feel a craving, drink first and wait 10 minutes before eating.</span>
+                            </div>
+                            <div class="water-time-row">
+                                <span class="water-time">12:00 PM</span>
+                                <span class="water-amount">💧</span>
+                                <span class="water-desc">250ml before lunch — reduces meal appetite naturally by up to 13%.</span>
+                            </div>
+                            <div class="water-time-row">
+                                <span class="water-time">15:00 PM</span>
+                                <span class="water-amount">💧</span>
+                                <span class="water-desc">250ml afternoon. Dehydration causes fatigue — not always lack of sleep.</span>
+                            </div>
+                            <div class="water-time-row">
+                                <span class="water-time">18:30 PM</span>
+                                <span class="water-amount">💧</span>
+                                <span class="water-desc">250ml before dinner. Last major intake before evening rest.</span>
+                            </div>
+                            <div class="water-time-row">
+                                <span class="water-time">After 20:00</span>
+                                <span class="water-amount">💧</span>
+                                <span class="water-desc">Small sips only. Heavy intake before bed disrupts deep sleep quality.</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- GROCERY STRATEGY -->
+        <!-- ═══ EMOTIONAL EATING ═══ -->
+        <section id="emotional-eating" class="emotional-eating-section" data-scroll-reveal>
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">The Part Nobody Talks About</span>
+                    <h2>Emotional Eating — Biology, Not Weakness</h2>
+                    <p class="section-subtitle">Eating under stress is not a character flaw. It is a hormonal response. Understanding the mechanism is the first step to breaking the cycle.</p>
+                </div>
+                <div class="emotional-grid">
+                    <div class="emotional-explainer">
+                        <p>When you are stressed, your brain releases cortisol. Cortisol tells your body you need immediate energy — and it craves quick sugar and fat because those are the fastest fuel sources. This is a survival mechanism from thousands of years ago, and it overrides willpower completely.</p>
+                        <p>Restriction makes it worse. The more you tell yourself "I cannot eat that," the more your brain fixates on it. This is why strict diets fail — they create the psychological conditions for bingeing.</p>
+                        <p>The solution is not willpower. It is structure. When you have regular, satisfying, protein-rich meals, cortisol-triggered cravings have less power over you. Your blood sugar is stable. Your hunger hormones are balanced. You are not fighting yourself all day.</p>
+                        <p><strong>The first step:</strong> learn to tell the difference between real hunger and emotional hunger. Real hunger comes on slowly. Emotional hunger is sudden, specific, and usually follows something stressful.</p>
+                        <div class="hunger-test">
+                            <div class="hunger-test-title">Real Hunger or Emotional Hunger?</div>
+                            <div class="hunger-q">Ask yourself before eating:</div>
+                            <div class="hunger-answers">
+                                <div class="hunger-ans hunger-ans--real">
+                                    <i class="fi fi-rr-check"></i>
+                                    <span><strong>Real hunger:</strong> Came on gradually · I'd eat anything, including vegetables · it's been 3–4 hours since I ate · I feel it in my stomach</span>
+                                </div>
+                                <div class="hunger-ans hunger-ans--emotional">
+                                    <i class="fi fi-rr-exclamation"></i>
+                                    <span><strong>Emotional hunger:</strong> Appeared suddenly · I only want something specific (chocolate, chips) · it followed stress, boredom, or conflict · it feels urgent</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="section-header" style="text-align:left; margin-bottom:16px;">
+                            <span class="section-label">5 Things to Do Instead</span>
+                        </div>
+                        <div class="emotional-strats">
+                            <div class="strat-card">
+                                <div class="strat-icon">🚶‍♀️</div>
+                                <div>
+                                    <h4>Walk for 10 minutes</h4>
+                                    <p>A short walk reduces cortisol within 7–10 minutes. It changes your environment, breaks the thought loop, and often makes the craving disappear entirely.</p>
+                                </div>
+                            </div>
+                            <div class="strat-card">
+                                <div class="strat-icon">💧</div>
+                                <div>
+                                    <h4>Drink a full glass of water first</h4>
+                                    <p>Wait 10 minutes after drinking. Many "cravings" are actually dehydration or boredom — they often vanish once you hydrate properly.</p>
+                                </div>
+                            </div>
+                            <div class="strat-card">
+                                <div class="strat-icon">📝</div>
+                                <div>
+                                    <h4>Name the emotion in writing</h4>
+                                    <p>Write down what happened in the last 2 hours. Naming the emotion activates your rational brain and reduces the emotional response intensity by up to 50%.</p>
+                                </div>
+                            </div>
+                            <div class="strat-card">
+                                <div class="strat-icon">🥚</div>
+                                <div>
+                                    <h4>Choose a protein snack if you do eat</h4>
+                                    <p>If you decide to eat, choose: 1 boiled egg, plain yogurt, or 10 unsalted almonds. These satisfy without derailing your deficit.</p>
+                                </div>
+                            </div>
+                            <div class="strat-card">
+                                <div class="strat-icon">🚫</div>
+                                <div>
+                                    <h4>Zero guilt — always</h4>
+                                    <p>One episode does not ruin a week. Guilt is cortisol fuel — it makes the next episode more likely. Eat, move on, return to structure at the next meal.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ 5 MISTAKES ═══ -->
+        <section id="errors" class="nutrition-errors-section" data-scroll-reveal>
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">Fix These First</span>
+                    <h2>The 5 Nutrition Mistakes That Stall Weight Loss</h2>
+                    <p class="section-subtitle">These mistakes are responsible for 90% of failed weight loss attempts. Each one has a direct, simple fix you can apply today.</p>
+                </div>
+                <div class="errors-grid">
+                    <div class="error-card">
+                        <span class="error-num">01</span>
+                        <h3>Skipping Breakfast</h3>
+                        <p>Skipping breakfast spikes hunger hormones by mid-morning, making you 40% more likely to overeat at lunch. Your metabolism also runs slower when it receives no fuel in the first 2 hours of the day.</p>
+                        <div class="error-fix"><i class="fi fi-rr-check"></i> Eat within 1 hour of waking. 2 eggs and black coffee is enough to activate your metabolism.</div>
+                    </div>
+                    <div class="error-card">
+                        <span class="error-num">02</span>
+                        <h3>Drinking Liquid Calories</h3>
+                        <p>Juice, sweetened coffee, sodas, and alcohol are the biggest invisible calorie source for most women. Switching to water and black coffee alone can save 350–600 calories per day without changing a single meal.</p>
+                        <div class="error-fix"><i class="fi fi-rr-check"></i> Drink only water, unsweetened tea, or black coffee. This one change alone can produce 1–2 kg of weight loss in month 1.</div>
+                    </div>
+                    <div class="error-card">
+                        <span class="error-num">03</span>
+                        <h3>Not Enough Protein</h3>
+                        <p>Women who eat low-protein diets lose muscle alongside fat. After the diet ends, their metabolism is permanently slower. This is why the weight comes back faster every time — and why each new diet feels harder than the last.</p>
+                        <div class="error-fix"><i class="fi fi-rr-check"></i> Include a protein source at every single meal. Chicken, eggs, fish, yogurt, or lentils — always.</div>
+                    </div>
+                    <div class="error-card">
+                        <span class="error-num">04</span>
+                        <h3>Buying "Light" Products</h3>
+                        <p>"Light," "fat-free," "zero sugar," and "diet" labels are marketing, not nutrition. Fat-free products often replace fat with sugar. Zero-sugar products use sweeteners that maintain sweet cravings and disrupt gut bacteria.</p>
+                        <div class="error-fix"><i class="fi fi-rr-check"></i> Read the full ingredient list, not just the front label. Choose real food with few ingredients over processed "diet" versions.</div>
+                    </div>
+                    <div class="error-card">
+                        <span class="error-num">05</span>
+                        <h3>Eating Too Fast</h3>
+                        <p>Your brain takes 20 minutes to receive the fullness signal from your stomach. Eating fast means you consume 2–3 servings in the time it takes your brain to register you've had 1. Research shows fast eaters consume 31% more calories per meal.</p>
+                        <div class="error-fix"><i class="fi fi-rr-check"></i> Put down your fork between bites. Eat without screens. Chew 20 times per bite. Portion sizes decrease naturally.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ GROCERY STRATEGY ═══ -->
         <section id="grocery-strategy" class="grocery-strategy-section" data-scroll-reveal>
             <div class="container">
                 <div class="section-header">
-                    <span class="section-label">Shopping Smart</span>
-                    <h2>Grocery Strategy</h2>
-                    <p class="section-subtitle">Build your cart with 40% proteins, 30% veggies/fibers, 20% fats, 10% timed carbs. Prioritize organic options when possible.</p>
+                    <span class="section-label">Shop Smart</span>
+                    <h2>Build Your Weekly Grocery List</h2>
+                    <p class="section-subtitle">Stock your kitchen with these categories and you will always have the ingredients for a balanced, fat-loss-friendly meal — without thinking.</p>
                 </div>
                 <div class="grocery-categories">
                     <div class="category">
                         <div class="category-icon category-icon--protein"><i class="fi fi-rr-meat"></i></div>
-                        <h3>Protein Sources</h3>
+                        <h3>Proteins (35–40% of plate)</h3>
                         <ul>
-                            <li>Chicken, turkey, fish</li>
-                            <li>Eggs, Greek yogurt</li>
-                            <li>Legumes, tofu</li>
-                            <li>Lean beef, cottage cheese</li>
-                            <li>Tempeh, nuts</li>
+                            <li>Chicken breast or thigh</li>
+                            <li>Eggs (whole, not just whites)</li>
+                            <li>Canned tuna or fresh salmon</li>
+                            <li>Greek yogurt (plain, 0–2%)</li>
+                            <li>Lentils, chickpeas, black beans</li>
+                            <li>Cottage cheese</li>
+                            <li>Tofu or tempeh (vegetarian)</li>
                         </ul>
                     </div>
                     <div class="category">
                         <div class="category-icon category-icon--fiber"><i class="fi fi-rr-leaf"></i></div>
-                        <h3>Fiber Sources</h3>
+                        <h3>Vegetables &amp; Fiber (30% of plate)</h3>
                         <ul>
-                            <li>Vegetables like broccoli, spinach</li>
-                            <li>Fruits such as berries, apples</li>
-                            <li>Whole grains like oats</li>
-                            <li>Chia seeds, Brussels sprouts</li>
-                            <li>Avocados, pears</li>
+                            <li>Spinach, kale, arugula</li>
+                            <li>Broccoli, zucchini, green beans</li>
+                            <li>Tomatoes, cucumbers, peppers</li>
+                            <li>Carrots, beets</li>
+                            <li>Cabbage, Brussels sprouts</li>
+                            <li>Berries (fresh or frozen)</li>
                         </ul>
                     </div>
                     <div class="category">
                         <div class="category-icon category-icon--fat"><i class="fi fi-rr-avocado"></i></div>
-                        <h3>Hormone-Supporting Fats</h3>
+                        <h3>Healthy Fats (20% of plate)</h3>
                         <ul>
-                            <li>Avocados, nuts</li>
-                            <li>Olive oil, fatty fish</li>
-                            <li>Seeds like chia, flax</li>
-                            <li>Coconut oil, walnuts</li>
+                            <li>Avocado (½ per meal max)</li>
+                            <li>Olive oil (measure: 1 tsp per cooking)</li>
+                            <li>Almonds, walnuts (small handful)</li>
+                            <li>Chia seeds, flaxseeds</li>
                             <li>Pumpkin seeds</li>
                         </ul>
                     </div>
                     <div class="category">
                         <div class="category-icon category-icon--carb"><i class="fi fi-rr-bread"></i></div>
-                        <h3>Smart Carbs</h3>
+                        <h3>Smart Carbs (10–20% of plate)</h3>
                         <ul>
-                            <li>Quinoa, sweet potatoes</li>
-                            <li>Brown rice, beans</li>
-                            <li>Low-GI fruits</li>
-                            <li>Barley, lentils</li>
-                            <li>Whole wheat bread</li>
+                            <li>Brown rice or basmati</li>
+                            <li>Oats (rolled, not instant)</li>
+                            <li>Sweet potato</li>
+                            <li>Whole grain bread (2 slices max)</li>
+                            <li>Quinoa</li>
+                            <li>Bananas, apples, oranges</li>
                         </ul>
+                    </div>
+                </div>
+                <div class="transformation-block" style="margin-top:24px;">
+                    <p>🛒 <strong>Shopping rule:</strong> Shop the perimeter of the supermarket — that is where real food lives (produce, meat, dairy). The middle aisles are where ultra-processed products hide. When in doubt: if it has more than 5 ingredients or you cannot pronounce them, put it back.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ FAQ ═══ -->
+        <section id="faq" class="nutrition-faq-section" data-scroll-reveal>
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">Real Answers</span>
+                    <h2>Questions Plus-Size Women Actually Ask About Nutrition</h2>
+                    <p class="section-subtitle">No fluff. Direct responses to the real questions women ask before starting a fat loss program.</p>
+                </div>
+                <div class="accordion nutrition-accordion">
+                    <div class="accordion-item">
+                        <button class="accordion-header">Can I eat carbs and still lose weight? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>Yes — and you probably should. Carbohydrates are not fattening. Excess total calories are what cause fat storage. Brown rice, oats, sweet potato, and legumes provide sustained energy, improve workout performance, and support gut health. Removing them entirely causes fatigue, brain fog, and hormone disruption. The key is portion size, not elimination.</p></div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header">Do I need to count every calorie? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>Not necessarily — but understanding calorie ranges is important. Using structured meal plans (like the 7-day plan above) removes the need for daily counting because the meals are pre-designed to keep you in the right deficit. However, tracking for 2–3 weeks at the start is a powerful educational exercise — it shows you exactly where your hidden calories come from and permanently adjusts your portion instincts.</p></div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header">Is fruit sugar as bad as regular sugar? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>Whole fruit is not the same as sugar. When you eat a piece of fruit, the fiber slows the absorption of natural sugars — preventing blood sugar spikes. 1–2 pieces of fruit per day is compatible with fat loss. What is problematic is fruit juice — where the fiber is removed and the sugar is concentrated. Always eat the fruit, never drink it.</p></div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header">Why am I not losing weight even though I barely eat? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>Three common reasons: (1) You are underestimating liquid calories from drinks, sauces, and snacks you do not register as food. (2) Your body has entered adaptive thermogenesis — it slowed your metabolism in response to severe restriction. (3) You are losing fat but retaining water due to stress or hormonal cycles, masking the scale change. The fix is always the same: moderate deficit (300–500 cal), adequate protein, consistent sleep, and reduced stress.</p></div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header">Can I drink coffee on a weight loss program? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>Yes. Black coffee is almost calorie-free, slightly increases metabolic rate, and is a mild appetite suppressant. The problem is what you add — sugar, syrups, full milk, or cream can turn a 5-calorie drink into a 300-calorie one. Drink coffee black, or with a small amount of unsweetened plant milk.</p></div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header">What about weight loss supplements and detox teas? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>Save your money. Detox teas work as laxatives — they cause water weight loss, not fat loss. Once you stop, you regain it instantly. Most weight loss supplements contain caffeine (which you get free from coffee), or stimulants that raise your heart rate and stress your liver without producing real fat loss. There is no supplement approved by any health authority that replaces a calorie deficit. None.</p></div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header">What if I have PCOS, hypothyroidism, or insulin resistance? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>These conditions make weight loss harder — not impossible. With PCOS: lower carb intake and prioritize blood sugar stability with fiber and protein. With hypothyroidism: ensure you are on correct medication, and understand your deficit may need to be slightly adjusted because your TDEE is lower than average. With insulin resistance: reduce high-GI carbs, increase fiber and protein, distribute carbs around exercise. Always consult your doctor — these are manageable conditions, not permanent barriers.</p></div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header">How do I handle social eating and family meals? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content"><p>Social eating is part of life — not a weight loss emergency. Three rules that work: (1) Eat a protein snack before the event so you arrive not starving. (2) Choose grilled over fried, water over soda, and skip the bread basket. (3) Eat slowly and stop at 80% full. One restaurant meal will not break your progress. It is the 27 "special occasion" meals per month that add up.</p></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- FAQ -->
-        <section id="faq" class="faq-preview-section" data-scroll-reveal>
+        <!-- ═══ WHAT WE DON'T DO ═══ -->
+        <section id="what-we-dont-do" class="what-we-dont-do-section" data-scroll-reveal>
             <div class="container">
                 <div class="section-header">
-                    <span class="section-label">FAQ</span>
-                    <h2>Nutrition FAQ</h2>
+                    <span class="section-label">Our Commitment</span>
+                    <h2>What CurvaFit Will Never Tell You to Do</h2>
+                    <p class="section-subtitle">We built this program on one principle: if it would harm your body long-term, we will not recommend it — even if it works short-term.</p>
                 </div>
-                <div class="accordion nutrition-accordion">
-                    <div class="accordion-item">
-                        <button class="accordion-header">Can I eat carbs? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>Yes. Carbohydrates are strategically timed around your activity to support energy, performance, and recovery without promoting excess fat storage.</p></div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">Do I need to count calories? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>We focus on structure and food quality over strict calorie counting. However, light tracking can be helpful for awareness and better understanding your habits.</p></div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">What about PCOS? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>Our approach prioritizes blood sugar balance, which aligns well with PCOS management. However, always consult your healthcare provider for personalized guidance.</p></div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">Is this keto? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>No. We include balanced carbohydrates to avoid the metabolic stress often associated with extreme low-carb approaches.</p></div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">Do I need intermittent fasting? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>Intermittent fasting is not required. We prioritize consistent fueling to support hormones, metabolism, and energy levels.</p></div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">What if I have a slow metabolism? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>Our structured protein intake and progressive activity plan help gradually stimulate and support a healthier metabolic rate over time.</p></div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">What about vegetarian options? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>We provide plant-based alternatives such as lentils, tempeh, quinoa, and other high-protein vegetarian options to suit your preferences.</p></div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">How do I handle cravings? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>Our balanced nutrition strategy, rich in protein and fiber, helps minimize cravings. We also recommend mindful substitutions and structured meals to maintain control.</p></div>
-                    </div>
-                </div>
+                <ul class="dont-do-list">
+                    <li data-scroll-reveal>
+                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
+                        <div class="dont-text"><strong>We will never tell you to eat less than 1,200 calories a day.</strong> Below this threshold, your body cannot obtain the minimum nutrients it needs to function. You will lose muscle, damage your metabolism, and gain everything back within weeks of stopping.</div>
+                    </li>
+                    <li data-scroll-reveal>
+                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
+                        <div class="dont-text"><strong>We will never sell you a detox, cleanse, or teatox.</strong> Your liver and kidneys detox your body 24 hours a day. Detox products are laxatives that cause temporary water weight loss — always followed by immediate rebound.</div>
+                    </li>
+                    <li data-scroll-reveal>
+                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
+                        <div class="dont-text"><strong>We will never recommend eliminating an entire food group.</strong> No carbs, no fat, no dairy — these extreme restrictions cause nutrient deficiencies, hormonal disruption, and are impossible to maintain permanently. Real food from all groups belongs in your diet.</div>
+                    </li>
+                    <li data-scroll-reveal>
+                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
+                        <div class="dont-text"><strong>We will never recommend diet pills or fat burners.</strong> Most are unregulated and dangerous. The ones that produce any effect at all are just high-dose caffeine — which you can get from free black coffee. None are a substitute for food discipline and consistency.</div>
+                    </li>
+                    <li data-scroll-reveal>
+                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
+                        <div class="dont-text"><strong>We will never promise miracle results in unrealistic timelines.</strong> Losing 10 kg in 2 weeks is not fat loss — it is dangerous water and muscle depletion. Safe fat loss is 0.5–1 kg per week. We will always tell you the honest biological truth, even when it is slower than you hoped.</div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ═══ FINAL CTA ═══ -->
+        <section class="nutrition-final-cta">
+            <div class="container">
+                <span class="section-label section-label--light">Ready to Start</span>
+                <h2>Now You Know the Truth.<br>The Next Step Is Structure.</h2>
+                <p>Knowledge without a plan stays as knowledge. CurvaFit programs give you the exact meal plans, workout schedule, and weekly tracker that put everything on this page into practice — at home, starting now.</p>
+                <a href="programs.html" class="primary-cta button-3d large">Find My Program →</a>
+                <p class="reassurance">⚡ Safe for all fitness levels · No gym · No pills · Results in 4–8 weeks with consistency</p>
             </div>
         </section>
 
@@ -633,15 +886,14 @@
     <footer class="footer">
         <div class="container footer-grid">
             <div class="footer-brand">
-                 <a href="index.html"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo"></a>
-                <p>Safe weight loss for curvy women. Honor your body while reaching new vitality.</p>
-                <p>Safe weight loss for curvy women. Honor your body while reaching new vitality.</p>
+                <a href="index.html"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo"></a>
+                <p>Safe, science-based weight loss for plus-size women. No pills. No crash diets. Just results.</p>
                 <a href="about.html">Learn Our Story</a>
             </div>
             <div class="footer-policies">
                 <ul>
                     <li><a href="/policies/privacy.html">Privacy Policy</a></li>
-                    <li><a href="/policies/terms.html">Terms & Conditions</a></li>
+                    <li><a href="/policies/terms.html">Terms &amp; Conditions</a></li>
                     <li><a href="/policies/refund.html">Refund Policy</a></li>
                     <li><a href="disclaimer.html">Medical Disclaimer</a></li>
                     <li><a href="faq.html">FAQ</a></li>
@@ -650,9 +902,7 @@
                 </ul>
             </div>
             <div class="footer-social">
-                <p class="social-title">
-                    Stay in the Loop — Follow for Curvy Tips and Inspiration.
-                </p>
+                <p class="social-title">Follow for daily tips, real results, and curvy inspiration.</p>
                 <a href=""><i class="fab fa-facebook-f"></i></a>
                 <a href=""><i class="fab fa-instagram"></i></a>
                 <a href=""><i class="fab fa-tiktok"></i></a>
@@ -672,17 +922,36 @@
         <div id="newsletter-popup" class="newsletter-success-popup">
             <div class="popup-content">
                 <div class="popup-icon">🎉</div>
-                <h3>Thank you for subscribing!</h3>
-                <p>You'll receive exclusive tips, offers and CurvaFit updates soon.</p>
+                <h3>Welcome to the CurvaFit Family!</h3>
+                <p>You'll receive weekly tips, real meal plans, and exclusive member offers.</p>
                 <button id="popup-close-btn">Close</button>
             </div>
         </div>
-        <div class="copyright"><p>&copy; 2026 CurvaFit. All rights reserved.</p></div>
+        <div class="copyright">
+            <p>&copy; 2026 CurvaFit. All rights reserved. | Results vary. Always consult a healthcare professional before starting any weight loss program.</p>
+        </div>
     </footer>
 
     <script src="script.js"></script>
     <script src="/animations.js"></script>
     <script src="/search.js"></script>
+
+    <!-- 7-Day Tabs -->
+    <script>
+    (function(){
+        const tabs = document.querySelectorAll('.week-tab');
+        const grids = document.querySelectorAll('.day-plan-grid');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function(){
+                tabs.forEach(t => t.classList.remove('active'));
+                grids.forEach(g => g.classList.remove('active'));
+                this.classList.add('active');
+                const target = document.getElementById('day-' + this.dataset.day);
+                if(target) target.classList.add('active');
+            });
+        });
+    })();
+    </script>
 
     <div id="audio-player" class="draggable-audio-player">
         <button id="play-pause-btn">
@@ -693,5 +962,6 @@
             <source src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/audio_glowing_1.mp3?v=1771468630" type="audio/mpeg">
         </audio>
     </div>
+
 </body>
 </html>

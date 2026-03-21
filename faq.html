@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Find answers to common questions about plus size fitness FAQ, weight loss for curvy women, fitness safety for beginners, sustainable fat loss questions, and body positive fitness programs at CurvaFit.">
     <meta property="og:title" content="FAQ | CurvaFit">
-    <meta property="og:description" content="Explore our plus size fitness FAQ for insights on weight loss for curvy women, fitness safety for beginners, sustainable fat loss questions, and body positive fitness programs. Get the guidance you need to start confidently.">
-    <meta property="og:image" content="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/faq_og.jpg?v=1771460122">
+    <meta property="og:description" content="Explore our plus size fitness FAQ for insights on weight loss for curvy women, fitness safety for beginners, sustainable fat loss questions, and body positive fitness programs.">
     <meta property="og:url" content="https://www.curvafit.com/faq.html">
     <meta property="og:type" content="website">
     <title>FAQ | CurvaFit</title>
@@ -19,20 +18,15 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.5.1/uicons-solid-rounded/css/uicons-solid-rounded.css">
 </head>
 <body>
+
     <header class="sticky-header">
         <div class="header-container">
-            <div class="search-icon">
-                <i class="fi fi-rr-search"></i>
-            </div>
+            <div class="search-icon"><i class="fi fi-rr-search"></i></div>
             <div class="search-bar">
                 <input type="text" placeholder="Search programs, nutrition, shop..." list="search-suggestions">
                 <datalist id="search-suggestions">
-                    <option value="Programs">
-                    <option value="Nutrition">
-                    <option value="Shop">
-                    <option value="Community">
-                    <option value="Blog">
-                    <option value="Success Stories">
+                    <option value="Programs"><option value="Nutrition"><option value="Shop">
+                    <option value="Community"><option value="Blog"><option value="Success Stories">
                 </datalist>
                 <i class="fi fi-rr-search submit-search"></i>
             </div>
@@ -53,319 +47,526 @@
                     <li><a href="contact.html"><i class="fi fi-rr-envelope"></i> Contact</a></li>
                 </ul>
             </nav>
-            <div class="hamburger-menu">
-                <i class="fi fi-rr-menu-burger"></i>
-            </div>
+            <div class="hamburger-menu"><i class="fi fi-rr-menu-burger"></i></div>
         </div>
     </header>
+
     <main>
+
+        <!-- ══ HERO (original section) ══ -->
         <section id="hero" class="faq-hero">
             <div class="container">
+                <span class="section-label section-label--light">No Stupid Questions Here</span>
                 <h1>Frequently Asked Questions</h1>
                 <h2>Everything you need to know before starting your journey.</h2>
-                <p>Explore our plus size fitness FAQ to find clear answers on weight loss for curvy women, fitness safety for beginners, sustainable fat loss questions, and body positive fitness programs. We're here to support you every step of the way.</p>
+                <p>We answer the real questions — the ones you're afraid to ask, the ones no one else answers honestly. If your question isn't here, contact us directly.</p>
+                <div class="faq-hero-stats">
+                    <div class="fhs-item"><span>40+</span><small>Questions answered</small></div>
+                    <div class="fhs-item"><span>7</span><small>Categories</small></div>
+                    <div class="fhs-item"><span>48h</span><small>Support response time</small></div>
+                </div>
+                <!-- FAQ Search -->
+                <div class="faq-search-wrap">
+                    <i class="fi fi-rr-search"></i>
+                    <input type="text" id="faq-search-input" 
+                        placeholder="Search a question... e.g. plateau, carbs, PCOS"
+                        autocomplete="off">
+                    <button id="faq-search-clear" title="Clear">✕</button>
+                </div>
+                <p id="faq-search-count" class="faq-search-count" style="display:none;"></p>
             </div>
         </section>
+
+        <!-- ══ CATEGORY FILTERS (original section) ══ -->
         <section id="category-filters" class="category-filters-section">
             <div class="container">
                 <h2>Browse by Category</h2>
                 <div class="filters">
-                    <button data-category="all" class="active">All</button>
-                    <button data-category="programs">Programs</button>
-                    <button data-category="weight-loss">Weight Loss</button>
-                    <button data-category="safety">Safety</button>
-                    <button data-category="nutrition">Nutrition</button>
-                    <button data-category="payments">Payments</button>
-                    <button data-category="community">Community</button>
-                    <button data-category="technical">Technical</button>
+                    <button data-category="all" class="active"><i class="fi fi-rr-apps"></i> All</button>
+                    <button data-category="getting-started"><i class="fi fi-rr-rocket"></i> Getting Started</button>
+                    <button data-category="programs"><i class="fi fi-rr-dumbbell"></i> Programs</button>
+                    <button data-category="weight-loss"><i class="fi fi-rr-chart-line-up"></i> Weight Loss</button>
+                    <button data-category="nutrition"><i class="fi fi-rr-apple-whole"></i> Nutrition</button>
+                    <button data-category="safety"><i class="fi fi-rr-shield-check"></i> Safety & Medical</button>
+                    <button data-category="community"><i class="fi fi-rr-users"></i> Community</button>
+                    <button data-category="payments"><i class="fi fi-rr-credit-card"></i> Billing & Refunds</button>
+                    <button data-category="technical"><i class="fi fi-rr-settings"></i> Technical</button>
                 </div>
             </div>
         </section>
+
+        <!-- ══ GETTING STARTED (new category) ══ -->
+        <section id="getting-started" class="faq-category" data-category="getting-started">
+            <div class="container">
+                <div class="faq-category-header">
+                    <div class="faq-cat-icon"><i class="fi fi-rr-rocket"></i></div>
+                    <div>
+                        <h2>Getting Started</h2>
+                        <p class="faq-cat-sub">New here? These are the first questions to read.</p>
+                    </div>
+                </div>
+                <div class="accordion">
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">Do I need any fitness experience to start? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content">
+                            <p>None at all. CurvaFit's Beginner program was built specifically for women who have never exercised before — or who tried before and stopped. The movements start gentle: walking, seated exercises, and slow floor movements. There is no test you need to pass to begin. The only requirement is showing up.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">What weight do I need to be to join CurvaFit? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content">
+                            <p>There is no minimum or maximum weight. CurvaFit is designed for plus-size women — meaning women who feel their current weight is affecting their health, energy, or confidence and want to change that safely. Whether you are 80 kg or 160 kg, you are welcome here. The programs scale to your starting point.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">How do I know which program is right for me? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content">
+                            <p>Simple rule: if you have not exercised consistently in the last 6 months, start with the <strong>Beginner program</strong>. If you already walk regularly and have some basic fitness base, the <strong>Intermediate program</strong> may suit you. If you have already lost significant weight and want to maintain without regaining, the <strong>Maintainer program</strong> is for you. When in doubt, start with Beginner — you can always progress.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">What do I need at home to get started? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content">
+                            <p>For the Beginner program: nothing. A floor, comfortable clothes, and a pair of supportive shoes for walking. That is it. For Intermediate, a resistance band (optional but helpful) and a yoga mat add value. No gym, no expensive machine, no membership required. Everything is designed for your living room.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">How long before I see real results? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content">
+                            <p>In the first 1–2 weeks: less bloating, better sleep, slightly more energy. This is your body resetting. In weeks 3–4: clothes feel different. The scale may show 1–3 kg gone. By month 2–3: visible changes in how you look and feel. Real fat loss takes consistency over weeks, not days. Anyone promising dramatic results in 7 days is lying to you. We won't do that.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ PROGRAMS & STRUCTURE (original section, enriched) ══ -->
         <section id="programs-structure" class="faq-category" data-category="programs">
             <div class="container">
-                <h2>Programs & Structure</h2>
+                <div class="faq-category-header">
+                    <div class="faq-cat-icon"><i class="fi fi-rr-dumbbell"></i></div>
+                    <div>
+                        <h2>Programs &amp; Structure</h2>
+                        <p class="faq-cat-sub">How the programs work, what's inside, and how to follow them.</p>
+                    </div>
+                </div>
                 <div class="accordion">
+
                     <div class="accordion-item">
-                        <button class="accordion-header">How do CurvaFit programs work?</button>
+                        <button class="accordion-header">How do CurvaFit programs work? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Our body positive fitness programs are structured with gentle, progressive workouts and balanced nutrition guidance tailored for curvy women. They focus on building habits for sustainable fat loss without extremes.</p>
+                            <p>Each program is a structured weekly plan that combines three elements: a <strong>meal plan</strong> (3 balanced meals per day, high in protein), a <strong>workout schedule</strong> (3–5 low-impact sessions per week), and a <strong>daily checklist</strong> for water, sleep, and habits. Everything is designed for home use. You follow the week, log your progress, and the program builds on itself week after week.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Are the workouts beginner-friendly?</button>
+                        <button class="accordion-header">Are the workouts beginner-friendly? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Yes, our fitness safety for beginners ensures all workouts start at an accessible level, with modifications to suit plus size fitness needs.</p>
+                            <p>Yes. Every exercise in the Beginner program has been selected specifically for women starting at higher body weights. No jumping, no running, no movements that put dangerous stress on knees or hips. The starting point is walking and gentle floor work — movements you can do even if your fitness level is currently zero.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Do I need equipment?</button>
+                        <button class="accordion-header">Do I need equipment? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Most programs require minimal or no equipment, making them ideal for home-based weight loss for curvy women.</p>
+                            <p>No equipment is required for the Beginner program. Your bodyweight, a floor, and supportive shoes are enough. The Intermediate program optionally uses a resistance band and yoga mat — both available in the CurvaFit shop, but not mandatory. We never design a program that requires an expensive machine.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">How long are the workouts?</button>
+                        <button class="accordion-header">How long are the workouts? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Workouts typically last 20-45 minutes, designed for busy schedules while promoting sustainable fat loss questions.</p>
+                            <p>Beginner sessions are 20–30 minutes. Intermediate sessions are 30–45 minutes. This includes warm-up and cool-down. Sessions are designed for real women with real schedules — not for people who can spend 2 hours in a gym every day. If you can commit 25 minutes, 3–4 times per week, you can follow this program.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Can I do this at home?</button>
+                        <button class="accordion-header">Can I switch programs mid-way? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Absolutely, our programs are home-friendly with body positive fitness programs that don't require a gym.</p>
+                            <p>Yes. If you feel the Beginner program is too easy after 4 weeks, you can move to Intermediate. If the Intermediate feels overwhelming, stepping back to Beginner is not failure — it is smart progression. Contact our support team and we will guide you on the best transition point.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Are programs customizable?</button>
+                        <button class="accordion-header">What happens after I reach my goal weight? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Yes, we offer guidance to adapt programs to your needs, ensuring fitness safety for beginners and beyond.</p>
+                            <p>You transition to the <strong>Forever Fit Maintainer program</strong>. This is designed specifically to prevent yo-yo rebound — the biggest risk after successful weight loss. It teaches you how to eat at maintenance calories, how to adjust your activity level, and how to read your body's signals. Reaching your goal is not the end. Keeping it is the real work.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Is this suitable for plus-size beginners?</button>
+                        <button class="accordion-header">Can I do this at home without a gym? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Our plus size fitness FAQ highlights that programs are created specifically for curvy beginners, with a focus on gentle progression.</p>
+                            <p>Completely. 100% of the program is designed for home use. Research shows that 70–80% of weight loss comes from nutrition, not exercise. The movements we prescribe — walking, floor work, bodyweight resistance — are sufficient to support fat loss when combined with proper eating. You do not need a gym membership to get results with CurvaFit.</p>
                         </div>
                     </div>
+
                 </div>
             </div>
         </section>
+
+        <!-- ══ WEIGHT LOSS & RESULTS (original section, enriched) ══ -->
         <section id="weight-loss-results" class="faq-category" data-category="weight-loss">
             <div class="container">
-                <h2>Weight Loss & Results</h2>
+                <div class="faq-category-header">
+                    <div class="faq-cat-icon"><i class="fi fi-rr-chart-line-up"></i></div>
+                    <div>
+                        <h2>Weight Loss &amp; Results</h2>
+                        <p class="faq-cat-sub">Honest answers about what to expect and when.</p>
+                    </div>
+                </div>
                 <div class="accordion">
+
                     <div class="accordion-item">
-                        <button class="accordion-header">How long before I see results?</button>
+                        <button class="accordion-header">How much weight can I realistically lose per month? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Many see improved energy in weeks, with visible changes in 4-8 weeks through consistent sustainable fat loss questions approach.</p>
+                            <p>The medically safe range for plus-size women is <strong>2 to 4 kg per month</strong> (approximately 0.5–1 kg per week). In month 1, you may see more — up to 4–6 kg — because a portion is water weight and bloat reduction. After that, 2–3 kg per month of actual fat loss is excellent progress that protects your muscle and your metabolism. Losing faster than this usually means you are losing muscle, not just fat — which slows everything down long term.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Is weight loss guaranteed?</button>
+                        <button class="accordion-header">Is weight loss guaranteed? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Results vary based on individual factors; we focus on sustainable habits rather than guarantees in our weight loss for curvy women programs.</p>
+                            <p>No — and we will never pretend otherwise. Results depend on your consistency, your metabolic health, your sleep, your stress levels, and your personal history with food and exercise. What we guarantee is a method that is scientifically grounded, safe, and has worked for thousands of women. The result depends on how consistently you apply it.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">What makes CurvaFit different?</button>
+                        <button class="accordion-header">Why is my weight not moving even though I'm following the plan? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>We emphasize body positive fitness programs over restrictive diets, tailored for curvy bodies.</p>
+                            <p>This is called a <strong>plateau</strong> and it is completely normal — especially around weeks 5–8. The most common causes are: your body has adapted to your current calorie level, you are retaining water (due to stress, hormones, or sodium), you are building muscle while losing fat (the scale doesn't show this), or your sleep is disrupted. Post in the community Plateau Thread — our coaches respond within 24 hours with specific adjustments.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Will this work with slow metabolism?</button>
+                        <button class="accordion-header">Will this work if I have a slow metabolism? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Our approach supports metabolic health gently, addressing common sustainable fat loss questions.</p>
+                            <p>Yes — with realistic expectations. A slower metabolism means you need a slightly larger calorie deficit to see the same results as someone with a faster one. CurvaFit addresses this by focusing on protein (which boosts metabolism), sleep quality (which regulates hunger hormones), and stress reduction (which lowers cortisol — the fat-storage hormone). These three things directly support metabolism, regardless of your starting point.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Is this suitable for women with PCOS?</button>
+                        <button class="accordion-header">Are results sustainable long-term? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Programs consider hormonal health, but consult your doctor for personalized fitness safety for beginners with PCOS.</p>
+                            <p>Yes — if you transition properly to maintenance. The CurvaFit method is built around habit formation, not willpower. By month 3, the eating patterns and movement habits feel natural rather than forced. This is what makes results stick. Women who yo-yo typically followed a very restrictive diet with no maintenance plan. CurvaFit builds the maintenance phase from day one.</p>
                         </div>
                     </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">Are results sustainable long-term?</button>
-                        <div class="accordion-content">
-                            <p>Yes, by building habits, our plus size fitness FAQ promotes lasting changes.</p>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </section>
-        <section id="safety-health" class="faq-category" data-category="safety">
-            <div class="container">
-                <h2>Safety & Health</h2>
-                <div class="accordion">
-                    <div class="accordion-item">
-                        <button class="accordion-header">Are workouts joint-friendly?</button>
-                        <div class="accordion-content">
-                            <p>Our low-impact designs prioritize fitness safety for beginners and curvy bodies.</p>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">Is this safe for beginners?</button>
-                        <div class="accordion-content">
-                            <p>Absolutely, with modifications and progressions for plus size fitness FAQ concerns.</p>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">Should I consult a doctor?</button>
-                        <div class="accordion-content">
-                            <p>Yes, especially if you have conditions, before starting weight loss for curvy women programs.</p>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">What if I have a medical condition?</button>
-                        <div class="accordion-content">
-                            <p>Seek professional advice; our programs are general sustainable fat loss questions guidance.</p>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header">Is the program hormone-conscious?</button>
-                        <div class="accordion-content">
-                            <p>We incorporate hormonal awareness in body positive fitness programs.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+
+        <!-- ══ NUTRITION (original section, enriched) ══ -->
         <section id="nutrition-diet" class="faq-category" data-category="nutrition">
             <div class="container">
-                <h2>Nutrition & Diet</h2>
+                <div class="faq-category-header">
+                    <div class="faq-cat-icon"><i class="fi fi-rr-apple-whole"></i></div>
+                    <div>
+                        <h2>Nutrition &amp; Diet</h2>
+                        <p class="faq-cat-sub">What to eat, what to avoid, and why protein matters so much.</p>
+                    </div>
+                </div>
                 <div class="accordion">
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Do I need to follow a strict diet?</button>
+                        <button class="accordion-header">Do I have to count calories every single day? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>No, we promote balanced eating for sustainable fat loss questions.</p>
+                            <p>Not obsessively. CurvaFit uses <strong>structured meal templates</strong> rather than strict calorie counting. You follow a 3-meal-per-day structure with specific food types at each meal (protein + vegetable + slow carb). Over time, this naturally creates the 300–500 calorie deficit needed for fat loss — without counting every gram. If you want to track precisely, that option is available. If counting stresses you out, the template approach works just as well.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Are carbs allowed?</button>
+                        <button class="accordion-header">Can I eat carbs and still lose weight? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Yes, nutrient-dense carbs are part of our approach to weight loss for curvy women.</p>
+                            <p>Yes. Carbs are not the enemy — <strong>excess calories are</strong>. CurvaFit includes brown rice, oats, sweet potato, legumes, and whole grain bread in the meal plans. What we reduce are liquid sugars (sodas, juices, sweetened coffee) and refined, low-fiber carbs that spike blood sugar and increase hunger. Cutting carbs completely is not only unnecessary — it's unsustainable and stressful on your body.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Is this a crash diet?</button>
+                        <button class="accordion-header">Why does CurvaFit focus so much on protein? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>No, we avoid extremes in favor of body positive fitness programs.</p>
+                            <p>Three reasons. First, <strong>protein keeps you full</strong> for longer than any other macronutrient — reducing total calorie intake naturally. Second, protein <strong>preserves muscle mass</strong> during weight loss. Losing muscle slows your metabolism and makes regain much more likely. Third, your body burns more calories digesting protein than it does digesting fat or carbs — this is called the thermic effect of food. Protein at every meal is the single most impactful nutrition change a plus-size woman can make.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Do you provide meal plans?</button>
+                        <button class="accordion-header">Can I follow the program if I'm vegetarian or vegan? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Yes, flexible guides tailored for plus size fitness FAQ needs.</p>
+                            <p>Yes. The meal plans include vegetarian adaptations using eggs, legumes (lentils, chickpeas, black beans), tofu, tempeh, Greek yogurt (for vegetarians), and plant-based protein combinations. Vegan members can meet their protein targets with lentils, edamame, tofu, tempeh, and hemp seeds. It requires slightly more planning — but it is completely achievable.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Is the nutrition approach sustainable?</button>
+                        <button class="accordion-header">Is it okay to eat out while on the program? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Our focus is on lifelong habits, not temporary restrictions.</p>
+                            <p>Yes. CurvaFit teaches you how to make good choices in restaurants, not how to avoid all social situations. The general rule: choose a protein-based main dish, ask for sauces and dressings on the side, replace fries with a salad or vegetable, and drink water instead of soda. You don't need to eat perfectly — you need to eat <strong>better than before</strong>, most of the time.</p>
                         </div>
                     </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">Is this a crash diet? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content">
+                            <p>No. A crash diet is any approach that drops your calories below 1,200 per day, eliminates entire food groups, or promises extreme rapid weight loss. CurvaFit recommends <strong>1,400–1,700 calories per day</strong> for most plus-size women — enough to feel satisfied, energetic, and not deprived, while still creating a fat-burning deficit. We never recommend going below safe calorie thresholds.</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
-        <section id="payments-access" class="faq-category" data-category="payments">
+
+        <!-- ══ SAFETY & HEALTH (original section, enriched) ══ -->
+        <section id="safety-health" class="faq-category" data-category="safety">
             <div class="container">
-                <h2>Payments & Access</h2>
+                <div class="faq-category-header">
+                    <div class="faq-cat-icon"><i class="fi fi-rr-shield-check"></i></div>
+                    <div>
+                        <h2>Safety &amp; Medical</h2>
+                        <p class="faq-cat-sub">Honest answers for women with health conditions.</p>
+                    </div>
+                </div>
                 <div class="accordion">
+
                     <div class="accordion-item">
-                        <button class="accordion-header">What payment methods are accepted?</button>
+                        <button class="accordion-header">Should I consult my doctor before starting? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Credit cards, PayPal, and select digital wallets for secure transactions.</p>
+                            <p>Yes — always. CurvaFit is an educational lifestyle program, not a medical service. Before making significant changes to your eating or exercise habits, speak with your doctor — especially if you take medication, have a diagnosed condition, or have not been physically active for a long time. This is not a warning we add for legal reasons. It is genuine advice because your safety matters more than any program.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Is there a refund policy?</button>
+                        <button class="accordion-header">Is CurvaFit safe if I have PCOS? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Refer to our refund policy page for details on body positive fitness programs.</p>
+                            <p>The CurvaFit approach — moderate calorie deficit, high protein, low refined sugar, low-impact movement, sleep optimization, and stress reduction — <strong>aligns well with the lifestyle changes most recommended for PCOS management</strong>. However, PCOS is a medical condition that varies significantly between women. Some women with PCOS have insulin resistance that requires specific dietary adjustments. Always work with your gynecologist or endocrinologist alongside any lifestyle program.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Do I get lifetime access?</button>
+                        <button class="accordion-header">Can I follow the program if I have type 2 diabetes? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Yes, once purchased, access is yours for life.</p>
+                            <p>The nutritional principles of CurvaFit — reducing refined sugars, increasing protein and fiber, eating structured meals — are consistent with general diabetes-friendly dietary guidance. However, if you are on insulin or blood sugar medication, changes in your diet can affect your medication dosage. <strong>Do not start without informing your doctor.</strong> They may need to adjust your medication as your diet and weight change.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Can I upgrade later?</button>
+                        <button class="accordion-header">Is this safe during menopause? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Yes, contact support for upgrade options in sustainable fat loss questions.</p>
+                            <p>Yes, and it is particularly relevant. Menopause causes hormonal changes that shift fat storage toward the abdomen and slow metabolism. CurvaFit's focus on protein preservation, cortisol reduction through stress management, and sleep optimization directly addresses the mechanisms that make weight loss harder during menopause. The Over 40 community group specifically supports women navigating this transition together.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Is payment secure?</button>
+                        <button class="accordion-header">I have knee pain — can I still exercise? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>We use industry-standard encryption for all transactions.</p>
+                            <p>Yes. None of the Beginner program exercises require impact on the knee joint. Walking on flat ground, seated exercises, floor stretching, and gentle chair exercises are all available. The program explicitly avoids running, jumping, and high-knee movements for this reason. As you lose weight, knee pressure naturally reduces — which over time may improve your pain. If your knee pain is severe, consult a physiotherapist before starting any movement.</p>
                         </div>
                     </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">Can I do the program if I have limited mobility? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content">
+                            <p>Partially, yes. The nutrition component of CurvaFit applies regardless of mobility level — and nutrition is 70–80% of fat loss. For the exercise component, we offer chair-based and seated adaptations for women with limited mobility. If floor exercises are not possible, walking short distances and chair movement can still support results. Contact our support team and we will guide you to the right modifications.</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
+
+        <!-- ══ COMMUNITY (original section, enriched) ══ -->
         <section id="community-support" class="faq-category" data-category="community">
             <div class="container">
-                <h2>Community & Support</h2>
+                <div class="faq-category-header">
+                    <div class="faq-cat-icon"><i class="fi fi-rr-users"></i></div>
+                    <div>
+                        <h2>Community &amp; Support</h2>
+                        <p class="faq-cat-sub">About the CurvaFit community — safety, anonymity, and belonging.</p>
+                    </div>
+                </div>
                 <div class="accordion">
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Is there a private community?</button>
+                        <button class="accordion-header">Is the community really safe and judgment-free? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Yes, a supportive space for members sharing plus size fitness FAQ experiences.</p>
+                            <p>Yes — and this is enforced, not just stated. The community has active moderators 24 hours a day, 7 days a week. Any comment that body-shames, compares member progress negatively, promotes dangerous methods, or creates pressure is removed immediately. First offense results in a warning. Second offense results in permanent removal. Zero exceptions. Our members have called this the first fitness space where they felt genuinely safe.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">How do I ask questions?</button>
+                        <button class="accordion-header">What if I'm too embarrassed to share my starting weight? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Through the community forum or contact support for personalized help.</p>
+                            <p>You never have to share your starting weight publicly if you don't want to. Many members begin by simply introducing themselves by first name, city, and one goal. When you are ready to share more, the community is there to receive it without judgment. The weekly weight log thread is optional — showing up matters more than any number you post.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Do I get coaching support?</button>
+                        <button class="accordion-header">Can I be anonymous in the community? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Select programs include access to coaches for weight loss for curvy women guidance.</p>
+                            <p>Yes. You can use a username rather than your real name. Sensitive threads — emotional eating, plateau struggles, mental health — have an anonymous posting option. Your real identity is never revealed to other members without your consent. What is shared in the community stays in the community. Screenshots shared externally are a violation of membership terms and result in immediate removal.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Is the community active?</button>
+                        <button class="accordion-header">What happens if someone is rude or body-shaming in the group? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Our members engage daily in discussions on body positive fitness programs.</p>
+                            <p>Report it with one click using the anonymous report button. A moderator reviews it within 2 hours. If the content violates community standards, it is removed and the member receives a warning or ban depending on severity. You can also message the moderation team directly. Your report is always anonymous — the person you report will never know it was you.</p>
                         </div>
                     </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">Do I get coaching support? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content">
+                            <p>Program members have access to weekly live Q&amp;A sessions with Coach Anna (movement) and Coach Maria (nutrition). Premium Coach Access members get direct 1-on-1 messages answered within 4 hours. All members can post in the coach Q&amp;A threads and receive responses within 24 hours. You are never alone in this community.</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
+
+        <!-- ══ PAYMENTS (original section, enriched) ══ -->
+        <section id="payments-access" class="faq-category" data-category="payments">
+            <div class="container">
+                <div class="faq-category-header">
+                    <div class="faq-cat-icon"><i class="fi fi-rr-credit-card"></i></div>
+                    <div>
+                        <h2>Billing &amp; Refunds</h2>
+                        <p class="faq-cat-sub">Transparent answers about pricing, access, and your money.</p>
+                    </div>
+                </div>
+                <div class="accordion">
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">What payment methods are accepted? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content">
+                            <p>We accept all major credit and debit cards (Visa, Mastercard, American Express), PayPal, and select digital wallets. All transactions are processed securely through Stripe — a PCI DSS Level 1 certified payment processor. CurvaFit never stores your card details on our own servers.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">What is your refund policy? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content">
+                            <p>CurvaFit offers a <strong>30-day money-back guarantee</strong> on all program purchases. If you are not satisfied within the first 30 days, contact us at billing@curvafit.com with your order number and we will process your refund — no lengthy explanations required. After 30 days, refunds are evaluated on a case-by-case basis. Full details are on the <a href="/policies/refund.html" style="color:var(--rose); font-weight:600;">Refund Policy page</a>.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">Are there hidden fees after purchase? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content">
+                            <p>No. The price you see is the price you pay — once, with lifetime access to that program. There are no automatic renewals, no monthly subscriptions hidden in the fine print, and no surprise charges. The only optional upgrades are the Premium Coach Access ($49/month) and physical products from the shop — both clearly priced and entirely optional.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">Do I get lifetime access? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content">
+                            <p>Yes. Once you purchase a program, it is yours permanently. You can return to the content at any time — whether that is 6 months or 3 years later. Program updates and improvements are included at no extra cost.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">Can I upgrade to a higher program later? <i class="fi fi-rr-angle-down"></i></button>
+                        <div class="accordion-content">
+                            <p>Yes. Contact support@curvafit.com and we will apply a credit for your original purchase toward the upgrade. You will only pay the difference in price — never the full amount again.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ TECHNICAL (original section, enriched) ══ -->
         <section id="technical-questions" class="faq-category" data-category="technical">
             <div class="container">
-                <h2>Technical Questions</h2>
+                <div class="faq-category-header">
+                    <div class="faq-cat-icon"><i class="fi fi-rr-settings"></i></div>
+                    <div>
+                        <h2>Technical Questions</h2>
+                        <p class="faq-cat-sub">Access issues, login problems, and platform support.</p>
+                    </div>
+                </div>
                 <div class="accordion">
+
                     <div class="accordion-item">
-                        <button class="accordion-header">I didn’t receive my login email.</button>
+                        <button class="accordion-header">I didn't receive my login email after purchase. <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Check spam folder or contact support for assistance.</p>
+                            <p>First, check your spam or junk folder — our emails occasionally land there. If it is not there, wait 15 minutes and check again. If you still haven't received it after 30 minutes, contact support@curvafit.com with the email address you used at checkout and your order confirmation number. We resolve access issues within a few hours.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">I forgot my password.</button>
+                        <button class="accordion-header">I forgot my password. <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Use the 'Forgot Password' link on the login page.</p>
+                            <p>Use the "Forgot Password" link on the login page. A reset link will be sent to your registered email within a few minutes. If you don't receive it, check spam or contact support@curvafit.com — we will manually reset your access.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">Videos are not loading.</button>
+                        <button class="accordion-header">Videos are not loading properly. <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Check your internet connection or try a different browser.</p>
+                            <p>Try the following steps in order: refresh the page, check your internet connection speed, clear your browser cache, or try a different browser (Chrome or Firefox work best). If videos still don't load, contact support with your device type and browser version and we will investigate on our end.</p>
                         </div>
                     </div>
+
                     <div class="accordion-item">
-                        <button class="accordion-header">How do I access on mobile?</button>
+                        <button class="accordion-header">How do I access the platform on my phone? <i class="fi fi-rr-angle-down"></i></button>
                         <div class="accordion-content">
-                            <p>Our platform is mobile-optimized for seamless access.</p>
+                            <p>The CurvaFit platform is fully mobile-optimized. Open your browser (Safari on iPhone, Chrome on Android), go to curvafit.com, and log in. All content — videos, meal plans, community — is accessible on mobile without downloading any app. You can also add the site to your home screen for quick access.</p>
                         </div>
                     </div>
+
                 </div>
             </div>
         </section>
-        <section id="final-cta" class="final-cta-section">
+
+        <!-- ══ STILL HAVE A QUESTION — new warm CTA section ══ -->
+        <section class="faq-contact-cta">
             <div class="container">
-                <h2>Still Have Questions?</h2>
-                <p>We're here to provide more personalized guidance on your plus size fitness FAQ or any other concerns.</p>
-                <a href="contact.html" class="primary-cta button-3d">Contact Us</a>
+                <div class="fcc-inner">
+                    <div class="fcc-icon">💬</div>
+                    <h2>Still Have a Question?</h2>
+                    <p>No question is too small or too personal. Our team answers every message — real people, not bots. We respond within 48 hours, usually much faster.</p>
+                    <div class="fcc-buttons">
+                        <a href="contact.html" class="button-3d">Send Us a Message</a>
+                        <a href="mailto:support@curvafit.com" class="button-3d fcc-btn-outline">support@curvafit.com</a>
+                    </div>
+                    <p class="fcc-note">You can also post your question directly in the <a href="community.html">CurvaFit Community</a> — 10,000+ women may already have the answer.</p>
+                </div>
             </div>
         </section>
+
+        <!-- ══ FINAL CTA (original section) ══ -->
+        <section id="final-cta" class="final-cta-section">
+            <div class="final-cta-bg"></div>
+            <div class="container">
+                <div class="final-cta-content">
+                    <span class="section-label section-label--light">Ready to Start?</span>
+                    <h2>You Have the Answers.<br>Now Take the First Step.</h2>
+                    <p>Thousands of plus-size women started exactly where you are — with questions, doubts, and fear of failing again. The difference is they started anyway.</p>
+                    <a href="programs.html" class="primary-cta button-3d large">Find My Program →</a>
+                    <p class="reassurance">⚡ 30-day money-back guarantee · No equipment needed · 100% at home</p>
+                </div>
+            </div>
+        </section>
+
     </main>
+
     <footer class="footer">
         <div class="container footer-grid">
             <div class="footer-brand">
                 <a href="index.html"><img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="CurvaFit Logo"></a>
-                <p>Safe weight loss for curvy women. Honor your body while reaching new vitality.</p>
-                <p>Safe weight loss for curvy women. Honor your body while reaching new vitality.</p>
+                <p>Safe, science-based weight loss for plus-size women. No pills. No crash diets. Just results.</p>
                 <a href="about.html">Learn Our Story</a>
             </div>
             <div class="footer-policies">
                 <ul>
                     <li><a href="/policies/privacy.html">Privacy Policy</a></li>
-                    <li><a href="/policies/terms.html">Terms & Conditions</a></li>
+                    <li><a href="/policies/terms.html">Terms &amp; Conditions</a></li>
                     <li><a href="/policies/refund.html">Refund Policy</a></li>
                     <li><a href="disclaimer.html">Medical Disclaimer</a></li>
                     <li><a href="faq.html">FAQ</a></li>
@@ -374,9 +575,7 @@
                 </ul>
             </div>
             <div class="footer-social">
-                <p class="social-title">
-                    Stay in the Loop — Follow for Curvy Tips and Inspiration.
-                </p>
+                <p class="social-title">Follow for daily tips, real results, and curvy inspiration.</p>
                 <a href=""><i class="fab fa-facebook-f"></i></a>
                 <a href=""><i class="fab fa-instagram"></i></a>
                 <a href=""><i class="fab fa-tiktok"></i></a>
@@ -386,44 +585,88 @@
                 <a href=""><i class="fab fa-x-twitter"></i></a>
             </div>
             <div class="footer-newsletter">
-            <h3>Newsletter</h3>
-            <form id="newsletter-form">
-                <input type="email" id="newsletter-email" placeholder="Enter your email" required>
-                <button type="submit" class="button-3d">Subscribe</button>
-            </form>
+                <h3>Newsletter</h3>
+                <form id="newsletter-form">
+                    <input type="email" id="newsletter-email" placeholder="Enter your email" required>
+                    <button type="submit" class="button-3d">Subscribe</button>
+                </form>
+            </div>
         </div>
-        </div>
-        <!-- NEWSLETTER SUCCESS POPUP -->
         <div id="newsletter-popup" class="newsletter-success-popup">
             <div class="popup-content">
                 <div class="popup-icon">🎉</div>
-                <h3>Thank you for subscribing!</h3>
-                <p>You'll receive exclusive tips, offers and CurvaFit updates soon.</p>
+                <h3>Welcome to the CurvaFit Family!</h3>
+                <p>You'll receive weekly tips, real meal plans, and exclusive member offers.</p>
                 <button id="popup-close-btn">Close</button>
             </div>
         </div>
         <div class="copyright">
-            <p>&copy; 2026 CurvaFit. All rights reserved.</p>
+            <p>&copy; 2026 CurvaFit. All rights reserved. | Results vary. Always consult a healthcare professional before starting any weight loss program.</p>
         </div>
     </footer>
+
     <script src="script.js"></script>
     <script src="page.js"></script>
     <script src="/animations.js"></script>
-    <script src="/animations.js"></script>
     <script src="/search.js"></script>
+
+    <!-- FAQ Search Script -->
+    <script>
+        const searchInput = document.getElementById('faq-search-input');
+        const searchClear = document.getElementById('faq-search-clear');
+        const searchCount = document.getElementById('faq-search-count');
+
+        searchInput.addEventListener('input', function () {
+            const query = this.value.trim().toLowerCase();
+            searchClear.style.display = query ? 'block' : 'none';
+
+            const allItems = document.querySelectorAll('.accordion-item');
+            let visible = 0;
+
+            allItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                const match = !query || text.includes(query);
+                item.style.display = match ? '' : 'none';
+                if (match && query) visible++;
+            });
+
+            // Show/hide category sections
+            document.querySelectorAll('.faq-category').forEach(cat => {
+                if (!query) {
+                    cat.style.display = '';
+                    return;
+                }
+                const hasVisible = [...cat.querySelectorAll('.accordion-item')]
+                    .some(i => i.style.display !== 'none');
+                cat.style.display = hasVisible ? '' : 'none';
+            });
+
+            if (query) {
+                searchCount.style.display = 'block';
+                searchCount.textContent = visible + ' question' + (visible !== 1 ? 's' : '') + ' found for "' + query + '"';
+            } else {
+                searchCount.style.display = 'none';
+            }
+        });
+
+        searchClear.addEventListener('click', function () {
+            searchInput.value = '';
+            this.style.display = 'none';
+            searchCount.style.display = 'none';
+            document.querySelectorAll('.accordion-item').forEach(i => i.style.display = '');
+            document.querySelectorAll('.faq-category').forEach(c => c.style.display = '');
+        });
+    </script>
+
     <div id="audio-player" class="draggable-audio-player">
         <button id="play-pause-btn">
-            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                <path d="M8 5v14l11-7z"/>
-            </svg>
-            <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display: none;">
-                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-            </svg>
+            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
         </button>
         <audio id="audio-element" loop>
             <source src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/audio_glowing_1.mp3?v=1771468630" type="audio/mpeg">
-            Votre navigateur ne supporte pas l'élément audio.
         </audio>
     </div>
+
 </body>
 </html>
