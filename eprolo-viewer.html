@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Eprolo Product Viewer</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #0d0d0d;
+      color: #e0e0e0;
+      padding: 30px;
+      margin: 0;
+    }
+
+    h1 {
+      color: #e91e63;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    #run-btn {
+      background: linear-gradient(135deg, #e91e63, #673ab7);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+
+    #run-btn:hover {
+      opacity: 0.85;
+      transform: translateY(-2px);
+    }
+
+    #run-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #copy-btn {
+      display: none;
+      background: linear-gradient(135deg, #27ae60, #1a8a50);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-left: 12px;
+      transition: all 0.3s;
+    }
+
+    #copy-btn:hover {
+      opacity: 0.85;
+      transform: translateY(-2px);
+    }
+
+    #copy-btn.copied {
+      background: linear-gradient(135deg, #1a8a50, #0d5c35);
+    }
+
+    #status {
+      color: #aaa;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      min-height: 20px;
+    }
+
+    #log-output {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 20px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      max-height: 70vh;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .log-line-ok    { color: #4ade80; }
+    .log-line-info  { color: #e0e0e0; }
+    .log-line-sep   { color: #555; }
+    .log-line-title { color: #e91e63; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <h1>🛒 Eprolo Product Log Viewer</h1>
+
+  <button id="run-btn" onclick="fetchLogs()">▶ Récupérer les produits</button>
+  <button id="copy-btn" onclick="copyLogs()">📋 Copier le log</button>
+
+  <p id="status">Clique sur le bouton pour lancer la récupération.</p>
+
+  <div id="log-output"></div>
+
+  <script>
+    let rawLogs = [];
+
+    async function fetchLogs() {
+      const runBtn  = document.getElementById('run-btn');
+      const copyBtn = document.getElementById('copy-btn');
+      const status  = document.getElementById('status');
+      const output  = document.getElementById('log-output');
+
+      runBtn.disabled = true;
+      runBtn.textContent = '⏳ Chargement...';
+      copyBtn.style.display = 'none';
+      status.textContent = 'Appel en cours vers Netlify...';
+      output.style.display = 'none';
+      output.innerHTML = '';
+      rawLogs = [];
+
+      try {
+        const res  = await fetch('/.netlify/functions/fetch-eprolo-products');
+        const data = await res.json();
+
+        if (data.logs && data.logs.length > 0) {
+          rawLogs = data.logs;
+          renderLogs(data.logs);
+          status.textContent = `✅ ${data.total} produits récupérés. Log prêt à copier.`;
+          copyBtn.style.display = 'inline-block';
+          copyBtn.textContent = '📋 Copier le log';
+          copyBtn.classList.remove('copied');
+        } else {
+          status.textContent = '⚠️ Aucun log retourné. Vérifie la fonction.';
+        }
+
+      } catch (err) {
+        status.textContent = '❌ Erreur : ' + err.message;
+      }
+
+      runBtn.disabled = false;
+      runBtn.textContent = '▶ Récupérer les produits';
+    }
+
+    function renderLogs(logs) {
+      const output = document.getElementById('log-output');
+      output.style.display = 'block';
+
+      const html = logs.map(line => {
+        if (line.includes('✅') || line.includes('🎉')) {
+          return `<span class="log-line-ok">${escHtml(line)}</span>`;
+        } else if (line.startsWith('─')) {
+          return `<span class="log-line-sep">${escHtml(line)}</span>`;
+        } else if (line.includes('Product ID') || line.includes('Titre complet')) {
+          return `<span class="log-line-title">${escHtml(line)}</span>`;
+        } else {
+          return `<span class="log-line-info">${escHtml(line)}</span>`;
+        }
+      }).join('\n');
+
+      output.innerHTML = html;
+    }
+
+    function copyLogs() {
+      if (!rawLogs.length) return;
+
+      const text = rawLogs.join('\n');
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.textContent = '✅ Copié !';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '📋 Copier le log';
+          btn.classList.remove('copied');
+        }, 2500);
+      });
+    }
+
+    function escHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+  </script>
+
+</body>
+</html>
