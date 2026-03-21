@@ -1563,6 +1563,20 @@
       "whatsapp": "https://wa.me/XXXXXXXX",
       "twitter": "https://x.com/curvafit"
     },
+    "programs": {
+      "beginner": {
+        "price": 199,
+        "label": "Start Soft Start"
+      },
+      "intermediate": {
+        "price": 259,
+        "label": "Start Deeper Refiner"
+      },
+      "maintenance": {
+        "price": 379,
+        "label": "Start Forever Fit"
+      }
+    },
     "promos": [
       { "code": "PAUL81",     "items": 10, "percent": 40 },
       { "code": "CURVA15",    "items": 4,  "percent": 20 },

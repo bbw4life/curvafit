@@ -6851,19 +6851,6 @@ tbody tr:hover { background: var(--rose-ultra); }
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* ================================================================
    NOUVELLES SECTIONS — index.html additions
    Colle ce bloc à la fin de ton style.css
@@ -7224,12 +7211,6 @@ tbody tr:hover { background: var(--rose-ultra); }
 @media (max-width: 768px) {
     .journey-steps { grid-template-columns: 1fr; }
 }
-
-
-
-
-
-
 
 
 /* ================================================================
@@ -7722,20 +7703,6 @@ tbody tr:hover { background: var(--rose-ultra); }
 .cs-phase p { font-size: 0.85rem; color: var(--slate); line-height: 1.68; margin: 0; }
 
 @media (max-width: 768px) { .case-studies-grid { grid-template-columns: 1fr; } }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /* ================================================================

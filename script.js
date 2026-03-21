@@ -209,6 +209,72 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// ====================== PROGRAM PRICES ======================
+const programs = settings.programs || {};
+const programMap = {
+  beginner:     programs.beginner    || { price: 99,  label: 'Start Soft Start' },
+  intermediate: programs.intermediate|| { price: 149, label: 'Start Deeper Refiner' },
+  maintenance:  programs.maintenance || { price: 79,  label: 'Start Forever Fit' }
+};
+
+// Prix dans les cartes programs
+document.querySelectorAll('.program-card').forEach(card => {
+  const tier = card.id.replace('program-', ''); // "beginner", "intermediate", "maintenance"
+  const prog = programMap[tier];
+  if (!prog) return;
+
+  const priceEl = card.querySelector('.prog-price');
+  if (priceEl) priceEl.textContent = `$${prog.price}`;
+
+  const ctaEl = card.querySelector('.prog-cta');
+  if (ctaEl) ctaEl.textContent = `${prog.label} →`;
+});
+
+
+// Prix dans le tableau comparatif
+const priceRow = document.querySelector('.comparison-table-section .price-row');
+if (priceRow) {
+  const cells = priceRow.querySelectorAll('td');
+  if (cells[1]) cells[1].textContent = `$${programMap.beginner.price}`;
+  if (cells[2]) cells[2].textContent = `$${programMap.intermediate.price}`;
+  if (cells[3]) cells[3].textContent = `$${programMap.maintenance.price}`;
+}
+
+// Prix dans le final CTA
+const finalBtns = document.querySelectorAll('.final-cta-btn');
+finalBtns.forEach(btn => {
+  if (btn.classList.contains('final-cta-btn--beginner'))
+    btn.textContent = `🌱 Start Beginner — $${programMap.beginner.price}`;
+  else if (btn.classList.contains('final-cta-btn--featured'))
+    btn.textContent = `🔥 Start Intermediate — $${programMap.intermediate.price}`;
+  else if (btn.classList.contains('final-cta-btn--maintenance'))
+    btn.textContent = `🌟 Start Maintenance — $${programMap.maintenance.price}`;
+});
+
+// ====================== SOCIAL CHANNELS SECTION ======================
+const iconClassMap = {
+  'fa-instagram':   socialLinks.instagram,
+  'fa-facebook-f':  socialLinks.facebook,
+  'fa-tiktok':      socialLinks.tiktok,
+  'fa-whatsapp':    socialLinks.whatsapp,
+  'fa-youtube':     socialLinks.youtube,
+  'fa-pinterest-p': socialLinks.pinterest,
+  'fa-x-twitter':   socialLinks.twitter
+};
+
+document.querySelectorAll('.social-channel-card').forEach(card => {
+  const icon = card.querySelector('i');
+  if (!icon) return;
+  for (const [cls, url] of Object.entries(iconClassMap)) {
+    if (url && icon.classList.contains(cls)) {
+      card.href = url;
+      card.target = '_blank';
+      card.rel = 'noopener noreferrer';
+      break;
+    }
+  }
+});
+
 // Fallback : si les icônes sont directement sur le <a> (pas dans un <i>)
 document.querySelectorAll('.footer-social a').forEach(a => {
   if (a.href && a.href !== window.location.href && a.href !== '#') return;
@@ -2553,3 +2619,121 @@ window.addEventListener('load', () => {
 })();
 
 
+
+// ══════════════════════════════════════════
+//  STORY FORM & COMMUNITY STORIES
+// ══════════════════════════════════════════
+
+const storyForm = document.getElementById('story-form');
+if (storyForm) {
+  storyForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const btn = storyForm.querySelector('button[type="submit"]');
+    const original = btn.textContent;
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    const fields  = storyForm.querySelectorAll('input, select, textarea');
+    const nameAge = fields[0].value.split(',');
+
+    const payload = {
+      firstName:   nameAge[0]?.trim() || fields[0].value.trim(),
+      age:         nameAge[1]?.trim() || '',
+      email:       fields[1].value.trim(),
+      startWeight: fields[2].value.trim(),
+      program:     fields[3].value,
+      duration:    fields[4].value.trim(),
+      story:       fields[5].value.trim(),
+      anonymous:   storyForm.querySelector('input[type="checkbox"]')?.checked ? 'true' : 'false'
+    };
+
+    try {
+      const res  = await fetch('/.netlify/functions/story-share', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        btn.textContent = '✅ Story sent!';
+        storyForm.reset();
+        setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 4000);
+      } else {
+        throw new Error(data.error || 'Unknown error');
+      }
+    } catch (err) {
+      btn.textContent = '❌ Error — try again';
+      btn.disabled = false;
+      console.error(err);
+    }
+  });
+}
+
+const PROGRAM_TAG = {
+  'Beginner — Soft Start':         { cls: 'dt-tag--beginner',     icon: '🌱' },
+  'Intermediate — Deeper Refiner': { cls: 'dt-tag--intermediate', icon: '🔥' },
+  'Maintenance — Forever Fit':     { cls: 'dt-tag--maintenance',  icon: '🌟' }
+};
+
+function buildStoryCard(s) {
+  const tag     = PROGRAM_TAG[s.program] || { cls: 'dt-tag--beginner', icon: '🌱' };
+  const nameStr = s.age ? `${s.firstName}, ${s.age}` : s.firstName;
+
+  return `
+    <div class="dt-card dt-card--community">
+      <div class="dt-header">
+        <div class="dt-avatar-placeholder">
+          <i class="fi fi-rr-user"></i>
+        </div>
+        <div>
+          <h3>${nameStr}</h3>
+          <span class="dt-tag ${tag.cls}">${tag.icon} ${s.program}</span>
+        </div>
+      </div>
+      ${s.startWeight ? `
+      <div class="dt-numbers">
+        <div class="dt-num"><span>${s.startWeight} kg</span><small>Start</small></div>
+        ${s.result ? `
+        <div class="dt-arrow">→</div>
+        <div class="dt-num dt-num--result"><span>${s.result}</span><small>${s.duration || ''}</small></div>` : ''}
+      </div>` : ''}
+      <p class="dt-quote">"${s.story}"</p>
+      <div class="rating">
+        <i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i>
+        <i class="fi fi-sr-star"></i><i class="fi fi-sr-star"></i>
+      </div>
+      ${s.date ? `<small class="dt-date">Shared on ${s.date}</small>` : ''}
+    </div>`;
+}
+
+async function loadCommunityStories() {
+  const grid = document.querySelector('#detailed-testimonials .dt-grid');
+  if (!grid) return;
+
+  try {
+    const res  = await fetch('/.netlify/functions/story-share');
+    const data = await res.json();
+
+    if (!data.success || !data.stories.length) return;
+
+    const divider = document.createElement('div');
+    divider.className = 'dt-community-divider';
+    divider.innerHTML = `
+      <span class="section-label">From Our Community</span>
+      <h3>Stories Shared by CurvaFit Members</h3>`;
+    grid.appendChild(divider);
+
+    data.stories.forEach(s => {
+      const temp = document.createElement('div');
+      temp.innerHTML = buildStoryCard(s);
+      grid.appendChild(temp.firstElementChild);
+    });
+
+  } catch (err) {
+    console.warn('Community stories could not load:', err);
+  }
+}
+
+loadCommunityStories();
