@@ -1,16 +1,16 @@
-// fetch-eprolo-products.js
+// fetch-eprolo-products.js — VERSION COMPLÈTE (couleur + taille + prix + stock)
 const fetch = require('node-fetch');
 const crypto = require('crypto');
 
 exports.handler = async (event) => {
-  const logs = []; // ← collecte tous les logs ici
+  const logs = [];
 
   const log = (msg) => {
     console.log(msg);
     logs.push(msg);
   };
 
-  log("[EPROLO PRODUCTS] 🚀 Récupération de TOUS les produits (version stricte)");
+  log("[EPROLO PRODUCTS] 🚀 Récupération de TOUS les produits");
 
   try {
     const apiKey = process.env.EPROLO_API_KEY;
@@ -24,7 +24,6 @@ exports.handler = async (event) => {
     while (hasMore) {
       const timestamp = Date.now();
       const sign = crypto.createHash('md5').update(apiKey + timestamp + apiSecret).digest('hex');
-
       const url = `https://openapi.eprolo.com/product_list.html?sign=${sign}&timestamp=${timestamp}&page=${page}&limit=${limit}`;
 
       log(`[EPROLO] Page ${page} → ${url}`);
@@ -37,7 +36,6 @@ exports.handler = async (event) => {
       if ((data.code === 0 || data.code === "0") && data.data && data.data.length > 0) {
         allProducts = allProducts.concat(data.data);
         log(`✅ Page ${page} : +${data.data.length} produits (total : ${allProducts.length})`);
-
         if (data.data.length < limit) hasMore = false;
         else page++;
       } else {
@@ -45,44 +43,63 @@ exports.handler = async (event) => {
       }
     }
 
-    log(`\n🎉 TOTAL PRODUITS VISIBLES DANS L'API : ${allProducts.length}\n`);
+    log(`\n🎉 TOTAL PRODUITS : ${allProducts.length}\n`);
 
     allProducts.forEach((product, index) => {
-      log(`[${index+1}] Product ID interne : ${product.id}`);
-      log(`Titre complet : ${product.title}`);
-      log(`Variants retournés par l'API : ${product.variantlist ? product.variantlist.length : 0}`);
+      log("═".repeat(90));
+      log(`🔹 [${index + 1}] ${product.title}`);
+      log(`   Product ID : ${product.id}`);
+      log(`   Variants   : ${product.variantlist ? product.variantlist.length : 0}`);
+      log("─".repeat(90));
 
       if (product.variantlist && product.variantlist.length > 0) {
-        log(`→ Variants (COULEUR NETTOYÉE → ID) :`);
 
-        if (index === 0 && product.variantlist[0]) {
-          const firstVariant = product.variantlist[0];
-          log(`   [DEBUG STRUCTURE] Clés disponibles : ${Object.keys(firstVariant).join(' | ')}`);
+        // Debug structure — une seule fois sur le premier produit
+        if (index === 0) {
+          const keys = Object.keys(product.variantlist[0]);
+          log(`   [DEBUG KEYS] ${keys.join(' | ')}`);
+          log("─".repeat(90));
         }
 
-        product.variantlist.forEach((variant, vIndex) => {
-          let rawColor = variant.color ||
-                        variant.option1 ||
-                        variant.option_value ||
-                        variant.name ||
-                        variant.sku ||
-                        'N/A';
+        // Grouper les variants par couleur (option1)
+        const colorGroups = {};
 
-          let cleanColor = rawColor
+        product.variantlist.forEach((variant) => {
+          let color = (variant.option1 || variant.color || 'N/A')
             .replace(/ one$/i, '')
-            .replace(/ - Section \d+/i, '')
             .trim();
+          color = color.charAt(0).toUpperCase() + color.slice(1);
 
-          cleanColor = cleanColor.charAt(0).toUpperCase() + cleanColor.slice(1);
+          const size    = (variant.option2 || '').trim();
+          const option3 = (variant.option3 || '').trim();
 
-          log(`   [${vIndex+1}] ${cleanColor} → ${variant.id}   (SKU: ${variant.sku || 'N/A'})`);
+          if (!colorGroups[color]) colorGroups[color] = [];
+          colorGroups[color].push({
+            size,
+            option3,
+            id:     variant.id,
+            sku:    variant.sku               || 'N/A',
+            price:  variant.cost              || 'N/A',
+            weight: variant.weight            || 'N/A',
+            stock:  variant.inventory_quantity || 'N/A'
+          });
+        });
+
+        // Affichage groupé par couleur
+        Object.entries(colorGroups).forEach(([color, variants]) => {
+          log(`   🎨 ${color} (${variants.length} taille(s))`);
+          variants.forEach((v) => {
+            const sizeStr   = v.size    ? `SIZE: ${v.size}`        : 'SIZE: —';
+            const opt3Str   = v.option3 ? ` | OPT3: ${v.option3}` : '';
+            log(`      → ID: ${v.id} | ${sizeStr}${opt3Str} | SKU: ${v.sku} | PRIX: ${v.price} | POIDS: ${v.weight} | STOCK: ${v.stock}`);
+          });
+          log('');
         });
       }
-      log("─".repeat(90));
     });
 
-    log(`\n✅ FIN DU LOG - Copie maintenant les lignes dont tu as besoin dans products.data.json`);
-    log(`Note : Si tu ne vois pas "Black", c'est que ce variant n'est pas encore "Synced" dans l'API.`);
+    log("═".repeat(90));
+    log("✅ FIN DU LOG");
 
     return {
       statusCode: 200,
@@ -90,7 +107,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         success: true,
         total: allProducts.length,
-        logs: logs  // ← les logs sont maintenant dans la réponse
+        logs: logs
       })
     };
 
