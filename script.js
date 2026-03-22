@@ -2028,18 +2028,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.buy-now').forEach(btn => { btn.addEventListener('click', (e) => { addToCart(e); checkout(); }); });
   document.querySelectorAll('.wishlist-toggle, .wishlist-icon-product, .mini-wishlist-icon').forEach(icon => { icon.addEventListener('click', toggleWishlist); });
 
- const cartWrapper = document.querySelector('.icon-wrapper:has(.cart-icon)');
-if (cartWrapper) {
-    cartWrapper.addEventListener('click', openCartDrawer);
-    const cartBadgeEl = cartWrapper.querySelector('.cart-badge');
-    if (cartBadgeEl) cartBadgeEl.addEventListener('click', openCartDrawer);
-}
-const wishlistWrapper = document.querySelector('.icon-wrapper:has(.wishlist-icon)');
-if (wishlistWrapper) {
-    wishlistWrapper.addEventListener('click', openWishlistModal);
-    const wishlistBadgeEl = wishlistWrapper.querySelector('.wishlist-badge');
-    if (wishlistBadgeEl) wishlistBadgeEl.addEventListener('click', openWishlistModal);
-}
+  const cartWrapper = document.querySelector('.icon-wrapper:has(.cart-icon)');
+  if (cartWrapper) cartWrapper.addEventListener('click', openCartDrawer);
+  const wishlistWrapper = document.querySelector('.icon-wrapper:has(.wishlist-icon)');
+  if (wishlistWrapper) wishlistWrapper.addEventListener('click', openWishlistModal);
 
   if (overlay) overlay.addEventListener('click', () => { closeCartDrawer(); closeWishlistModal(); });
   const closeDrawerBtn = document.querySelector('.close-drawer');
