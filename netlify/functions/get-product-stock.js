@@ -1,5 +1,6 @@
 // netlify/functions/get-product-stock.js
-// Retourne le stock total d'un produit EPROLO via son cj_id (product ID EPROLO)
+// Récupère le stock d'un produit EPROLO via son cj_id
+// Utilise product_list avec filtre, car product_detail n'est pas un endpoint valide
 
 const fetch  = require('node-fetch');
 const crypto = require('crypto');
@@ -11,7 +12,6 @@ exports.handler = async (event) => {
     'Access-Control-Allow-Headers': 'Content-Type'
   };
 
-  // OPTIONS preflight
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
   }
@@ -30,43 +30,46 @@ exports.handler = async (event) => {
     const apiKey    = process.env.EPROLO_API_KEY;
     const apiSecret = process.env.EPROLO_API_SECRET;
 
-    const timestamp = Date.now();
-    const sign      = crypto
-      .createHash('md5')
-      .update(apiKey + timestamp + apiSecret)
-      .digest('hex');
+    // Stratégie : parcourir les pages de product_list jusqu'à trouver le produit
+    // (même logique que fetch-eprolo-products.js qui fonctionne)
+    let page = 1;
+    const limit = 100;
+    let found = null;
 
-    // Appel API EPROLO — détail d'un produit
-    const url = `https://openapi.eprolo.com/product_detail.html?sign=${sign}&timestamp=${timestamp}&product_id=${cj_id}`;
+    while (!found && page <= 20) { // max 20 pages = 2000 produits
+      const timestamp = Date.now();
+      const sign = crypto
+        .createHash('md5')
+        .update(apiKey + timestamp + apiSecret)
+        .digest('hex');
 
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: { 'apiKey': apiKey }
-    });
+      const url = `https://openapi.eprolo.com/product_list.html?sign=${sign}&timestamp=${timestamp}&page=${page}&limit=${limit}`;
 
-    const data = await response.json();
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { 'apiKey': apiKey }
+      });
 
-    if ((data.code === 0 || data.code === '0') && data.data) {
-      const product  = data.data;
-      const variants = product.variantlist || [];
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.error('[get-product-stock] JSON parse error page', page);
+        break;
+      }
 
-      // Additionner le stock de toutes les variantes
-      const totalStock = variants.reduce((sum, v) => {
-        const qty = parseInt(v.inventory_quantity) || 0;
-        return sum + qty;
-      }, 0);
+      if ((data.code === 0 || data.code === '0') && data.data && data.data.length > 0) {
+        // Chercher le produit par son id
+        found = data.data.find(p => String(p.id) === String(cj_id));
 
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-          success:     true,
-          cj_id:       cj_id,
-          totalStock:  totalStock,
-          variantCount: variants.length
-        })
-      };
-    } else {
+        if (data.data.length < limit) break; // dernière page
+        page++;
+      } else {
+        break;
+      }
+    }
+
+    if (!found) {
       return {
         statusCode: 200,
         headers,
@@ -74,10 +77,27 @@ exports.handler = async (event) => {
           success:    false,
           cj_id:      cj_id,
           totalStock: null,
-          error:      data.message || 'Product not found'
+          error:      'Product not found in EPROLO catalog'
         })
       };
     }
+
+    // Additionner le stock de toutes les variantes
+    const variants    = found.variantlist || [];
+    const totalStock  = variants.reduce((sum, v) => {
+      return sum + (parseInt(v.inventory_quantity) || 0);
+    }, 0);
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        success:      true,
+        cj_id:        cj_id,
+        totalStock:   totalStock,
+        variantCount: variants.length
+      })
+    };
 
   } catch (error) {
     console.error('[get-product-stock] Error:', error.message);
