@@ -226,6 +226,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const settings = products.find(p => p.type === "settings") || {};
       const enableMediaZoom = (settings.enable_media_zoom || "no").toLowerCase() === "yes";
 
+      // PATCH 2 — Désactiver complètement le zoom si "no"
+    if (!enableMediaZoom) {
+        const noZoomStyle = document.createElement('style');
+        noZoomStyle.id = 'no-zoom-style';
+        noZoomStyle.textContent = `
+            .main-image img { transform: none !important; cursor: default !important; }
+            .main-image:hover img { transform: none !important; }
+            #media-zoom-modal { display: none !important; pointer-events: none !important; }
+        `;
+        document.head.appendChild(noZoomStyle);
+    }
+
+
       // ══════════════════════════════════════════
       //  FEATURED SPOTLIGHT — dynamique depuis settings
       // ══════════════════════════════════════════
@@ -662,6 +675,19 @@ document.addEventListener('DOMContentLoaded', () => {
           card.querySelector('p').textContent = product.description;
           const img = card.querySelector('img');
           if (img) { img.src = upgradeShopifyImageUrl(product.image); img.alt = product.title; }
+          // ── HOVER IMAGE SWAP ──
+            if (product.image_hover) {
+                const imgHover = upgradeShopifyImageUrl(product.image_hover);
+                const preload = new Image();
+                preload.src = imgHover;
+
+                card.addEventListener('mouseenter', () => { img.src = imgHover; });
+                card.addEventListener('mouseleave', () => { img.src = upgradeShopifyImageUrl(product.image); });
+
+                card.addEventListener('touchstart', () => { img.src = imgHover; }, { passive: true });
+                card.addEventListener('touchend', () => { setTimeout(() => { img.src = upgradeShopifyImageUrl(product.image); }, 700); }, { passive: true });
+            }
+
           card.dataset.title = product.title;
           card.dataset.price = product.price;
           card.dataset.comparePrice = product.compare_price;
@@ -702,6 +728,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("✅ Product ID chargé pour les reviews :", window.currentProductId);
         if (typeof loadDynamicReviews === 'function') loadDynamicReviews();
         const prod = products.find(p => p.id === pid);
+        // PATCH 3 — Stock bar
+        if (prod && prod.cj_id) {
+            initStockBar(prod.cj_id);
+        }
 
         // ====================== RATING & REVIEWS COUNT ======================
         if (prod) {
@@ -3057,3 +3087,58 @@ async function loadCommunityStories() {
 }
 
 loadCommunityStories();
+
+
+function initStockBar(cjId) {
+    const block = document.getElementById('pp-stock-block');
+    const label = document.getElementById('pp-stock-label');
+    const fill  = document.getElementById('pp-stock-bar-fill');
+    const hint  = document.getElementById('pp-stock-hint');
+    if (!block || !label || !fill || !hint) return;
+ 
+    fetch(`/.netlify/functions/get-product-stock?cj_id=${cjId}`)
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            block.classList.remove('loading');
+ 
+            if (!data.success || data.totalStock === null) {
+                block.classList.add('error');
+                return;
+            }
+ 
+            const stock = data.totalStock;
+            let level, pct, hintText;
+ 
+            if (stock > 200) {
+                level    = 'high';
+                pct      = 100;
+                hintText = 'In stock — ships within 24h';
+            } else if (stock > 100) {
+                level    = 'medium';
+                pct      = Math.round((stock / 200) * 100);
+                hintText = 'Limited stock remaining';
+            } else {
+                level    = 'low';
+                pct      = Math.max(8, Math.round((stock / 100) * 50));
+                hintText = '⚠️ Almost sold out — order now!';
+            }
+ 
+            // Label
+            label.className = 'pp-stock-label stock--' + level;
+            label.innerHTML =
+                '<span>Only </span>' +
+                '<span class="pp-stock-qty">' + stock + '</span>' +
+                '<span> left in stock</span>';
+ 
+            // Barre
+            fill.className   = 'pp-stock-bar-fill stock--' + level;
+            fill.style.width = pct + '%';
+ 
+            // Hint
+            hint.textContent = hintText;
+        })
+        .catch(function(err) {
+            console.warn('[StockBar] Could not load stock:', err);
+            block.classList.add('error');
+        });
+}

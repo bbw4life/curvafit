@@ -19,6 +19,7 @@
     "price": 39.99,
     "compare_price": 58.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style.webp?v=1771457385",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": ["18 sections","21 sections","24 sections"],
     "colors": [
       {"name": "Blue","hex": "#2196F3","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_6_84d9f4d3-a377-4582-88cb-acafa5e6e0a8.webp?v=1754486478","variant_id": "9984749996","active": true},
@@ -67,6 +68,7 @@
     "price": 34.99,
     "compare_price": 54.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_3.webp?v=1771457384",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": ["S","M","L","XL","XXL","XXXL","4XL","5XL","6XL"],
     "colors": [
       {"name": "Fuchsia","hex": "#FF00FF","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_12_3eda61ad-07b1-49f1-882c-220e14a421fc.webp?v=1754486479","active": true},
@@ -123,6 +125,7 @@
     "price": 17.99,
     "compare_price": 29.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_2.webp?v=1771457384",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": [],
     "colors": [
       {"name": "Pink","hex": "#FF69B4","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_12_3eda61ad-07b1-49f1-882c-220e14a421fc.webp?v=1754486479","variant_id": "9984750002","active": true},
@@ -165,6 +168,7 @@
     "price": 16.99,
     "compare_price": 28.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/band_1.webp?v=1771462321",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": ["S","M","L","XL"],
     "colors": [
       {"name": "Army Green","hex": "#4B5320","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Sf557550825534dea9083e446ec6cbba4C.webp?v=1754486478","active": true},
@@ -251,6 +255,7 @@
     "price": 34.99,
     "compare_price": 54.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_health_1.jpg?v=1771457668",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": ["S","M","L","XL"],
     "colors": [
       {"name": "Dark Red","hex": "#8B0000","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_10_184ef0b5-0954-42a8-8428-0910a101a35b.webp?v=1754486478","variant_id": "9984750014","active": true},
@@ -312,6 +317,7 @@
     "price": 22.99,
     "compare_price": 38.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/band_3.avif?v=1771462322",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": ["S","M","L"],
     "colors": [
       {"name": "Yellow","hex": "#FFD700","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/S6fa99d50654f415da99dadc3135c273ez.webp?v=1754486478","active": true},
@@ -364,6 +370,7 @@
     "price": 24.99,
     "compare_price": 44.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style.webp?v=1771457385",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": ["S","M","L","XL","XXL","3XL","4XL","5XL"],
     "colors": [
       {"name": "Dream Sky Blue","hex": "#87CEEB","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_6_84d9f4d3-a377-4582-88cb-acafa5e6e0a8.webp?v=1754486478","active": true},
@@ -454,6 +461,7 @@
     "price": 14.99,
     "compare_price": 24.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_3.webp?v=1771457384",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": ["M","L","XL"],
     "colors": [
       {"name": "Grey","hex": "#9E9E9E","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_9_1a5d96a4-6cc8-43e2-9bf6-9f130ea40742.webp?v=1754486478","variant_id": "9984750008","active": true},
@@ -502,6 +510,7 @@
     "price": 14.99,
     "compare_price": 24.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/band_1.webp?v=1771462321",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": ["S","M","L","XL","XXL"],
     "colors": [
       {"name": "Pink","hex": "#FF69B4","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_12_3eda61ad-07b1-49f1-882c-220e14a421fc.webp?v=1754486479","active": true},
@@ -549,6 +558,7 @@
     "price": 32.99,
     "compare_price": 54.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_health_1.jpg?v=1771457668",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": [],
     "colors": [
       {"name": "Purple","hex": "#9B59B6","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_12_3eda61ad-07b1-49f1-882c-220e14a421fc.webp?v=1754486479","active": true},
@@ -597,6 +607,7 @@
     "price": 22.99,
     "compare_price": 39.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_3_527794cf-4a45-43e8-8f57-f5ff9d35274b.png?v=1754486472",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": [],
     "colors": [
       {"name": "Black","hex": "#000000","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_9_1a5d96a4-6cc8-43e2-9bf6-9f130ea40742.webp?v=1754486478","active": true},
@@ -643,6 +654,7 @@
     "price": 25.99,
     "compare_price": 42.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_12_3eda61ad-07b1-49f1-882c-220e14a421fc.webp?v=1754486479",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": [],
     "colors": [
       {"name": "Pink","hex": "#FF69B4","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_1_aeda37b4-a4ab-4731-a053-cb94dfb9ac3b.webp?v=1754486478","active": true},
@@ -683,6 +695,7 @@
     "price": 9.99,
     "compare_price": 17.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_2.webp?v=1771457384",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": [],
     "colors": [
       {"name": "Gray","hex": "#9E9E9E","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_9_1a5d96a4-6cc8-43e2-9bf6-9f130ea40742.webp?v=1754486478","active": true},
@@ -729,6 +742,7 @@
     "price": 22.99,
     "compare_price": 39.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_2.webp?v=1771457384",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": ["39","40","41","42","43","44"],
     "colors": [
       {"name": "Grey","hex": "#9E9E9E","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_9_1a5d96a4-6cc8-43e2-9bf6-9f130ea40742.webp?v=1754486478","active": true},
@@ -772,6 +786,7 @@
     "price": 14.99,
     "compare_price": 24.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_3.webp?v=1771457384",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": ["800g","850g","900g","1000g"],
     "colors": [
       {"name": "Purple White","hex": "#9B59B6","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_12_3eda61ad-07b1-49f1-882c-220e14a421fc.webp?v=1754486479","active": true},
@@ -828,6 +843,7 @@
     "price": 22.99,
     "compare_price": 39.99,
     "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_health_1.jpg?v=1771457668",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": [],
     "colors": [
       {"name": "Dark Green","hex": "#2d5a27","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_health_1.jpg?v=1771457668","active": true},
@@ -893,7 +909,7 @@
       {"code": "BUNDLEFREE","items": 6,"percent": 30},
       {"code": "CURVA40","items": 7,"percent": 40}
     ],
-    "enable_media_zoom": "yes",
+    "enable_media_zoom": "Yes",
     "flash_deal": {
       "hours": 8
     },
