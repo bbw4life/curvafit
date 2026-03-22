@@ -4347,21 +4347,3 @@ body {
     border-radius: inherit;
 }
 
-
-@media (max-width: 768px) {
-    .icon-wrapper {
-        position: relative;
-        padding: 8px !important;
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    .icon-wrapper .badge {
-        pointer-events: none;
-    }
-
-    .cart-icon,
-    .wishlist-icon {
-        pointer-events: none;
-    }
-}
