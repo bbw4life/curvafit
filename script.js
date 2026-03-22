@@ -3095,45 +3095,45 @@ function initStockBar(cjId) {
     const fill  = document.getElementById('pp-stock-bar-fill');
     const hint  = document.getElementById('pp-stock-hint');
     if (!block || !label || !fill || !hint) return;
- 
+
     fetch(`/.netlify/functions/get-product-stock?cj_id=${cjId}`)
         .then(function(res) { return res.json(); })
         .then(function(data) {
             block.classList.remove('loading');
- 
+
             if (!data.success || data.totalStock === null) {
                 block.classList.add('error');
                 return;
             }
- 
+
             const stock = data.totalStock;
             let level, pct, hintText;
- 
+
             if (stock > 200) {
                 level    = 'high';
                 pct      = 100;
-                hintText = 'In stock — ships within 24h';
+                hintText = 'High demand — order yours before it sells out!';
             } else if (stock > 100) {
                 level    = 'medium';
                 pct      = Math.round((stock / 200) * 100);
-                hintText = 'Limited stock remaining';
+                hintText = 'Selling fast — grab yours while you can!';
             } else {
                 level    = 'low';
                 pct      = Math.max(8, Math.round((stock / 100) * 50));
-                hintText = '⚠️ Almost sold out — order now!';
+                hintText = '⚠️ Almost gone — don\'t miss out!';
             }
- 
+
             // Label
             label.className = 'pp-stock-label stock--' + level;
             label.innerHTML =
                 '<span>Only </span>' +
                 '<span class="pp-stock-qty">' + stock + '</span>' +
-                '<span> left in stock</span>';
- 
+                '<span> units left</span>';
+
             // Barre
             fill.className   = 'pp-stock-bar-fill stock--' + level;
             fill.style.width = pct + '%';
- 
+
             // Hint
             hint.textContent = hintText;
         })
