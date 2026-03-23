@@ -18,13 +18,31 @@
     "description": "Burns belly fat while you watch TV. The magnetic design stays on your waist automatically — adjustable from 18 to 24 sections to fit every size. No experience needed.",
     "price": 39.99,
     "compare_price": 58.99,
-    "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_8.png?v=1774226085",
-    "image_hover": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_blue.jpg?v=1774227670",
+    "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_produit_first.webp?v=1774271069&width=3000",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_hover.avif?v=1774271070&width=3000",
     "sizes": ["18 sections","21 sections","24 sections"],
     "colors": [
-      {"name": "Blue","hex": "#2196F3","image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_1_blue.webp?v=1774231220","variant_id": "9984749996","active": true},
-      {"name": "Purple","hex": "#9B59B6","image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/purple.jpg?v=1774231220","variant_id": "9984749997","active": true},
-      {"name": "Pink","hex": "#FF69B4","image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_2_purple.jpg?v=1774231220","variant_id": "9984749998","active": true}
+      {
+        "name": "Blue",
+        "hex": "#2196F3",
+        "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_1_blue.webp?v=1774231220&width=3000",
+        "variant_id": "9984749996",
+        "active": true
+      },
+      {
+        "name": "Purple",
+        "hex": "#9B59B6",
+        "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/purple_hoop.webp?v=1774271070&width=3000",
+        "variant_id": "9984749997",
+        "active": true
+      },
+      {
+        "name": "Pink",
+        "hex": "#FF69B4",
+        "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_pink.jpg?v=1774227670&width=3000",
+        "variant_id": "9984749998",
+        "active": true
+      }
     ],
     "variants": [
       {"vid": "710072511","color": "Blue","size": "24 sections","price": 39.99,"active": true},
@@ -38,15 +56,20 @@
       {"vid": "710072503","color": "Pink","size": "18 sections","price": 29.99,"active": true}
     ],
     "media": [
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_1.png?v=1774228283",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_7_34cbe5a0-ea02-44e1-9021-6fc9a0f59e47.webp?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_9_fd535894-2578-4b8a-84a2-a7c29f33289a.webp?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_6_eecf21aa-e517-4bb3-8a8f-acba192c2ee5.jpg?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_8_a061f9a0-813c-4cf1-8bc4-2e953051174a.jpg?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_2_2931fd8b-047d-465b-8043-b7d7126b39f7.jpg?v=1771884541",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_3_6f466031-c570-4b5a-a705-f3df71589a31.png?v=1771884541"
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_tr.webp?v=1774271070&width=3000",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_4.webp?v=1774272457&width=3000",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_seconde.webp?v=1774271070&width=3000",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_7.jpg?v=1774272457&width=3000",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_produit_first.webp?v=1774271069&width=3000",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_5.webp?v=1774272457&width=3000",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_3.jpg?v=1774272457&width=3000",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_8.jpg?v=1774273600&width=3000",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_12.webp?v=1774274436&width=3000",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_10.webp?v=1774273600&width=3000",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_14.jpg?v=1774226054",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_14.jpg?v=1774226054",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_2.jpg?v=1774272457&width=3000",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_13.webp?v=1774274436&width=3000"
     ],
     "promo": {"start_date": "2026-02-24","end_date": "2026-02-28","single_discount": 0,"duo_discount": 0,"trio_discount": 0}
   },

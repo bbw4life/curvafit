@@ -38,7 +38,6 @@
     cursor: pointer;
     border-radius: 8px;
     overflow: hidden;
-    /* MOD 2: réduit le zoom des thumbnails */
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     flex-shrink: 0;
 }
@@ -47,8 +46,8 @@
     box-shadow: 0 4px 12px rgba(233, 30, 99, 0.20);
 }
 .thumbnail-item img {
-    width: 86px;  /* FIX 2: 86x86 bien carrés */
-    height: 86px;
+    width: 86px !important;
+    height: 86px !important;
     object-fit: cover;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
@@ -78,6 +77,7 @@
     border: 2px solid #000000;
     transition: transform 0.08s linear;
     will-change: transform;
+    object-fit: contain;
 }
 .slider-arrow {
     position: absolute;
@@ -384,14 +384,15 @@ button.buy-now.cta:hover {
         flex: 0 0 auto;
     }
     .thumbnail-item img {
-        width: 70px;
-        height: 70px;
+        width: 70px !important;
+        height: 70px !important;
     }
     .main-image-slider {
         width: 100%;
     }
     .main-image img {
         height: 390px !important;
+        object-fit: cover !important;
     }
     .slider-arrow.prev {
         left: 10px;
@@ -464,8 +465,6 @@ button.buy-now.cta:hover {
     line-height: 1.2;
 }
  
-
-
 /* ── Star Rating ── */
 .unique-star-rating-container {
     display: flex;
@@ -1374,15 +1373,15 @@ details[open] .chevron {
     text-align: center;
 }
 .feature-item img {
-    width: 50px;
-    height: 50px;
-    margin-bottom: 5px;
+    width: 60px !important;
+    height: 60px !important;
+    margin-bottom: 6px;
     border: none;
     border-radius: 50%;
     background: white;
-    padding: 6px;
-    box-shadow: 0 2px 8px rgba(233, 30, 99, 0.15);
-    object-fit: contain;
+    padding: 0;
+    box-shadow: 0 4px 12px rgba(233, 30, 99, 0.18);
+    object-fit: cover !important;
 }
 .feature-item p {
     font-size: 14px;
@@ -1392,8 +1391,15 @@ details[open] .chevron {
 }
 @media (max-width: 768px) {
     .product-features { gap: 8px; }
-    .feature-item img { width: 40px; height: 40px; }
-    .feature-item p { font-size: 12px; }
+
+    .feature-item img {
+        width: 52px !important;
+        height: 52px !important;
+    }
+
+    .feature-item p {
+        font-size: 12px;
+    }
 }
 
 
@@ -1488,9 +1494,6 @@ details[open] .chevron {
     .slide-image { height: 200px !important; }
 }
 
-
-
- 
 /* ── Shipping Icons ── */
 .paul-shipping-icons {
     background: white;
@@ -1586,6 +1589,14 @@ details[open] .chevron {
     fill: #e91e63;
     stroke: none;
 }
+
+
+
+
+
+
+
+
  
 /* ── Wave sections ── */
 #wave-section * {
@@ -4347,3 +4358,14 @@ body {
     border-radius: inherit;
 }
 
+
+
+
+
+@media (max-width: 768px) {
+    .product-media {
+        width: calc(100% + 20px);
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+}
