@@ -421,8 +421,8 @@ function showErrorPopup(message, isSuccess = false) {
     }, 8000);
 }
 
-let counts = {1: 0, 2: 1, 3: 2, 4: 7, 5: 35};
-let total = 45;
+let counts = {1: 0, 2: 0, 3: 2, 4: 7, 5: 64};
+let total = 73;
 
 function updateSummary() {
     totalReviewsSpan.textContent = total;

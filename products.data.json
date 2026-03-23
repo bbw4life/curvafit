@@ -18,13 +18,13 @@
     "description": "Burns belly fat while you watch TV. The magnetic design stays on your waist automatically — adjustable from 18 to 24 sections to fit every size. No experience needed.",
     "price": 39.99,
     "compare_price": 58.99,
-    "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style.webp?v=1771457385",
-    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
+    "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_8.png?v=1774226085",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_blue.jpg?v=1774227670",
     "sizes": ["18 sections","21 sections","24 sections"],
     "colors": [
-      {"name": "Blue","hex": "#2196F3","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_6_84d9f4d3-a377-4582-88cb-acafa5e6e0a8.webp?v=1754486478","variant_id": "9984749996","active": true},
-      {"name": "Purple","hex": "#9B59B6","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_12_3eda61ad-07b1-49f1-882c-220e14a421fc.webp?v=1754486479","variant_id": "9984749997","active": true},
-      {"name": "Pink","hex": "#FF69B4","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_12_3eda61ad-07b1-49f1-882c-220e14a421fc.webp?v=1754486479","variant_id": "9984749998","active": true}
+      {"name": "Blue","hex": "#2196F3","image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_1_blue.webp?v=1774231220","variant_id": "9984749996","active": true},
+      {"name": "Purple","hex": "#9B59B6","image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/purple.jpg?v=1774231220","variant_id": "9984749997","active": true},
+      {"name": "Pink","hex": "#FF69B4","image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_2_purple.jpg?v=1774231220","variant_id": "9984749998","active": true}
     ],
     "variants": [
       {"vid": "710072511","color": "Blue","size": "24 sections","price": 39.99,"active": true},
@@ -38,7 +38,7 @@
       {"vid": "710072503","color": "Pink","size": "18 sections","price": 29.99,"active": true}
     ],
     "media": [
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow4_a9227abc-e102-4a7b-98f6-099ddcb7d64e.webp?v=1771884540",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_1.png?v=1774228283",
       "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_7_34cbe5a0-ea02-44e1-9021-6fc9a0f59e47.webp?v=1771884540",
       "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_9_fd535894-2578-4b8a-84a2-a7c29f33289a.webp?v=1771884540",
       "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",

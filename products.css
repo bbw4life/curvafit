@@ -1483,7 +1483,7 @@ details[open] .chevron {
     .slide-image { height: 200px !important; }
 }
 @media (min-width: 1025px) {
-    .slide-item { width: calc((100% - 25px) / 2.2); max-width: none; }
+    .slide-item { width: calc((100% - 25px) / 1.6); max-width: none; }
     .images-slider-track { gap: 16px; padding: 6px 0 12px; }
     .slide-image { height: 200px !important; }
 }

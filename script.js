@@ -758,6 +758,10 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           if (ratingTextEl) ratingTextEl.textContent = rating.toFixed(1) + ' / 5';
           if (reviewsCountEl) reviewsCountEl.textContent = reviewsCount + ' reviews';
+          // Cherchez ce bloc existant dans votre script :
+          // Ajoutez juste après :
+          const trustRating = document.querySelector('.pp-trust-strip .pp-trust-item:last-child');
+          if (trustRating) trustRating.innerHTML = `<i class="fas fa-star"></i> ${rating.toFixed(1)} / 5`;
 
           const scrollToReviews = () => {
             const reviewsSection = document.getElementById('reviews-section');
