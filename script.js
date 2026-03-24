@@ -3126,9 +3126,8 @@ window.addEventListener('load', () => {
 })();
 
 
-// ══════════════════════════════════════════
-//  STORY FORM & COMMUNITY STORIES
-// ══════════════════════════════════════════
+
+
 
 const storyForm = document.getElementById('story-form');
 if (storyForm) {
@@ -3168,7 +3167,6 @@ if (storyForm) {
     btn.disabled = true;
 
     const fields    = storyForm.querySelectorAll('input, select, textarea');
-    const nameAge   = fields[0].value.split(',');
     const fileInput = storyForm.querySelector('input[type="file"]');
 
     let photoBase64 = '';
@@ -3199,18 +3197,36 @@ if (storyForm) {
       });
     }
 
+    const nameAge    = fields[0].value.split(',');
+    const firstName  = nameAge[0]?.trim() || fields[0].value.trim();
+    const age        = nameAge[1]?.trim() || '';
+    const email      = fields[1].value.trim();
+    const country    = fields[2].value.trim();
+    const startWeight= fields[3].value.trim();
+    const program    = fields[4].value;
+    const duration   = fields[5].value.trim();
+    const result     = fields[6].value.trim();
+    const waist      = fields[7].value.trim();
+    const failedBefore = fields[8].value.trim();
+    const story      = fields[9].value.trim();
+    const rating     = document.getElementById('story-rating-value')?.value || '5';
+    const anonymous  = storyForm.querySelector('input[type="checkbox"]')?.checked ? 'true' : 'false';
+
     const payload = {
-      firstName:   nameAge[0]?.trim() || fields[0].value.trim(),
-      age:         nameAge[1]?.trim() || '',
-      email:       fields[1].value.trim(),
-      startWeight: fields[2].value.trim(),
-      program:     fields[3].value,
-      duration:    fields[4].value.trim(),
-      result:      fields[5].value.trim(),
-      story:       fields[6].value.trim(),
-      rating:      document.getElementById('story-rating-value')?.value || '5',
-      photo:       photoBase64,
-      anonymous:   storyForm.querySelector('input[type="checkbox"]')?.checked ? 'true' : 'false'
+      firstName,
+      age,
+      email,
+      country,
+      startWeight,
+      program,
+      duration,
+      result,
+      waist,
+      failedBefore,
+      story,
+      rating,
+      photo: photoBase64,
+      anonymous
     };
 
     try {
@@ -3246,14 +3262,26 @@ const PROGRAM_TAG = {
 
 function buildStoryCard(s) {
   const tag     = PROGRAM_TAG[s.program] || { cls: 'dt-tag--beginner', icon: '🌱' };
-  const nameStr = s.age ? `${s.firstName}, ${s.age}` : s.firstName;
+  const country = s.country ? ` — ${s.country}` : '';
+  const nameStr = s.age ? `${s.firstName}, ${s.age}${country}` : `${s.firstName}${country}`;
 
   const avatarHTML = s.photo
     ? `<img src="${s.photo}" alt="${s.firstName}" class="dt-header-img">`
     : `<div class="dt-avatar-placeholder"><i class="fi fi-rr-user"></i></div>`;
 
+  const waistHTML = s.waist
+    ? `<div class="dt-num dt-num--waist"><span>${s.waist}</span><small>Waist</small></div>`
+    : '';
+
+  const failedHTML = s.failedBefore
+    ? `<div class="dt-prev">
+        <span class="dt-prev-label">Failed before:</span>
+        ${s.failedBefore}
+       </div>`
+    : '';
+
   return `
-    <div class="dt-card dt-card--community">
+    <div class="dt-card">
       <div class="dt-header">
         ${avatarHTML}
         <div>
@@ -3267,7 +3295,9 @@ function buildStoryCard(s) {
         ${s.result ? `
         <div class="dt-arrow">→</div>
         <div class="dt-num dt-num--result"><span>${s.result}</span><small>${s.duration || ''}</small></div>` : ''}
+        ${waistHTML}
       </div>` : ''}
+      ${failedHTML}
       <p class="dt-quote">"${s.story}"</p>
       <div class="rating">
         ${[1,2,3,4,5].map(i =>
@@ -3288,13 +3318,7 @@ async function loadCommunityStories() {
 
     if (!data.success || !data.stories.length) return;
 
-    const divider = document.createElement('div');
-    divider.className = 'dt-community-divider';
-    divider.innerHTML = `
-      <span class="section-label">From Our Community</span>
-      <h3>Stories Shared by CurvaFit Members</h3>`;
-    grid.appendChild(divider);
-
+    // Pas de divider titre — les cards s'ajoutent directement
     data.stories.forEach(s => {
       const temp = document.createElement('div');
       temp.innerHTML = buildStoryCard(s);
@@ -3307,6 +3331,12 @@ async function loadCommunityStories() {
 }
 
 loadCommunityStories();
+
+
+
+
+
+
 
 
 function initStockBar(cjId) {

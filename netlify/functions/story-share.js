@@ -19,7 +19,7 @@ function formatDate() {
 
 // ── SAVE ──────────────────────────────────────────────────────────────
 async function saveStory(body) {
-  const { firstName, age, email, startWeight, program, duration, result, story, rating, photo, anonymous } = body;
+  const { firstName, age, email, country, startWeight, program, duration, result, waist, failedBefore, story, rating, photo, anonymous } = body;
 
   if (!firstName || !email || !startWeight || !program || !story) {
     throw new Error('Required fields missing');
@@ -28,20 +28,23 @@ async function saveStory(body) {
   const auth   = getAuth();
   const sheets = google.sheets({ version: 'v4', auth });
 
-  // Colonnes : A=firstName, B=age, C=email, D=startWeight, E=program,
-  //            F=duration, G=result, H=story, I=rating, J=photo,
-  //            K=anonymous, L=status, M=date
+  // Colonnes : A=firstName, B=age, C=email, D=country, E=startWeight,
+  //            F=program, G=duration, H=result, I=waist, J=failedBefore,
+  //            K=story, L=rating, M=photo, N=anonymous, O=status, P=date
   const values = [[
     firstName.trim(),
-    age         || '',
+    age           || '',
     email.trim().toLowerCase(),
+    country       || '',
     startWeight,
     program,
-    duration    || '',
-    result      || '',
+    duration      || '',
+    result        || '',
+    waist         || '',
+    failedBefore  || '',
     story.trim(),
-    rating      || '5',
-    photo       || '',
+    rating        || '5',
+    photo         || '',
     anonymous === true || anonymous === 'true' ? 'yes' : 'no',
     'pending',
     formatDate()
@@ -49,7 +52,7 @@ async function saveStory(body) {
 
   await sheets.spreadsheets.values.append({
     spreadsheetId:   process.env.GOOGLE_SHARE_STORY_ID,
-    range:           `${SHEET_NAME}!A:M`,
+    range:           `${SHEET_NAME}!A:P`,
     valueInputOption:'RAW',
     insertDataOption:'INSERT_ROWS',
     resource: { values }
@@ -65,26 +68,30 @@ async function fetchStories() {
 
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.GOOGLE_SHARE_STORY_ID,
-    range:         `${SHEET_NAME}!A:M`
+    range:         `${SHEET_NAME}!A:P`
   });
 
   const rows = res.data.values || [];
 
-  // A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7, I=8, J=9, K=10, L=11, M=12
+  // A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7, I=8, J=9,
+  // K=10, L=11, M=12, N=13, O=14, P=15
   const stories = rows
     .slice(1) // skip header row
-    .filter(r => r[11] && r[11].toString().toLowerCase() === 'approved')
+    .filter(r => r[14] && r[14].toString().toLowerCase() === 'approved')
     .map(r => ({
-      firstName:   r[10] && r[10].toString().toLowerCase() === 'yes' ? 'Anonymous' : (r[0] || 'Anonymous'),
+      firstName:   r[13] && r[13].toString().toLowerCase() === 'yes' ? 'Anonymous' : (r[0] || 'Anonymous'),
       age:         r[1]  || '',
-      startWeight: r[3]  || '',
-      program:     r[4]  || '',
-      duration:    r[5]  || '',
-      result:      r[6]  || '',
-      story:       r[7]  || '',
-      rating:      r[8]  || '5',
-      photo:       r[9]  || '',
-      date:        r[12] || ''
+      country:     r[3]  || '',
+      startWeight: r[4]  || '',
+      program:     r[5]  || '',
+      duration:    r[6]  || '',
+      result:      r[7]  || '',
+      waist:       r[8]  || '',
+      failedBefore:r[9]  || '',
+      story:       r[10] || '',
+      rating:      r[11] || '5',
+      photo:       r[12] || '',
+      date:        r[15] || ''
     }));
 
   return { success: true, stories };
