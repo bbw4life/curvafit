@@ -3197,20 +3197,27 @@ if (storyForm) {
       });
     }
 
-    const nameAge    = fields[0].value.split(',');
-    const firstName  = nameAge[0]?.trim() || fields[0].value.trim();
-    const age        = nameAge[1]?.trim() || '';
-    const email      = fields[1].value.trim();
-    const country    = fields[2].value.trim();
-    const startWeight= fields[3].value.trim();
-    const program    = fields[4].value;
-    const duration   = fields[5].value.trim();
-    const result     = fields[6].value.trim();
-    const waist      = fields[7].value.trim();
+    // ── FIX 1 : parsing firstName + age robuste ──────────────────────
+    const nameAgeRaw = fields[0].value.trim();
+    const commaIdx   = nameAgeRaw.indexOf(',');
+    const firstName  = commaIdx !== -1
+      ? nameAgeRaw.slice(0, commaIdx).trim()
+      : nameAgeRaw;
+    const age        = commaIdx !== -1
+      ? nameAgeRaw.slice(commaIdx + 1).trim()
+      : '';
+
+    const email        = fields[1].value.trim();
+    const country      = fields[2].value.trim();
+    const startWeight  = fields[3].value.trim();
+    const program      = fields[4].value;
+    const duration     = fields[5].value.trim();
+    const result       = fields[6].value.trim();
+    const waist        = fields[7].value.trim();
     const failedBefore = fields[8].value.trim();
-    const story      = fields[9].value.trim();
-    const rating     = document.getElementById('story-rating-value')?.value || '5';
-    const anonymous  = storyForm.querySelector('input[type="checkbox"]')?.checked ? 'true' : 'false';
+    const story        = fields[9].value.trim();
+    const rating       = document.getElementById('story-rating-value')?.value || '5';
+    const anonymous    = storyForm.querySelector('input[type="checkbox"]')?.checked ? 'true' : 'false';
 
     const payload = {
       firstName,
@@ -3269,6 +3276,16 @@ function buildStoryCard(s) {
     ? `<img src="${s.photo}" alt="${s.firstName}" class="dt-header-img">`
     : `<div class="dt-avatar-placeholder"><i class="fi fi-rr-user"></i></div>`;
 
+  // ── FIX 2 : ajouter "kg" après startWeight ───────────────────────
+  const startWeightDisplay = s.startWeight
+    ? (String(s.startWeight).toLowerCase().includes('kg') ? s.startWeight : `${s.startWeight} kg`)
+    : '';
+
+  // ── FIX 3 : ajouter "months" après duration si c'est un nombre ──
+  const durationDisplay = s.duration
+    ? (/^\d+$/.test(s.duration.trim()) ? `${s.duration} months` : s.duration)
+    : '';
+
   const waistHTML = s.waist
     ? `<div class="dt-num dt-num--waist"><span>${s.waist}</span><small>Waist</small></div>`
     : '';
@@ -3289,12 +3306,12 @@ function buildStoryCard(s) {
           <span class="dt-tag ${tag.cls}">${tag.icon} ${s.program}</span>
         </div>
       </div>
-      ${s.startWeight ? `
+      ${startWeightDisplay ? `
       <div class="dt-numbers">
-        <div class="dt-num"><span>${s.startWeight} kg</span><small>Start</small></div>
+        <div class="dt-num"><span>${startWeightDisplay}</span><small>Start</small></div>
         ${s.result ? `
         <div class="dt-arrow">→</div>
-        <div class="dt-num dt-num--result"><span>${s.result}</span><small>${s.duration || ''}</small></div>` : ''}
+        <div class="dt-num dt-num--result"><span>${s.result}</span><small>${durationDisplay}</small></div>` : ''}
         ${waistHTML}
       </div>` : ''}
       ${failedHTML}
@@ -3318,7 +3335,6 @@ async function loadCommunityStories() {
 
     if (!data.success || !data.stories.length) return;
 
-    // Pas de divider titre — les cards s'ajoutent directement
     data.stories.forEach(s => {
       const temp = document.createElement('div');
       temp.innerHTML = buildStoryCard(s);
