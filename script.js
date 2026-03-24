@@ -2357,9 +2357,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // ================================================================
   (function() {
     const heroSlides = [
-      'https://cdn.shopify.com/s/files/1/0643/8263/2041/files/blog_img_3.webp?v=1772583394',
-      'https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_health_1.jpg?v=1771457668',
-      'https://cdn.shopify.com/s/files/1/0643/8263/2041/files/bg_plus_size_fit.webp?v=1772559170'
+      'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/banner_1.png?v=1774377685',
+      'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/banner_2.png?v=1774377685',
+      'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/banner_3.png?v=1774377686'
     ];
     const hero = document.querySelector('.hero-section');
     if (!hero) return;

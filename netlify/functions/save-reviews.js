@@ -34,30 +34,35 @@ exports.handler = async (event) => {
       if (!fullName || !email || !title || !rating || !text || !productId) throw new Error("Toutes les données sont obligatoires");
       if (!email.includes('@')) throw new Error("Email invalide");
 
-      // Sauvegarde de l'avis (toujours)
       const date = formatReviewDate();
-      const values = [[fullName.trim(), email.trim(), title.trim(), rating, text.trim(), date, productId]];
+
+      // Récupérer les images base64 (max 3), jointes par " | "
+      const images = Array.isArray(body.images) ? body.images.slice(0, 3) : [];
+      const imagesCell = images.filter(Boolean).join(' | ');
+
+      // Sauvegarder avec colonne H = images
+      const values = [[fullName.trim(), email.trim(), title.trim(), rating, text.trim(), date, productId, imagesCell]];
       await sheets.spreadsheets.values.append({
         spreadsheetId: reviewsSpreadsheetId,
-        range: "CustomersReviews!A:G",
+        range: "CustomersReviews!A:H",
         valueInputOption: "RAW",
         insertDataOption: "INSERT_ROWS",
         resource: { values }
       });
 
       // Vérification compte + incrémentation Reviews Written (colonne I)
-      const accountsRes = await sheets.spreadsheets.values.get({ 
-        spreadsheetId: accountsSpreadsheetId, 
-        range: "Feuille 1!A:Z" 
+      const accountsRes = await sheets.spreadsheets.values.get({
+        spreadsheetId: accountsSpreadsheetId,
+        range: "Feuille 1!A:Z"
       });
       const accountsRows = accountsRes.data.values || [];
 
       const accountRowIndex = accountsRows.findIndex(row => normalize(row[2] || "") === normalize(email));
-      
+
       if (accountRowIndex !== -1) {
         const accountRowNum = accountRowIndex + 1;
         const currentRow = accountsRows[accountRowIndex] || [];
-        let currentReviewsCount = parseInt(currentRow[8] || 0);   // Colonne I
+        let currentReviewsCount = parseInt(currentRow[8] || 0);
         const newReviewsCount = currentReviewsCount + 1;
 
         await sheets.spreadsheets.values.update({
@@ -77,9 +82,9 @@ exports.handler = async (event) => {
 
     if (action === 'get-reviews') {
       if (!productId) throw new Error("Product ID manquant");
-      const res = await sheets.spreadsheets.values.get({ 
-        spreadsheetId: reviewsSpreadsheetId, 
-        range: "CustomersReviews!A:Z" 
+      const res = await sheets.spreadsheets.values.get({
+        spreadsheetId: reviewsSpreadsheetId,
+        range: "CustomersReviews!A:Z"
       });
       const rows = res.data.values || [];
 
@@ -91,12 +96,13 @@ exports.handler = async (event) => {
           title: row[2] || "",
           rating: parseInt(row[3]) || 5,
           text: row[4] || "",
-          date: row[5] || ""
+          date: row[5] || "",
+          images: row[7] ? row[7].split(' | ').filter(Boolean) : []
         }));
 
-      return { 
-        statusCode: 200, 
-        body: JSON.stringify({ success: true, reviews }) 
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ success: true, reviews })
       };
     }
 

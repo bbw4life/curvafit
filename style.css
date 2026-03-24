@@ -1009,7 +1009,7 @@ a { text-decoration: none; color: inherit; }
 
 .marquee-content {
     display: inline-block;
-    animation: marqueeScroll 40s linear infinite;
+    animation: marqueeScroll 30s linear infinite;
 }
 
 .marquee-content span {
@@ -1018,7 +1018,7 @@ a { text-decoration: none; color: inherit; }
     font-size: 0.85rem;
     font-weight: 500;
     letter-spacing: 0.06em;
-    padding: 0 32px;
+    padding: 0 5px;
     opacity: 0.92;
 }
 

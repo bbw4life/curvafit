@@ -369,15 +369,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 4000);
     }
 
-    // Init
     showCard(0);
     startAuto();
 
-    // Dots cliquables
     dots.forEach(function(dot, i) {
       dot.addEventListener('click', function() {
         showCard(i);
-        startAuto(); // reset le timer
+        startAuto();
       });
     });
   })();
@@ -455,13 +453,18 @@ writeButton.addEventListener('click', () => {
 
 const form = reviewForm.querySelector('form');
 
-function addOptimisticReview(name, rating, title, text) {
+// ====================== REVIEW AVEC IMAGES ======================
+
+function addOptimisticReview(name, rating, title, text, imagesBase64 = []) {
     const newReview = document.createElement('div');
     newReview.className = 'review-card dynamic-review';
     const avatarLetter = name.charAt(0).toUpperCase();
     const stars = '★'.repeat(rating);
     const now = new Date();
     const dateStr = `${now.getFullYear()}-${now.toLocaleString('en-US', { month: 'short' })}-${now.getDate().toString().padStart(2, '0')}`;
+    const imagesHTML = imagesBase64.map(b64 =>
+        `<img src="${b64}" alt="Review photo" style="width:80px;height:80px;object-fit:cover;border-radius:8px;margin:4px;">`
+    ).join('');
     newReview.innerHTML = `
         <div class="avatar">${avatarLetter}</div>
         <h4>${name}</h4>
@@ -469,7 +472,7 @@ function addOptimisticReview(name, rating, title, text) {
         <span class="date">${dateStr}</span>
         <h5>${title}</h5>
         <p>${text}</p>
-        <div class="review-images"></div>
+        <div class="review-images">${imagesHTML}</div>
         <div class="social-icon"></div>
     `;
     reviewsList.appendChild(newReview);
@@ -491,6 +494,9 @@ async function loadDynamicReviews() {
                 newReview.className = 'review-card dynamic-review';
                 const avatarLetter = review.fullName.charAt(0).toUpperCase();
                 const stars = '★'.repeat(review.rating);
+                const imagesHTML = (review.images || []).map(url =>
+                    `<img src="${url}" alt="Review photo" style="width:80px;height:80px;object-fit:cover;border-radius:8px;margin:4px;">`
+                ).join('');
                 newReview.innerHTML = `
                     <div class="avatar">${avatarLetter}</div>
                     <h4>${review.fullName}</h4>
@@ -498,7 +504,7 @@ async function loadDynamicReviews() {
                     <span class="date">${review.date}</span>
                     <h5>${review.title}</h5>
                     <p>${review.text}</p>
-                    <div class="review-images"></div>
+                    <div class="review-images">${imagesHTML}</div>
                     <div class="social-icon"></div>
                 `;
                 reviewsList.appendChild(newReview);
@@ -516,15 +522,44 @@ form.addEventListener('submit', async (e) => {
     const rating = parseInt(document.getElementById('review-rating').value);
     const title = document.getElementById('review-title').value.trim();
     const text = document.getElementById('review-text').value.trim();
+    const imageInput = document.getElementById('review-images');
 
     if (!name || !email || !rating || !title || !text) {
         showErrorPopup("Please fill in all fields");
         return;
     }
 
+    // Compress & convert images to base64
+    const imagesBase64 = [];
+    if (imageInput && imageInput.files.length > 0) {
+        const files = Array.from(imageInput.files).slice(0, 3);
+        for (const file of files) {
+            const b64 = await new Promise((resolve) => {
+                const img = new Image();
+                const url = URL.createObjectURL(file);
+                img.onload = () => {
+                    const MAX = 600;
+                    let w = img.width, h = img.height;
+                    if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+                    else       { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    URL.revokeObjectURL(url);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                };
+                img.onerror = () => { URL.revokeObjectURL(url); resolve(''); };
+                img.src = url;
+            });
+            if (b64) imagesBase64.push(b64);
+        }
+    }
+
     const productId = window.currentProductId || 'unknown';
-    addOptimisticReview(name, rating, title, text);
+    addOptimisticReview(name, rating, title, text, imagesBase64);
     form.reset();
+    const previewContainer = document.getElementById('review-images-preview');
+    if (previewContainer) previewContainer.innerHTML = '';
     reviewForm.style.display = 'none';
     writeButton.style.display = 'block';
 
@@ -539,7 +574,8 @@ form.addEventListener('submit', async (e) => {
                 title: title,
                 rating: rating,
                 text: text,
-                productId: productId
+                productId: productId,
+                images: imagesBase64
             })
         });
         const data = await res.json();
@@ -553,6 +589,27 @@ form.addEventListener('submit', async (e) => {
         console.error("❌ Fetch review error:", err);
         showErrorPopup("", true);
         setTimeout(loadDynamicReviews, 1500);
+    }
+});
+
+// ====================== IMAGE PREVIEW ======================
+document.addEventListener('DOMContentLoaded', () => {
+    const imageInput = document.getElementById('review-images');
+    const previewContainer = document.getElementById('review-images-preview');
+    if (imageInput && previewContainer) {
+        imageInput.addEventListener('change', () => {
+            previewContainer.innerHTML = '';
+            Array.from(imageInput.files).slice(0, 3).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.cssText = 'width:70px;height:70px;object-fit:cover;border-radius:8px;border:2px solid #e0e0e0;margin:4px;';
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
     }
 });
 
@@ -622,8 +679,6 @@ updateSummary();
     }, msUntilNext);
 })();
 
-
-
 (function() {
     var imgs1 = [
         'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/images_2.jpg?v=1774309964',
@@ -645,7 +700,7 @@ updateSummary();
         'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/images_2.jpg?v=1774309964',
         'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/images_17.jpg?v=1774309965',
     ];
- 
+
     function buildRow(id, srcs) {
         var track = document.getElementById(id);
         if (!track) return;
@@ -661,17 +716,12 @@ updateSummary();
             track.appendChild(card);
         });
     }
- 
+
     buildRow('miq-row1', imgs1);
     buildRow('miq-row2', imgs2);
 })();
 
-
-// ══════════════════════════════════════════
-//  WEIGHT LOSS SECTION — Animation des barres
-//  À coller à la fin de script.js
-// ══════════════════════════════════════════
-
+// ── Weight Loss bars animation ──
 (function initWLBars() {
     var bars = document.querySelectorAll('.wl-bar');
     if (!bars.length) return;

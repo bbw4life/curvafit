@@ -1327,6 +1327,9 @@
                 </select>
                 <input type="text" id="review-title" placeholder="Review Title" required>
                 <textarea id="review-text" placeholder="Your Review" required></textarea>
+                <label for="review-images">Add Photos (optional, max 3)</label>
+                <input type="file" id="review-images" accept="image/*" multiple>
+                <div id="review-images-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"></div>
                 <button type="submit">Submit Review</button>
             </form>
         </div>
