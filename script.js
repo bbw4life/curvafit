@@ -3220,7 +3220,7 @@ if (storyForm) {
     const story        = fields[9].value.trim();
     const rating       = document.getElementById('story-rating-value')?.value || '5';
 
-    // ── FIX ANONYMOUS : lire la checkbox dédiée, pas le consentement ─
+    // Checkbox dédiée à l'anonymat (pas le consentement)
     const anonymous = document.getElementById('anonymous-checkbox')?.checked ? 'true' : 'false';
 
     const payload = {
@@ -3271,6 +3271,17 @@ const PROGRAM_TAG = {
   'Maintenance — Forever Fit':     { cls: 'dt-tag--maintenance',  icon: '🌟' }
 };
 
+// ── Helper : ajoute une unité si elle est absente ────────────────────
+function addUnit(value, unit) {
+  const v = String(value || '').trim();
+  if (!v) return '';
+  const lower = v.toLowerCase();
+  // Si l'unité est déjà présente (kg, cm, months...) on ne touche pas
+  if (lower.includes(unit.toLowerCase())) return v;
+  // Si c'est un signe comme −12 kg ou -12kg on vérifie aussi
+  return `${v} ${unit}`;
+}
+
 function buildStoryCard(s) {
   const tag     = PROGRAM_TAG[s.program] || { cls: 'dt-tag--beginner', icon: '🌱' };
   const country = s.country ? ` — ${s.country}` : '';
@@ -3280,20 +3291,20 @@ function buildStoryCard(s) {
     ? `<img src="${s.photo}" alt="${s.firstName}" class="dt-header-img">`
     : `<div class="dt-avatar-placeholder"><i class="fi fi-rr-user"></i></div>`;
 
-  // ── FIX kg : forcer l'ajout de "kg" si absent ────────────────────
-  const sw = String(s.startWeight || '').trim();
-  const startWeightDisplay = sw
-    ? (sw.toLowerCase().includes('kg') ? sw : `${sw} kg`)
-    : '';
+  // ── FIX kg sur startWeight ───────────────────────────────────────
+  const startWeightDisplay = addUnit(s.startWeight, 'kg');
 
-  // ── FIX months : ajouter "months" si valeur purement numérique ───
+  // ── FIX kg sur result ────────────────────────────────────────────
+  const resultDisplay = addUnit(s.result, 'kg');
+
+  // ── FIX months sur duration ──────────────────────────────────────
   const dur = String(s.duration || '').trim();
   const durationDisplay = dur
     ? (/^\d+$/.test(dur) ? `${dur} months` : dur)
     : '';
 
   const waistHTML = s.waist
-    ? `<div class="dt-num dt-num--waist"><span>${s.waist}</span><small>Waist</small></div>`
+    ? `<div class="dt-num dt-num--waist"><span>${addUnit(s.waist, 'cm')}</span><small>Waist</small></div>`
     : '';
 
   const failedHTML = s.failedBefore
@@ -3301,6 +3312,23 @@ function buildStoryCard(s) {
         <span class="dt-prev-label">Failed before:</span>
         ${s.failedBefore}
        </div>`
+    : '';
+
+  // ── FIX bloc vert : on réutilise le champ "story" comme mental quote
+  // car il n'y a pas de champ séparé dans le formulaire.
+  // On coupe la story en 2 : première phrase = quote principale,
+  // reste = mental quote verte (si assez long)
+  const storyText  = s.story || '';
+  const splitIdx   = storyText.search(/[.!?]\s+/);
+  const mainQuote  = splitIdx !== -1 && splitIdx < storyText.length - 20
+    ? storyText.slice(0, splitIdx + 1).trim()
+    : storyText;
+  const mentalText = splitIdx !== -1 && splitIdx < storyText.length - 20
+    ? storyText.slice(splitIdx + 1).trim()
+    : '';
+
+  const mentalHTML = mentalText
+    ? `<div class="dt-mental"><i class="fi fi-rr-heart"></i><span>"${mentalText}"</span></div>`
     : '';
 
   return `
@@ -3315,13 +3343,14 @@ function buildStoryCard(s) {
       ${startWeightDisplay ? `
       <div class="dt-numbers">
         <div class="dt-num"><span>${startWeightDisplay}</span><small>Start</small></div>
-        ${s.result ? `
+        ${resultDisplay ? `
         <div class="dt-arrow">→</div>
-        <div class="dt-num dt-num--result"><span>${s.result}</span><small>${durationDisplay}</small></div>` : ''}
+        <div class="dt-num dt-num--result"><span>${resultDisplay}</span><small>${durationDisplay}</small></div>` : ''}
         ${waistHTML}
       </div>` : ''}
       ${failedHTML}
-      <p class="dt-quote">"${s.story}"</p>
+      <p class="dt-quote">"${mainQuote}"</p>
+      ${mentalHTML}
       <div class="rating">
         ${[1,2,3,4,5].map(i =>
           `<i class="${i <= parseInt(s.rating || 5) ? 'fi fi-sr-star' : 'fi fi-rr-star'}"></i>`
