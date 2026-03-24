@@ -621,3 +621,69 @@ updateSummary();
         urgencyBar.textContent = newCount + ' people';
     }, msUntilNext);
 })();
+
+
+
+(function() {
+    var imgs1 = [
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/images_2.jpg?v=1774309964',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/images_17.jpg?v=1774309965',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/images_6.jpg?v=1774309965',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/raul_3.jpg?v=1774310072',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/raul_2.jpg?v=1774310072',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/raul9.jpg?v=1774310071',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/images_1.jpg?v=1774309964',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/raul_6.webp?v=1774310071',
+    ];
+    var imgs2 = [
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/raul_4.jpg?v=1774310071',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/images_4.jpg?v=1774309965',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/nadine_4.jpg?v=1774310365',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/nadine_2.jpg?v=1774310364',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/nadine_1.jpg?v=1774310364',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/nadine_3.jpg?v=1774310364',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/images_2.jpg?v=1774309964',
+        'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/images_17.jpg?v=1774309965',
+    ];
+ 
+    function buildRow(id, srcs) {
+        var track = document.getElementById(id);
+        if (!track) return;
+        var all = srcs.concat(srcs).concat(srcs).concat(srcs);
+        all.forEach(function(src) {
+            var card = document.createElement('div');
+            card.className = 'miq-card';
+            var img = document.createElement('img');
+            img.src = src;
+            img.alt = '';
+            img.loading = 'lazy';
+            card.appendChild(img);
+            track.appendChild(card);
+        });
+    }
+ 
+    buildRow('miq-row1', imgs1);
+    buildRow('miq-row2', imgs2);
+})();
+
+
+// ══════════════════════════════════════════
+//  WEIGHT LOSS SECTION — Animation des barres
+//  À coller à la fin de script.js
+// ══════════════════════════════════════════
+
+(function initWLBars() {
+    var bars = document.querySelectorAll('.wl-bar');
+    if (!bars.length) return;
+
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animated');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+
+    bars.forEach(function(bar) { observer.observe(bar); });
+})();

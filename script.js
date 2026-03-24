@@ -758,8 +758,6 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           if (ratingTextEl) ratingTextEl.textContent = rating.toFixed(1) + ' / 5';
           if (reviewsCountEl) reviewsCountEl.textContent = reviewsCount + ' reviews';
-          // Cherchez ce bloc existant dans votre script :
-          // Ajoutez juste après :
           const trustRating = document.querySelector('.pp-trust-strip .pp-trust-item:last-child');
           if (trustRating) trustRating.innerHTML = `<i class="fas fa-star"></i> ${rating.toFixed(1)} / 5`;
 
@@ -1183,6 +1181,224 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 300);
 
       window.getProductUrl = getProductUrl;
+
+
+    //  STICKY ATC — initialise après le fetch products.data.json
+    (function initStickyATC() {
+
+        // ── Cibler uniquement une page produit ──
+        const productSection = document.querySelector('.product-section');
+        if (!productSection) return;
+
+        const pid     = productSection.dataset.productId;
+        const product = products.find(p => p.id === pid);
+        if (!product) return;
+
+        // ── Éléments DOM ──
+        const bar         = document.getElementById('sticky-atc');
+        const satcImg     = document.getElementById('satc-img');
+        const satcTitle   = document.getElementById('satc-title');
+        const satcPrice   = document.getElementById('satc-price');
+        const satcSwatches= document.getElementById('satc-swatches');
+        const satcColorName = document.getElementById('satc-color-name');
+        const satcColorField= document.getElementById('satc-color-field');
+        const satcSizeField = document.getElementById('satc-size-field');
+        const satcSizeEl  = document.getElementById('satc-size');
+        const satcMinus   = document.getElementById('satc-minus');
+        const satcPlus    = document.getElementById('satc-plus');
+        const satcQtyVal  = document.getElementById('satc-qty-val');
+        const satcAddBtn  = document.getElementById('satc-add-btn');
+
+        if (!bar || !satcImg) return;
+
+        // ── État interne ──
+        let satcQty          = 1;
+        let satcSelectedColor = null;
+        let satcSelectedSize  = null;
+
+        const hasColors = product.colors && product.colors.length > 0;
+        const hasSizes  = product.sizes  && product.sizes.length  > 0;
+
+        // ── Remplir le titre ──
+        satcTitle.textContent = product.title;
+
+        // ── Image par défaut ──
+        const defaultImg = (hasColors && product.colors[0].image) ? product.colors[0].image : product.image;
+        satcImg.src = upgradeShopifyImageUrl(defaultImg);
+
+        // ── Fonction prix ──
+        function getSatcPrice(color, size) {
+            if (!color || !size) return product.price;
+            const v = product.variants.find(vv => vv.color === color && vv.size === size);
+            return v ? v.price : product.price;
+        }
+
+        function updateSatcPrice() {
+            const p = getSatcPrice(satcSelectedColor, satcSelectedSize);
+            satcPrice.textContent = '$' + p.toFixed(2);
+        }
+
+        // ── Init prix ──
+        satcPrice.textContent = '$' + product.price.toFixed(2);
+
+        // ── Couleurs ──
+        if (hasColors) {
+            product.colors.forEach((col, i) => {
+                const sw = document.createElement('div');
+                sw.className = 'satc-swatch' + (i === 0 ? ' active' : '');
+                sw.style.backgroundColor = col.hex;
+                sw.title = col.name;
+                sw.addEventListener('click', () => {
+                    satcSwatches.querySelectorAll('.satc-swatch').forEach(s => s.classList.remove('active'));
+                    sw.classList.add('active');
+                    satcSelectedColor = col.name;
+                    satcColorName.textContent = col.name;
+                    if (col.image) satcImg.src = upgradeShopifyImageUrl(col.image);
+                    updateSatcPrice();
+                });
+                satcSwatches.appendChild(sw);
+            });
+            // Sélectionner la 1ère couleur par défaut
+            satcSelectedColor = product.colors[0].name;
+            satcColorName.textContent = product.colors[0].name;
+        } else {
+            satcColorField.style.display = 'none';
+        }
+
+        // ── Tailles ──
+        if (hasSizes) {
+            const defaultOpt = document.createElement('option');
+            defaultOpt.value = '';
+            defaultOpt.textContent = 'Select size';
+            satcSizeEl.appendChild(defaultOpt);
+            product.sizes.forEach(sz => {
+                const opt = document.createElement('option');
+                opt.value = sz;
+                opt.textContent = sz;
+                satcSizeEl.appendChild(opt);
+            });
+            satcSizeEl.addEventListener('change', () => {
+                satcSelectedSize = satcSizeEl.value || null;
+                updateSatcPrice();
+            });
+        } else {
+            satcSizeField.style.display = 'none';
+        }
+
+        // ── Quantité ──
+        satcMinus.addEventListener('click', () => {
+            if (satcQty > 1) { satcQty--; satcQtyVal.textContent = satcQty; }
+        });
+        satcPlus.addEventListener('click', () => {
+            satcQty++;
+            satcQtyVal.textContent = satcQty;
+        });
+
+        // ── Add to Cart ──
+        satcAddBtn.addEventListener('click', () => {
+            // Vérifications
+            if (hasColors && !satcSelectedColor) {
+                showErrorPopup('Please select a color.');
+                return;
+            }
+            if (hasSizes && !satcSelectedSize) {
+                showErrorPopup('Please select a size.');
+                return;
+            }
+
+            // Image du variant
+            let itemImage = upgradeShopifyImageUrl(product.image);
+            if (satcSelectedColor) {
+                const colorObj = product.colors.find(c => c.name === satcSelectedColor);
+                if (colorObj && colorObj.image) itemImage = upgradeShopifyImageUrl(colorObj.image);
+            }
+
+            // Variant ID
+            let cjVariantId = null;
+            const variant = product.variants.find(v => {
+                const colorMatch = !satcSelectedColor || v.color === satcSelectedColor;
+                const sizeMatch  = !satcSelectedSize  || v.size  === satcSelectedSize;
+                return colorMatch && sizeMatch;
+            });
+            if (variant) cjVariantId = variant.vid;
+            else if (product.variants && product.variants.length > 0) cjVariantId = product.variants[0].vid;
+
+            const price   = getSatcPrice(satcSelectedColor, satcSelectedSize);
+            const ratio   = product.compare_price / product.price;
+            const compare = price * ratio;
+
+            // Ajouter au cart (utilise la variable `cart` globale de script.js)
+            let cartItem = cart.find(i =>
+                i.id    === product.id &&
+                i.color === satcSelectedColor &&
+                i.size  === satcSelectedSize
+            );
+            if (cartItem) {
+                cartItem.quantity += satcQty;
+            } else {
+                cart.push({
+                    id:            product.id,
+                    title:         product.title,
+                    price:         price,
+                    compare_price: compare,
+                    image:         itemImage,
+                    size:          satcSelectedSize,
+                    color:         satcSelectedColor,
+                    quantity:      satcQty,
+                    cj_product_id: product.cj_id,
+                    cj_variant_id: cjVariantId
+                });
+            }
+
+            saveCart();
+            updateCartQuantityInSheet();
+            updateBadges();
+            renderCart();
+            openCartDrawer();
+
+            // Feedback visuel
+            satcAddBtn.classList.add('added');
+            satcAddBtn.querySelector('span').textContent = 'Added!';
+            setTimeout(() => {
+                satcAddBtn.classList.remove('added');
+                satcAddBtn.querySelector('span').textContent = 'Add to Cart';
+            }, 2000);
+        });
+
+        // ── Trigger : afficher la barre quand on approche du footer ──
+        const footer = document.querySelector('footer.footer');
+        const addToCartMainBtn = document.querySelector('.product-content .add-to-cart');
+
+        function checkStickyVisibility() {
+            if (!footer) return;
+
+            const footerTop    = footer.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+
+            // Afficher quand le footer est visible (à 200px de la limite basse)
+            const nearFooter = footerTop < windowHeight + 200;
+
+            // Cacher si le bouton principal ATC est visible à l'écran
+            let mainBtnVisible = false;
+            if (addToCartMainBtn) {
+                const rect = addToCartMainBtn.getBoundingClientRect();
+                mainBtnVisible = rect.top >= 0 && rect.bottom <= windowHeight;
+            }
+
+            if (nearFooter && !mainBtnVisible) {
+                bar.classList.add('visible');
+                bar.setAttribute('aria-hidden', 'false');
+            } else {
+                bar.classList.remove('visible');
+                bar.setAttribute('aria-hidden', 'true');
+            }
+        }
+
+        window.addEventListener('scroll', checkStickyVisibility, { passive: true });
+        checkStickyVisibility();
+
+    })();
+
     })
     .catch(error => console.error('Erreur de chargement des produits:', error));
 
