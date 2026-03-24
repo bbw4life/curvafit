@@ -345,7 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateLiveViewers, updateFrequency);
   updateLiveViewers();
 
-  // ====================== MOD 4 : TESTIMONIALS SLIDER (mobile auto) ======================
+  // ====================== TESTIMONIALS SLIDER (mobile auto) ======================
   (function() {
     var cards = document.querySelectorAll('.pp-testimonial-card');
     var dots  = document.querySelectorAll('.pp-testimonials-dot');
@@ -453,6 +453,36 @@ writeButton.addEventListener('click', () => {
 
 const form = reviewForm.querySelector('form');
 
+// ====================== COMPRESSION IMAGE ======================
+// MAX 200px / qualité 0.5 — identique à story-form dans script.js
+// 3 images × ~10 000 chars = ~30 000 chars total, bien sous la limite 50 000 de Google Sheets
+
+async function compressImageForSheet(file) {
+    return new Promise((resolve) => {
+        const MAX = 200;
+        const QUALITY = 0.5;
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+
+        img.onload = () => {
+            let w = img.width, h = img.height;
+            if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+            else       { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+
+            const canvas = document.createElement('canvas');
+            canvas.width  = w;
+            canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+
+            URL.revokeObjectURL(url);
+            resolve(canvas.toDataURL('image/jpeg', QUALITY));
+        };
+
+        img.onerror = () => { URL.revokeObjectURL(url); resolve(''); };
+        img.src = url;
+    });
+}
+
 // ====================== REVIEW AVEC IMAGES ======================
 
 function addOptimisticReview(name, rating, title, text, imagesBase64 = []) {
@@ -529,28 +559,12 @@ form.addEventListener('submit', async (e) => {
         return;
     }
 
-    // Compress & convert images to base64
+    // Compression agressive : MAX 200px / qualité 0.5 — identique à story-form
     const imagesBase64 = [];
     if (imageInput && imageInput.files.length > 0) {
         const files = Array.from(imageInput.files).slice(0, 3);
         for (const file of files) {
-            const b64 = await new Promise((resolve) => {
-                const img = new Image();
-                const url = URL.createObjectURL(file);
-                img.onload = () => {
-                    const MAX = 600;
-                    let w = img.width, h = img.height;
-                    if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
-                    else       { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
-                    const canvas = document.createElement('canvas');
-                    canvas.width = w; canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    URL.revokeObjectURL(url);
-                    resolve(canvas.toDataURL('image/jpeg', 0.7));
-                };
-                img.onerror = () => { URL.revokeObjectURL(url); resolve(''); };
-                img.src = url;
-            });
+            const b64 = await compressImageForSheet(file);
             if (b64) imagesBase64.push(b64);
         }
     }
@@ -601,9 +615,9 @@ document.addEventListener('DOMContentLoaded', () => {
             previewContainer.innerHTML = '';
             Array.from(imageInput.files).slice(0, 3).forEach(file => {
                 const reader = new FileReader();
-                reader.onload = (e) => {
+                reader.onload = (ev) => {
                     const img = document.createElement('img');
-                    img.src = e.target.result;
+                    img.src = ev.target.result;
                     img.style.cssText = 'width:70px;height:70px;object-fit:cover;border-radius:8px;border:2px solid #e0e0e0;margin:4px;';
                     previewContainer.appendChild(img);
                 };
