@@ -19,7 +19,11 @@ function formatDate() {
 
 // ── SAVE ──────────────────────────────────────────────────────────────
 async function saveStory(body) {
-  const { firstName, age, email, country, startWeight, program, duration, result, waist, failedBefore, story, rating, photo, anonymous } = body;
+  const {
+    firstName, age, email, country, startWeight, program,
+    duration, result, waist, failedBefore, story, mentalQuote,
+    rating, photo, anonymous
+  } = body;
 
   if (!firstName || !email || !startWeight || !program || !story) {
     throw new Error('Required fields missing');
@@ -30,21 +34,23 @@ async function saveStory(body) {
 
   // Colonnes : A=firstName, B=age, C=email, D=country, E=startWeight,
   //            F=program, G=duration, H=result, I=waist, J=failedBefore,
-  //            K=story, L=rating, M=photo, N=anonymous, O=status, P=date
+  //            K=story, L=mentalQuote, M=rating, N=photo, O=anonymous,
+  //            P=status, Q=date
   const values = [[
     firstName.trim(),
-    age           || '',
+    age            || '',
     email.trim().toLowerCase(),
-    country       || '',
+    country        || '',
     startWeight,
     program,
-    duration      || '',
-    result        || '',
-    waist         || '',
-    failedBefore  || '',
+    duration       || '',
+    result         || '',
+    waist          || '',
+    failedBefore   || '',
     story.trim(),
-    rating        || '5',
-    photo         || '',
+    mentalQuote    || '',
+    rating         || '5',
+    photo          || '',
     anonymous === true || anonymous === 'true' ? 'yes' : 'no',
     'pending',
     formatDate()
@@ -52,7 +58,7 @@ async function saveStory(body) {
 
   await sheets.spreadsheets.values.append({
     spreadsheetId:   process.env.GOOGLE_SHARE_STORY_ID,
-    range:           `${SHEET_NAME}!A:P`,
+    range:           `${SHEET_NAME}!A:Q`,
     valueInputOption:'RAW',
     insertDataOption:'INSERT_ROWS',
     resource: { values }
@@ -68,18 +74,19 @@ async function fetchStories() {
 
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.GOOGLE_SHARE_STORY_ID,
-    range:         `${SHEET_NAME}!A:P`
+    range:         `${SHEET_NAME}!A:Q`
   });
 
   const rows = res.data.values || [];
 
   // A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7, I=8, J=9,
-  // K=10, L=11, M=12, N=13, O=14, P=15
+  // K=10, L=11(mentalQuote), M=12(rating), N=13(photo),
+  // O=14(anonymous), P=15(status), Q=16(date)
   const stories = rows
-    .slice(1) // skip header row
-    .filter(r => r[14] && r[14].toString().toLowerCase() === 'approved')
+    .slice(1)
+    .filter(r => r[15] && r[15].toString().toLowerCase() === 'approved')
     .map(r => ({
-      firstName:   r[13] && r[13].toString().toLowerCase() === 'yes' ? 'Anonymous' : (r[0] || 'Anonymous'),
+      firstName:   r[14] && r[14].toString().toLowerCase() === 'yes' ? 'Anonymous' : (r[0] || 'Anonymous'),
       age:         r[1]  || '',
       country:     r[3]  || '',
       startWeight: r[4]  || '',
@@ -89,9 +96,10 @@ async function fetchStories() {
       waist:       r[8]  || '',
       failedBefore:r[9]  || '',
       story:       r[10] || '',
-      rating:      r[11] || '5',
-      photo:       r[12] || '',
-      date:        r[15] || ''
+      mentalQuote: r[11] || '',
+      rating:      r[12] || '5',
+      photo:       r[13] || '',
+      date:        r[16] || ''
     }));
 
   return { success: true, stories };

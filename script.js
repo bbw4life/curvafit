@@ -3218,10 +3218,12 @@ if (storyForm) {
     const waist        = fields[7].value.trim();
     const failedBefore = fields[8].value.trim();
     const story        = fields[9].value.trim();
-    const rating       = document.getElementById('story-rating-value')?.value || '5';
 
-    // Checkbox dédiée à l'anonymat (pas le consentement)
-    const anonymous = document.getElementById('anonymous-checkbox')?.checked ? 'true' : 'false';
+    // ── Champ mental quote dédié ─────────────────────────────────────
+    const mentalQuote  = document.getElementById('mental-quote-input')?.value.trim() || '';
+
+    const rating       = document.getElementById('story-rating-value')?.value || '5';
+    const anonymous    = document.getElementById('anonymous-checkbox')?.checked ? 'true' : 'false';
 
     const payload = {
       firstName,
@@ -3235,6 +3237,7 @@ if (storyForm) {
       waist,
       failedBefore,
       story,
+      mentalQuote,
       rating,
       photo: photoBase64,
       anonymous
@@ -3271,14 +3274,11 @@ const PROGRAM_TAG = {
   'Maintenance — Forever Fit':     { cls: 'dt-tag--maintenance',  icon: '🌟' }
 };
 
-// ── Helper : ajoute une unité si elle est absente ────────────────────
+// ── Helper : ajoute une unité si absente ────────────────────────────
 function addUnit(value, unit) {
   const v = String(value || '').trim();
   if (!v) return '';
-  const lower = v.toLowerCase();
-  // Si l'unité est déjà présente (kg, cm, months...) on ne touche pas
-  if (lower.includes(unit.toLowerCase())) return v;
-  // Si c'est un signe comme −12 kg ou -12kg on vérifie aussi
+  if (v.toLowerCase().includes(unit.toLowerCase())) return v;
   return `${v} ${unit}`;
 }
 
@@ -3291,13 +3291,9 @@ function buildStoryCard(s) {
     ? `<img src="${s.photo}" alt="${s.firstName}" class="dt-header-img">`
     : `<div class="dt-avatar-placeholder"><i class="fi fi-rr-user"></i></div>`;
 
-  // ── FIX kg sur startWeight ───────────────────────────────────────
   const startWeightDisplay = addUnit(s.startWeight, 'kg');
+  const resultDisplay      = addUnit(s.result, 'kg');
 
-  // ── FIX kg sur result ────────────────────────────────────────────
-  const resultDisplay = addUnit(s.result, 'kg');
-
-  // ── FIX months sur duration ──────────────────────────────────────
   const dur = String(s.duration || '').trim();
   const durationDisplay = dur
     ? (/^\d+$/.test(dur) ? `${dur} months` : dur)
@@ -3314,21 +3310,9 @@ function buildStoryCard(s) {
        </div>`
     : '';
 
-  // ── FIX bloc vert : on réutilise le champ "story" comme mental quote
-  // car il n'y a pas de champ séparé dans le formulaire.
-  // On coupe la story en 2 : première phrase = quote principale,
-  // reste = mental quote verte (si assez long)
-  const storyText  = s.story || '';
-  const splitIdx   = storyText.search(/[.!?]\s+/);
-  const mainQuote  = splitIdx !== -1 && splitIdx < storyText.length - 20
-    ? storyText.slice(0, splitIdx + 1).trim()
-    : storyText;
-  const mentalText = splitIdx !== -1 && splitIdx < storyText.length - 20
-    ? storyText.slice(splitIdx + 1).trim()
-    : '';
-
-  const mentalHTML = mentalText
-    ? `<div class="dt-mental"><i class="fi fi-rr-heart"></i><span>"${mentalText}"</span></div>`
+  // ── Bloc vert avec icône cœur — champ dédié mentalQuote ─────────
+  const mentalHTML = s.mentalQuote
+    ? `<div class="dt-mental"><i class="fi fi-rr-heart"></i><span>"${s.mentalQuote}"</span></div>`
     : '';
 
   return `
@@ -3349,7 +3333,7 @@ function buildStoryCard(s) {
         ${waistHTML}
       </div>` : ''}
       ${failedHTML}
-      <p class="dt-quote">"${mainQuote}"</p>
+      <p class="dt-quote">"${s.story}"</p>
       ${mentalHTML}
       <div class="rating">
         ${[1,2,3,4,5].map(i =>
