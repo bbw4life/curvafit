@@ -1469,7 +1469,7 @@ section#hero.faq-hero,
    FINAL CTA
 ───────────────────────────────────────────── */
 .final-cta-section {
-    padding:20px 0;
+    padding:10px 0;
     background:linear-gradient(135deg, var(--charcoal) 0%, var(--plum) 52%, var(--rose) 100%);
     text-align:center;
     position:relative;
@@ -2295,20 +2295,10 @@ section#hero.faq-hero,
 }
 
 
-
-
-
-/* ================================================================
-   CAREERS PAGE — CSS COMPLET FINAL
-   Remplacer TOUT l'ancien bloc CAREERS dans pages.css
-   padding entre sections: 15px | padding intérieur: 10px vertical
-================================================================ */
-
 /* ── Neutraliser tous les anciens styles careers ── */
 .careers-banner, .why-join-section, .why-grid, .why-card,
 .mission-values-section, .our-culture-section,
 .hiring-process-section, .diversity-inclusion-section,
-.application-form-section form,
 .open-positions-section, .positions-grid, .position-card {
     all: unset;
 }
@@ -3146,74 +3136,6 @@ section#hero.faq-hero,
 @media (max-width: 640px) {
     .cr-pos-grid { grid-template-columns: 1fr; }
 }
-
-/* ════════════════════════════════════════
-   9. APPLICATION FORM
-════════════════════════════════════════ */
-.cr-apply {
-    padding: var(--cr-pad);
-    margin-top: var(--cr-gap);
-    background: var(--cream);
-}
-
-.cr-form {
-    max-width: 620px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.cr-form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-.cr-form input[type="text"],
-.cr-form input[type="email"],
-.cr-form input[type="file"],
-.cr-form textarea {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    font-family: var(--font-body);
-    font-size: 0.90rem;
-    color: var(--charcoal);
-    background: #fff;
-    outline: none;
-    transition: border-color 0.22s, box-shadow 0.22s, transform 0.22s;
-    box-sizing: border-box;
-}
-
-.cr-form input:focus,
-.cr-form textarea:focus {
-    border-color: var(--rose);
-    box-shadow: 0 0 0 3px rgba(192,56,94,0.08);
-    transform: translateY(-1px);
-}
-
-.cr-form textarea { resize: vertical; }
-
-.cr-form-check {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 0.83rem;
-    color: var(--mist);
-    cursor: pointer;
-    line-height: 1.5;
-}
-
-.cr-form-check input { margin-top: 3px; accent-color: var(--rose); flex-shrink: 0; width: auto; }
-.cr-form-check a { color: var(--rose); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
-.cr-form .button-3d { width: 100%; text-align: center; display: block; }
-
-@media (max-width: 560px) {
-    .cr-form-row { grid-template-columns: 1fr; }
-}
-
 
 
 

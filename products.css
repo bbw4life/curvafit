@@ -759,6 +759,13 @@ button.buy-now.cta:hover {
     margin: 2px 0 0;
     white-space: nowrap;
 }
+
+@media (max-width: 768px) {
+    .paul_story_bloc__grid {
+        gap: 16px !important;
+    }
+}
+
 .paul_story_video {
     width: 100%;
     height: 100%;
@@ -3166,7 +3173,7 @@ body {
     font-weight: 700;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.60);
+    color: rgba(214, 211, 211, 0.6);
     background: rgba(255,255,255,0.10);
     border: 1px solid rgba(255,255,255,0.18);
     padding: 5px 16px;
@@ -3272,126 +3279,133 @@ body {
 .pp-ba-col--after .pp-ba-list li i { color: #22c55e; flex-shrink: 0; margin-top: 2px; font-size: 0.82rem; }
 @media (max-width: 680px) { .pp-ba-grid { grid-template-columns: 1fr; gap: 14px; } }
  
-/* ── MOD 4: pp-testimonials-section — slider horizontal auto sur mobile ── */
 .pp-testimonials-section {
-    padding: 15px 0 10px;
-    background: #fce4ec;
+    padding: 20px 16px 10px;
+    background: linear-gradient(160deg, #fce4ec 0%, #f3e5f5 100%);
     border-top: 1px solid rgba(233, 30, 99, 0.14);
     border-bottom: 1px solid rgba(233, 30, 99, 0.14);
 }
 .pp-testimonials-section .container { text-align: center; }
-.pp-testimonials-section .pp-section-label {
-    color: #e91e63;
-    background: white;
-    border-color: rgba(233, 30, 99, 0.14);
-}
-.pp-testimonials-section .pp-section-title { color: #1a1018 !important; }
-.pp-section-sub { font-size: 0.90rem; color: #9e8e96; margin-top: -20px; margin-bottom: 32px; }
+.pp-section-sub { font-size: 0.90rem; color: #9e6e80; margin-top: -10px; margin-bottom: 32px; }
 
-/* Desktop: grille normale */
 .pp-testimonials-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
     text-align: left;
 }
 
-/* MOD 4: wrapper slider sur mobile */
-.pp-testimonials-slider-wrapper {
-    position: relative;
-    overflow: hidden;   /* clips les cartes hors champ */
+.pp-testimonials-section .pp-section-label {
+    color: #e91e63;
+    background: white;
+    border: 1px solid rgba(233, 30, 99, 0.25);
+}
+
+.pp-testimonials-section .pp-section-title {
+    color: #1a1018 !important;
 }
 
 .pp-testimonial-card {
-    background: white;
-    border: 1px solid rgba(233, 30, 99, 0.14);
-    border-radius: 16px;
-    padding: 22px 20px;
-    box-shadow: 0 4px 14px rgba(103, 58, 183, 0.08);
     position: relative;
-    transition: all 0.25s ease;
+    background: #fff;
+    border-radius: 20px;
+    padding: 22px 20px 18px;
+    border: 1.5px solid rgba(233, 30, 99, 0.13);
     overflow: hidden;
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
 }
 .pp-testimonial-card::before {
-    content: '\201C';
+    content: '';
     position: absolute;
-    top: 8px; left: 14px;
-    font-size: 3.5rem;
-    color: #fce4ec;
-    line-height: 1;
-    font-weight: 700;
-    pointer-events: none;
+    inset: 0;
+    border-radius: 20px;
+    padding: 1.5px;
+    background: linear-gradient(135deg, #e91e63, #673ab7, #e91e63);
+    background-size: 200% 200%;
+    -webkit-mask: linear-gradient(#ece0e0 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+.pp-testimonial-card:hover::before {
+    opacity: 1;
+    animation: borderSpin 2.5s linear infinite;
+}
+@keyframes borderSpin {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 .pp-testimonial-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 12px 32px rgba(103, 58, 183, 0.16);
+    box-shadow: 0 16px 40px rgba(233, 30, 99, 0.15), 0 4px 12px rgba(103, 58, 183, 0.10);
 }
-.pp-t-stars { color: #ffd700; font-size: 0.85rem; margin-bottom: 8px; }
-.pp-t-text { font-size: 0.88rem; color: #5a4d55; line-height: 1.65; margin-bottom: 14px; font-style: italic; }
+
+.pp-quote-mark {
+    font-size: 52px;
+    line-height: 0.8;
+    color: #f3bacd;
+    font-weight: 900;
+    margin-bottom: 4px;
+    font-family: Georgia, serif;
+    user-select: none;
+}
+.pp-t-stars { color: #ffc107; font-size: 13px; margin-bottom: 10px; letter-spacing: 2px; }
+.pp-t-text { font-size: 13px; color: #5a4d55; line-height: 1.7; font-style: italic; margin: 0 0 16px; }
+.pp-t-divider {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(233,30,99,.12), rgba(103,58,183,.12), transparent);
+    margin-bottom: 14px;
+}
 .pp-t-author { display: flex; align-items: center; gap: 10px; }
 .pp-t-avatar {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: linear-gradient(135deg, #e91e63, #673ab7);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    font-size: 0.88rem;
+    color: #ececec;
+    font-size: 14px;
     font-weight: 700;
     flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(233, 30, 99, 0.28);
 }
-.pp-t-info { flex: 1; }
-.pp-t-info strong { font-size: 0.82rem; font-weight: 700; color: #1a1018; display: block; }
-.pp-t-info span { font-size: 0.70rem; color: #9e8e96; }
+.pp-t-info strong { font-size: 13px; font-weight: 700; color: #1a1018; display: block; }
+.pp-t-info span { font-size: 11px; color: #9e8e96; }
 .pp-t-verified {
-    font-size: 0.65rem;
+    margin-left: auto;
+    font-size: 10px;
     font-weight: 700;
     background: #dcfce7;
     color: #166534;
-    padding: 3px 8px;
+    padding: 4px 9px;
     border-radius: 100px;
     border: 1px solid rgba(34, 197, 94, 0.22);
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
-/* MOD 4: mobile slider styles */
 @media (max-width: 768px) {
-    .pp-testimonials-section { padding: 36px 0 30px; }
-
-    /* Désactive la grille sur mobile */
-    .pp-testimonials-grid {
-        display: block;
-        position: relative;
-    }
-
-    /* Toutes les cartes empilées, masquées par défaut */
-    .pp-testimonial-card {
-        display: none;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    /* Seule la carte active est visible */
+    .pp-testimonials-section { padding: 20px 16px 10px; }
+    .pp-testimonials-grid { display: block; }
+    .pp-testimonial-card { display: none; width: 100%; box-sizing: border-box; }
     .pp-testimonial-card.pp-t-active {
         display: block;
         animation: ppTFadeIn 0.5s ease;
     }
-
     @keyframes ppTFadeIn {
         from { opacity: 0; transform: translateX(30px); }
         to   { opacity: 1; transform: translateX(0); }
     }
-
-    /* Indicateurs de pagination */
     .pp-testimonials-dots {
         display: flex;
         justify-content: center;
         gap: 8px;
         margin-top: 16px;
     }
-
     .pp-testimonials-dot {
         width: 8px;
         height: 8px;
@@ -3402,124 +3416,17 @@ body {
         border: none;
         padding: 0;
     }
-
     .pp-testimonials-dot.active {
         background: #e91e63;
         transform: scale(1.3);
     }
-
-    .pp-trust-strip { gap: 8px; }
-    .pp-trust-item { font-size: 0.68rem; }
 }
 
-/* Desktop: cache les dots */
 @media (min-width: 769px) {
     .pp-testimonials-dots { display: none !important; }
 }
 
-/* ================================================================
-   TOOLS INCLUDED — Premium Redesign
-================================================================ */
-.tools-section {
-    padding: 15px 0 10px;
-    background: linear-gradient(160deg, #1a1018 0%, #2d1f3a 100%);
-    position: relative;
-    overflow: hidden;
-}
-.tools-section::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse 60% 40% at 50% 60%, rgba(103, 58, 183, 0.18), transparent);
-    pointer-events: none;
-}
-.tools-section .container { position: relative; z-index: 1; }
-.tools-section h2 {
-    text-align: center;
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    font-weight: 700;
-    color: white;
-    margin-bottom: 20px;
-    position: relative;
-    letter-spacing: -0.01em;
-}
-.tools-section h2::after {
-    content: '';
-    display: block;
-    width: 60px;
-    height: 4px;
-    background: linear-gradient(90deg, #e91e63, #673ab7);
-    margin: 14px auto 0;
-    border-radius: 100px;
-}
-.tool-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 18px;
-}
-.tool-card {
-    background: rgba(255,255,255,0.07);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 18px;
-    padding: 10px 10px 10px;
-    text-align: center;
-    transition: all 0.28s ease;
-    position: relative;
-    overflow: hidden;
-}
-.tool-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(233,30,99,0), rgba(103,58,183,0));
-    transition: background 0.28s ease;
-    border-radius: 18px;
-}
-.tool-card:hover {
-    background: rgba(255,255,255,0.13);
-    border-color: rgba(233, 30, 99, 0.40);
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 18px 40px rgba(0,0,0,0.25);
-}
-.tool-card:hover::before {
-    background: linear-gradient(135deg, rgba(233,30,99,0.06), rgba(103,58,183,0.06));
-}
-.tool-card i {
-    font-size: 2.2rem;
-    display: block;
-    margin-bottom: 14px;
-    background: linear-gradient(135deg, #e91e63, #673ab7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    position: relative;
-    z-index: 1;
-}
-.tool-card h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    color: white;
-    margin: 0 0 8px;
-    position: relative;
-    z-index: 1;
-}
-.tool-card p {
-    font-size: 0.80rem;
-    color: rgba(255,255,255,0.55);
-    line-height: 1.6;
-    margin: 0;
-    position: relative;
-    z-index: 1;
-}
-@media (max-width: 768px) {
-    .tools-section { padding: 40px 0 32px; }
-    .tool-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .tool-card { padding: 20px 14px 16px; }
-}
-@media (max-width: 480px) {
-    .tool-grid { grid-template-columns: 1fr; }
-}
+
  
 /* ================================================================
    SPOTLIGHT — Real Curvy Women, Real Confidence — Premium Redesign

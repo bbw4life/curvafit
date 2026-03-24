@@ -353,31 +353,6 @@
             </div>
         </section>
 
-        <!-- ══ 9. APPLICATION FORM ══ -->
-        <section id="application-form" class="cr-apply">
-            <div class="container">
-                <div class="section-header">
-                    <span class="section-label">Apply</span>
-                    <h2>Submit Your Application</h2>
-                    <p class="section-subtitle">No position that fits? Send your profile anyway. If you believe in what CurvaFit stands for, we want to hear from you.</p>
-                </div>
-                <form class="cr-form">
-                    <div class="cr-form-row">
-                        <input type="text" placeholder="Full Name" required>
-                        <input type="email" placeholder="Email Address" required>
-                    </div>
-                    <input type="text" placeholder="Position of Interest (or 'Open Application')">
-                    <input type="file" accept=".pdf,.doc,.docx" required>
-                    <textarea placeholder="Tell us why you believe in CurvaFit's mission — in your own words." required rows="4"></textarea>
-                    <label class="cr-form-check">
-                        <input type="checkbox" required>
-                        <span>I have read and agree to the <a href="/policies/privacy.html">Privacy Policy</a>.</span>
-                    </label>
-                    <button type="submit" class="button-3d">Submit Application</button>
-                </form>
-            </div>
-        </section>
-
         <!-- ══ 10. FINAL CTA ══ -->
         <section id="final-cta" class="final-cta-section">
             <div class="final-cta-bg"></div>
@@ -448,12 +423,94 @@
     <script src="/search.js"></script>
     <div id="audio-player" class="draggable-audio-player">
         <button id="play-pause-btn">
-            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+            <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display: none;">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
         </button>
         <audio id="audio-element" loop>
             <source src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/audio_glowing_1.mp3?v=1771468630" type="audio/mpeg">
         </audio>
     </div>
+
+    <div id="error-popup" class="error-popup hidden">
+        <div class="popup-content">
+            <p id="popup-message" class="popup-text"></p>
+            <button id="popup-close" class="popup-btn">OK</button>
+        </div>
+    </div>
+
+    <div class="paul-indicator-wrapper">
+        <a href="#" class="paul-indicator" id="paulTrigger">
+            <i class="fi fi-rr-user"></i>
+            <span class="paul-tooltip">Earn 20% if you login/signup</span>
+        </a>
+    </div>
+
+    <div class="paul-popup-overlay" id="paulPopup">
+        <div class="paul-popup">
+            <span class="paul-close">×</span>
+            <h2 class="paul-offer-title">20% OFF TODAY ONLY!</h2>
+            <p class="paul-offer-subtitle">Log in or sign up now</p>
+            <div id="authContainer">
+                <div id="loginForm" class="auth-form">
+                    <h3>Login</h3>
+                    <input type="email" placeholder="Email" required>
+                    <div class="password-input-wrapper" style="position:relative !important;">
+                        <input type="password" id="login-password" placeholder="Password" required>
+                        <span class="password-toggle" data-target="login-password">
+                            <i class="fi fi-sr-eye"></i>
+                        </span>
+                    </div>
+                    <label><input type="checkbox"> Remember me</label>
+                    <button type="button" class="paul-btn paul-btn-login">Log In</button>
+                    <p class="switch-link">No account? <span id="goToSignup">Sign Up</span></p>
+                </div>
+                <div id="signupForm" class="auth-form" style="display:none;">
+                    <h3>Sign Up</h3>
+                    <input type="text" placeholder="Last Name" required>
+                    <input type="text" placeholder="First Name" required>
+                    <input type="email" placeholder="Email" required>
+                    <input type="tel" placeholder="Phone (optional)">
+                    <div class="password-input-wrapper" style="position:relative !important;">
+                        <input type="password" id="signup-password" placeholder="Password" required>
+                        <span class="password-toggle" data-target="signup-password">
+                            <i class="fi fi-sr-eye"></i>
+                        </span>
+                    </div>
+                    <label><input type="checkbox"> I want to subscribe to the newsletter</label>
+                    <button type="button" class="paul-btn paul-btn-register">Create My Account</button>
+                    <p class="switch-link">Already have an account? <span id="goToLogin">Login</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ FLOATING NAV ══ -->
+    <div id="floating-nav">
+        <button class="fnav-toggle" id="fnav-toggle">
+            <i class="fi fi-rr-apps"></i>
+        </button>
+        <div class="fnav-wheel" id="fnav-wheel">
+            <button class="fnav-btn fnav-top" title="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+                <i class="fi fi-rr-angle-up"></i>
+            </button>
+            <button class="fnav-btn fnav-right" title="Next page" id="fnav-next">
+                <i class="fi fi-rr-angle-right"></i>
+            </button>
+            <button class="fnav-btn fnav-bottom" title="Scroll to bottom" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">
+                <i class="fi fi-rr-angle-down"></i>
+            </button>
+            <button class="fnav-btn fnav-left" title="Previous page" onclick="history.back()">
+                <i class="fi fi-rr-angle-left"></i>
+            </button>
+            <button class="fnav-btn fnav-refresh" title="Refresh" onclick="location.reload()">
+                <i class="fi fi-rr-refresh"></i>
+            </button>
+        </div>
+    </div>
+
 </body>
 </html>
