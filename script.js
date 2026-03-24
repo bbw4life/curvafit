@@ -3129,6 +3129,8 @@ window.addEventListener('load', () => {
 
 
 
+
+
 const storyForm = document.getElementById('story-form');
 if (storyForm) {
 
@@ -3197,7 +3199,7 @@ if (storyForm) {
       });
     }
 
-    // ── FIX 1 : parsing firstName + age robuste ──────────────────────
+    // ── Parsing firstName + age ──────────────────────────────────────
     const nameAgeRaw = fields[0].value.trim();
     const commaIdx   = nameAgeRaw.indexOf(',');
     const firstName  = commaIdx !== -1
@@ -3217,7 +3219,9 @@ if (storyForm) {
     const failedBefore = fields[8].value.trim();
     const story        = fields[9].value.trim();
     const rating       = document.getElementById('story-rating-value')?.value || '5';
-    const anonymous    = storyForm.querySelector('input[type="checkbox"]')?.checked ? 'true' : 'false';
+
+    // ── FIX ANONYMOUS : lire la checkbox dédiée, pas le consentement ─
+    const anonymous = document.getElementById('anonymous-checkbox')?.checked ? 'true' : 'false';
 
     const payload = {
       firstName,
@@ -3276,14 +3280,16 @@ function buildStoryCard(s) {
     ? `<img src="${s.photo}" alt="${s.firstName}" class="dt-header-img">`
     : `<div class="dt-avatar-placeholder"><i class="fi fi-rr-user"></i></div>`;
 
-  // ── FIX 2 : ajouter "kg" après startWeight ───────────────────────
-  const startWeightDisplay = s.startWeight
-    ? (String(s.startWeight).toLowerCase().includes('kg') ? s.startWeight : `${s.startWeight} kg`)
+  // ── FIX kg : forcer l'ajout de "kg" si absent ────────────────────
+  const sw = String(s.startWeight || '').trim();
+  const startWeightDisplay = sw
+    ? (sw.toLowerCase().includes('kg') ? sw : `${sw} kg`)
     : '';
 
-  // ── FIX 3 : ajouter "months" après duration si c'est un nombre ──
-  const durationDisplay = s.duration
-    ? (/^\d+$/.test(s.duration.trim()) ? `${s.duration} months` : s.duration)
+  // ── FIX months : ajouter "months" si valeur purement numérique ───
+  const dur = String(s.duration || '').trim();
+  const durationDisplay = dur
+    ? (/^\d+$/.test(dur) ? `${dur} months` : dur)
     : '';
 
   const waistHTML = s.waist
@@ -3347,8 +3353,6 @@ async function loadCommunityStories() {
 }
 
 loadCommunityStories();
-
-
 
 
 
