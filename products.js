@@ -492,8 +492,9 @@ function addOptimisticReview(name, rating, title, text, imagesBase64 = []) {
     const stars = '★'.repeat(rating);
     const now = new Date();
     const dateStr = `${now.getFullYear()}-${now.toLocaleString('en-US', { month: 'short' })}-${now.getDate().toString().padStart(2, '0')}`;
+
     const imagesHTML = imagesBase64.map(b64 =>
-        `<img src="${b64}" alt="Review photo" style="width:80px;height:80px;object-fit:cover;border-radius:8px;margin:4px;">`
+        `<img src="${b64}" alt="Review photo">`
     ).join('');
     newReview.innerHTML = `
         <div class="avatar">${avatarLetter}</div>
@@ -525,8 +526,8 @@ async function loadDynamicReviews() {
                 const avatarLetter = review.fullName.charAt(0).toUpperCase();
                 const stars = '★'.repeat(review.rating);
                 const imagesHTML = (review.images || []).map(url =>
-                    `<img src="${url}" alt="Review photo" style="width:80px;height:80px;object-fit:cover;border-radius:8px;margin:4px;">`
-                ).join('');
+                  `<img src="${url}" alt="Review photo">`
+              ).join('');
                 newReview.innerHTML = `
                     <div class="avatar">${avatarLetter}</div>
                     <h4>${review.fullName}</h4>
