@@ -3465,17 +3465,146 @@ document.addEventListener('DOMContentLoaded', function() {
   let notifShown = false;
 
   // ── DOM refs ──
-  const toggle    = document.getElementById('cf-chat-toggle');
-  const window_   = document.getElementById('cf-chat-window');
-  const messages  = document.getElementById('cf-messages');
-  const input     = document.getElementById('cf-input');
-  const sendBtn   = document.getElementById('cf-send-btn');
-  const typing    = document.getElementById('cf-typing');
-  const closeBtn  = document.getElementById('cf-close-btn');
-  const chips     = document.querySelectorAll('.cf-chip');
-  const iconOpen  = toggle.querySelector('.cf-icon-open');
-  const iconClose = toggle.querySelector('.cf-icon-close');
-  const notifDot  = toggle.querySelector('.cf-notif-dot');
+  const widget   = document.getElementById('cf-chat-widget');
+  const toggle   = document.getElementById('cf-chat-toggle');
+  const window_  = document.getElementById('cf-chat-window');
+  const messages = document.getElementById('cf-messages');
+  const input    = document.getElementById('cf-input');
+  const sendBtn  = document.getElementById('cf-send-btn');
+  const typing   = document.getElementById('cf-typing');
+  const closeBtn = document.getElementById('cf-close-btn');
+  const chips    = document.querySelectorAll('.cf-chip');
+  const iconOpen = toggle.querySelector('.cf-icon-open');
+  const iconClose= toggle.querySelector('.cf-icon-close');
+  const notifDot = toggle.querySelector('.cf-notif-dot');
+
+  // ══════════════════════════════════════════
+  // DRAGGABLE — déplacer le widget n'importe où
+  // ══════════════════════════════════════════
+  (function initDrag() {
+    let isDragging = false;
+    let startX, startY, origLeft, origBottom;
+    let hasMoved = false;
+
+    function getWidgetPos() {
+      const rect = widget.getBoundingClientRect();
+      return {
+        left: rect.left,
+        top: rect.top
+      };
+    }
+
+    function onPointerDown(e) {
+      // Ignorer si c'est le bouton fermer ou les chips ou l'input
+      if (e.target.closest('.cf-header-close') ||
+          e.target.closest('.cf-quick-chips') ||
+          e.target.closest('.cf-input-area') ||
+          e.target.closest('.cf-messages')) return;
+
+      // Seulement sur le toggle pour le drag
+      if (!e.target.closest('#cf-chat-toggle')) return;
+
+      isDragging = true;
+      hasMoved = false;
+      startX = e.clientX;
+      startY = e.clientY;
+
+      const rect = widget.getBoundingClientRect();
+      origLeft = rect.left;
+      origBottom = window.innerHeight - rect.bottom;
+
+      widget.classList.add('cf-dragging');
+
+      // Passer en position absolue depuis fixed
+      widget.style.left = origLeft + 'px';
+      widget.style.bottom = origBottom + 'px';
+      widget.style.right = 'auto';
+      widget.style.top = 'auto';
+
+      e.preventDefault();
+    }
+
+    function onPointerMove(e) {
+      if (!isDragging) return;
+
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+        hasMoved = true;
+      }
+
+      let newLeft = origLeft + dx;
+      let newBottom = origBottom - dy;
+
+      // Limites écran
+      const btnW = toggle.offsetWidth;
+      const btnH = toggle.offsetHeight;
+      newLeft = Math.max(8, Math.min(window.innerWidth - btnW - 8, newLeft));
+      newBottom = Math.max(8, Math.min(window.innerHeight - btnH - 8, newBottom));
+
+      widget.style.left = newLeft + 'px';
+      widget.style.bottom = newBottom + 'px';
+
+      // Ajuste la direction de la fenêtre chat selon la position
+      updateWindowPosition(newLeft, newBottom);
+    }
+
+    function onPointerUp(e) {
+      if (!isDragging) return;
+      isDragging = false;
+      widget.classList.remove('cf-dragging');
+
+      // Si pas de mouvement significatif = clic → toggle chat
+      if (!hasMoved) {
+        isOpen ? closeChat() : openChat();
+      }
+    }
+
+    // Mouse
+    toggle.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('mousemove', onPointerMove);
+    document.addEventListener('mouseup', onPointerUp);
+
+    // Touch
+    toggle.addEventListener('touchstart', function(e) {
+      const touch = e.touches[0];
+      onPointerDown({ clientX: touch.clientX, clientY: touch.clientY,
+        target: e.target, preventDefault: () => e.preventDefault() });
+    }, { passive: false });
+
+    document.addEventListener('touchmove', function(e) {
+      if (!isDragging) return;
+      const touch = e.touches[0];
+      onPointerMove({ clientX: touch.clientX, clientY: touch.clientY });
+      e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchend', function(e) {
+      const touch = e.changedTouches[0];
+      onPointerUp({ clientX: touch.clientX, clientY: touch.clientY });
+    });
+  })();
+
+  // Met à jour la direction d'ouverture de la fenêtre
+  function updateWindowPosition(left, bottom) {
+    const winW = window.innerWidth;
+    const winH = window.innerHeight;
+
+    // Droite si le widget est dans la moitié droite
+    if (left > winW / 2) {
+      widget.classList.add('cf-right');
+    } else {
+      widget.classList.remove('cf-right');
+    }
+
+    // Haut si le widget est dans la moitié haute
+    if (bottom > winH / 2) {
+      widget.classList.add('cf-top');
+    } else {
+      widget.classList.remove('cf-top');
+    }
+  }
 
   // ── Open / Close ──
   function openChat() {
@@ -3500,7 +3629,8 @@ document.addEventListener('DOMContentLoaded', function() {
     iconClose.style.display = 'none';
   }
 
-  toggle.addEventListener('click', () => isOpen ? closeChat() : openChat());
+  // Le toggle est géré par le drag handler (hasMoved)
+  // Mais on garde le closeBtn
   closeBtn.addEventListener('click', closeChat);
 
   // Show notif dot after 3s if not opened
@@ -3528,13 +3658,26 @@ What are you looking for today?`;
 
   // ── Format Markdown (basic) ──
   function formatMarkdown(text) {
-    return text
+    // Supprime tous les liens markdown ou URL bruts du texte
+    // Les liens seront gérés via les product cards uniquement
+    let formatted = text
+      // Supprimer les liens markdown [texte](url)
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<strong>$1</strong>')
+      // Supprimer les URLs brutes type /products/... ou .html
+      .replace(/\/?products?\/[\w\-\.\/]+\.html?/gi, '')
+      .replace(/\/[\w\-]+\.html?/gi, '')
+      // Bold
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      // Italic
       .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      // Code
       .replace(/`(.+?)`/g, '<code>$1</code>')
+      // Newlines
       .replace(/\n\n/g, '<br><br>')
       .replace(/\n/g, '<br>')
       .replace(/•\s/g, '• ');
+
+    return formatted;
   }
 
   // ── Get current time ──
@@ -3552,15 +3695,14 @@ What are you looking for today?`;
     bubble.innerHTML = formatMarkdown(text);
     msgEl.appendChild(bubble);
 
-    // Product cards (AI messages only)
+    // Product cards (AI messages only) — liens cachés derrière bouton CTA
     if (role === 'ai' && products && products.length > 0) {
       const cardsWrap = document.createElement('div');
       cardsWrap.className = 'cf-product-cards';
 
       products.forEach(p => {
-        const card = document.createElement('a');
+        const card = document.createElement('div');
         card.className = 'cf-product-card';
-        card.href = p.url;
         card.innerHTML = `
           <div class="cf-product-card-info">
             <div class="cf-product-card-title">${p.title}</div>
@@ -3569,7 +3711,18 @@ What are you looking for today?`;
               <span class="cf-price-compare">$${p.compare_price.toFixed(2)}</span>
             </div>
           </div>
-          <div class="cf-product-card-arrow">→</div>
+          <a
+            href="${p.url}"
+            class="cf-product-card-btn"
+            title="Voir ce produit"
+            target="_blank"
+            rel="noopener"
+          >
+            Voir
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
         `;
         cardsWrap.appendChild(card);
       });
@@ -3724,6 +3877,6 @@ What are you looking for today?`;
     }
   });
 
-console.log('✅ CurvaFit AI Chatbot initialized');
+  console.log('✅ CurvaFit AI Chatbot initialized');
 })();
 }); // fin DOMContentLoaded chatbot
