@@ -3449,439 +3449,411 @@ function initStockBar(cjId) {
 
 /* ================================================================
    CURVAFIT AI CHATBOT — FRONTEND JS
-   ✅ Correct product URLs (no 404)
-   ✅ Color images displayed in product cards
-   ✅ Name: Curva Support (not Cora)
-   ✅ No internal IDs sent to user
-   ✅ Draggable widget
-   ✅ 16 quick chips
 ================================================================ */
-document.addEventListener('DOMContentLoaded', function() {
-(function() {
-  'use strict';
+document.addEventListener('DOMContentLoaded', function () {
+  (function () {
+    'use strict';
 
-  // ── State ──
-  let isOpen = false;
-  let isLoading = false;
-  let conversationHistory = [];
-  let notifShown = false;
+    /* ── DOM refs ── */
+    const widget   = document.getElementById('cf-chat-widget');
+    const toggle   = document.getElementById('cf-chat-toggle');
+    const window_  = document.getElementById('cf-chat-window');
+    const messages = document.getElementById('cf-messages');
+    const input    = document.getElementById('cf-input');
+    const sendBtn  = document.getElementById('cf-send-btn');
+    const typing   = document.getElementById('cf-typing');
+    const closeBtn = document.getElementById('cf-close-btn');
+    const chips    = document.querySelectorAll('.cf-chip');
+    const iconOpen  = toggle ? toggle.querySelector('.cf-icon-open')  : null;
+    const iconClose = toggle ? toggle.querySelector('.cf-icon-close') : null;
+    const notifDot  = toggle ? toggle.querySelector('.cf-notif-dot')  : null;
 
-  // ── DOM refs ──
-  const widget   = document.getElementById('cf-chat-widget');
-  const toggle   = document.getElementById('cf-chat-toggle');
-  const window_  = document.getElementById('cf-chat-window');
-  const messages = document.getElementById('cf-messages');
-  const input    = document.getElementById('cf-input');
-  const sendBtn  = document.getElementById('cf-send-btn');
-  const typing   = document.getElementById('cf-typing');
-  const closeBtn = document.getElementById('cf-close-btn');
-  const chips    = document.querySelectorAll('.cf-chip');
-  const iconOpen = toggle.querySelector('.cf-icon-open');
-  const iconClose= toggle.querySelector('.cf-icon-close');
-  const notifDot = toggle.querySelector('.cf-notif-dot');
+    if (!widget || !toggle || !window_ || !messages || !input || !sendBtn) return;
 
-  if (!widget || !toggle || !window_ || !messages || !input || !sendBtn) return;
+    /* ── State ── */
+    let isOpen  = false;
+    let isLoading = false;
+    let conversationHistory = [];
+    let notifShown = false;
 
-  // ══════════════════════════════════════════
-  // DRAGGABLE — déplacer le widget n'importe où
-  // ══════════════════════════════════════════
-  (function initDrag() {
-    let isDragging = false;
-    let startX, startY, origLeft, origBottom;
-    let hasMoved = false;
+    /* ══════════════════════════════════════
+       DRAGGABLE WIDGET
+    ══════════════════════════════════════ */
+    (function initDrag() {
+      let isDragging = false;
+      let startX, startY, origLeft, origBottom, hasMoved;
 
-    function onPointerDown(e) {
-      if (e.target.closest('.cf-header-close') ||
-          e.target.closest('.cf-quick-chips') ||
-          e.target.closest('.cf-input-area') ||
-          e.target.closest('.cf-messages')) return;
-      if (!e.target.closest('#cf-chat-toggle')) return;
+      function onDown(e) {
+        if (
+          e.target.closest('.cf-header-close') ||
+          e.target.closest('.cf-quick-chips')  ||
+          e.target.closest('.cf-input-area')   ||
+          e.target.closest('.cf-messages')
+        ) return;
+        if (!e.target.closest('#cf-chat-toggle')) return;
 
-      isDragging = true;
-      hasMoved   = false;
-      startX     = e.clientX;
-      startY     = e.clientY;
+        isDragging = true;
+        hasMoved   = false;
+        startX     = e.clientX;
+        startY     = e.clientY;
 
-      const rect = widget.getBoundingClientRect();
-      origLeft   = rect.left;
-      origBottom = window.innerHeight - rect.bottom;
+        const rect = widget.getBoundingClientRect();
+        origLeft   = rect.left;
+        origBottom = window.innerHeight - rect.bottom;
 
-      widget.classList.add('cf-dragging');
-      widget.style.left   = origLeft + 'px';
-      widget.style.bottom = origBottom + 'px';
-      widget.style.right  = 'auto';
-      widget.style.top    = 'auto';
-      e.preventDefault();
-    }
-
-    function onPointerMove(e) {
-      if (!isDragging) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
-
-      let newLeft   = origLeft + dx;
-      let newBottom = origBottom - dy;
-      const btnW = toggle.offsetWidth;
-      const btnH = toggle.offsetHeight;
-      newLeft   = Math.max(8, Math.min(window.innerWidth  - btnW - 8, newLeft));
-      newBottom = Math.max(8, Math.min(window.innerHeight - btnH - 8, newBottom));
-
-      widget.style.left   = newLeft + 'px';
-      widget.style.bottom = newBottom + 'px';
-      updateWindowPosition(newLeft, newBottom);
-    }
-
-    function onPointerUp() {
-      if (!isDragging) return;
-      isDragging = false;
-      widget.classList.remove('cf-dragging');
-      if (!hasMoved) {
-        isOpen ? closeChat() : openChat();
+        widget.classList.add('cf-dragging');
+        widget.style.left   = origLeft   + 'px';
+        widget.style.bottom = origBottom + 'px';
+        widget.style.right  = 'auto';
+        widget.style.top    = 'auto';
+        e.preventDefault();
       }
+
+      function onMove(e) {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
+
+        const bW = toggle.offsetWidth;
+        const bH = toggle.offsetHeight;
+        let nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft   + dx));
+        let nb = Math.max(8, Math.min(window.innerHeight - bH - 8, origBottom - dy));
+
+        widget.style.left   = nl + 'px';
+        widget.style.bottom = nb + 'px';
+        updateWindowPos(nl, nb);
+      }
+
+      function onUp() {
+        if (!isDragging) return;
+        isDragging = false;
+        widget.classList.remove('cf-dragging');
+        if (!hasMoved) { isOpen ? closeChat() : openChat(); }
+      }
+
+      toggle.addEventListener('mousedown', onDown);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+
+      toggle.addEventListener('touchstart', e => {
+        const t = e.touches[0];
+        onDown({ clientX: t.clientX, clientY: t.clientY, target: e.target, preventDefault: () => e.preventDefault() });
+      }, { passive: false });
+
+      document.addEventListener('touchmove', e => {
+        if (!isDragging) return;
+        onMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+        e.preventDefault();
+      }, { passive: false });
+
+      document.addEventListener('touchend', onUp);
+    })();
+
+    function updateWindowPos(left, bottom) {
+      widget.classList.toggle('cf-right', left   > window.innerWidth  / 2);
+      widget.classList.toggle('cf-top',   bottom > window.innerHeight / 2);
     }
 
-    toggle.addEventListener('mousedown', onPointerDown);
-    document.addEventListener('mousemove', onPointerMove);
-    document.addEventListener('mouseup', onPointerUp);
-
-    toggle.addEventListener('touchstart', function(e) {
-      const t = e.touches[0];
-      onPointerDown({ clientX: t.clientX, clientY: t.clientY, target: e.target, preventDefault: () => e.preventDefault() });
-    }, { passive: false });
-
-    document.addEventListener('touchmove', function(e) {
-      if (!isDragging) return;
-      const t = e.touches[0];
-      onPointerMove({ clientX: t.clientX, clientY: t.clientY });
-      e.preventDefault();
-    }, { passive: false });
-
-    document.addEventListener('touchend', function(e) {
-      onPointerUp();
-    });
-  })();
-
-  function updateWindowPosition(left, bottom) {
-    const winW = window.innerWidth;
-    const winH = window.innerHeight;
-    widget.classList.toggle('cf-right', left > winW / 2);
-    widget.classList.toggle('cf-top',   bottom > winH / 2);
-  }
-
-  // ── Open / Close ──
-  function openChat() {
-    isOpen = true;
-    window_.classList.add('cf-open');
-    window_.setAttribute('aria-hidden', 'false');
-    iconOpen.style.display  = 'none';
-    iconClose.style.display = '';
-    notifDot.style.display  = 'none';
-    input.focus();
-    if (messages.children.length === 0) addWelcomeMessage();
-  }
-
-  function closeChat() {
-    isOpen = false;
-    window_.classList.remove('cf-open');
-    window_.setAttribute('aria-hidden', 'true');
-    iconOpen.style.display  = '';
-    iconClose.style.display = 'none';
-  }
-
-  if (closeBtn) closeBtn.addEventListener('click', closeChat);
-
-  // Notif dot after 3s
-  setTimeout(() => {
-    if (!isOpen && !notifShown) {
-      notifDot.style.display = 'block';
-      notifShown = true;
+    /* ── Open / Close ── */
+    function openChat() {
+      isOpen = true;
+      window_.classList.add('cf-open');
+      window_.setAttribute('aria-hidden', 'false');
+      if (iconOpen)  iconOpen.style.display  = 'none';
+      if (iconClose) iconClose.style.display = '';
+      if (notifDot)  notifDot.style.display  = 'none';
+      input.focus();
+      if (messages.children.length === 0) addWelcomeMessage();
     }
-  }, 3000);
 
-  // ── Welcome Message ──
-  function addWelcomeMessage() {
-    const welcomeText = `Hi! 👋 I'm **Curva**, your personal CurvaFit coach & advisor!
+    function closeChat() {
+      isOpen = false;
+      window_.classList.remove('cf-open');
+      window_.setAttribute('aria-hidden', 'true');
+      if (iconOpen)  iconOpen.style.display  = '';
+      if (iconClose) iconClose.style.display = 'none';
+    }
 
-I'm here to help you with:
-- 🔥 Finding the right products for your goals
-- 💪 Fitness & weight loss tips for plus-size women
-- 🥗 Nutrition advice that actually works
-- 📦 Order info, delivery, promo codes
+    if (closeBtn) closeBtn.addEventListener('click', closeChat);
 
-What can I help you with today? 😊`;
-    addMessage(welcomeText, 'ai');
-  }
+    /* Notif dot after 3s */
+    setTimeout(() => {
+      if (!isOpen && !notifShown && notifDot) {
+        notifDot.style.display = 'block';
+        notifShown = true;
+      }
+    }, 3000);
 
-  // ── Format Markdown (basic) ──
-  function formatMarkdown(text) {
-    return text
-      // Remove internal product IDs that might slip through
-      .replace(/\b(resistance-bands|yoga-mat|leggings|sports-bra|hydration-bottle|workout-towel|fitness-tracker|protein-shaker|dumbbell-set|jump-rope|foam-roller|yoga-blocks|ankle-weights|cooling-towel|massage-ball|gym-bag)\b/gi, '')
-      // Remove raw product page paths like /products/product1.html
-      // (they appear in product CARDS, not in the text bubble)
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<strong>$1</strong>')
-      // Bold
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      // Italic
-      .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      // Code
-      .replace(/`(.+?)`/g, '<code>$1</code>')
-      // Newlines
-      .replace(/\n\n/g, '<br><br>')
-      .replace(/\n/g, '<br>');
-  }
+    /* ── Welcome ── */
+    function addWelcomeMessage() {
+      addMessage(
+        `Hi! 👋 I'm **Curva**, your personal CurvaFit coach!\n\nI'm here to help you with:\n- 🔥 Weight loss tips & advice\n- 🥗 Nutrition guidance\n- 💪 Product recommendations\n- 📋 Programs & coaching plans\n\nWhat can I help you with today? 😊`,
+        'ai',
+        []
+      );
+    }
 
-  function getTime() {
-    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
+    /* ── Format Markdown ── */
+    function formatMarkdown(text) {
+      // Strip internal IDs that might slip through
+      const internalIds = [
+        'resistance-bands','yoga-mat','leggings','sports-bra',
+        'hydration-bottle','workout-towel','fitness-tracker','protein-shaker',
+        'dumbbell-set','jump-rope','foam-roller','yoga-blocks',
+        'ankle-weights','cooling-towel','massage-ball','gym-bag'
+      ];
+      let out = text;
+      internalIds.forEach(id => {
+        out = out.replace(new RegExp('\\b' + id + '\\b', 'gi'), '');
+      });
 
-  // ── Add message to UI ──
-  function addMessage(text, role, products) {
-    const msgEl  = document.createElement('div');
-    msgEl.className = `cf-message cf-message--${role}`;
+      return out
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<strong>$1</strong>') // remove markdown links
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g,     '<em>$1</em>')
+        .replace(/`(.+?)`/g,       '<code>$1</code>')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g,   '<br>');
+    }
 
-    // Text bubble
-    const bubble = document.createElement('div');
-    bubble.className = 'cf-msg-bubble';
-    bubble.innerHTML = formatMarkdown(text);
-    msgEl.appendChild(bubble);
+    function getTime() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
 
-    // Product cards (AI messages only)
-    if (role === 'ai' && products && products.length > 0) {
-      const cardsWrap = document.createElement('div');
-      cardsWrap.className = 'cf-product-cards';
+    /* ══════════════════════════════════════
+       ADD MESSAGE — with responsive cards
+    ══════════════════════════════════════ */
+    function addMessage(text, role, products) {
+      const msgEl  = document.createElement('div');
+      msgEl.className = `cf-message cf-message--${role}`;
 
-      products.forEach(p => {
-        // Build color swatches HTML
-        let colorsHTML = '';
-        if (p.colors && p.colors.length > 0) {
-          colorsHTML = '<div class="cf-card-colors">';
-          p.colors.slice(0, 5).forEach(c => {
-            colorsHTML += `<span
-              class="cf-card-color-swatch"
-              title="${c.name}"
-              style="background:${c.hex || '#ccc'}"
-              data-color-img="${c.image || ''}"
-              data-color-name="${c.name}"
-            ></span>`;
-          });
-          if (p.colors.length > 5) {
-            colorsHTML += `<span class="cf-card-color-more">+${p.colors.length - 5}</span>`;
+      /* Text bubble */
+      const bubble = document.createElement('div');
+      bubble.className = 'cf-msg-bubble';
+      bubble.innerHTML = formatMarkdown(text);
+      msgEl.appendChild(bubble);
+
+      /* Product cards — only if products array has items */
+      if (role === 'ai' && Array.isArray(products) && products.length > 0) {
+        const cardsWrap = document.createElement('div');
+        cardsWrap.className = 'cf-product-cards';
+
+        products.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'cf-product-card';
+
+          /* ── Product image ── */
+          let imgHTML = '';
+          if (p.image) {
+            imgHTML = `
+              <div class="cf-pc-img-wrap">
+                <img class="cf-pc-img" src="${p.image}" alt="${p.title}" loading="lazy"
+                     onerror="this.parentElement.style.display='none'">
+              </div>`;
           }
-          colorsHTML += '</div>';
-          colorsHTML += '<div class="cf-card-color-name"></div>';
-        }
 
-        // Build sizes HTML
-        let sizesHTML = '';
-        if (p.sizes && p.sizes.length > 0) {
-          sizesHTML = `<div class="cf-card-sizes"><span class="cf-card-sizes-label">Sizes:</span> ${p.sizes.join(' · ')}</div>`;
-        }
+          /* ── Rating ── */
+          const ratingHTML = p.rating
+            ? `<div class="cf-pc-rating">⭐ ${p.rating}/5</div>`
+            : '';
 
-        // Rating
-        let ratingHTML = '';
-        if (p.rating) {
-          ratingHTML = `<div class="cf-card-rating">⭐ ${p.rating}/5</div>`;
-        }
+          /* ── Price ── */
+          const priceHTML = `
+            <div class="cf-pc-price">
+              <span class="cf-pc-price-current">$${Number(p.price).toFixed(2)}</span>
+              <span class="cf-pc-price-compare">$${Number(p.compare_price).toFixed(2)}</span>
+            </div>`;
 
-        // Delivery
-        let deliveryHTML = '';
-        if (p.delivery && p.delivery !== 'Contact us for delivery times') {
-          deliveryHTML = `<div class="cf-card-delivery">🚚 Est. delivery: ${p.delivery}</div>`;
-        }
+          /* ── Colors ── */
+          let colorsHTML = '';
+          if (p.colors && p.colors.length > 0) {
+            const swatchesHTML = p.colors.slice(0, 6).map(c => `
+              <span
+                class="cf-pc-swatch"
+                title="${c.name}"
+                style="background:${c.hex || '#ccc'}"
+                data-img="${c.image || ''}"
+                data-name="${c.name}"
+              ></span>`).join('');
+            const moreHTML = p.colors.length > 6
+              ? `<span class="cf-pc-swatch-more">+${p.colors.length - 6}</span>` : '';
+            colorsHTML = `
+              <div class="cf-pc-colors">${swatchesHTML}${moreHTML}</div>
+              <div class="cf-pc-color-label"></div>`;
+          }
 
-        // Build the correct URL — handle both absolute and relative
-        // The function returns /products/productN.html
-        // We navigate to it directly
-        const productUrl = p.url || '#';
+          /* ── Sizes ── */
+          const sizesHTML = (p.sizes && p.sizes.length > 0)
+            ? `<div class="cf-pc-sizes"><strong>Sizes:</strong> ${p.sizes.join(' · ')}</div>` : '';
 
-        const card = document.createElement('div');
-        card.className = 'cf-product-card';
-        card.innerHTML = `
-          <div class="cf-product-card-img-wrap">
-            <img
-              class="cf-product-card-img"
-              src="${p.image || ''}"
-              alt="${p.title}"
-              loading="lazy"
-              onerror="this.style.display='none'"
-            >
-          </div>
-          <div class="cf-product-card-info">
-            <div class="cf-product-card-title">${p.title}</div>
-            ${ratingHTML}
-            <div class="cf-product-card-price">
-              <span class="cf-price-current">$${Number(p.price).toFixed(2)}</span>
-              <span class="cf-price-compare">$${Number(p.compare_price).toFixed(2)}</span>
-            </div>
-            ${colorsHTML}
-            ${sizesHTML}
-            ${deliveryHTML}
-            <a
-              href="${productUrl}"
-              class="cf-product-card-btn"
-              onclick="event.stopPropagation()"
-            >
+          /* ── Delivery ── */
+          const deliveryHTML = (p.delivery)
+            ? `<div class="cf-pc-delivery">🚚 ${p.delivery}</div>` : '';
+
+          /* ── CTA button ── */
+          const ctaHTML = `
+            <a href="${p.url}" class="cf-pc-btn" onclick="event.stopPropagation()">
               View Product
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
               </svg>
-            </a>
-          </div>
-        `;
+            </a>`;
 
-        // Color swatch hover: show image + name
-        const swatches = card.querySelectorAll('.cf-card-color-swatch');
-        const colorNameEl = card.querySelector('.cf-card-color-name');
-        const mainImg = card.querySelector('.cf-product-card-img');
+          card.innerHTML = `
+            ${imgHTML}
+            <div class="cf-pc-info">
+              <div class="cf-pc-title">${p.title}</div>
+              ${ratingHTML}
+              ${priceHTML}
+              ${colorsHTML}
+              ${sizesHTML}
+              ${deliveryHTML}
+              ${ctaHTML}
+            </div>`;
 
-        swatches.forEach(swatch => {
-          swatch.addEventListener('mouseenter', () => {
-            const img = swatch.dataset.colorImg;
-            const name = swatch.dataset.colorName;
-            if (img && mainImg) mainImg.src = img;
-            if (colorNameEl) colorNameEl.textContent = name;
-            swatches.forEach(s => s.classList.remove('cf-swatch-active'));
-            swatch.classList.add('cf-swatch-active');
+          /* ── Swatch interaction ── */
+          const swatches  = card.querySelectorAll('.cf-pc-swatch');
+          const colorLabel = card.querySelector('.cf-pc-color-label');
+          const mainImg    = card.querySelector('.cf-pc-img');
+
+          swatches.forEach(sw => {
+            const activate = () => {
+              swatches.forEach(s => s.classList.remove('cf-pc-swatch--active'));
+              sw.classList.add('cf-pc-swatch--active');
+              if (colorLabel) colorLabel.textContent = sw.dataset.name;
+              if (mainImg && sw.dataset.img) mainImg.src = sw.dataset.img;
+            };
+            sw.addEventListener('mouseenter', activate);
+            sw.addEventListener('click',      activate);
           });
-          swatch.addEventListener('click', () => {
-            const img = swatch.dataset.colorImg;
-            const name = swatch.dataset.colorName;
-            if (img && mainImg) mainImg.src = img;
-            if (colorNameEl) colorNameEl.textContent = name;
-            swatches.forEach(s => s.classList.remove('cf-swatch-active'));
-            swatch.classList.add('cf-swatch-active');
-          });
+
+          cardsWrap.appendChild(card);
         });
 
-        cardsWrap.appendChild(card);
-      });
-
-      msgEl.appendChild(cardsWrap);
-    }
-
-    // Timestamp
-    const time = document.createElement('span');
-    time.className  = 'cf-msg-time';
-    time.textContent = getTime();
-    msgEl.appendChild(time);
-
-    messages.appendChild(msgEl);
-    scrollToBottom();
-    return msgEl;
-  }
-
-  function addErrorMessage() {
-    addMessage("Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏", 'ai');
-  }
-
-  function scrollToBottom() {
-    messages.scrollTo({ top: messages.scrollHeight, behavior: 'smooth' });
-  }
-
-  function showTyping() { typing.style.display = 'flex'; scrollToBottom(); }
-  function hideTyping()  { typing.style.display = 'none'; }
-
-  // ── Send message ──
-  async function sendMessage(userText) {
-    if (!userText || userText.trim().length === 0 || isLoading) return;
-
-    const text = userText.trim();
-
-    // Hide chips after first message
-    const chipsEl = document.getElementById('cf-quick-chips');
-    if (chipsEl) chipsEl.style.display = 'none';
-
-    addMessage(text, 'user');
-    conversationHistory.push({ role: 'user', content: text });
-
-    input.value = '';
-    input.style.height = 'auto';
-    sendBtn.disabled = true;
-    isLoading = true;
-
-    showTyping();
-
-    try {
-      const response = await fetch('/.netlify/functions/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: text,
-          history: conversationHistory.slice(-8)
-        })
-      });
-
-      hideTyping();
-
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
-
-      const aiReply  = data.reply    || "I'm not sure how to answer that. Could you rephrase? 😊";
-      const products = data.products || [];
-
-      addMessage(aiReply, 'ai', products);
-      conversationHistory.push({ role: 'assistant', content: aiReply });
-
-      if (conversationHistory.length > 20) {
-        conversationHistory = conversationHistory.slice(-16);
+        msgEl.appendChild(cardsWrap);
       }
 
-    } catch (error) {
-      hideTyping();
-      console.error('Chat error:', error);
-      addErrorMessage();
-    } finally {
-      isLoading = false;
-      sendBtn.disabled = input.value.trim().length === 0;
+      /* Timestamp */
+      const time = document.createElement('span');
+      time.className  = 'cf-msg-time';
+      time.textContent = getTime();
+      msgEl.appendChild(time);
+
+      messages.appendChild(msgEl);
+      scrollToBottom();
     }
-  }
 
-  // ── Input handlers ──
-  input.addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-    sendBtn.disabled  = this.value.trim().length === 0;
-  });
-
-  input.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      if (!sendBtn.disabled) sendMessage(this.value);
+    function addErrorMessage() {
+      addMessage(
+        "Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏",
+        'ai', []
+      );
     }
-  });
 
-  sendBtn.addEventListener('click', () => {
-    if (!sendBtn.disabled) sendMessage(input.value);
-  });
+    function scrollToBottom() {
+      messages.scrollTo({ top: messages.scrollHeight, behavior: 'smooth' });
+    }
 
-  // ── Quick chips ──
-  chips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      const msg = chip.dataset.msg;
-      if (msg) {
-        input.value = msg;
-        sendBtn.disabled = false;
-        sendMessage(msg);
+    function showTyping() { if (typing) { typing.style.display = 'flex'; scrollToBottom(); } }
+    function hideTyping()  { if (typing) typing.style.display = 'none'; }
+
+    /* ── Send message ── */
+    async function sendMessage(userText) {
+      if (!userText || !userText.trim() || isLoading) return;
+      const text = userText.trim();
+
+      /* Hide chips */
+      const chipsEl = document.getElementById('cf-quick-chips');
+      if (chipsEl) chipsEl.style.display = 'none';
+
+      addMessage(text, 'user', []);
+      conversationHistory.push({ role: 'user', content: text });
+
+      input.value      = '';
+      input.style.height = 'auto';
+      sendBtn.disabled = true;
+      isLoading        = true;
+
+      showTyping();
+
+      try {
+        const response = await fetch('/.netlify/functions/chat', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            message: text,
+            history: conversationHistory.slice(-8)
+          })
+        });
+
+        hideTyping();
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        if (data.error) throw new Error(data.error);
+
+        const aiReply  = data.reply    || "I'm not sure how to answer that. Could you rephrase? 😊";
+        const products = data.products || [];   // empty for general questions
+
+        addMessage(aiReply, 'ai', products);
+        conversationHistory.push({ role: 'assistant', content: aiReply });
+
+        if (conversationHistory.length > 20) {
+          conversationHistory = conversationHistory.slice(-16);
+        }
+
+      } catch (err) {
+        hideTyping();
+        console.error('Chat error:', err);
+        addErrorMessage();
+      } finally {
+        isLoading        = false;
+        sendBtn.disabled = input.value.trim().length === 0;
+      }
+    }
+
+    /* ── Input handlers ── */
+    input.addEventListener('input', function () {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+      sendBtn.disabled  = this.value.trim().length === 0;
+    });
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!sendBtn.disabled) sendMessage(this.value);
       }
     });
-  });
 
-  // ── Keyboard shortcuts ──
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && isOpen) closeChat();
-  });
+    sendBtn.addEventListener('click', () => {
+      if (!sendBtn.disabled) sendMessage(input.value);
+    });
 
-  // ── Click outside to close ──
-  document.addEventListener('click', e => {
-    if (isOpen && !widget.contains(e.target)) closeChat();
-  });
+    /* ── Quick chips ── */
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const msg = chip.dataset.msg;
+        if (msg) {
+          input.value      = msg;
+          sendBtn.disabled = false;
+          sendMessage(msg);
+        }
+      });
+    });
 
-  console.log('✅ CurvaFit AI Chatbot (Curva Support) initialized');
-})();
+    /* ── Keyboard & outside click ── */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && isOpen) closeChat();
+    });
+
+    document.addEventListener('click', e => {
+      if (isOpen && !widget.contains(e.target)) closeChat();
+    });
+
+    console.log('✅ CurvaFit Chatbot (Curva Support) ready');
+  })();
 }); // end DOMContentLoaded
 
 
