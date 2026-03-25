@@ -3449,204 +3449,209 @@ function initStockBar(cjId) {
 
 
 /* ═══════════════════════════════════════════════════════════════
-   CURVAFIT AI CHATBOT — Frontend JS
-   Replace the entire chatbot block inside script.js
-   (the block that starts with: document.addEventListener('DOMContentLoaded', function() {)
-   and contains the chatbot IIFE)
+   CURVAFIT AI CHATBOT — Frontend JavaScript
+   
+   HOW TO USE:
+   Find the old chatbot block in your script.js — it starts with:
+     document.addEventListener('DOMContentLoaded', function() {
+     (function() {   ← the chatbot IIFE
+   
+   Replace that ENTIRE block (from the outer DOMContentLoaded down
+   to its closing }); ) with this full file content.
    ═══════════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', function () {
   (function () {
     'use strict';
 
-    // ── State ────────────────────────────────────────────────────
-    let isOpen = false;
-    let isLoading = false;
-    let conversationHistory = [];
-    let notifShown = false;
+    // ── Guard: only run if widget exists on this page ────────────
+    const widget  = document.getElementById('cf-chat-widget');
+    if (!widget) return;
 
     // ── DOM refs ─────────────────────────────────────────────────
-    const widget    = document.getElementById('cf-chat-widget');
+    const toggle    = document.getElementById('cf-chat-toggle');
     const window_   = document.getElementById('cf-chat-window');
     const messages  = document.getElementById('cf-messages');
     const input     = document.getElementById('cf-input');
     const sendBtn   = document.getElementById('cf-send-btn');
     const typing    = document.getElementById('cf-typing');
     const closeBtn  = document.getElementById('cf-close-btn');
+    const chipsEl   = document.getElementById('cf-quick-chips');
     const chips     = document.querySelectorAll('.cf-chip');
-    const toggle    = document.getElementById('cf-chat-toggle');
-    const iconOpen  = toggle ? toggle.querySelector('.cf-icon-open')  : null;
-    const iconClose = toggle ? toggle.querySelector('.cf-icon-close') : null;
-    const notifDot  = toggle ? toggle.querySelector('.cf-notif-dot')  : null;
+    const iconOpen  = toggle.querySelector('.cf-icon-open');
+    const iconClose = toggle.querySelector('.cf-icon-close');
+    const notifDot  = toggle.querySelector('.cf-notif-dot');
 
-    // Guard: if widget not present on this page, do nothing
-    if (!widget || !toggle) return;
+    // ── State ────────────────────────────────────────────────────
+    let isOpen              = false;
+    let isLoading           = false;
+    let notifShown          = false;
+    let conversationHistory = [];
 
     // ════════════════════════════════════════════════════════════
-    // DRAGGABLE — move widget anywhere on screen
+    // DRAGGABLE WIDGET
     // ════════════════════════════════════════════════════════════
     (function initDrag() {
-      let isDragging = false;
+      let dragging = false;
       let startX, startY, origLeft, origBottom;
       let hasMoved = false;
 
-      function onPointerDown(e) {
-        // Only drag from the toggle button itself
-        if (!e.target.closest('#cf-chat-toggle')) return;
-        // Don't start drag on close btn or input
-        if (e.target.closest('.cf-header-close')) return;
-
-        isDragging = true;
-        hasMoved   = false;
-        startX = e.clientX;
-        startY = e.clientY;
-
-        const rect = widget.getBoundingClientRect();
-        origLeft   = rect.left;
-        origBottom = window.innerHeight - rect.bottom;
-
+      function onDown(clientX, clientY, target, preventDefault) {
+        if (!target.closest('#cf-chat-toggle')) return;
+        if (target.closest('.cf-header-close'))  return;
+        dragging  = true;
+        hasMoved  = false;
+        startX    = clientX;
+        startY    = clientY;
+        const r   = widget.getBoundingClientRect();
+        origLeft   = r.left;
+        origBottom = window.innerHeight - r.bottom;
         widget.classList.add('cf-dragging');
-        widget.style.left   = origLeft + 'px';
-        widget.style.bottom = origBottom + 'px';
-        widget.style.right  = 'auto';
-        widget.style.top    = 'auto';
-
-        e.preventDefault();
+        widget.style.cssText += `;left:${origLeft}px;bottom:${origBottom}px;right:auto;top:auto`;
+        if (preventDefault) preventDefault();
       }
 
-      function onPointerMove(e) {
-        if (!isDragging) return;
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
+      function onMove(clientX, clientY, preventDefault) {
+        if (!dragging) return;
+        const dx = clientX - startX;
+        const dy = clientY - startY;
         if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
-
-        const btnW   = toggle.offsetWidth;
-        const btnH   = toggle.offsetHeight;
-        let newLeft   = Math.max(8, Math.min(window.innerWidth  - btnW - 8, origLeft   + dx));
-        let newBottom = Math.max(8, Math.min(window.innerHeight - btnH - 8, origBottom - dy));
-
-        widget.style.left   = newLeft + 'px';
-        widget.style.bottom = newBottom + 'px';
-        updateWindowDirection(newLeft, newBottom);
+        const bW = toggle.offsetWidth;
+        const bH = toggle.offsetHeight;
+        const l  = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft   + dx));
+        const b  = Math.max(8, Math.min(window.innerHeight - bH - 8, origBottom - dy));
+        widget.style.left   = l + 'px';
+        widget.style.bottom = b + 'px';
+        updateDirection(l, b);
+        if (preventDefault) preventDefault();
       }
 
-      function onPointerUp() {
-        if (!isDragging) return;
-        isDragging = false;
+      function onUp() {
+        if (!dragging) return;
+        dragging = false;
         widget.classList.remove('cf-dragging');
-        // No significant move = treat as click
-        if (!hasMoved) {
-          isOpen ? closeChat() : openChat();
-        }
+        if (!hasMoved) isOpen ? closeChat() : openChat();
+      }
+
+      function updateDirection(l, b) {
+        widget.classList.toggle('cf-right', l > window.innerWidth  / 2);
+        widget.classList.toggle('cf-top',   b > window.innerHeight / 2);
       }
 
       // Mouse
-      toggle.addEventListener('mousedown', onPointerDown);
-      document.addEventListener('mousemove', onPointerMove);
-      document.addEventListener('mouseup', onPointerUp);
+      toggle.addEventListener('mousedown', e => onDown(e.clientX, e.clientY, e.target, () => e.preventDefault()));
+      document.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+      document.addEventListener('mouseup', onUp);
 
       // Touch
-      toggle.addEventListener('touchstart', function (e) {
+      toggle.addEventListener('touchstart', e => {
         const t = e.touches[0];
-        onPointerDown({ clientX: t.clientX, clientY: t.clientY, target: e.target, preventDefault: () => e.preventDefault() });
+        onDown(t.clientX, t.clientY, e.target, () => e.preventDefault());
       }, { passive: false });
-      document.addEventListener('touchmove', function (e) {
-        if (!isDragging) return;
+      document.addEventListener('touchmove', e => {
+        if (!dragging) return;
         const t = e.touches[0];
-        onPointerMove({ clientX: t.clientX, clientY: t.clientY });
-        e.preventDefault();
+        onMove(t.clientX, t.clientY, () => e.preventDefault());
       }, { passive: false });
-      document.addEventListener('touchend', function () { onPointerUp(); });
+      document.addEventListener('touchend', onUp);
     })();
 
-    // Adjust window open direction based on widget position
-    function updateWindowDirection(left, bottom) {
-      widget.classList.toggle('cf-right', left > window.innerWidth / 2);
-      widget.classList.toggle('cf-top',   bottom > window.innerHeight / 2);
-    }
-
-    // ── Open / Close ─────────────────────────────────────────────
+    // ── Open chat ────────────────────────────────────────────────
     function openChat() {
       isOpen = true;
       window_.classList.add('cf-open');
       window_.setAttribute('aria-hidden', 'false');
-      if (iconOpen)  iconOpen.style.display  = 'none';
-      if (iconClose) iconClose.style.display = '';
-      if (notifDot)  notifDot.style.display  = 'none';
-      if (input)     input.focus();
-      if (messages && messages.children.length === 0) addWelcomeMessage();
+      iconOpen.style.display  = 'none';
+      iconClose.style.display = '';
+      notifDot.style.display  = 'none';
+      input.focus();
+      if (messages.children.length === 0) showWelcome();
     }
 
+    // ── Close chat ───────────────────────────────────────────────
     function closeChat() {
       isOpen = false;
       window_.classList.remove('cf-open');
       window_.setAttribute('aria-hidden', 'true');
-      if (iconOpen)  iconOpen.style.display  = '';
-      if (iconClose) iconClose.style.display = 'none';
+      iconOpen.style.display  = '';
+      iconClose.style.display = 'none';
     }
 
     if (closeBtn) closeBtn.addEventListener('click', closeChat);
 
-    // Show notification dot after 3 s if chat not yet opened
+    // Show notif dot after 3 s if never opened
     setTimeout(() => {
-      if (!isOpen && !notifShown && notifDot) {
+      if (!isOpen && !notifShown) {
         notifDot.style.display = 'block';
         notifShown = true;
       }
     }, 3000);
 
+    // Click outside → close
+    document.addEventListener('click', e => {
+      if (isOpen && !widget.contains(e.target)) closeChat();
+    });
+
+    // Escape → close
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && isOpen) closeChat();
+    });
+
     // ── Welcome message ──────────────────────────────────────────
-    function addWelcomeMessage() {
-      addMessage(
-        `Hi! 👋 I'm **Curva**, your personal CurvaFit coach.\n\nI can help you with:\n• 🔥 Fat-burning products\n• 👗 Apparel & activewear\n• 💪 Programs & pricing\n• 🎟️ Promo codes & discounts\n• 🚚 Delivery & colors\n\nWhat are you looking for today?`,
+    function showWelcome() {
+      appendMessage(
+        `Hi! 👋 I'm **Curva**, your personal CurvaFit support assistant.\n\nI can help you with:\n• 🔥 Fat-burning products & tools\n• 👗 Apparel, colors & sizes\n• 💪 Fitness programs & pricing\n• 🎟️ Promo codes & discounts\n• 🚚 Delivery times & shipping\n• 🥗 Nutrition & weight loss tips\n\nWhat would you like to know today?`,
         'ai'
       );
     }
 
-    // ── Markdown formatter ───────────────────────────────────────
-    function formatMarkdown(text) {
+    // ── Format markdown → safe HTML ──────────────────────────────
+    function formatText(text) {
       return text
-        // Remove any raw internal IDs that may slip through (safety net)
+        // Safety net: strip any internal IDs that slip through
         .replace(/\b(resistance-bands|yoga-mat|leggings|sports-bra|hydration-bottle|workout-towel|fitness-tracker|protein-shaker|dumbbell-set|jump-rope|foam-roller|yoga-blocks|ankle-weights|cooling-towel|massage-ball|gym-bag)\b/gi, '')
-        // Remove markdown links — the frontend renders product cards instead
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1')
-        // Remove bare .html paths
-        .replace(/\/products\/product\d+\.html/gi, '')
-        .replace(/\/[\w\-]+\.html/gi, '')
+        // Strip markdown links [text](url) — product cards handle links
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+        // Strip bare .html paths
+        .replace(/\/?products\/product\d+\.html/gi, '')
         // Bold
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         // Italic
         .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        // Code
+        // Inline code
         .replace(/`(.+?)`/g, '<code>$1</code>')
-        // Line breaks
+        // Newlines
         .replace(/\n\n/g, '<br><br>')
         .replace(/\n/g, '<br>');
     }
 
-    // ── Current time ─────────────────────────────────────────────
-    function getTime() {
+    // ── Current time string ──────────────────────────────────────
+    function nowTime() {
       return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-    // ── Scroll to bottom ─────────────────────────────────────────
-    function scrollToBottom() {
-      if (messages) messages.scrollTo({ top: messages.scrollHeight, behavior: 'smooth' });
+    // ── Scroll messages to bottom ────────────────────────────────
+    function scrollBottom() {
+      messages.scrollTo({ top: messages.scrollHeight, behavior: 'smooth' });
     }
 
-    // ── Add message to UI ────────────────────────────────────────
-    // products: [{id, title, price, compare_price, url, image, colors, sizes}]
-    function addMessage(text, role, products) {
-      if (!messages) return;
-      const msgEl  = document.createElement('div');
-      msgEl.className = `cf-message cf-message--${role}`;
+    // ════════════════════════════════════════════════════════════
+    // APPEND MESSAGE
+    // products: [{id,title,description,price,compare_price,url,
+    //            image,colors,sizes,rating,reviews_count,
+    //            single_discount,duo_discount,trio_discount,
+    //            delivery_start,delivery_end}]
+    // ════════════════════════════════════════════════════════════
+    function appendMessage(text, role, products) {
+      const wrap   = document.createElement('div');
+      wrap.className = `cf-message cf-message--${role}`;
 
-      // Bubble
+      // Text bubble
       const bubble = document.createElement('div');
       bubble.className = 'cf-msg-bubble';
-      bubble.innerHTML = formatMarkdown(text);
-      msgEl.appendChild(bubble);
+      bubble.innerHTML = formatText(text);
+      wrap.appendChild(bubble);
 
-      // ── Product cards (AI only) ──────────────────────────────
+      // ── Product cards (AI messages only) ────────────────────
       if (role === 'ai' && Array.isArray(products) && products.length > 0) {
         const cardsWrap = document.createElement('div');
         cardsWrap.className = 'cf-product-cards';
@@ -3655,59 +3660,77 @@ document.addEventListener('DOMContentLoaded', function () {
           const card = document.createElement('div');
           card.className = 'cf-product-card';
 
-          // ── Color swatches with images ─────────────────────
-          let colorHTML = '';
-          if (p.colors && p.colors.length > 0) {
-            const colorItems = p.colors.slice(0, 5).map(c => `
-              <span
-                class="cf-color-swatch"
-                title="${c.name}"
-                style="background-color:${c.hex};"
-                data-img="${c.image}"
-                data-name="${c.name}"
-              ></span>
-            `).join('');
-            colorHTML = `<div class="cf-color-swatches">${colorItems}</div>`;
-          }
+          // Main image: prefer first color's image
+          const mainImg = (p.colors && p.colors[0] && p.colors[0].image)
+            ? p.colors[0].image
+            : p.image;
 
-          // ── Size pills ─────────────────────────────────────
-          let sizeHTML = '';
-          if (p.sizes && p.sizes.length > 0) {
-            const pills = p.sizes.slice(0, 6).map(s =>
-              `<span class="cf-size-pill">${s}</span>`
-            ).join('');
-            sizeHTML = `<div class="cf-size-pills">${pills}</div>`;
-          }
-
-          // ── Discount badge ─────────────────────────────────
+          // Discount badge
           let badgeHTML = '';
           if (p.compare_price > p.price) {
             const pct = Math.round(((p.compare_price - p.price) / p.compare_price) * 100);
             badgeHTML = `<span class="cf-discount-badge">-${pct}%</span>`;
           }
 
-          // ── Rating ─────────────────────────────────────────
+          // Rating
           let ratingHTML = '';
           if (p.rating) {
-            const stars = '★'.repeat(Math.round(p.rating)) + '☆'.repeat(5 - Math.round(p.rating));
-            ratingHTML = `<span class="cf-product-rating" title="${p.rating}/5">${stars} <small>(${p.reviews_count || 0})</small></span>`;
+            const filled = Math.round(p.rating);
+            const empty  = 5 - filled;
+            const stars  = '★'.repeat(filled) + '☆'.repeat(empty);
+            ratingHTML = `<div class="cf-product-rating">${stars} <small>(${p.reviews_count || 0})</small></div>`;
           }
 
-          // ── Product image (changes on color hover) ─────────
-          const mainImage = (p.colors && p.colors[0] && p.colors[0].image)
-            ? p.colors[0].image
-            : p.image;
+          // Color swatches — name + hex circle
+          let colorHTML = '';
+          if (p.colors && p.colors.length > 0) {
+            const swatches = p.colors.slice(0, 6).map(c => `
+              <span
+                class="cf-color-swatch"
+                title="${c.name}"
+                style="background-color:${c.hex};"
+                data-img="${c.image}"
+                data-name="${c.name}"
+              ></span>`).join('');
+            colorHTML = `<div class="cf-color-swatches">${swatches}</div>`;
+          }
 
-          // Build the card — URL goes ONLY into the button href
+          // Size pills
+          let sizeHTML = '';
+          if (p.sizes && p.sizes.length > 0) {
+            const pills = p.sizes.slice(0, 7).map(s =>
+              `<span class="cf-size-pill">${s}</span>`
+            ).join('');
+            sizeHTML = `<div class="cf-size-pills">${pills}</div>`;
+          }
+
+          // Delivery line
+          let deliveryHTML = '';
+          if (p.delivery_start && p.delivery_end) {
+            deliveryHTML = `<div class="cf-product-delivery">🚚 ${p.delivery_start} → ${p.delivery_end}</div>`;
+          }
+
+          // Discount line
+          let discountHTML = '';
+          const dLines = [];
+          if (p.single_discount > 0) dLines.push(`1× -${p.single_discount}%`);
+          if (p.duo_discount    > 0) dLines.push(`2× -${p.duo_discount}%`);
+          if (p.trio_discount   > 0) dLines.push(`3× -${p.trio_discount}%`);
+          if (dLines.length) {
+            discountHTML = `<div class="cf-product-discounts">🎟️ ${dLines.join(' · ')}</div>`;
+          }
+
+          // ── Build card HTML ────────────────────────────────
+          // IMPORTANT: the href uses p.url which is /products/productN.html
+          // target="_blank" ensures it opens correctly even from any page
           card.innerHTML = `
             <div class="cf-product-card-img-wrap">
               <img
                 class="cf-product-card-img"
-                src="${mainImage}"
+                src="${mainImg}"
                 alt="${p.title}"
                 loading="lazy"
-              >
-              ${badgeHTML}
+              >${badgeHTML}
             </div>
             <div class="cf-product-card-info">
               <div class="cf-product-card-title">${p.title}</div>
@@ -3718,6 +3741,8 @@ document.addEventListener('DOMContentLoaded', function () {
               </div>
               ${colorHTML}
               ${sizeHTML}
+              ${deliveryHTML}
+              ${discountHTML}
             </div>
             <a
               href="${p.url}"
@@ -3734,157 +3759,137 @@ document.addEventListener('DOMContentLoaded', function () {
             </a>
           `;
 
-          // ── Color swatch hover → change card image ─────────
-          card.querySelectorAll('.cf-color-swatch').forEach(swatch => {
-            const cardImg = card.querySelector('.cf-product-card-img');
-            swatch.addEventListener('mouseenter', () => {
-              const imgSrc = swatch.dataset.img;
-              if (imgSrc && cardImg) cardImg.src = imgSrc;
+          // ── Color swatch interaction: hover/click → swap image ─
+          const cardImg = card.querySelector('.cf-product-card-img');
+          card.querySelectorAll('.cf-color-swatch').forEach(sw => {
+            sw.addEventListener('mouseenter', () => {
+              if (sw.dataset.img && cardImg) cardImg.src = sw.dataset.img;
             });
-            swatch.addEventListener('mouseleave', () => {
-              if (cardImg) cardImg.src = mainImage;
+            sw.addEventListener('mouseleave', () => {
+              if (cardImg) cardImg.src = mainImg;
             });
-            // Also accessible on click/tap
-            swatch.addEventListener('click', () => {
-              const imgSrc = swatch.dataset.img;
-              if (imgSrc && cardImg) cardImg.src = imgSrc;
+            sw.addEventListener('click', () => {
+              if (sw.dataset.img && cardImg) cardImg.src = sw.dataset.img;
               card.querySelectorAll('.cf-color-swatch').forEach(s => s.classList.remove('active'));
-              swatch.classList.add('active');
+              sw.classList.add('active');
             });
           });
 
           cardsWrap.appendChild(card);
         });
 
-        msgEl.appendChild(cardsWrap);
+        wrap.appendChild(cardsWrap);
       }
 
       // Timestamp
-      const time = document.createElement('span');
-      time.className = 'cf-msg-time';
-      time.textContent = getTime();
-      msgEl.appendChild(time);
+      const ts = document.createElement('span');
+      ts.className   = 'cf-msg-time';
+      ts.textContent = nowTime();
+      wrap.appendChild(ts);
 
-      messages.appendChild(msgEl);
-      scrollToBottom();
-      return msgEl;
+      messages.appendChild(wrap);
+      scrollBottom();
+      return wrap;
     }
 
     // ── Show / hide typing indicator ─────────────────────────────
-    function showTyping() {
-      if (typing) { typing.style.display = 'flex'; scrollToBottom(); }
-    }
-    function hideTyping() {
-      if (typing) typing.style.display = 'none';
-    }
+    function showTyping()  { typing.style.display = 'flex'; scrollBottom(); }
+    function hideTyping()  { typing.style.display = 'none'; }
 
-    // ── Send message to Netlify function ─────────────────────────
-    async function sendMessage(userText) {
-      if (!userText || !userText.trim() || isLoading) return;
-      const text = userText.trim();
+    // ════════════════════════════════════════════════════════════
+    // SEND MESSAGE → Netlify function → Groq
+    // ════════════════════════════════════════════════════════════
+    async function sendMessage(text) {
+      text = (text || '').trim();
+      if (!text || isLoading) return;
 
       // Hide chips after first user message
-      const chipsEl = document.getElementById('cf-quick-chips');
       if (chipsEl) chipsEl.style.display = 'none';
 
-      // Show user bubble
-      addMessage(text, 'user');
+      appendMessage(text, 'user');
       conversationHistory.push({ role: 'user', content: text });
 
-      // Reset input
-      if (input)   { input.value = ''; input.style.height = 'auto'; }
-      if (sendBtn) sendBtn.disabled = true;
-      isLoading = true;
-
+      input.value        = '';
+      input.style.height = 'auto';
+      sendBtn.disabled   = true;
+      isLoading          = true;
       showTyping();
 
       try {
-        const response = await fetch('/.netlify/functions/chat', {
+        const res = await fetch('/.netlify/functions/chat', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify({
             message: text,
-            history: conversationHistory.slice(-8)
-          })
+            history: conversationHistory.slice(-8),
+          }),
         });
 
         hideTyping();
 
-        if (!response.ok) {
-          const errData = await response.json().catch(() => ({}));
-          throw new Error(errData.error || `HTTP ${response.status}`);
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `HTTP ${res.status}`);
         }
 
-        const data = await response.json();
-
-        if (data.error) throw new Error(data.error);
-
-        const aiReply  = data.reply    || "I'm not sure how to answer that — could you rephrase?";
+        const data     = await res.json();
+        const reply    = data.reply    || "I'm not sure — could you rephrase? 😊";
         const products = data.products || [];
 
-        addMessage(aiReply, 'ai', products);
-        conversationHistory.push({ role: 'assistant', content: aiReply });
+        appendMessage(reply, 'ai', products);
+        conversationHistory.push({ role: 'assistant', content: reply });
 
-        // Keep history manageable
+        // Trim history
         if (conversationHistory.length > 20) {
           conversationHistory = conversationHistory.slice(-16);
         }
 
       } catch (err) {
         hideTyping();
-        console.error('[Curva chat] Error:', err.message);
-        addMessage(
-          "Sorry, I'm having a little trouble right now 🙏 Please try again in a moment, or contact us directly at support@curvafit.com",
+        console.error('[Curva] fetch error:', err.message);
+        appendMessage(
+          "Sorry, I'm having a little trouble right now 🙏 Please try again, or contact us directly:\n👉 /contact.html",
           'ai'
         );
       } finally {
-        isLoading = false;
-        if (sendBtn && input) sendBtn.disabled = input.value.trim().length === 0;
+        isLoading        = false;
+        sendBtn.disabled = input.value.trim().length === 0;
       }
     }
 
-    // ── Input handlers ───────────────────────────────────────────
-    if (input) {
-      input.addEventListener('input', function () {
-        this.style.height = 'auto';
-        this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-        if (sendBtn) sendBtn.disabled = this.value.trim().length === 0;
-      });
+    // ── Input: auto-resize + enable send btn ─────────────────────
+    input.addEventListener('input', function () {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+      sendBtn.disabled  = this.value.trim().length === 0;
+    });
 
-      input.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          if (sendBtn && !sendBtn.disabled) sendMessage(this.value);
-        }
-      });
-    }
+    // Enter (without Shift) = send
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!sendBtn.disabled) sendMessage(this.value);
+      }
+    });
 
-    if (sendBtn) {
-      sendBtn.addEventListener('click', () => {
-        if (input && !sendBtn.disabled) sendMessage(input.value);
-      });
-    }
+    // Send button click
+    sendBtn.addEventListener('click', () => {
+      if (!sendBtn.disabled) sendMessage(input.value);
+    });
 
     // ── Quick chips ──────────────────────────────────────────────
     chips.forEach(chip => {
       chip.addEventListener('click', () => {
         const msg = chip.dataset.msg;
-        if (msg) sendMessage(msg);
+        if (msg) {
+          openChat();
+          sendMessage(msg);
+        }
       });
     });
 
-    // ── Keyboard: Escape closes ──────────────────────────────────
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && isOpen) closeChat();
-    });
-
-    // ── Click outside widget closes ──────────────────────────────
-    document.addEventListener('click', e => {
-      if (isOpen && !widget.contains(e.target)) closeChat();
-    });
-
-    console.log('✅ Curva Support chatbot initialized');
+    console.log('✅ Curva Support chatbot ready');
   })();
-}); // end DOMContentLoaded — chatbot
+}); // end DOMContentLoaded — Curva chatbot
 
 
