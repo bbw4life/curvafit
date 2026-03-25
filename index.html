@@ -1255,12 +1255,12 @@
 
 <!-- ═══════════════════════════════════════════════════════════════
      CURVAFIT AI CHATBOT — HTML WIDGET
-     Coller juste avant </body> sur toutes les pages
+     Paste just before </body> on all pages
 ═══════════════════════════════════════════════════════════════ -->
 <div id="cf-chat-widget">
 
-  <!-- ── Bouton flottant ── -->
-  <button id="cf-chat-toggle" aria-label="Ouvrir Curva Support">
+  <!-- ── Floating button ── -->
+  <button id="cf-chat-toggle" aria-label="Open Curva Support">
     <div class="cf-toggle-inner">
       <span class="cf-toggle-icon cf-icon-open">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -1281,7 +1281,7 @@
     <span class="cf-notif-dot"></span>
   </button>
 
-  <!-- ── Fenêtre chat ── -->
+  <!-- ── Chat window ── -->
   <div id="cf-chat-window" class="cf-chat-window" aria-hidden="true">
 
     <!-- Header -->
@@ -1297,65 +1297,65 @@
         <h3>Curva <span class="cf-ai-badge">Support</span></h3>
         <p>CurvaFit Fitness Expert</p>
       </div>
-      <button class="cf-header-close" id="cf-close-btn" aria-label="Fermer le chat">
+      <button class="cf-header-close" id="cf-close-btn" aria-label="Close chat">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
         </svg>
       </button>
     </div>
 
-    <!-- Chips de suggestion rapide -->
+    <!-- Quick suggestion chips -->
     <div class="cf-quick-chips" id="cf-quick-chips">
-      <button class="cf-chip" data-msg="C'est quoi votre meilleur produit pour perdre du ventre ?">
-        🔥 Perdre du ventre
+      <button class="cf-chip" data-msg="What is your best product to burn belly fat?">
+        🔥 Burn belly fat
       </button>
-      <button class="cf-chip" data-msg="J'ai besoin d'un soutien-gorge sport pour grande taille">
-        👙 Sport bra
+      <button class="cf-chip" data-msg="I need a sports bra for plus size">
+        👙 Sports bra
       </button>
-      <button class="cf-chip" data-msg="Quels produits recommandez-vous pour débutante ?">
-        🌱 Débutante
+      <button class="cf-chip" data-msg="What products do you recommend for beginners?">
+        🌱 Beginner
       </button>
-      <button class="cf-chip" data-msg="Quels sont vos produits les moins chers ?">
-        💰 Petits prix
+      <button class="cf-chip" data-msg="What are your cheapest products?">
+        💰 Best deals
       </button>
     </div>
 
-    <!-- Zone messages -->
+    <!-- Messages area -->
     <div class="cf-messages" id="cf-messages" role="log" aria-live="polite">
-      <!-- Messages injectés par JS -->
+      <!-- Messages injected by JS -->
     </div>
 
-    <!-- Indicateur de frappe -->
+    <!-- Typing indicator -->
     <div class="cf-typing" id="cf-typing" style="display:none">
       <div class="cf-typing-bubble">
         <span></span><span></span><span></span>
       </div>
-      <p>Curva rédige…</p>
+      <p>Curva is typing…</p>
     </div>
 
-    <!-- Zone de saisie -->
+    <!-- Input area -->
     <div class="cf-input-area">
       <div class="cf-input-wrapper">
         <textarea
           id="cf-input"
-          placeholder="Pose-moi ta question…"
+          placeholder="Ask me anything…"
           rows="1"
           maxlength="500"
-          aria-label="Message à envoyer"
+          aria-label="Message to send"
         ></textarea>
-        <button id="cf-send-btn" class="cf-send-btn" aria-label="Envoyer" disabled>
+        <button id="cf-send-btn" class="cf-send-btn" aria-label="Send" disabled>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13"
               stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
       </div>
-      <p class="cf-input-hint">Propulsé par CurvaFit AI · Entrée pour envoyer</p>
+      <p class="cf-input-hint">Powered by CurvaFit AI · Press Enter to send</p>
     </div>
 
   </div>
 </div>
-<!-- ── FIN CHATBOT ── -->
+<!-- ── END CHATBOT ── -->
 
 
 

@@ -1,35 +1,51 @@
 // ═══════════════════════════════════════════════════════════════
 //  CURVAFIT — Netlify Function: chat.js
-//  Lit toutes les données depuis data.json (produits, programmes,
-//  promos, settings) et les transmet dynamiquement à l'API Groq.
+//  Reads all data from products.data.json (products, programs,
+//  promos, settings) and passes it dynamically to the Groq API.
 // ═══════════════════════════════════════════════════════════════
 
 const fetch = require('node-fetch');
 const path  = require('path');
 const fs    = require('fs');
 
-// ── Chargement dynamique de data.json ──────────────────────────
-// Le fichier est lu à chaque appel pour garantir les dernières
-// données après chaque redéploiement.
+// ── Dynamic loading of products.data.json ──────────────────────
+// The file is read at each call to guarantee the latest
+// data after each redeployment.
 function loadData() {
-  const dataPath = path.join(__dirname, '..', 'data.json');
-  const raw = fs.readFileSync(dataPath, 'utf-8');
-  return JSON.parse(raw);
+  // Netlify functions run from /var/task — project root is /var/task
+  // products.data.json is at the root of the project
+  const possiblePaths = [
+    path.join(__dirname, '..', 'products.data.json'),   // ../products.data.json (if function is in /netlify/functions)
+    path.join(__dirname, 'products.data.json'),          // same folder fallback
+    path.resolve(process.cwd(), 'products.data.json'),   // process working directory
+    '/var/task/products.data.json'                       // absolute Netlify path
+  ];
+
+  for (const filePath of possiblePaths) {
+    if (fs.existsSync(filePath)) {
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      return JSON.parse(raw);
+    }
+  }
+
+  throw new Error(
+    `products.data.json not found. Tried:\n${possiblePaths.join('\n')}`
+  );
 }
 
-// ── Extraction des entités depuis data.json ────────────────────
+// ── Extract entities from products.data.json ──────────────────
 function parseData(allData) {
   const settings = allData.find(item => item.type === 'settings') || {};
   const products  = allData.filter(item => item.type !== 'settings' && item.active !== false);
   return { settings, products };
 }
 
-// ── Construction de l'URL produit ─────────────────────────────
+// ── Build product URL ─────────────────────────────────────────
 function buildProductUrl(productId) {
   return `/products/${productId}.html`;
 }
 
-// ── Recherche de produits pertinents ──────────────────────────
+// ── Search relevant products ──────────────────────────────────
 function searchProducts(query, products) {
   if (!query || products.length === 0) return [];
 
@@ -52,7 +68,7 @@ function searchProducts(query, products) {
       if ((p.title || '').toLowerCase().includes(kw)) score += 2;
     });
 
-    // Correspondances thématiques multilingues
+    // Multilingual thematic matches
     const themes = [
       { keys: ['hula','hoop','belly','ventre','graisse'], id: 'resistance-bands' },
       { keys: ['waist','taille','trainer','gainant','cincher'], id: 'yoga-mat' },
@@ -78,11 +94,11 @@ function searchProducts(query, products) {
       }
     });
 
-    // Prix budget / premium
+    // Budget / premium price scoring
     if (['cheap','budget','pas cher','moins cher','economique'].some(k => q.includes(k)) && p.price < 20) score += 5;
     if (['premium','best','top','meilleur','qualite'].some(k => q.includes(k)) && p.price > 30)           score += 3;
 
-    // Taille plus-size
+    // Plus-size scoring
     if (['plus size','grande taille','xxl','xxxl','4xl','5xl','6xl','curvy'].some(k => q.includes(k))) {
       const bigSizes = (p.sizes || []).some(s => ['XXL','XXXL','4XL','5XL','6XL'].includes(s));
       if (bigSizes) score += 8;
@@ -97,7 +113,7 @@ function searchProducts(query, products) {
     .slice(0, 3);
 }
 
-// ── Formatage d'un produit pour le contexte AI ────────────────
+// ── Format a product for AI context ──────────────────────────
 function formatProductForContext(p, index) {
   const url    = buildProductUrl(p.id);
   const colors = (p.colors || []).map(c => {
@@ -105,161 +121,161 @@ function formatProductForContext(p, index) {
     return `${c.name}${imgPart}`;
   }).join(' | ');
 
-  const sizes   = (p.sizes || []).length > 0 ? p.sizes.join(', ') : 'Taille unique';
+  const sizes   = (p.sizes || []).length > 0 ? p.sizes.join(', ') : 'One size';
   const savings = p.compare_price ? (p.compare_price - p.price).toFixed(2) : null;
   const savePct = p.compare_price ? Math.round((1 - p.price / p.compare_price) * 100) : null;
 
   let promoInfo = '';
   if (p.single_discount > 0 || p.duo_discount > 0 || p.trio_discount > 0) {
-    promoInfo = `\n   - Promotions: 1 article -${p.single_discount}% | 2 articles -${p.duo_discount}% | 3 articles -${p.trio_discount}%`;
+    promoInfo = `\n   - Promotions: 1 item -${p.single_discount}% | 2 items -${p.duo_discount}% | 3 items -${p.trio_discount}%`;
   }
 
   let ratingInfo = '';
   if (p.rating) {
-    ratingInfo = `\n   - Note: ${p.rating}/5 (${p.reviews_count || 0} avis)`;
+    ratingInfo = `\n   - Rating: ${p.rating}/5 (${p.reviews_count || 0} reviews)`;
   }
 
   return `
 ${index + 1}. **${p.title}**
-   - ID interne: ${p.id} (NE PAS mentionner à l'utilisateur)
-   - URL page produit: ${url}
-   - Prix actuel: $${p.price}
-   - Prix barré: $${p.compare_price}${savings ? ` (économie: $${savings} — ${savePct}% de réduction)` : ''}
+   - Internal ID: ${p.id} (DO NOT mention to the user)
+   - Product page URL: ${url}
+   - Current price: $${p.price}
+   - Crossed price: $${p.compare_price}${savings ? ` (saving: $${savings} — ${savePct}% off)` : ''}
    - Description: ${p.description}
-   - Couleurs disponibles (avec image): ${colors}
-   - Tailles disponibles: ${sizes}
-   - Délai de livraison: 7 à 15 jours ouvrables${promoInfo}${ratingInfo}`;
+   - Available colors (with image): ${colors}
+   - Available sizes: ${sizes}
+   - Delivery time: 7 to 15 business days${promoInfo}${ratingInfo}`;
 }
 
-// ── Formatage des programmes depuis settings ───────────────────
+// ── Format programs from settings ─────────────────────────────
 function formatPrograms(settings) {
   if (!settings.programs) return '';
   const { beginner, intermediate, maintenance } = settings.programs;
   return `
-PROGRAMMES CURVAFIT:
-- Soft Start (Débutant): $${beginner?.price || 'N/A'} — "${beginner?.label || ''}"
-- Deeper Refiner (Intermédiaire): $${intermediate?.price || 'N/A'} — "${intermediate?.label || ''}"
+CURVAFIT PROGRAMS:
+- Soft Start (Beginner): $${beginner?.price || 'N/A'} — "${beginner?.label || ''}"
+- Deeper Refiner (Intermediate): $${intermediate?.price || 'N/A'} — "${intermediate?.label || ''}"
 - Forever Fit (Maintenance): $${maintenance?.price || 'N/A'} — "${maintenance?.label || ''}"
-→ Après achat: email + mot de passe envoyé, accès à la plateforme partenaire.`;
+→ After purchase: email + password sent, access to partner platform.`;
 }
 
-// ── Formatage des codes promo depuis settings ──────────────────
+// ── Format promo codes from settings ──────────────────────────
 function formatPromos(settings) {
   if (!settings.promos || settings.promos.length === 0) return '';
   const promoLines = settings.promos.map(p =>
-    `Code "${p.code}": -${p.percent}% dès ${p.items} articles`
+    `Code "${p.code}": -${p.percent}% from ${p.items} items`
   ).join('\n   ');
-  return `\nCODES PROMO ACTIFS:\n   ${promoLines}`;
+  return `\nACTIVE PROMO CODES:\n   ${promoLines}`;
 }
 
-// ── Formatage du cart drawer / shipping ───────────────────────
+// ── Format cart drawer / shipping ─────────────────────────────
 function formatShipping(settings) {
   const freeThreshold = settings.cart_drawer?.free_shipping_threshold;
   const shippingCost  = settings.shipping_cost;
-  let info = `\nLIVRAISON:\n   - Délai: 7 à 15 jours ouvrables pour tous les pays`;
-  if (shippingCost)  info += `\n   - Frais de port: $${shippingCost}`;
-  if (freeThreshold) info += `\n   - Livraison GRATUITE dès $${freeThreshold} d'achat`;
+  let info = `\nSHIPPING:\n   - Delay: 7 to 15 business days for all countries`;
+  if (shippingCost)  info += `\n   - Shipping fees: $${shippingCost}`;
+  if (freeThreshold) info += `\n   - FREE shipping from $${freeThreshold} purchase`;
   return info;
 }
 
-// ── Liens sociaux / contact ────────────────────────────────────
+// ── Social links / contact ─────────────────────────────────────
 function formatContactLinks(settings) {
   const s = settings.social_links || {};
   return `
-CONTACT & RÉSEAUX:
-   - WhatsApp: ${s.whatsapp || '[non configuré]'}
-   - Instagram: ${s.instagram || '[non configuré]'}
-   - TikTok: ${s.tiktok || '[non configuré]'}
-   - Facebook: ${s.facebook || '[non configuré]'}
-   - YouTube: ${s.youtube || '[non configuré]'}`;
+CONTACT & SOCIAL MEDIA:
+   - WhatsApp: ${s.whatsapp || '[not configured]'}
+   - Instagram: ${s.instagram || '[not configured]'}
+   - TikTok: ${s.tiktok || '[not configured]'}
+   - Facebook: ${s.facebook || '[not configured]'}
+   - YouTube: ${s.youtube || '[not configured]'}`;
 }
 
-// ── System prompt complet ──────────────────────────────────────
+// ── Full system prompt ──────────────────────────────────────────
 function buildSystemPrompt(settings, productContext) {
-  return `Tu es **Curva Support**, l'assistante officielle de CurvaFit — une marque fitness premium dédiée aux femmes plus-size.
+  return `You are **Curva Support**, the official assistant of CurvaFit — a premium fitness brand dedicated to plus-size women.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎯 TON IDENTITÉ
+🎯 YOUR IDENTITY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Tu t'appelles **Curva Support** (jamais "Cora", jamais "AI").
-Tu es :
-- Un coach motivant et bienveillant
-- Un conseiller stratégique fitness
-- Un guide doux, jamais condescendant
-- Un vendeur intelligent (pertinent, jamais agressif)
+Your name is **Curva Support** (never "Cora", never "AI").
+You are:
+- A motivating and caring coach
+- A strategic fitness advisor
+- A gentle guide, never condescending
+- An intelligent seller (relevant, never aggressive)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧠 MISSION CURVAFIT
+🧠 CURVAFIT MISSION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-CurvaFit aide les femmes plus-size à :
-- Perdre du poids sainement et progressivement (pas extrême)
-- Rester actives à domicile, sans salle de sport
-- Adopter un mode de vie durable et motivant
-- Retrouver confiance en elles
+CurvaFit helps plus-size women to:
+- Lose weight healthily and progressively (not extreme)
+- Stay active at home, without a gym
+- Adopt a sustainable and motivating lifestyle
+- Regain confidence in themselves
 
-Approche : science + expérience réelle + bienveillance.
-Résultats visibles : en moyenne 4 à 6 semaines avec constance.
-Probabilité de succès : ~70% si les conseils sont bien suivis.
+Approach: science + real experience + kindness.
+Visible results: on average 4 to 6 weeks with consistency.
+Probability of success: ~70% if advice is followed well.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🏋️ PROGRAMMES
+🏋️ PROGRAMS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${formatPrograms(settings)}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📦 PRODUITS — CATALOGUE COMPLET
+📦 PRODUCTS — FULL CATALOG
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${productContext}
 ${formatShipping(settings)}
 ${formatPromos(settings)}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📞 SUPPORT HUMAIN
+📞 HUMAN SUPPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Si l'utilisateur insiste, n'est pas satisfait, ou demande un humain :
-"Je comprends 👍 Tu peux contacter notre équipe directement :
+If the user insists, is not satisfied, or asks for a human:
+"I understand 👍 You can contact our team directly:
 ${formatContactLinks(settings)}
-Nous serons ravis de t'aider personnellement 😊"
+We'll be happy to help you personally 😊"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-👤 À PROPOS DU FONDATEUR
+👤 ABOUT THE FOUNDER
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Paul Francenel, 25 ans, entrepreneur.
-Pas médecin — travaille avec des professionnels certifiés.
-Objectif : transformer la vie des femmes plus-size sainement.
+Paul Francenel, 25 years old, entrepreneur.
+Not a doctor — works with certified professionals.
+Goal: transform the lives of plus-size women healthily.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📋 RÈGLES ABSOLUES
+📋 ABSOLUTE RULES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-1. TOUJOURS répondre dans la même langue que l'utilisateur (FR ou EN).
-2. Ne JAMAIS mentionner les IDs internes (resistance-bands, yoga-mat, etc.).
-3. Ne JAMAIS inventer des prix, couleurs ou données non présentes dans le catalogue.
-4. Ne JAMAIS promettre des résultats garantis.
-5. Ne JAMAIS donner de conseils médicaux avancés — rediriger vers un médecin.
-6. Quand tu mentionnes un produit, TOUJOURS inclure : titre, prix, couleurs disponibles.
-7. Quand une couleur est mentionnée, préciser son image si disponible.
-8. Les liens produits suivent ce format : /products/[id-produit].html
-   Ex: /products/resistance-bands.html — NE JAMAIS générer d'autres formats d'URL.
-9. Ne jamais forcer la vente — proposer intelligemment.
-10. Réponses concises (3-5 phrases max par point), naturelles, avec émojis.
+1. ALWAYS respond in the same language as the user (FR or EN).
+2. NEVER mention internal IDs (resistance-bands, yoga-mat, etc.).
+3. NEVER invent prices, colors or data not present in the catalog.
+4. NEVER promise guaranteed results.
+5. NEVER give advanced medical advice — redirect to a doctor.
+6. When mentioning a product, ALWAYS include: title, price, available colors.
+7. When a color is mentioned, specify its image if available.
+8. Product links follow this format: /products/[product-id].html
+   Ex: /products/resistance-bands.html — NEVER generate other URL formats.
+9. Never push sales — propose intelligently.
+10. Concise responses (3-5 sentences max per point), natural, with emojis.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🥗 NUTRITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Conseils simples et pratiques : déficit calorique modéré (300-500 cal), 
-protéines à chaque repas, 2L d'eau/jour, 3 repas structurés, 
-pas de pilules ni suppléments — approche naturelle uniquement.
+Simple and practical advice: moderate caloric deficit (300-500 cal),
+protein at every meal, 2L water/day, 3 structured meals,
+no pills or supplements — natural approach only.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💡 COMPORTEMENT
+💡 BEHAVIOR
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- Ton chaud, humain, motivant — jamais robotique
-- Adapter le niveau de détail à la question
-- Terminer par une invitation douce à l'action si pertinent
-- Si hors sujet fitness/produits : rediriger poliment`;
+- Warm, human, motivating tone — never robotic
+- Adapt level of detail to the question
+- End with a gentle call to action if relevant
+- If off-topic fitness/products: redirect politely`;
 }
 
-// ── Handler principal ──────────────────────────────────────────
+// ── Main handler ───────────────────────────────────────────────
 exports.handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin':  '*',
@@ -277,45 +293,45 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // ── Chargement des données ──
+    // ── Load data ──
     const allData = loadData();
     const { settings, products } = parseData(allData);
 
-    // ── Parsing de la requête ──
+    // ── Parse request ──
     const { message, history = [] } = JSON.parse(event.body);
 
     if (!message || message.trim().length === 0) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message requis' }) };
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message required' }) };
     }
 
-    // ── Recherche produits pertinents ──
+    // ── Search relevant products ──
     const relevantProducts = searchProducts(message, products);
 
-    // ── Contexte produits pour le prompt ──
+    // ── Product context for prompt ──
     let productContext = '';
     if (relevantProducts.length > 0) {
-      productContext = '📦 PRODUITS PERTINENTS POUR CETTE REQUÊTE:\n';
+      productContext = '📦 RELEVANT PRODUCTS FOR THIS REQUEST:\n';
       productContext += relevantProducts.map((p, i) => formatProductForContext(p, i)).join('\n');
     } else {
-      // Donner le catalogue complet condensé si aucun produit spécifique
-      productContext = '📦 CATALOGUE COMPLET (condensé):\n';
+      // Give full condensed catalog if no specific product found
+      productContext = '📦 FULL CATALOG (condensed):\n';
       productContext += products.map((p, i) => {
         const url = buildProductUrl(p.id);
         return `${i + 1}. ${p.title} — $${p.price} — ${url}`;
       }).join('\n');
     }
 
-    // ── Construction du prompt système ──
+    // ── Build system prompt ──
     const systemPrompt = buildSystemPrompt(settings, productContext);
 
-    // ── Messages pour Groq ──
+    // ── Messages for Groq ──
     const messages = [
       { role: 'system', content: systemPrompt },
       ...history.slice(-8).map(h => ({ role: h.role, content: h.content })),
       { role: 'user', content: message }
     ];
 
-    // ── Appel API Groq ──
+    // ── Groq API call ──
     const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -338,11 +354,10 @@ exports.handler = async (event, context) => {
     }
 
     const data  = await groqResponse.json();
-    const reply = data.choices[0]?.message?.content || "Je suis désolée, je n'ai pas pu générer une réponse. Réessaie !";
+    const reply = data.choices[0]?.message?.content || "Sorry, I couldn't generate a response. Please try again!";
 
-    // ── Préparation des cartes produits pour le frontend ──
+    // ── Prepare product cards for frontend ──
     const productCards = relevantProducts.slice(0, 2).map(p => {
-      // Trouver la première couleur avec image
       const firstColorWithImage = (p.colors || []).find(c => c.image && c.active !== false);
       const allColors = (p.colors || [])
         .filter(c => c.active !== false)
@@ -364,7 +379,7 @@ exports.handler = async (event, context) => {
         image:         firstColorWithImage?.image || p.image || null,
         rating:        p.rating || null,
         reviews_count: p.reviews_count || null,
-        delivery:      '7 à 15 jours ouvrables',
+        delivery:      '7 to 15 business days',
         single_discount: p.single_discount || 0,
         duo_discount:    p.duo_discount    || 0,
         trio_discount:   p.trio_discount   || 0
@@ -382,7 +397,7 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Erreur interne', message: error.message })
+      body: JSON.stringify({ error: 'Internal error', message: error.message })
     };
   }
 };

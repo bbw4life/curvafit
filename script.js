@@ -3454,9 +3454,9 @@ function initStockBar(cjId) {
 /* ═══════════════════════════════════════════════════════════════
    CURVAFIT AI CHATBOT — chatbot.js
    - Draggable widget
-   - Cartes produits avec images couleurs
-   - URLs correctes /products/[id].html
-   - Nom : Curva Support
+   - Product cards with color images
+   - Correct URLs /products/[id].html
+   - Name: Curva Support
 ═══════════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', function () {
   (function () {
@@ -3482,7 +3482,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const iconClose = toggle.querySelector('.cf-icon-close');
     const notifDot  = toggle.querySelector('.cf-notif-dot');
 
-    if (!widget || !toggle || !chatWin) return; // sécurité
+    if (!widget || !toggle || !chatWin) return;
 
     // ══════════════════════════════════════════════════════════
     // DRAGGABLE
@@ -3564,7 +3564,7 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
       }, { passive: false });
 
-      document.addEventListener('touchend', function (e) {
+      document.addEventListener('touchend', function () {
         onPointerUp();
       });
     })();
@@ -3599,7 +3599,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     closeBtn.addEventListener('click', closeChat);
 
-    // Notification dot après 3s
+    // Notification dot after 3s
     setTimeout(() => {
       if (!isOpen && !notifShown) {
         notifDot.style.display = 'block';
@@ -3608,70 +3608,70 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 3000);
 
     // ══════════════════════════════════════════════════════════
-    // MESSAGE DE BIENVENUE
+    // WELCOME MESSAGE
     // ══════════════════════════════════════════════════════════
     function addWelcomeMessage() {
-      const txt = `Bonjour ! 👋 Je suis **Curva Support**, ton assistante officielle CurvaFit.
+      const txt = `Hello! 👋 I'm **Curva Support**, your official CurvaFit assistant.
 
-Je suis là pour t'aider à trouver les meilleurs produits et conseils pour ton parcours fitness. Je peux t'aider avec :
-- 🔥 Produits pour perdre du ventre
-- 👗 Vêtements de sport grande taille
-- 💪 Récupération & bien-être
-- 💰 Bonnes affaires & promos
+I'm here to help you find the best products and advice for your fitness journey. I can help you with:
+- 🔥 Products to burn belly fat
+- 👗 Plus-size activewear
+- 💪 Recovery & wellness
+- 💰 Deals & promos
 
-De quoi as-tu besoin aujourd'hui ?`;
+What do you need today?`;
 
       addMessage(txt, 'ai');
     }
 
     // ══════════════════════════════════════════════════════════
-    // FORMATAGE MARKDOWN (léger)
+    // MARKDOWN FORMATTING (lightweight)
     // ══════════════════════════════════════════════════════════
     function formatMarkdown(text) {
       return text
-        // Supprimer les liens markdown — on utilise les cartes produits
+        // Remove markdown links — we use product cards
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<strong>$1</strong>')
-        // Nettoyer les URLs brutes résiduelles
+        // Clean leftover raw URLs
         .replace(/https?:\/\/[^\s<>"]+/g, '')
         .replace(/\/products\/[\w\-]+\.html?/gi, '')
         // Bold & italic
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        // Code inline
+        // Inline code
         .replace(/`(.+?)`/g, '<code>$1</code>')
-        // Sauts de ligne
+        // Line breaks
         .replace(/\n\n/g, '<br><br>')
         .replace(/\n/g, '<br>');
     }
 
     // ══════════════════════════════════════════════════════════
-    // CARTE PRODUIT
+    // PRODUCT CARD
     // ══════════════════════════════════════════════════════════
     function buildProductCard(p) {
       const card = document.createElement('div');
       card.className = 'cf-product-card';
 
-      // Économie
+      // Savings
       const saving = p.compare_price > p.price
         ? Math.round((1 - p.price / p.compare_price) * 100)
         : 0;
 
-      // Badge promo
+      // Discount badge
       const promoHtml = saving > 0
         ? `<span class="cf-card-badge">-${saving}%</span>`
         : '';
 
-      // Note
+      // Rating
       const ratingHtml = p.rating
-        ? `<div class="cf-card-rating">⭐ ${p.rating}/5 <span class="cf-card-reviews">(${p.reviews_count || 0} avis)</span></div>`
+        ? `<div class="cf-card-rating">⭐ ${p.rating}/5 <span class="cf-card-reviews">(${p.reviews_count || 0} reviews)</span></div>`
         : '';
 
-      // Tailles
+      // Sizes
       const sizesHtml = p.sizes && p.sizes.length > 0
-        ? `<div class="cf-card-sizes"><span class="cf-card-label">Tailles :</span> ${p.sizes.join(' · ')}</div>`
+        ? `<div class="cf-card-sizes"><span class="cf-card-label">Sizes:</span> ${p.sizes.join(' · ')}</div>`
         : '';
 
-      // Couleurs avec miniatures d'images
+      // Colors with image thumbnails
       let colorsHtml = '';
       if (p.colors && p.colors.length > 0) {
         const colorDots = p.colors.map(c => {
@@ -3682,11 +3682,11 @@ De quoi as-tu besoin aujourd'hui ?`;
           }
           return `<span class="cf-color-dot" title="${c.name}" style="background-color:${c.hex || '#ccc'}"></span>`;
         }).join('');
-        colorsHtml = `<div class="cf-card-colors"><span class="cf-card-label">Couleurs :</span><div class="cf-color-dots">${colorDots}</div></div>`;
+        colorsHtml = `<div class="cf-card-colors"><span class="cf-card-label">Colors:</span><div class="cf-color-dots">${colorDots}</div></div>`;
       }
 
-      // Délai livraison
-      const deliveryHtml = `<div class="cf-card-delivery">🚚 Livraison : ${p.delivery || '7 à 15 jours ouvrables'}</div>`;
+      // Delivery
+      const deliveryHtml = `<div class="cf-card-delivery">🚚 Delivery: ${p.delivery || '7 to 15 business days'}</div>`;
 
       card.innerHTML = `
         <div class="cf-card-image-wrap">
@@ -3705,7 +3705,7 @@ De quoi as-tu besoin aujourd'hui ?`;
           ${sizesHtml}
           ${deliveryHtml}
           <a href="${p.url}" class="cf-card-cta" target="_blank" rel="noopener noreferrer">
-            Voir le produit
+            View Product
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
               <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5"
                 stroke-linecap="round" stroke-linejoin="round"/>
@@ -3714,7 +3714,7 @@ De quoi as-tu besoin aujourd'hui ?`;
         </div>
       `;
 
-      // Hover couleur → changer l'image principale
+      // Hover color → change main image
       const mainImg = card.querySelector('.cf-card-img');
       if (mainImg) {
         card.querySelectorAll('.cf-color-dot').forEach((dot, idx) => {
@@ -3736,7 +3736,7 @@ De quoi as-tu besoin aujourd'hui ?`;
     }
 
     // ══════════════════════════════════════════════════════════
-    // AJOUTER UN MESSAGE
+    // ADD A MESSAGE
     // ══════════════════════════════════════════════════════════
     function getTime() {
       return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -3751,7 +3751,7 @@ De quoi as-tu besoin aujourd'hui ?`;
       bubble.innerHTML = formatMarkdown(text);
       msgEl.appendChild(bubble);
 
-      // Cartes produits (messages AI uniquement)
+      // Product cards (AI messages only)
       if (role === 'ai' && products && products.length > 0) {
         const cardsWrap = document.createElement('div');
         cardsWrap.className = 'cf-product-cards';
@@ -3762,7 +3762,7 @@ De quoi as-tu besoin aujourd'hui ?`;
       }
 
       const time = document.createElement('span');
-      time.className  = 'cf-msg-time';
+      time.className   = 'cf-msg-time';
       time.textContent = getTime();
       msgEl.appendChild(time);
 
@@ -3772,7 +3772,7 @@ De quoi as-tu besoin aujourd'hui ?`;
     }
 
     function addErrorMessage() {
-      addMessage("Désolée, j'ai un petit souci technique. Réessaie dans un instant ! 🙏", 'ai');
+      addMessage("Sorry, I'm having a small technical issue. Please try again in a moment! 🙏", 'ai');
     }
 
     function scrollToBottom() {
@@ -3792,24 +3792,24 @@ De quoi as-tu besoin aujourd'hui ?`;
     }
 
     // ══════════════════════════════════════════════════════════
-    // ENVOI DU MESSAGE
+    // SEND MESSAGE
     // ══════════════════════════════════════════════════════════
     async function sendMessage(userText) {
       if (!userText || userText.trim().length === 0 || isLoading) return;
 
       const text = userText.trim();
 
-      // Cacher les chips
+      // Hide chips
       const chipsEl = document.getElementById('cf-quick-chips');
       if (chipsEl) chipsEl.style.display = 'none';
 
       addMessage(text, 'user');
       conversationHistory.push({ role: 'user', content: text });
 
-      input.value       = '';
+      input.value        = '';
       input.style.height = 'auto';
-      sendBtn.disabled  = true;
-      isLoading         = true;
+      sendBtn.disabled   = true;
+      isLoading          = true;
 
       showTyping();
 
@@ -3830,13 +3830,13 @@ De quoi as-tu besoin aujourd'hui ?`;
         const data = await response.json();
         if (data.error) throw new Error(data.error);
 
-        const aiReply = data.reply    || "Je n'ai pas de réponse pour ça. Reformule ta question 😊";
+        const aiReply  = data.reply    || "I don't have an answer for that. Try rephrasing your question 😊";
         const products = data.products || [];
 
         addMessage(aiReply, 'ai', products);
         conversationHistory.push({ role: 'assistant', content: aiReply });
 
-        // Garder l'historique gérable
+        // Keep history manageable
         if (conversationHistory.length > 20) {
           conversationHistory = conversationHistory.slice(-16);
         }
@@ -3852,7 +3852,7 @@ De quoi as-tu besoin aujourd'hui ?`;
     }
 
     // ══════════════════════════════════════════════════════════
-    // ÉVÉNEMENTS INPUT
+    // INPUT EVENTS
     // ══════════════════════════════════════════════════════════
     input.addEventListener('input', function () {
       this.style.height = 'auto';
@@ -3879,16 +3879,16 @@ De quoi as-tu besoin aujourd'hui ?`;
       });
     });
 
-    // ── Fermer sur Échap ──
+    // ── Close on Escape ──
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && isOpen) closeChat();
     });
 
-    // ── Fermer au clic extérieur ──
+    // ── Close on outside click ──
     document.addEventListener('click', e => {
       if (isOpen && !widget.contains(e.target)) closeChat();
     });
 
-    console.log('✅ CurvaFit — Curva Support initialisé');
+    console.log('✅ CurvaFit — Curva Support initialized');
   })();
-}); // fin DOMContentLoaded
+});
