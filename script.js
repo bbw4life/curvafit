@@ -3449,13 +3449,13 @@ function initStockBar(cjId) {
 
 /* ================================================================
    CURVAFIT AI CHATBOT — FRONTEND JS
-   FIXES:
-   1. Images: pas de whitespace (géré en CSS)
-   2. Images cliquables → page produit
-   3. Liens affichés comme de beaux boutons
-   4. Images variantes au hover des swatches
-   5. Mots importants en gras dans la réponse IA
-   6. Chat persiste après actualisation (localStorage)
+   6 FIXES APPLIED (original code preserved):
+   FIX 1: Image whitespace → CSS only (see chatbot.css)
+   FIX 2: Product images clickable → wrapped in <a> link
+   FIX 3: Raw links → beautiful buttons
+   FIX 4: Variant color images on swatch hover
+   FIX 5: Important words bolded in AI response
+   FIX 6: Chat persists after page refresh (localStorage)
 ================================================================ */
 document.addEventListener('DOMContentLoaded', function () {
   (function () {
@@ -3483,83 +3483,52 @@ document.addEventListener('DOMContentLoaded', function () {
     let conversationHistory = [];
     let notifShown = false;
 
-    /* ── FIX 6: Persistence localStorage ── */
-    const STORAGE_KEY_HISTORY  = 'cf_chat_history';
-    const STORAGE_KEY_MESSAGES = 'cf_chat_messages';
-    const MAX_STORED_MESSAGES  = 30; // limite pour éviter trop de données
+    /* ══════════════════════════════════════
+       FIX 6: PERSIST CHAT AFTER REFRESH
+    ══════════════════════════════════════ */
+    const CF_HISTORY_KEY  = 'cf_conv_history';
+    const CF_MESSAGES_KEY = 'cf_rendered_msgs';
 
-    function saveToStorage() {
+    function persistSave() {
       try {
-        // Sauvegarder l'historique de conversation
-        localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(conversationHistory.slice(-20)));
-        // Sauvegarder les messages rendus (sérialisés)
-        const storedMsgs = [];
+        localStorage.setItem(CF_HISTORY_KEY, JSON.stringify(conversationHistory.slice(-20)));
+        const rendered = [];
         messages.querySelectorAll('.cf-message').forEach(el => {
-          storedMsgs.push({
-            html: el.innerHTML,
-            role: el.classList.contains('cf-message--user') ? 'user' : 'ai'
+          rendered.push({
+            role: el.classList.contains('cf-message--user') ? 'user' : 'ai',
+            html: el.innerHTML
           });
         });
-        localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(storedMsgs.slice(-MAX_STORED_MESSAGES)));
-      } catch (e) { /* localStorage peut être désactivé */ }
-    }
-
-    function loadFromStorage() {
-      try {
-        const savedHistory = localStorage.getItem(STORAGE_KEY_HISTORY);
-        if (savedHistory) {
-          conversationHistory = JSON.parse(savedHistory);
-        }
-        const savedMessages = localStorage.getItem(STORAGE_KEY_MESSAGES);
-        if (savedMessages) {
-          const msgs = JSON.parse(savedMessages);
-          if (msgs && msgs.length > 0) {
-            msgs.forEach(msg => {
-              const msgEl = document.createElement('div');
-              msgEl.className = `cf-message cf-message--${msg.role}`;
-              msgEl.innerHTML = msg.html;
-              // Réattacher les event listeners sur swatches et liens
-              reattachSwatchListeners(msgEl);
-              messages.appendChild(msgEl);
-            });
-            scrollToBottom();
-            return true; // messages restaurés
-          }
-        }
-      } catch (e) { /* ignore */ }
-      return false;
-    }
-
-    function clearStorage() {
-      try {
-        localStorage.removeItem(STORAGE_KEY_HISTORY);
-        localStorage.removeItem(STORAGE_KEY_MESSAGES);
+        localStorage.setItem(CF_MESSAGES_KEY, JSON.stringify(rendered.slice(-30)));
       } catch (e) {}
     }
 
-    /* ── Réattacher les listeners sur swatches après restauration ── */
-    function reattachSwatchListeners(container) {
-      const swatches   = container.querySelectorAll('.cf-pc-swatch');
-      const colorLabel = container.querySelector('.cf-pc-color-label');
-      const mainImg    = container.querySelector('.cf-pc-img');
+    function persistLoad() {
+      try {
+        const savedHistory = localStorage.getItem(CF_HISTORY_KEY);
+        if (savedHistory) conversationHistory = JSON.parse(savedHistory);
 
-      swatches.forEach(sw => {
-        const activate = () => {
-          swatches.forEach(s => s.classList.remove('cf-pc-swatch--active'));
-          sw.classList.add('cf-pc-swatch--active');
-          if (colorLabel) colorLabel.textContent = sw.dataset.name;
-          // FIX 4: changer l'image avec l'image de la variante couleur
-          if (mainImg && sw.dataset.img && sw.dataset.img !== '') {
-            mainImg.src = sw.dataset.img;
+        const savedMsgs = localStorage.getItem(CF_MESSAGES_KEY);
+        if (savedMsgs) {
+          const list = JSON.parse(savedMsgs);
+          if (list && list.length > 0) {
+            list.forEach(m => {
+              const el = document.createElement('div');
+              el.className = `cf-message cf-message--${m.role}`;
+              el.innerHTML = m.html;
+              _attachSwatchListeners(el);
+              messages.appendChild(el);
+            });
+            scrollToBottom();
+            return true;
           }
-        };
-        sw.addEventListener('mouseenter', activate);
-        sw.addEventListener('click', activate);
-      });
+        }
+      } catch (e) {}
+      return false;
     }
 
     /* ══════════════════════════════════════
-       DRAGGABLE WIDGET
+       DRAGGABLE WIDGET (original — unchanged)
     ══════════════════════════════════════ */
     (function initDrag() {
       let isDragging = false;
@@ -3646,16 +3615,16 @@ document.addEventListener('DOMContentLoaded', function () {
       if (iconClose) iconClose.style.display = '';
       if (notifDot)  notifDot.style.display  = 'none';
       input.focus();
-      // FIX 6: charger depuis localStorage si pas encore chargé
+
+      // FIX 6: restore persisted messages, else show welcome
       if (messages.children.length === 0) {
-        const restored = loadFromStorage();
+        const restored = persistLoad();
         if (!restored) addWelcomeMessage();
       }
-      // Cacher les chips si déjà des messages
+
+      // Hide chips if conversation already started
       const chipsEl = document.getElementById('cf-quick-chips');
-      if (chipsEl && messages.children.length > 1) {
-        chipsEl.style.display = 'none';
-      }
+      if (chipsEl && messages.children.length > 1) chipsEl.style.display = 'none';
     }
 
     function closeChat() {
@@ -3679,15 +3648,19 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ── Welcome ── */
     function addWelcomeMessage() {
       addMessage(
-        `Bonjour ! 👋 Je suis **Curva**, votre coach personnel **CurvaFit** !\n\nJe suis ici pour vous aider avec :\n- 🔥 Conseils minceur & perte de poids\n- 🥗 Guidance nutritionnelle\n- 💪 Recommandations de produits\n- 📋 Programmes & coaching\n\nQue puis-je faire pour vous aujourd'hui ? 😊`,
+        `Hi! 👋 I'm **Curva**, your personal CurvaFit coach!\n\nI'm here to help you with:\n- 🔥 Weight loss tips & advice\n- 🥗 Nutrition guidance\n- 💪 Product recommendations\n- 📋 Programs & coaching plans\n\nWhat can I help you with today? 😊`,
         'ai',
         []
       );
     }
 
-    /* ── FIX 3 & 5: Format Markdown + beautifier les liens + mots en gras ── */
+    /* ══════════════════════════════════════
+       FIX 3 & 5: FORMAT MARKDOWN
+       - Raw links → pretty buttons
+       - Important words → bold
+    ══════════════════════════════════════ */
     function formatMarkdown(text) {
-      // Nettoyer les IDs internes
+      // Strip internal IDs
       const internalIds = [
         'resistance-bands','yoga-mat','leggings','sports-bra',
         'hydration-bottle','workout-towel','fitness-tracker','protein-shaker',
@@ -3696,70 +3669,59 @@ document.addEventListener('DOMContentLoaded', function () {
       ];
       let out = text;
       internalIds.forEach(id => {
-        out = out.replace(new RegExp('\\b' + id.replace(/-/g,'[- ]') + '\\b', 'gi'), '');
+        out = out.replace(new RegExp('\\b' + id + '\\b', 'gi'), '');
       });
 
-      // FIX 3: Convertir les liens Markdown [texte](url) → bouton HTML
+      // FIX 3: Markdown links [label](url) → pretty button
       out = out.replace(
         /\[([^\]]+)\]\((\/[^\s)]+|https?:\/\/[^\s)]+)\)/g,
-        (match, label, url) => {
-          const cleanLabel = label.replace(/^(voir|visit|click|go to|aller sur|cliquez?( ici)?|page|ouvrir)\s*/i, '').trim();
-          return `<a href="${url}" class="cf-msg-link-btn" target="_self" onclick="event.stopPropagation()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
-            ${cleanLabel || 'Voir la page'}
-          </a>`;
-        }
+        (match, label, url) => _makeLinkBtn(label, url)
       );
 
-      // FIX 3: Convertir les URLs brutes (chemins locaux ou http) → bouton
-      // Éviter de re-traiter des URLs déjà dans un href
+      // FIX 3: bare local paths like /contact.html /products/product1.html → button
+      // Must not match URLs already inside href="" or src=""
       out = out.replace(
-        /(?<!href=["'])(?<![">])(\/[a-z0-9\-_/]+\.html(?:\?[^\s<]*)?|\/[a-z0-9\-_/]+\.html)/g,
+        /(?<![=\w"'`])(\/(?:products\/product\d+|[a-z0-9\-_/]+)\.html)/g,
         (match) => {
-          // Ignorer si déjà dans une balise
-          const label = match.replace('/', '').replace('.html', '').replace(/-/g, ' ').replace(/\//g, ' › ');
-          const cleanLabel = label.charAt(0).toUpperCase() + label.slice(1);
-          return `<a href="${match}" class="cf-msg-link-btn" target="_self" onclick="event.stopPropagation()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
-            ${cleanLabel || 'Voir la page'}
-          </a>`;
+          // Build a readable label from the path
+          const slug = match.replace(/^\//, '').replace('.html', '').replace(/\//g, ' › ');
+          const label = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          return _makeLinkBtn(label || 'View Page', match);
         }
       );
 
-      // WhatsApp links → bouton vert
+      // FIX 3: bare WhatsApp / https links that are not already in href
       out = out.replace(
-        /(https?:\/\/wa\.me\/[^\s<"]+)/g,
-        (match) => `<a href="${match}" class="cf-msg-link-btn" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25d366,#128c7e);" onclick="event.stopPropagation()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          WhatsApp Support
-        </a>`
+        /(?<![=\w"'`])(https?:\/\/wa\.me\/[^\s<"]+)/g,
+        (match) => _makeWABtn(match)
       );
 
-      // FIX 5: Mettre en gras les mots/éléments importants automatiquement
-      // Codes promos en gras
-      out = out.replace(
-        /\b([A-Z]{2,}[0-9]{0,3})\b(?=.*?%)/g,
-        '<strong>$1</strong>'
-      );
-
-      // Noms des fondateurs en gras
-      out = out.replace(/\b(Paul Francenel|Paul|Francenel)\b/g, '<strong>$1</strong>');
-
-      // Markdown **bold**
+      // FIX 5: bold **text**
       out = out.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-      // Markdown *italic*
+      // italic *text*
       out = out.replace(/\*(.+?)\*/g, '<em>$1</em>');
-      // Markdown `code`
+      // code `text`
       out = out.replace(/`(.+?)`/g, '<code>$1</code>');
 
-      // FIX 5: Prix en gras
-      out = out.replace(/(\$\d+(?:\.\d{2})?)/g, '<strong>$1</strong>');
-
-      // Sauts de ligne
+      // Line breaks
       out = out.replace(/\n\n/g, '<br><br>');
-      out = out.replace(/\n/g, '<br>');
+      out = out.replace(/\n/g,   '<br>');
 
       return out;
+    }
+
+    function _makeLinkBtn(label, url) {
+      return `<a href="${url}" class="cf-msg-link-btn" onclick="event.stopPropagation()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+        ${label}
+      </a>`;
+    }
+
+    function _makeWABtn(url) {
+      return `<a href="${url}" class="cf-msg-link-btn cf-msg-link-btn--wa" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>`;
     }
 
     function getTime() {
@@ -3767,7 +3729,31 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ══════════════════════════════════════
-       ADD MESSAGE — FIX 1, 2, 4
+       FIX 4: Re-attach swatch listeners
+       (needed after localStorage restore)
+    ══════════════════════════════════════ */
+    function _attachSwatchListeners(container) {
+      const swatches   = container.querySelectorAll('.cf-pc-swatch');
+      const colorLabel = container.querySelector('.cf-pc-color-label');
+      const mainImg    = container.querySelector('.cf-pc-img');
+
+      swatches.forEach(sw => {
+        const activate = () => {
+          swatches.forEach(s => s.classList.remove('cf-pc-swatch--active'));
+          sw.classList.add('cf-pc-swatch--active');
+          if (colorLabel) colorLabel.textContent = sw.dataset.name;
+          // FIX 4: switch to variant image
+          if (mainImg && sw.dataset.img && sw.dataset.img !== '') {
+            mainImg.src = sw.dataset.img;
+          }
+        };
+        sw.addEventListener('mouseenter', activate);
+        sw.addEventListener('click',      activate);
+      });
+    }
+
+    /* ══════════════════════════════════════
+       ADD MESSAGE
     ══════════════════════════════════════ */
     function addMessage(text, role, products) {
       const msgEl  = document.createElement('div');
@@ -3788,14 +3774,14 @@ document.addEventListener('DOMContentLoaded', function () {
           const card = document.createElement('div');
           card.className = 'cf-product-card';
 
-          /* FIX 1 & 2: Image sans whitespace + cliquable */
+          /* FIX 1 & 2: Image — no whitespace + clickable */
           let imgHTML = '';
           if (p.image) {
             imgHTML = `
               <div class="cf-pc-img-wrap">
                 <a href="${p.url}" class="cf-pc-img-link" onclick="event.stopPropagation()">
                   <img class="cf-pc-img" src="${p.image}" alt="${p.title}" loading="lazy"
-                       onerror="this.parentElement.parentElement.style.display='none'">
+                       onerror="this.closest('.cf-pc-img-wrap').style.display='none'">
                 </a>
               </div>`;
           }
@@ -3805,14 +3791,14 @@ document.addEventListener('DOMContentLoaded', function () {
             ? `<div class="cf-pc-rating">⭐ ${p.rating}/5</div>`
             : '';
 
-          /* Prix */
+          /* Price */
           const priceHTML = `
             <div class="cf-pc-price">
               <span class="cf-pc-price-current">$${Number(p.price).toFixed(2)}</span>
               <span class="cf-pc-price-compare">$${Number(p.compare_price).toFixed(2)}</span>
             </div>`;
 
-          /* FIX 4: Swatches avec data-img pour les images variantes */
+          /* FIX 4: swatches with data-img for variant images */
           let colorsHTML = '';
           if (p.colors && p.colors.length > 0) {
             const swatchesHTML = p.colors.slice(0, 6).map(c => `
@@ -3830,19 +3816,19 @@ document.addEventListener('DOMContentLoaded', function () {
               <div class="cf-pc-color-label"></div>`;
           }
 
-          /* Tailles */
+          /* Sizes */
           const sizesHTML = (p.sizes && p.sizes.length > 0)
-            ? `<div class="cf-pc-sizes"><strong>Tailles:</strong> ${p.sizes.join(' · ')}</div>` : '';
+            ? `<div class="cf-pc-sizes"><strong>Sizes:</strong> ${p.sizes.join(' · ')}</div>` : '';
 
-          /* Livraison */
+          /* Delivery */
           const deliveryHTML = p.delivery
             ? `<div class="cf-pc-delivery">🚚 ${p.delivery}</div>` : '';
 
-          /* FIX 3: CTA bouton propre */
+          /* FIX 3: CTA as a proper button */
           const ctaHTML = `
             <a href="${p.url}" class="cf-pc-btn" onclick="event.stopPropagation()">
-              Voir le Produit
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              View Product
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
                 <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
               </svg>
             </a>`;
@@ -3859,8 +3845,8 @@ document.addEventListener('DOMContentLoaded', function () {
               ${ctaHTML}
             </div>`;
 
-          /* FIX 4: Réattacher les swatches listeners */
-          reattachSwatchListeners(card);
+          /* FIX 4: attach swatch listeners */
+          _attachSwatchListeners(card);
 
           cardsWrap.appendChild(card);
         });
@@ -3877,13 +3863,13 @@ document.addEventListener('DOMContentLoaded', function () {
       messages.appendChild(msgEl);
       scrollToBottom();
 
-      // FIX 6: Sauvegarder après chaque nouveau message
-      saveToStorage();
+      // FIX 6: save after every message
+      persistSave();
     }
 
     function addErrorMessage() {
       addMessage(
-        "Désolée, j'ai un petit problème en ce moment. Veuillez réessayer dans un instant ! 🙏",
+        "Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏",
         'ai', []
       );
     }
@@ -3900,7 +3886,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!userText || !userText.trim() || isLoading) return;
       const text = userText.trim();
 
-      /* Cacher les chips */
+      /* Hide chips */
       const chipsEl = document.getElementById('cf-quick-chips');
       if (chipsEl) chipsEl.style.display = 'none';
 
@@ -3930,7 +3916,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const data = await response.json();
         if (data.error) throw new Error(data.error);
 
-        const aiReply  = data.reply    || "Je ne suis pas sûre de comprendre. Pouvez-vous reformuler ? 😊";
+        const aiReply  = data.reply    || "I'm not sure how to answer that. Could you rephrase? 😊";
         const products = data.products || [];
 
         addMessage(aiReply, 'ai', products);
@@ -3989,7 +3975,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isOpen && !widget.contains(e.target)) closeChat();
     });
 
-    console.log('✅ CurvaFit Chatbot (Curva Support) ready — 6 fixes applied');
+    console.log('✅ CurvaFit Chatbot ready');
   })();
 }); // end DOMContentLoaded
 

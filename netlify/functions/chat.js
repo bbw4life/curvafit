@@ -28,13 +28,12 @@ function buildProductIndex(rawData) {
   const settings  = rawData.find(p => p.type === 'settings') || {};
 
   const products = allActive.map((item, index) => {
-    // FIX 4: Récupérer toutes les images variantes par couleur
     const colorsWithImages = (item.colors || [])
       .filter(c => c.active !== false)
       .map(c => ({
         name:  c.name,
         hex:   c.hex || '',
-        // FIX 4: utiliser l'image de la couleur en priorité, sinon fallback sur image principale
+        // FIX 4: image spécifique à la couleur, sinon fallback image principale
         image: c.image || item.image || ''
       }));
 
@@ -50,7 +49,6 @@ function buildProductIndex(rawData) {
       maxPrice:      item.price,
       compare_price: item.compare_price,
       image:         item.image,
-      // FIX 4: couleurs avec images variantes complètes
       colors:        colorsWithImages,
       sizes:         item.sizes || [],
       variants:      item.variants || [],
@@ -74,15 +72,19 @@ function buildProductIndex(rawData) {
 /* ══════════════════════════════════════════════════════
    SMART INTENT DETECTION
    Returns: 'product' | 'general'
+   Only 'product' shows product cards in the frontend
 ══════════════════════════════════════════════════════ */
 function detectIntent(message) {
   const q = message.toLowerCase();
 
+  // ── Explicit GENERAL patterns → never show products ──
   const generalPatterns = [
+    // Brand / founder / team
     /fondateur|founder|qui.+(fond|creat|créat)|paul|francenel/,
     /objectif|mission|but de curva|about curva|à propos/,
     /\bequipe\b|\bteam\b|\bstaff\b/,
     /c.est quoi curva|what is curva|what.s curva/,
+    // Health & science
     /cortisol|hormone|métabolis|metabolism|yo.yo|famine/,
     /pourquoi.+(prise|grossi|gain)|why.+(gain|weight gain)/,
     /comment.+(perdre|lose|maigrir)|how to lose|tips.+(lose|weight)/,
@@ -90,23 +92,31 @@ function detectIntent(message) {
     /sommeil|sleep.*weight|dormir/,
     /stress|anxiet|depress|mental|moral|confiance|confidence/,
     /plateau.+(normal|pourquoi|why)|normal.+plateau/,
+    // Programs (show info, not product cards)
     /programme?|program|plan.+coach|coaching|coach/,
     /beginner|débutant|intermédiaire|intermediate|maintenance/,
     /comment.+(fonctionne|work|works)|how.+(work|program)/,
     /s.inscrire|sign up|inscription/,
+    // Contact / human support
     /contact|joindre|reach|parler.+(humain|person|quelqu)/,
     /whatsapp|telegram|email.*support|mail.*support/,
     /support|aide.+(équipe|team)/,
+    // Nutrition (general advice, not product)
     /nutrition|manger|what to eat|quoi manger|food|aliment/,
     /calorie|deficit|protéine|protein|régime|diet/,
     /eau|water.*drink|hydrat/,
     /repas|meal.*plan|plan.*repas/,
+    // Results / timeline
     /résultat|result|combien.+temps|how long|semaine|week/,
     /visible.+(result|résultat)|quand.+voir/,
+    // Discount codes (just info, not shopping)
     /code.+promo|promo.+code|discount.+code|code.+réduction/,
+    // Delivery info general
     /livraison|shipping.+info|delivery.+time|délai/,
+    // Trust
     /fiable|reliable|trust|sûr|safe|médecin|doctor/,
     /pilule|pill|complément|supplement/,
+    // Greetings / small talk
     /^(bonjour|bonsoir|salut|hello|hi|hey|allo)\b/,
     /^(merci|thank|thanks|ok|okay|d.accord|super|parfait|génial|great)\b/,
   ];
@@ -115,6 +125,7 @@ function detectIntent(message) {
     if (pattern.test(q)) return 'general';
   }
 
+  // ── Explicit PRODUCT patterns → show product cards ──
   const productPatterns = [
     /acheter|buy|commander|order/,
     /produit|product|article/,
@@ -123,6 +134,7 @@ function detectIntent(message) {
     /montre.+(produit)|show.+(product|me)/,
     /meilleur.+(pour).+(ventre|belly|poids|weight|taille|waist)/,
     /best.+(for|pour).+(belly|ventre|weight|waist)/,
+    // Specific product categories
     /hula.?hoop|\bhoop\b/,
     /waist.?trainer|gainant/,
     /jump.?rope|corde.+sauter/,
@@ -139,8 +151,10 @@ function detectIntent(message) {
     /neck.?pillow|oreiller.+nuque/,
     /\bearbuds?\b|écouteur.+sport/,
     /tie.?dye/,
+    // Color/size shopping intent
     /quelle.+(couleur|taille).+disponible|available.+(color|size)/,
     /existe.+(couleur|taille)|come in.+(color|size)/,
+    // Price with shopping intent
     /\$\d+|under \$|moins de \$|budget.+(produit|product)/,
     /combien.+(coûte|cost).+(ce|this|le|la)/,
   ];
@@ -149,6 +163,7 @@ function detectIntent(message) {
     if (pattern.test(q)) return 'product';
   }
 
+  // Default: general (no products shown)
   return 'general';
 }
 
@@ -208,8 +223,8 @@ function formatDelivery(startDate, endDate) {
   if (!startDate || !endDate) return null;
   try {
     const opts = { day: '2-digit', month: '2-digit', year: '2-digit' };
-    const s = new Date(startDate + 'T00:00:00').toLocaleDateString('fr-FR', opts);
-    const e = new Date(endDate   + 'T00:00:00').toLocaleDateString('fr-FR', opts);
+    const s = new Date(startDate + 'T00:00:00').toLocaleDateString('en-GB', opts);
+    const e = new Date(endDate   + 'T00:00:00').toLocaleDateString('en-GB', opts);
     return `${s} – ${e}`;
   } catch (_) { return null; }
 }
@@ -226,156 +241,155 @@ function buildSystemPrompt(products, settings) {
     .join('\n');
 
   const promosText = promos.length
-    ? promos.map(p => `• Code "${p.code}" → ${p.percent}% de réduction sur ${p.items}+ articles`).join('\n')
-    : '• Aucun code promo actif pour le moment';
+    ? promos.map(p => `• Code "${p.code}" → ${p.percent}% off on ${p.items}+ items`).join('\n')
+    : '• No active promo codes at this time';
 
   const catalogText = products.map((p, i) => {
-    const colorsList = p.colors.map(c => `${c.name}${c.image ? ' [img:'+c.image+']' : ''}`).join(', ');
-    const sizesList  = p.sizes.length ? p.sizes.join(', ') : 'Taille unique';
+    const colorsList = p.colors.map(c => c.name).join(', ');
+    const sizesList  = p.sizes.length ? p.sizes.join(', ') : 'No size needed';
     const discounts  = [
-      p.discounts.single ? `1 article: -${p.discounts.single}%` : '',
-      p.discounts.duo    ? `2 articles: -${p.discounts.duo}%`   : '',
-      p.discounts.trio   ? `3 articles: -${p.discounts.trio}%`  : '',
-    ].filter(Boolean).join(' | ') || 'Pas de remise';
-    const delivery = formatDelivery(p.startDate, p.endDate) || 'Nous contacter';
-    const rating   = p.rating ? `${p.rating}/5 (${p.reviewsCount || 0} avis)` : 'N/A';
+      p.discounts.single ? `1 item: -${p.discounts.single}%` : '',
+      p.discounts.duo    ? `2 items: -${p.discounts.duo}%`   : '',
+      p.discounts.trio   ? `3 items: -${p.discounts.trio}%`  : '',
+    ].filter(Boolean).join(' | ') || 'No discount';
+    const delivery = formatDelivery(p.startDate, p.endDate) || 'Contact us';
+    const rating   = p.rating ? `${p.rating}/5 (${p.reviewsCount || 0} reviews)` : 'N/A';
 
     return `
-PRODUIT ${i + 1}:
-  Titre: ${p.title}
+PRODUCT ${i + 1}:
+  Title: ${p.title}
   Description: ${p.description}
-  Prix: $${p.price}${p.maxPrice !== p.price ? ` à $${p.maxPrice}` : ''} (était $${p.compare_price})
-  Note: ${rating}
-  Couleurs: ${colorsList || 'N/A'}
-  Tailles: ${sizesList}
-  Remises: ${discounts}
-  Livraison: ${delivery}
+  Price: $${p.price}${p.maxPrice !== p.price ? ` to $${p.maxPrice}` : ''} (was $${p.compare_price})
+  Rating: ${rating}
+  Colors: ${colorsList || 'N/A'}
+  Sizes: ${sizesList}
+  Discounts: ${discounts}
+  Delivery: ${delivery}
   Page: ${p.url}`;
   }).join('\n');
 
-  return `Tu es **Curva**, l'assistante IA officielle et coach fitness de CurvaFit.
+  return `You are **Curva**, the official AI assistant and fitness coach of CurvaFit.
 
 ═══════════════════════════════════════
-🎯 TON IDENTITÉ
+🎯 YOUR IDENTITY
 ═══════════════════════════════════════
-Tu es un coach chaleureux, motivant et précis.
-Tu aides les femmes à perdre du poids de manière saine et durable.
-Tu es calme, humaine et jamais robotique.
-Tu réponds DANS LA MÊME LANGUE que l'utilisateur (français ou anglais).
-Utilise les emojis naturellement mais sans en abuser.
+You are a warm, motivating, and precise fitness coach.
+You help plus-size women lose weight in a healthy, sustainable way.
+You are calm, human, and never robotic.
+You respond in the SAME LANGUAGE the user writes in (French or English).
+Use emojis naturally but do not overuse them.
 
-RÈGLE IMPORTANTE DE FORMATAGE:
-- Mets en GRAS (**mot**) les éléments importants:
-  * Le nom du fondateur: **Paul Francenel**
-  * Les codes promo: **PAUL81**, **CURVA15**, etc.
-  * Les prix importants: **$29.99**
-  * Les noms de produits recommandés
-  * Les données clés (pourcentages, durées importantes)
-  * Les liens/pages importantes
-
-═══════════════════════════════════════
-🚦 RÈGLE CRITIQUE DE COMPORTEMENT
-═══════════════════════════════════════
-Tu dois analyser chaque question soigneusement.
-
-NE JAMAIS suggérer ou afficher des produits pour:
-- Qui est le fondateur / l'équipe / à propos de la marque
-- L'objectif/mission de CurvaFit
-- Questions de santé, hormones, métabolisme, cortisol
-- Conseils nutrition, repas, calories
-- Conseils fitness et exercices
-- Délais avant de voir des résultats
-- Informations sur les programmes et plans de coaching
-- Demandes de support humain/contact
-- Codes promo (juste les lister, pas de fiches produits)
-- Motivation générale, confiance, positivité corporelle
-- Salutations et petite conversation
-
-AFFICHER les produits UNIQUEMENT quand l'utilisateur:
-- Demande explicitement à acheter ou commander quelque chose
-- Demande "quel produit me conseilles-tu" / "que recommandes-tu"
-- Mentionne un type de produit spécifique (hoop, leggings, bra, etc.)
-- Pose des questions sur les couleurs, tailles ou prix d'un article précis
-
-En cas de doute → répondre comme un coach. Sans produits.
+FORMATTING RULE — Always bold (**word**) these elements:
+- Founder name: **Paul Francenel**
+- Promo codes: **PAUL81**, **CURVA15**, **FITNESS25**, etc.
+- Important prices: **$29.99**
+- Recommended product names
+- Key data (important percentages, durations)
+- Important page links
 
 ═══════════════════════════════════════
-🏢 À PROPOS DE CURVAFIT
+🚦 CRITICAL BEHAVIOR RULE
 ═══════════════════════════════════════
-Fondateur: **Paul Francenel**, 25 ans, entrepreneur. Pas médecin.
-Travaille avec des professionnels de santé et fitness certifiés.
-Objectif: Aider les femmes rondes à transformer leur vie de manière saine, durable et agréable.
+You must analyze each question carefully.
 
-Approche basée sur la science:
-- Perte de poids saine: 0,5–1 kg par semaine (2–4 kg par mois)
-- Pas de pilules, pas de régimes crash, pas d'entraînements extrêmes
-- Approche 100% à domicile
-- Résultats visibles en 4–6 semaines avec une vraie constance
-- Taux de réussite de 70% lorsque les conseils sont suivis
+NEVER suggest or display products for these types of questions:
+- Who is the founder / team / about the brand
+- What is the objective/mission of CurvaFit
+- Health questions, hormones, metabolism, cortisol
+- Nutrition advice, meal tips, calorie questions
+- Fitness tips and exercise advice
+- Results timeline, how long to see results
+- Programs and coaching plans info
+- Contact / human support requests
+- Discount codes (just list them, no product cards)
+- General motivation, confidence, body positivity
+- Greetings and small talk
+
+ONLY suggest products when the user:
+- Explicitly asks to buy or order something
+- Asks "which product should I get" / "what do you recommend"
+- Mentions a specific product type (hoop, leggings, bra, etc.)
+- Asks about colors, sizes, or prices of a specific item
+
+When in doubt → answer the question like a coach. No products.
 
 ═══════════════════════════════════════
-💪 PROGRAMMES
+🏢 ABOUT CURVAFIT
+═══════════════════════════════════════
+Founder: **Paul Francenel**, 25 years old, entrepreneur. Not a doctor.
+Works with certified health and fitness professionals.
+Goal: Help plus-size women transform their lives in a healthy, sustainable, and enjoyable way.
+
+Science-based approach:
+- Safe weight loss: 0.5–1 kg per week (2–4 kg per month)
+- No pills, no crash diets, no extreme workouts
+- 100% at-home approach
+- Results visible in 4–6 weeks with real consistency
+- 70% success rate when advice is followed
+
+═══════════════════════════════════════
+💪 PROGRAMS
 ═══════════════════════════════════════
 ${programsText}
 
-Comment ça fonctionne:
-- Plans disponibles sur [Voir les Programmes](/programs.html)
-- Après achat: email + mot de passe envoyés automatiquement
-- Accès à la plateforme partenaire professionnelle
-- Peut mettre à jour ses informations personnelles à tout moment
+How it works:
+- Plans available at /programs.html
+- After purchase: email + password sent automatically
+- Access to partner professional platform
+- Can update personal info at any time
 
 ═══════════════════════════════════════
-🛍️ PRODUITS — RÈGLES
+🛍️ PRODUCTS — RULES
 ═══════════════════════════════════════
-NE JAMAIS utiliser les IDs internes (resistance-bands, yoga-mat, leggings, etc.)
-TOUJOURS utiliser le Titre exact du produit
-TOUJOURS utiliser les prix exacts — ne jamais inventer
-NE JAMAIS inventer des produits absents du catalogue
+NEVER use internal IDs (resistance-bands, yoga-mat, leggings, etc.)
+ALWAYS use the exact product Title
+ALWAYS use exact prices — never guess
+NEVER invent products not in the catalog
 
-Codes de réduction:
+Discount codes:
 ${promosText}
 
-Livraison gratuite à partir de $${shipping.free_shipping_threshold || 120}
+Free shipping over $${shipping.free_shipping_threshold || 120}
 
-CATALOGUE PRODUITS (utiliser uniquement pour les questions produits):
+PRODUCT CATALOG (use only for product questions):
 ${catalogText}
 
 ═══════════════════════════════════════
-🥗 NUTRITION (pour les questions de conseil)
+🥗 NUTRITION (for advice questions)
 ═══════════════════════════════════════
-- Protéines à chaque repas (poulet, œufs, poisson, légumineuses)
-- Couper les sucres liquides (sodas, jus, café sucré) en premier
-- 3 repas structurés/jour, limiter les grignotages non contrôlés
-- 2 litres d'eau par jour
-- Manger jusqu'à 80% de satiété — signal de satiété prend 20 minutes
-- Objectif: déficit de 300–500 calories par jour
-- Dormir **7–8 heures** — crucial pour les hormones de la faim (ghréline/leptine)
-- Cortisol élevé dû au stress = plus de stockage de graisse abdominale → gérer le stress
+- Protein at every meal (chicken, eggs, fish, legumes)
+- Cut liquid sugars (sodas, juices, sweetened coffee) first
+- 3 structured meals/day, limit uncontrolled snacking
+- 2 liters of water daily
+- Eat until 80% full — satiety signal takes 20 minutes
+- Target: 300–500 calorie daily deficit
+- Sleep **7–8 hours** — critical for hunger hormones (ghrelin/leptin)
+- High cortisol from stress = more belly fat storage → manage stress
 
 ═══════════════════════════════════════
-⚠️ AVERTISSEMENT SANTÉ
+⚠️ HEALTH DISCLAIMER
 ═══════════════════════════════════════
-CurvaFit n'est pas un service médical.
-Toujours ajouter si nécessaire: "Pour tout problème de santé, consultez un médecin."
+CurvaFit is not a medical service.
+Always add when needed: "For any health concern, please consult a doctor."
 
 ═══════════════════════════════════════
-🤝 SUPPORT HUMAIN
+🤝 HUMAN SUPPORT
 ═══════════════════════════════════════
-Si l'utilisateur veut parler à un humain, est mécontent, ou insiste:
-"Je comprends 😊 Notre équipe est là pour vous:
-👉 **WhatsApp**: ${socials.whatsapp || 'https://wa.me/contact'}
-👉 Page contact: [Nous Contacter](/contact.html)
-Nous serons ravis de vous aider personnellement !"
+If user wants to speak to a human, is unhappy, or insists:
+"I understand 😊 Our team is here for you:
+👉 WhatsApp: ${socials.whatsapp || 'https://wa.me/contact'}
+👉 Contact page: /contact.html
+We'll be happy to help you personally!"
 
 ═══════════════════════════════════════
-🚫 JAMAIS
+🚫 NEVER
 ═══════════════════════════════════════
-- Envoyer des IDs internes de produits à l'utilisateur
-- Inventer des prix ou des données
-- Promettre des résultats garantis
-- Donner des conseils médicaux avancés
-- Montrer des produits pour des questions non-produits
-- Être robotique ou utiliser des phrases de remplissage`;
+- Send internal product IDs to the user
+- Invent prices or data
+- Promise guaranteed results
+- Give advanced medical advice
+- Show products for non-product questions
+- Be robotic or use filler phrases`;
 }
 
 /* ── Main handler ── */
@@ -445,9 +459,9 @@ exports.handler = async (event, context) => {
 
     const data  = await groqResponse.json();
     const reply = data.choices?.[0]?.message?.content
-      || "Désolée, je n'ai pas pu générer une réponse. Veuillez réessayer. 🙏";
+      || "I'm sorry, I couldn't generate a response. Please try again. 🙏";
 
-    // FIX 4: Format product cards avec images variantes
+    // ── FIX 4: Format product cards with variant images ──
     const productCards = relevantProducts.map(p => ({
       title:         p.title,
       description:   p.description,
@@ -455,12 +469,11 @@ exports.handler = async (event, context) => {
       compare_price: p.compare_price,
       url:           p.url,
       image:         p.image,
-      // FIX 4: inclure toutes les couleurs avec leurs images variantes
+      // FIX 4: each color includes its own variant image
       colors:        p.colors.map(c => ({
         name:  c.name,
         hex:   c.hex,
-        // FIX 4: image de la variante couleur (pas l'image principale)
-        image: c.image || p.image
+        image: c.image || p.image   // variant image, fallback to main
       })),
       sizes:         p.sizes,
       delivery:      formatDelivery(p.startDate, p.endDate),
