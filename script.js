@@ -3451,432 +3451,131 @@ function initStockBar(cjId) {
 
 
 
-/* ═══════════════════════════════════════════
-   CURVAFIT AI CHATBOT — FRONTEND JS
-═══════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', function() {
-(function() {
-  'use strict';
+// ═══════════════════════════════════════════
+// CURVAFIT AI CHATBOT — FRONTEND (Version corrigée)
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('cf-chat-toggle');
+  const windowEl = document.getElementById('cf-chat-window');
+  const messages = document.getElementById('cf-messages');
+  const input = document.getElementById('cf-input');
+  const sendBtn = document.getElementById('cf-send-btn');
+  const typing = document.getElementById('cf-typing');
+  const closeBtn = document.getElementById('cf-close-btn');
+  const chips = document.querySelectorAll('.cf-chip');
 
-  // ── State ──
   let isOpen = false;
   let isLoading = false;
   let conversationHistory = [];
-  let notifShown = false;
 
-  // ── DOM refs ──
-  const widget   = document.getElementById('cf-chat-widget');
-  const toggle   = document.getElementById('cf-chat-toggle');
-  const window_  = document.getElementById('cf-chat-window');
-  const messages = document.getElementById('cf-messages');
-  const input    = document.getElementById('cf-input');
-  const sendBtn  = document.getElementById('cf-send-btn');
-  const typing   = document.getElementById('cf-typing');
-  const closeBtn = document.getElementById('cf-close-btn');
-  const chips    = document.querySelectorAll('.cf-chip');
-  const iconOpen = toggle.querySelector('.cf-icon-open');
-  const iconClose= toggle.querySelector('.cf-icon-close');
-  const notifDot = toggle.querySelector('.cf-notif-dot');
-
-  // ══════════════════════════════════════════
-  // DRAGGABLE — déplacer le widget n'importe où
-  // ══════════════════════════════════════════
-  (function initDrag() {
-    let isDragging = false;
-    let startX, startY, origLeft, origBottom;
-    let hasMoved = false;
-
-    function getWidgetPos() {
-      const rect = widget.getBoundingClientRect();
-      return {
-        left: rect.left,
-        top: rect.top
-      };
-    }
-
-    function onPointerDown(e) {
-      // Ignorer si c'est le bouton fermer ou les chips ou l'input
-      if (e.target.closest('.cf-header-close') ||
-          e.target.closest('.cf-quick-chips') ||
-          e.target.closest('.cf-input-area') ||
-          e.target.closest('.cf-messages')) return;
-
-      // Seulement sur le toggle pour le drag
-      if (!e.target.closest('#cf-chat-toggle')) return;
-
-      isDragging = true;
-      hasMoved = false;
-      startX = e.clientX;
-      startY = e.clientY;
-
-      const rect = widget.getBoundingClientRect();
-      origLeft = rect.left;
-      origBottom = window.innerHeight - rect.bottom;
-
-      widget.classList.add('cf-dragging');
-
-      // Passer en position absolue depuis fixed
-      widget.style.left = origLeft + 'px';
-      widget.style.bottom = origBottom + 'px';
-      widget.style.right = 'auto';
-      widget.style.top = 'auto';
-
-      e.preventDefault();
-    }
-
-    function onPointerMove(e) {
-      if (!isDragging) return;
-
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-
-      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
-        hasMoved = true;
-      }
-
-      let newLeft = origLeft + dx;
-      let newBottom = origBottom - dy;
-
-      // Limites écran
-      const btnW = toggle.offsetWidth;
-      const btnH = toggle.offsetHeight;
-      newLeft = Math.max(8, Math.min(window.innerWidth - btnW - 8, newLeft));
-      newBottom = Math.max(8, Math.min(window.innerHeight - btnH - 8, newBottom));
-
-      widget.style.left = newLeft + 'px';
-      widget.style.bottom = newBottom + 'px';
-
-      // Ajuste la direction de la fenêtre chat selon la position
-      updateWindowPosition(newLeft, newBottom);
-    }
-
-    function onPointerUp(e) {
-      if (!isDragging) return;
-      isDragging = false;
-      widget.classList.remove('cf-dragging');
-
-      // Si pas de mouvement significatif = clic → toggle chat
-      if (!hasMoved) {
-        isOpen ? closeChat() : openChat();
-      }
-    }
-
-    // Mouse
-    toggle.addEventListener('mousedown', onPointerDown);
-    document.addEventListener('mousemove', onPointerMove);
-    document.addEventListener('mouseup', onPointerUp);
-
-    // Touch
-    toggle.addEventListener('touchstart', function(e) {
-      const touch = e.touches[0];
-      onPointerDown({ clientX: touch.clientX, clientY: touch.clientY,
-        target: e.target, preventDefault: () => e.preventDefault() });
-    }, { passive: false });
-
-    document.addEventListener('touchmove', function(e) {
-      if (!isDragging) return;
-      const touch = e.touches[0];
-      onPointerMove({ clientX: touch.clientX, clientY: touch.clientY });
-      e.preventDefault();
-    }, { passive: false });
-
-    document.addEventListener('touchend', function(e) {
-      const touch = e.changedTouches[0];
-      onPointerUp({ clientX: touch.clientX, clientY: touch.clientY });
-    });
-  })();
-
-  // Met à jour la direction d'ouverture de la fenêtre
-  function updateWindowPosition(left, bottom) {
-    const winW = window.innerWidth;
-    const winH = window.innerHeight;
-
-    // Droite si le widget est dans la moitié droite
-    if (left > winW / 2) {
-      widget.classList.add('cf-right');
-    } else {
-      widget.classList.remove('cf-right');
-    }
-
-    // Haut si le widget est dans la moitié haute
-    if (bottom > winH / 2) {
-      widget.classList.add('cf-top');
-    } else {
-      widget.classList.remove('cf-top');
-    }
-  }
-
-  // ── Open / Close ──
-  function openChat() {
-    isOpen = true;
-    window_.classList.add('cf-open');
-    window_.setAttribute('aria-hidden', 'false');
-    iconOpen.style.display = 'none';
-    iconClose.style.display = '';
-    notifDot.style.display = 'none';
-    input.focus();
-
-    if (messages.children.length === 0) {
-      addWelcomeMessage();
-    }
-  }
-
-  function closeChat() {
-    isOpen = false;
-    window_.classList.remove('cf-open');
-    window_.setAttribute('aria-hidden', 'true');
-    iconOpen.style.display = '';
-    iconClose.style.display = 'none';
-  }
-
-  // Le toggle est géré par le drag handler (hasMoved)
-  // Mais on garde le closeBtn
-  closeBtn.addEventListener('click', closeChat);
-
-  // Show notif dot after 3s if not opened
-  setTimeout(() => {
-    if (!isOpen && !notifShown) {
-      notifDot.style.display = 'block';
-      notifShown = true;
-    }
-  }, 3000);
-
-  // ── Welcome Message ──
-  function addWelcomeMessage() {
-    const welcomeText = `Hi! 👋 I'm **Cora**, your personal CurvaFit AI coach.
-
-I can help you find the perfect products for your fitness journey. Ask me about:
-- 🔥 Fat burning tools
-- 👗 Apparel & activewear  
-- 💪 Recovery & wellness
-- 💰 Budget-friendly picks
-
-What are you looking for today?`;
-
-    addMessage(welcomeText, 'ai');
-  }
-
-  // ── Format Markdown (basic) ──
-  function formatMarkdown(text) {
-    // Supprime tous les liens markdown ou URL bruts du texte
-    // Les liens seront gérés via les product cards uniquement
-    let formatted = text
-      // Supprimer les liens markdown [texte](url)
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<strong>$1</strong>')
-      // Supprimer les URLs brutes type /products/... ou .html
-      .replace(/\/?products?\/[\w\-\.\/]+\.html?/gi, '')
-      .replace(/\/[\w\-]+\.html?/gi, '')
-      // Bold
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      // Italic
-      .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      // Code
-      .replace(/`(.+?)`/g, '<code>$1</code>')
-      // Newlines
-      .replace(/\n\n/g, '<br><br>')
-      .replace(/\n/g, '<br>')
-      .replace(/•\s/g, '• ');
-
-    return formatted;
-  }
-
-  // ── Get current time ──
-  function getTime() {
-    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
-  // ── Add message to UI ──
   function addMessage(text, role, products = []) {
-    const msgEl = document.createElement('div');
-    msgEl.className = `cf-message cf-message--${role}`;
-
+    const msg = document.createElement('div');
+    msg.className = `cf-message cf-message--${role}`;
+    
     const bubble = document.createElement('div');
     bubble.className = 'cf-msg-bubble';
-    bubble.innerHTML = formatMarkdown(text);
-    msgEl.appendChild(bubble);
+    bubble.innerHTML = text.replace(/\n/g, '<br>');
+    msg.appendChild(bubble);
 
-    // Product cards (AI messages only) — liens cachés derrière bouton CTA
-    if (role === 'ai' && products && products.length > 0) {
-      const cardsWrap = document.createElement('div');
-      cardsWrap.className = 'cf-product-cards';
-
+    if (role === 'ai' && products.length > 0) {
+      const cards = document.createElement('div');
+      cards.className = 'cf-product-cards';
       products.forEach(p => {
-        const card = document.createElement('div');
+        const card = document.createElement('a');
+        card.href = p.url;
         card.className = 'cf-product-card';
         card.innerHTML = `
-          <div class="cf-product-card-info">
-            <div class="cf-product-card-title">${p.title}</div>
-            <div class="cf-product-card-price">
-              <span class="cf-price-current">$${p.price.toFixed(2)}</span>
-              <span class="cf-price-compare">$${p.compare_price.toFixed(2)}</span>
+          <img src="${p.image}" alt="${p.title}">
+          <div class="cf-product-info">
+            <div class="cf-product-title">${p.title}</div>
+            <div class="cf-product-price">
+              <span class="current">$${p.price.toFixed(2)}</span>
+              <span class="compare">$${p.compare_price.toFixed(2)}</span>
             </div>
           </div>
-          <a
-            href="${p.url}"
-            class="cf-product-card-btn"
-            title="Voir ce produit"
-            target="_blank"
-            rel="noopener"
-          >
-            Voir
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-              <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
+          <div class="cf-product-btn">View Product →</div>
         `;
-        cardsWrap.appendChild(card);
+        cards.appendChild(card);
       });
-
-      msgEl.appendChild(cardsWrap);
+      msg.appendChild(cards);
     }
 
     const time = document.createElement('span');
     time.className = 'cf-msg-time';
-    time.textContent = getTime();
-    msgEl.appendChild(time);
+    time.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    msg.appendChild(time);
 
-    messages.appendChild(msgEl);
-    scrollToBottom();
-
-    return msgEl;
+    messages.appendChild(msg);
+    messages.scrollTop = messages.scrollHeight;
   }
 
-  // ── Add error message ──
-  function addErrorMessage() {
-    addMessage("Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏", 'ai');
-  }
-
-  // ── Scroll to bottom ──
-  function scrollToBottom() {
-    messages.scrollTo({ top: messages.scrollHeight, behavior: 'smooth' });
-  }
-
-  // ── Show/hide typing ──
   function showTyping() {
     typing.style.display = 'flex';
-    scrollToBottom();
+    messages.scrollTop = messages.scrollHeight;
   }
 
   function hideTyping() {
     typing.style.display = 'none';
   }
 
-  // ── Send message ──
-  async function sendMessage(userText) {
-    if (!userText || userText.trim().length === 0 || isLoading) return;
-
-    const text = userText.trim();
-
-    // Hide chips after first message
-    const chipsEl = document.getElementById('cf-quick-chips');
-    if (chipsEl) chipsEl.style.display = 'none';
-
-    // Add user message
+  async function sendMessage(text) {
+    if (!text || isLoading) return;
     addMessage(text, 'user');
-    conversationHistory.push({ role: 'user', content: text });
+    conversationHistory.push({role: 'user', content: text});
 
-    // Reset input
     input.value = '';
-    input.style.height = 'auto';
     sendBtn.disabled = true;
     isLoading = true;
-
-    // Show typing
     showTyping();
 
     try {
-      const response = await fetch('/.netlify/functions/chat', {
+      const res = await fetch('/.netlify/functions/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: text,
-          history: conversationHistory.slice(-6)
-        })
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ message: text, history: conversationHistory.slice(-8) })
       });
 
+      const data = await res.json();
       hideTyping();
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+      if (data.reply) {
+        addMessage(data.reply, 'ai', data.products || []);
+        conversationHistory.push({role: 'assistant', content: data.reply});
       }
-
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      const aiReply = data.reply || "I'm not sure how to answer that. Could you rephrase?";
-      const products = data.products || [];
-
-      // Add AI response
-      addMessage(aiReply, 'ai', products);
-      conversationHistory.push({ role: 'assistant', content: aiReply });
-
-      // Keep history manageable
-      if (conversationHistory.length > 20) {
-        conversationHistory = conversationHistory.slice(-16);
-      }
-
-    } catch (error) {
+    } catch (e) {
       hideTyping();
-      console.error('Chat error:', error);
-      addErrorMessage();
+      addMessage("Sorry, I'm having trouble right now. Please try again.", 'ai');
     } finally {
       isLoading = false;
-      sendBtn.disabled = input.value.trim().length === 0;
+      sendBtn.disabled = false;
     }
   }
 
-  // ── Input handlers ──
-  input.addEventListener('input', function() {
-    // Auto-resize
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-
-    // Enable/disable send
-    sendBtn.disabled = this.value.trim().length === 0;
-  });
-
-  input.addEventListener('keydown', function(e) {
+  // Events
+  sendBtn.addEventListener('click', () => sendMessage(input.value));
+  input.addEventListener('keypress', e => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if (!sendBtn.disabled) {
-        sendMessage(this.value);
-      }
-    }
-  });
-
-  sendBtn.addEventListener('click', () => {
-    if (!sendBtn.disabled) {
       sendMessage(input.value);
     }
   });
 
-  // ── Quick chips ──
   chips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      const msg = chip.dataset.msg;
-      if (msg) {
-        input.value = msg;
-        sendBtn.disabled = false;
-        sendMessage(msg);
-      }
-    });
+    chip.addEventListener('click', () => sendMessage(chip.dataset.msg));
   });
 
-  // ── Close on Escape ──
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && isOpen) closeChat();
-  });
-
-  // ── Click outside to close ──
-  document.addEventListener('click', e => {
-    if (isOpen && !document.getElementById('cf-chat-widget').contains(e.target)) {
-      closeChat();
+  toggle.addEventListener('click', () => {
+    isOpen = !isOpen;
+    windowEl.classList.toggle('cf-open', isOpen);
+    if (isOpen && messages.children.length === 0) {
+      addMessage("Hi! 👋 I'm <strong>Curva Support</strong>, your personal fitness expert at CurvaFit.<br><br>What can I help you with today?", 'ai');
     }
   });
 
-  console.log('✅ CurvaFit AI Chatbot initialized');
-})();
-}); // fin DOMContentLoaded chatbot
+  closeBtn.addEventListener('click', () => {
+    isOpen = false;
+    windowEl.classList.remove('cf-open');
+  });
+
+  console.log('✅ Curva Support AI Chatbot loaded successfully');
+});
