@@ -9,6 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
     );
   }
 
+
+   if ('fonts' in document) {
+        document.fonts.ready.then(() => {
+            document.documentElement.classList.add('fonts-loaded');
+        });
+    } else {
+        window.addEventListener('load', () => {
+            document.documentElement.classList.add('fonts-loaded');
+        });
+    }
+
   // ══ FLOATING NAV ══
   const fnavToggle = document.getElementById('fnav-toggle');
   const fnavWheel  = document.getElementById('fnav-wheel');
@@ -3425,3 +3436,294 @@ function initStockBar(cjId) {
             block.classList.add('error');
         });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ═══════════════════════════════════════════
+   CURVAFIT AI CHATBOT — FRONTEND JS
+═══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  'use strict';
+
+  // ── State ──
+  let isOpen = false;
+  let isLoading = false;
+  let conversationHistory = [];
+  let notifShown = false;
+
+  // ── DOM refs ──
+  const toggle    = document.getElementById('cf-chat-toggle');
+  const window_   = document.getElementById('cf-chat-window');
+  const messages  = document.getElementById('cf-messages');
+  const input     = document.getElementById('cf-input');
+  const sendBtn   = document.getElementById('cf-send-btn');
+  const typing    = document.getElementById('cf-typing');
+  const closeBtn  = document.getElementById('cf-close-btn');
+  const chips     = document.querySelectorAll('.cf-chip');
+  const iconOpen  = toggle.querySelector('.cf-icon-open');
+  const iconClose = toggle.querySelector('.cf-icon-close');
+  const notifDot  = toggle.querySelector('.cf-notif-dot');
+
+  // ── Open / Close ──
+  function openChat() {
+    isOpen = true;
+    window_.classList.add('cf-open');
+    window_.setAttribute('aria-hidden', 'false');
+    iconOpen.style.display = 'none';
+    iconClose.style.display = '';
+    notifDot.style.display = 'none';
+    input.focus();
+
+    if (messages.children.length === 0) {
+      addWelcomeMessage();
+    }
+  }
+
+  function closeChat() {
+    isOpen = false;
+    window_.classList.remove('cf-open');
+    window_.setAttribute('aria-hidden', 'true');
+    iconOpen.style.display = '';
+    iconClose.style.display = 'none';
+  }
+
+  toggle.addEventListener('click', () => isOpen ? closeChat() : openChat());
+  closeBtn.addEventListener('click', closeChat);
+
+  // Show notif dot after 3s if not opened
+  setTimeout(() => {
+    if (!isOpen && !notifShown) {
+      notifDot.style.display = 'block';
+      notifShown = true;
+    }
+  }, 3000);
+
+  // ── Welcome Message ──
+  function addWelcomeMessage() {
+    const welcomeText = `Hi! 👋 I'm **Cora**, your personal CurvaFit AI coach.
+
+I can help you find the perfect products for your fitness journey. Ask me about:
+- 🔥 Fat burning tools
+- 👗 Apparel & activewear  
+- 💪 Recovery & wellness
+- 💰 Budget-friendly picks
+
+What are you looking for today?`;
+
+    addMessage(welcomeText, 'ai');
+  }
+
+  // ── Format Markdown (basic) ──
+  function formatMarkdown(text) {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/`(.+?)`/g, '<code>$1</code>')
+      .replace(/\n\n/g, '<br><br>')
+      .replace(/\n/g, '<br>')
+      .replace(/•\s/g, '• ');
+  }
+
+  // ── Get current time ──
+  function getTime() {
+    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // ── Add message to UI ──
+  function addMessage(text, role, products = []) {
+    const msgEl = document.createElement('div');
+    msgEl.className = `cf-message cf-message--${role}`;
+
+    const bubble = document.createElement('div');
+    bubble.className = 'cf-msg-bubble';
+    bubble.innerHTML = formatMarkdown(text);
+    msgEl.appendChild(bubble);
+
+    // Product cards (AI messages only)
+    if (role === 'ai' && products && products.length > 0) {
+      const cardsWrap = document.createElement('div');
+      cardsWrap.className = 'cf-product-cards';
+
+      products.forEach(p => {
+        const card = document.createElement('a');
+        card.className = 'cf-product-card';
+        card.href = p.url;
+        card.innerHTML = `
+          <div class="cf-product-card-info">
+            <div class="cf-product-card-title">${p.title}</div>
+            <div class="cf-product-card-price">
+              <span class="cf-price-current">$${p.price.toFixed(2)}</span>
+              <span class="cf-price-compare">$${p.compare_price.toFixed(2)}</span>
+            </div>
+          </div>
+          <div class="cf-product-card-arrow">→</div>
+        `;
+        cardsWrap.appendChild(card);
+      });
+
+      msgEl.appendChild(cardsWrap);
+    }
+
+    const time = document.createElement('span');
+    time.className = 'cf-msg-time';
+    time.textContent = getTime();
+    msgEl.appendChild(time);
+
+    messages.appendChild(msgEl);
+    scrollToBottom();
+
+    return msgEl;
+  }
+
+  // ── Add error message ──
+  function addErrorMessage() {
+    addMessage("Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏", 'ai');
+  }
+
+  // ── Scroll to bottom ──
+  function scrollToBottom() {
+    messages.scrollTo({ top: messages.scrollHeight, behavior: 'smooth' });
+  }
+
+  // ── Show/hide typing ──
+  function showTyping() {
+    typing.style.display = 'flex';
+    scrollToBottom();
+  }
+
+  function hideTyping() {
+    typing.style.display = 'none';
+  }
+
+  // ── Send message ──
+  async function sendMessage(userText) {
+    if (!userText || userText.trim().length === 0 || isLoading) return;
+
+    const text = userText.trim();
+
+    // Hide chips after first message
+    const chipsEl = document.getElementById('cf-quick-chips');
+    if (chipsEl) chipsEl.style.display = 'none';
+
+    // Add user message
+    addMessage(text, 'user');
+    conversationHistory.push({ role: 'user', content: text });
+
+    // Reset input
+    input.value = '';
+    input.style.height = 'auto';
+    sendBtn.disabled = true;
+    isLoading = true;
+
+    // Show typing
+    showTyping();
+
+    try {
+      const response = await fetch('/.netlify/functions/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: text,
+          history: conversationHistory.slice(-6)
+        })
+      });
+
+      hideTyping();
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      const aiReply = data.reply || "I'm not sure how to answer that. Could you rephrase?";
+      const products = data.products || [];
+
+      // Add AI response
+      addMessage(aiReply, 'ai', products);
+      conversationHistory.push({ role: 'assistant', content: aiReply });
+
+      // Keep history manageable
+      if (conversationHistory.length > 20) {
+        conversationHistory = conversationHistory.slice(-16);
+      }
+
+    } catch (error) {
+      hideTyping();
+      console.error('Chat error:', error);
+      addErrorMessage();
+    } finally {
+      isLoading = false;
+      sendBtn.disabled = input.value.trim().length === 0;
+    }
+  }
+
+  // ── Input handlers ──
+  input.addEventListener('input', function() {
+    // Auto-resize
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+
+    // Enable/disable send
+    sendBtn.disabled = this.value.trim().length === 0;
+  });
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!sendBtn.disabled) {
+        sendMessage(this.value);
+      }
+    }
+  });
+
+  sendBtn.addEventListener('click', () => {
+    if (!sendBtn.disabled) {
+      sendMessage(input.value);
+    }
+  });
+
+  // ── Quick chips ──
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const msg = chip.dataset.msg;
+      if (msg) {
+        input.value = msg;
+        sendBtn.disabled = false;
+        sendMessage(msg);
+      }
+    });
+  });
+
+  // ── Close on Escape ──
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && isOpen) closeChat();
+  });
+
+  // ── Click outside to close ──
+  document.addEventListener('click', e => {
+    if (isOpen && !document.getElementById('cf-chat-widget').contains(e.target)) {
+      closeChat();
+    }
+  });
+
+console.log('✅ CurvaFit AI Chatbot initialized');
+})();
+}); // fin DOMContentLoaded chatbot
