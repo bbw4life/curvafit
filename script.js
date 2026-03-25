@@ -3448,134 +3448,443 @@ function initStockBar(cjId) {
 
 
 
+/* ═══════════════════════════════════════════════════════════════
+   CURVAFIT AI CHATBOT — Frontend JS
+   Replace the entire chatbot block inside script.js
+   (the block that starts with: document.addEventListener('DOMContentLoaded', function() {)
+   and contains the chatbot IIFE)
+   ═══════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function () {
+  (function () {
+    'use strict';
 
+    // ── State ────────────────────────────────────────────────────
+    let isOpen = false;
+    let isLoading = false;
+    let conversationHistory = [];
+    let notifShown = false;
 
+    // ── DOM refs ─────────────────────────────────────────────────
+    const widget    = document.getElementById('cf-chat-widget');
+    const window_   = document.getElementById('cf-chat-window');
+    const messages  = document.getElementById('cf-messages');
+    const input     = document.getElementById('cf-input');
+    const sendBtn   = document.getElementById('cf-send-btn');
+    const typing    = document.getElementById('cf-typing');
+    const closeBtn  = document.getElementById('cf-close-btn');
+    const chips     = document.querySelectorAll('.cf-chip');
+    const toggle    = document.getElementById('cf-chat-toggle');
+    const iconOpen  = toggle ? toggle.querySelector('.cf-icon-open')  : null;
+    const iconClose = toggle ? toggle.querySelector('.cf-icon-close') : null;
+    const notifDot  = toggle ? toggle.querySelector('.cf-notif-dot')  : null;
 
-// ═══════════════════════════════════════════
-// CURVAFIT AI CHATBOT — FRONTEND (Version corrigée)
-// ═══════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
-  const toggle = document.getElementById('cf-chat-toggle');
-  const windowEl = document.getElementById('cf-chat-window');
-  const messages = document.getElementById('cf-messages');
-  const input = document.getElementById('cf-input');
-  const sendBtn = document.getElementById('cf-send-btn');
-  const typing = document.getElementById('cf-typing');
-  const closeBtn = document.getElementById('cf-close-btn');
-  const chips = document.querySelectorAll('.cf-chip');
+    // Guard: if widget not present on this page, do nothing
+    if (!widget || !toggle) return;
 
-  let isOpen = false;
-  let isLoading = false;
-  let conversationHistory = [];
+    // ════════════════════════════════════════════════════════════
+    // DRAGGABLE — move widget anywhere on screen
+    // ════════════════════════════════════════════════════════════
+    (function initDrag() {
+      let isDragging = false;
+      let startX, startY, origLeft, origBottom;
+      let hasMoved = false;
 
-  function addMessage(text, role, products = []) {
-    const msg = document.createElement('div');
-    msg.className = `cf-message cf-message--${role}`;
-    
-    const bubble = document.createElement('div');
-    bubble.className = 'cf-msg-bubble';
-    bubble.innerHTML = text.replace(/\n/g, '<br>');
-    msg.appendChild(bubble);
+      function onPointerDown(e) {
+        // Only drag from the toggle button itself
+        if (!e.target.closest('#cf-chat-toggle')) return;
+        // Don't start drag on close btn or input
+        if (e.target.closest('.cf-header-close')) return;
 
-    if (role === 'ai' && products.length > 0) {
-      const cards = document.createElement('div');
-      cards.className = 'cf-product-cards';
-      products.forEach(p => {
-        const card = document.createElement('a');
-        card.href = p.url;
-        card.className = 'cf-product-card';
-        card.innerHTML = `
-          <img src="${p.image}" alt="${p.title}">
-          <div class="cf-product-info">
-            <div class="cf-product-title">${p.title}</div>
-            <div class="cf-product-price">
-              <span class="current">$${p.price.toFixed(2)}</span>
-              <span class="compare">$${p.compare_price.toFixed(2)}</span>
-            </div>
-          </div>
-          <div class="cf-product-btn">View Product →</div>
-        `;
-        cards.appendChild(card);
-      });
-      msg.appendChild(cards);
-    }
+        isDragging = true;
+        hasMoved   = false;
+        startX = e.clientX;
+        startY = e.clientY;
 
-    const time = document.createElement('span');
-    time.className = 'cf-msg-time';
-    time.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-    msg.appendChild(time);
+        const rect = widget.getBoundingClientRect();
+        origLeft   = rect.left;
+        origBottom = window.innerHeight - rect.bottom;
 
-    messages.appendChild(msg);
-    messages.scrollTop = messages.scrollHeight;
-  }
+        widget.classList.add('cf-dragging');
+        widget.style.left   = origLeft + 'px';
+        widget.style.bottom = origBottom + 'px';
+        widget.style.right  = 'auto';
+        widget.style.top    = 'auto';
 
-  function showTyping() {
-    typing.style.display = 'flex';
-    messages.scrollTop = messages.scrollHeight;
-  }
-
-  function hideTyping() {
-    typing.style.display = 'none';
-  }
-
-  async function sendMessage(text) {
-    if (!text || isLoading) return;
-    addMessage(text, 'user');
-    conversationHistory.push({role: 'user', content: text});
-
-    input.value = '';
-    sendBtn.disabled = true;
-    isLoading = true;
-    showTyping();
-
-    try {
-      const res = await fetch('/.netlify/functions/chat', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ message: text, history: conversationHistory.slice(-8) })
-      });
-
-      const data = await res.json();
-      hideTyping();
-
-      if (data.reply) {
-        addMessage(data.reply, 'ai', data.products || []);
-        conversationHistory.push({role: 'assistant', content: data.reply});
+        e.preventDefault();
       }
-    } catch (e) {
-      hideTyping();
-      addMessage("Sorry, I'm having trouble right now. Please try again.", 'ai');
-    } finally {
-      isLoading = false;
-      sendBtn.disabled = false;
+
+      function onPointerMove(e) {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
+
+        const btnW   = toggle.offsetWidth;
+        const btnH   = toggle.offsetHeight;
+        let newLeft   = Math.max(8, Math.min(window.innerWidth  - btnW - 8, origLeft   + dx));
+        let newBottom = Math.max(8, Math.min(window.innerHeight - btnH - 8, origBottom - dy));
+
+        widget.style.left   = newLeft + 'px';
+        widget.style.bottom = newBottom + 'px';
+        updateWindowDirection(newLeft, newBottom);
+      }
+
+      function onPointerUp() {
+        if (!isDragging) return;
+        isDragging = false;
+        widget.classList.remove('cf-dragging');
+        // No significant move = treat as click
+        if (!hasMoved) {
+          isOpen ? closeChat() : openChat();
+        }
+      }
+
+      // Mouse
+      toggle.addEventListener('mousedown', onPointerDown);
+      document.addEventListener('mousemove', onPointerMove);
+      document.addEventListener('mouseup', onPointerUp);
+
+      // Touch
+      toggle.addEventListener('touchstart', function (e) {
+        const t = e.touches[0];
+        onPointerDown({ clientX: t.clientX, clientY: t.clientY, target: e.target, preventDefault: () => e.preventDefault() });
+      }, { passive: false });
+      document.addEventListener('touchmove', function (e) {
+        if (!isDragging) return;
+        const t = e.touches[0];
+        onPointerMove({ clientX: t.clientX, clientY: t.clientY });
+        e.preventDefault();
+      }, { passive: false });
+      document.addEventListener('touchend', function () { onPointerUp(); });
+    })();
+
+    // Adjust window open direction based on widget position
+    function updateWindowDirection(left, bottom) {
+      widget.classList.toggle('cf-right', left > window.innerWidth / 2);
+      widget.classList.toggle('cf-top',   bottom > window.innerHeight / 2);
     }
-  }
 
-  // Events
-  sendBtn.addEventListener('click', () => sendMessage(input.value));
-  input.addEventListener('keypress', e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage(input.value);
+    // ── Open / Close ─────────────────────────────────────────────
+    function openChat() {
+      isOpen = true;
+      window_.classList.add('cf-open');
+      window_.setAttribute('aria-hidden', 'false');
+      if (iconOpen)  iconOpen.style.display  = 'none';
+      if (iconClose) iconClose.style.display = '';
+      if (notifDot)  notifDot.style.display  = 'none';
+      if (input)     input.focus();
+      if (messages && messages.children.length === 0) addWelcomeMessage();
     }
-  });
 
-  chips.forEach(chip => {
-    chip.addEventListener('click', () => sendMessage(chip.dataset.msg));
-  });
-
-  toggle.addEventListener('click', () => {
-    isOpen = !isOpen;
-    windowEl.classList.toggle('cf-open', isOpen);
-    if (isOpen && messages.children.length === 0) {
-      addMessage("Hi! 👋 I'm <strong>Curva Support</strong>, your personal fitness expert at CurvaFit.<br><br>What can I help you with today?", 'ai');
+    function closeChat() {
+      isOpen = false;
+      window_.classList.remove('cf-open');
+      window_.setAttribute('aria-hidden', 'true');
+      if (iconOpen)  iconOpen.style.display  = '';
+      if (iconClose) iconClose.style.display = 'none';
     }
-  });
 
-  closeBtn.addEventListener('click', () => {
-    isOpen = false;
-    windowEl.classList.remove('cf-open');
-  });
+    if (closeBtn) closeBtn.addEventListener('click', closeChat);
 
-  console.log('✅ Curva Support AI Chatbot loaded successfully');
-});
+    // Show notification dot after 3 s if chat not yet opened
+    setTimeout(() => {
+      if (!isOpen && !notifShown && notifDot) {
+        notifDot.style.display = 'block';
+        notifShown = true;
+      }
+    }, 3000);
+
+    // ── Welcome message ──────────────────────────────────────────
+    function addWelcomeMessage() {
+      addMessage(
+        `Hi! 👋 I'm **Curva**, your personal CurvaFit coach.\n\nI can help you with:\n• 🔥 Fat-burning products\n• 👗 Apparel & activewear\n• 💪 Programs & pricing\n• 🎟️ Promo codes & discounts\n• 🚚 Delivery & colors\n\nWhat are you looking for today?`,
+        'ai'
+      );
+    }
+
+    // ── Markdown formatter ───────────────────────────────────────
+    function formatMarkdown(text) {
+      return text
+        // Remove any raw internal IDs that may slip through (safety net)
+        .replace(/\b(resistance-bands|yoga-mat|leggings|sports-bra|hydration-bottle|workout-towel|fitness-tracker|protein-shaker|dumbbell-set|jump-rope|foam-roller|yoga-blocks|ankle-weights|cooling-towel|massage-ball|gym-bag)\b/gi, '')
+        // Remove markdown links — the frontend renders product cards instead
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1')
+        // Remove bare .html paths
+        .replace(/\/products\/product\d+\.html/gi, '')
+        .replace(/\/[\w\-]+\.html/gi, '')
+        // Bold
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        // Italic
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        // Code
+        .replace(/`(.+?)`/g, '<code>$1</code>')
+        // Line breaks
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+    }
+
+    // ── Current time ─────────────────────────────────────────────
+    function getTime() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // ── Scroll to bottom ─────────────────────────────────────────
+    function scrollToBottom() {
+      if (messages) messages.scrollTo({ top: messages.scrollHeight, behavior: 'smooth' });
+    }
+
+    // ── Add message to UI ────────────────────────────────────────
+    // products: [{id, title, price, compare_price, url, image, colors, sizes}]
+    function addMessage(text, role, products) {
+      if (!messages) return;
+      const msgEl  = document.createElement('div');
+      msgEl.className = `cf-message cf-message--${role}`;
+
+      // Bubble
+      const bubble = document.createElement('div');
+      bubble.className = 'cf-msg-bubble';
+      bubble.innerHTML = formatMarkdown(text);
+      msgEl.appendChild(bubble);
+
+      // ── Product cards (AI only) ──────────────────────────────
+      if (role === 'ai' && Array.isArray(products) && products.length > 0) {
+        const cardsWrap = document.createElement('div');
+        cardsWrap.className = 'cf-product-cards';
+
+        products.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'cf-product-card';
+
+          // ── Color swatches with images ─────────────────────
+          let colorHTML = '';
+          if (p.colors && p.colors.length > 0) {
+            const colorItems = p.colors.slice(0, 5).map(c => `
+              <span
+                class="cf-color-swatch"
+                title="${c.name}"
+                style="background-color:${c.hex};"
+                data-img="${c.image}"
+                data-name="${c.name}"
+              ></span>
+            `).join('');
+            colorHTML = `<div class="cf-color-swatches">${colorItems}</div>`;
+          }
+
+          // ── Size pills ─────────────────────────────────────
+          let sizeHTML = '';
+          if (p.sizes && p.sizes.length > 0) {
+            const pills = p.sizes.slice(0, 6).map(s =>
+              `<span class="cf-size-pill">${s}</span>`
+            ).join('');
+            sizeHTML = `<div class="cf-size-pills">${pills}</div>`;
+          }
+
+          // ── Discount badge ─────────────────────────────────
+          let badgeHTML = '';
+          if (p.compare_price > p.price) {
+            const pct = Math.round(((p.compare_price - p.price) / p.compare_price) * 100);
+            badgeHTML = `<span class="cf-discount-badge">-${pct}%</span>`;
+          }
+
+          // ── Rating ─────────────────────────────────────────
+          let ratingHTML = '';
+          if (p.rating) {
+            const stars = '★'.repeat(Math.round(p.rating)) + '☆'.repeat(5 - Math.round(p.rating));
+            ratingHTML = `<span class="cf-product-rating" title="${p.rating}/5">${stars} <small>(${p.reviews_count || 0})</small></span>`;
+          }
+
+          // ── Product image (changes on color hover) ─────────
+          const mainImage = (p.colors && p.colors[0] && p.colors[0].image)
+            ? p.colors[0].image
+            : p.image;
+
+          // Build the card — URL goes ONLY into the button href
+          card.innerHTML = `
+            <div class="cf-product-card-img-wrap">
+              <img
+                class="cf-product-card-img"
+                src="${mainImage}"
+                alt="${p.title}"
+                loading="lazy"
+              >
+              ${badgeHTML}
+            </div>
+            <div class="cf-product-card-info">
+              <div class="cf-product-card-title">${p.title}</div>
+              ${ratingHTML}
+              <div class="cf-product-card-price">
+                <span class="cf-price-current">$${p.price.toFixed(2)}</span>
+                <span class="cf-price-compare">$${p.compare_price.toFixed(2)}</span>
+              </div>
+              ${colorHTML}
+              ${sizeHTML}
+            </div>
+            <a
+              href="${p.url}"
+              class="cf-product-card-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12H19M13 6L19 12L13 18"
+                      stroke="white" stroke-width="2.5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          `;
+
+          // ── Color swatch hover → change card image ─────────
+          card.querySelectorAll('.cf-color-swatch').forEach(swatch => {
+            const cardImg = card.querySelector('.cf-product-card-img');
+            swatch.addEventListener('mouseenter', () => {
+              const imgSrc = swatch.dataset.img;
+              if (imgSrc && cardImg) cardImg.src = imgSrc;
+            });
+            swatch.addEventListener('mouseleave', () => {
+              if (cardImg) cardImg.src = mainImage;
+            });
+            // Also accessible on click/tap
+            swatch.addEventListener('click', () => {
+              const imgSrc = swatch.dataset.img;
+              if (imgSrc && cardImg) cardImg.src = imgSrc;
+              card.querySelectorAll('.cf-color-swatch').forEach(s => s.classList.remove('active'));
+              swatch.classList.add('active');
+            });
+          });
+
+          cardsWrap.appendChild(card);
+        });
+
+        msgEl.appendChild(cardsWrap);
+      }
+
+      // Timestamp
+      const time = document.createElement('span');
+      time.className = 'cf-msg-time';
+      time.textContent = getTime();
+      msgEl.appendChild(time);
+
+      messages.appendChild(msgEl);
+      scrollToBottom();
+      return msgEl;
+    }
+
+    // ── Show / hide typing indicator ─────────────────────────────
+    function showTyping() {
+      if (typing) { typing.style.display = 'flex'; scrollToBottom(); }
+    }
+    function hideTyping() {
+      if (typing) typing.style.display = 'none';
+    }
+
+    // ── Send message to Netlify function ─────────────────────────
+    async function sendMessage(userText) {
+      if (!userText || !userText.trim() || isLoading) return;
+      const text = userText.trim();
+
+      // Hide chips after first user message
+      const chipsEl = document.getElementById('cf-quick-chips');
+      if (chipsEl) chipsEl.style.display = 'none';
+
+      // Show user bubble
+      addMessage(text, 'user');
+      conversationHistory.push({ role: 'user', content: text });
+
+      // Reset input
+      if (input)   { input.value = ''; input.style.height = 'auto'; }
+      if (sendBtn) sendBtn.disabled = true;
+      isLoading = true;
+
+      showTyping();
+
+      try {
+        const response = await fetch('/.netlify/functions/chat', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            message: text,
+            history: conversationHistory.slice(-8)
+          })
+        });
+
+        hideTyping();
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || `HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.error) throw new Error(data.error);
+
+        const aiReply  = data.reply    || "I'm not sure how to answer that — could you rephrase?";
+        const products = data.products || [];
+
+        addMessage(aiReply, 'ai', products);
+        conversationHistory.push({ role: 'assistant', content: aiReply });
+
+        // Keep history manageable
+        if (conversationHistory.length > 20) {
+          conversationHistory = conversationHistory.slice(-16);
+        }
+
+      } catch (err) {
+        hideTyping();
+        console.error('[Curva chat] Error:', err.message);
+        addMessage(
+          "Sorry, I'm having a little trouble right now 🙏 Please try again in a moment, or contact us directly at support@curvafit.com",
+          'ai'
+        );
+      } finally {
+        isLoading = false;
+        if (sendBtn && input) sendBtn.disabled = input.value.trim().length === 0;
+      }
+    }
+
+    // ── Input handlers ───────────────────────────────────────────
+    if (input) {
+      input.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        if (sendBtn) sendBtn.disabled = this.value.trim().length === 0;
+      });
+
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          if (sendBtn && !sendBtn.disabled) sendMessage(this.value);
+        }
+      });
+    }
+
+    if (sendBtn) {
+      sendBtn.addEventListener('click', () => {
+        if (input && !sendBtn.disabled) sendMessage(input.value);
+      });
+    }
+
+    // ── Quick chips ──────────────────────────────────────────────
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const msg = chip.dataset.msg;
+        if (msg) sendMessage(msg);
+      });
+    });
+
+    // ── Keyboard: Escape closes ──────────────────────────────────
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && isOpen) closeChat();
+    });
+
+    // ── Click outside widget closes ──────────────────────────────
+    document.addEventListener('click', e => {
+      if (isOpen && !widget.contains(e.target)) closeChat();
+    });
+
+    console.log('✅ Curva Support chatbot initialized');
+  })();
+}); // end DOMContentLoaded — chatbot
+
+

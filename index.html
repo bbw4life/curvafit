@@ -1253,13 +1253,15 @@
 
 
 
-<!-- ═══════════════════════════════════════════
-     CURVAFIT AI CHATBOT — Version corrigée
-═══════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════
+     CURVAFIT AI CHATBOT WIDGET
+     Paste this block just before </body> on every page
+     CSS is already in your style.css — no changes needed
+═══════════════════════════════════════════════════════ -->
 <div id="cf-chat-widget">
 
-  <!-- Bouton flottant -->
-  <button id="cf-chat-toggle" aria-label="Open CurvaFit AI Chat">
+  <!-- Floating toggle button -->
+  <button id="cf-chat-toggle" aria-label="Open Curva Support Chat">
     <div class="cf-toggle-inner">
       <span class="cf-toggle-icon cf-icon-open">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -1279,11 +1281,15 @@
     <span class="cf-notif-dot"></span>
   </button>
 
-  <!-- Fenêtre chat -->
+  <!-- Chat window -->
   <div id="cf-chat-window" class="cf-chat-window" aria-hidden="true">
+
+    <!-- Header -->
     <div class="cf-chat-header">
       <div class="cf-header-avatar">
-        <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065" alt="Curva Support">
+        <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065"
+             alt="Curva Support"
+             onerror="this.style.display='none'">
         <div class="cf-avatar-fallback">C</div>
         <span class="cf-online-dot"></span>
       </div>
@@ -1291,34 +1297,78 @@
         <h3>Curva <span class="cf-ai-badge">Support</span></h3>
         <p>CurvaFit Fitness Expert</p>
       </div>
-      <button class="cf-header-close" id="cf-close-btn">✕</button>
+      <button class="cf-header-close" id="cf-close-btn" aria-label="Close chat">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </button>
     </div>
 
+    <!-- Quick suggestion chips -->
     <div class="cf-quick-chips" id="cf-quick-chips">
-      <button class="cf-chip" data-msg="What's your best product for belly fat?">🔥 Belly fat</button>
-      <button class="cf-chip" data-msg="I need a sports bra for plus size">👕 Sports bra</button>
-      <button class="cf-chip" data-msg="What do you recommend for beginners?">🌱 Beginner</button>
-      <button class="cf-chip" data-msg="What are your cheapest products?">💰 Budget picks</button>
+      <button class="cf-chip" data-msg="What's your best product to burn belly fat?">
+        🔥 Belly fat
+      </button>
+      <button class="cf-chip" data-msg="I need a sports bra for plus size women">
+        👙 Sports bra
+      </button>
+      <button class="cf-chip" data-msg="What do you recommend for a complete beginner?">
+        🌱 Beginner
+      </button>
+      <button class="cf-chip" data-msg="What are your most affordable products under $20?">
+        💰 Budget picks
+      </button>
+      <button class="cf-chip" data-msg="Show me your workout programs and their prices">
+        💪 Programs
+      </button>
+      <button class="cf-chip" data-msg="Do you have any active discount codes right now?">
+        🎟️ Promo codes
+      </button>
+      <button class="cf-chip" data-msg="What colors and sizes are available for your leggings?">
+        🎨 Colors & sizes
+      </button>
+      <button class="cf-chip" data-msg="How long does delivery take?">
+        🚚 Delivery time
+      </button>
     </div>
 
-    <div class="cf-messages" id="cf-messages"></div>
+    <!-- Messages area -->
+    <div class="cf-messages" id="cf-messages" role="log" aria-live="polite">
+      <!-- Welcome message injected by JS -->
+    </div>
 
+    <!-- Typing indicator -->
     <div class="cf-typing" id="cf-typing" style="display:none">
-      <div class="cf-typing-bubble"><span></span><span></span><span></span></div>
+      <div class="cf-typing-bubble">
+        <span></span><span></span><span></span>
+      </div>
       <p>Curva is typing…</p>
     </div>
 
+    <!-- Input area -->
     <div class="cf-input-area">
       <div class="cf-input-wrapper">
-        <textarea id="cf-input" placeholder="Ask me anything about our products…" rows="1" maxlength="500"></textarea>
-        <button id="cf-send-btn" class="cf-send-btn" disabled>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <textarea
+          id="cf-input"
+          placeholder="Ask me anything about our products…"
+          rows="1"
+          maxlength="500"
+          aria-label="Chat message"
+        ></textarea>
+        <button id="cf-send-btn" class="cf-send-btn" aria-label="Send message" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13"
+                  stroke="white" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </button>
       </div>
-      <p class="cf-input-hint">Powered by CurvaFit AI • Press Enter to send</p>
+      <p class="cf-input-hint">Powered by CurvaFit AI · Press Enter to send</p>
     </div>
+
   </div>
 </div>
+<!-- END CURVAFIT AI CHATBOT WIDGET -->
 
 
 
