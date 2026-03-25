@@ -28,14 +28,9 @@ function buildProductIndex(rawData) {
   const settings  = rawData.find(p => p.type === 'settings') || {};
 
   const products = allActive.map((item, index) => {
-    // FIX 4 : images variantes par couleur
     const colorsWithImages = (item.colors || [])
       .filter(c => c.active !== false)
-      .map(c => ({
-        name:  c.name,
-        hex:   c.hex   || '',
-        image: c.image || item.image || ''
-      }));
+      .map(c => ({ name: c.name, hex: c.hex || '', image: c.image || item.image || '' }));
 
     const variantPrices = (item.variants || []).map(v => v.price).filter(Boolean);
     const minPrice = variantPrices.length ? Math.min(...variantPrices) : item.price;
@@ -69,15 +64,22 @@ function buildProductIndex(rawData) {
   return { products, settings };
 }
 
-/* ── INTENT DETECTION ── */
+/* ══════════════════════════════════════════════════════
+   SMART INTENT DETECTION
+   Returns: 'product' | 'general'
+   Only 'product' shows product cards in the frontend
+══════════════════════════════════════════════════════ */
 function detectIntent(message) {
   const q = message.toLowerCase();
 
+  // ── Explicit GENERAL patterns → never show products ──
   const generalPatterns = [
+    // Brand / founder / team
     /fondateur|founder|qui.+(fond|creat|créat)|paul|francenel/,
     /objectif|mission|but de curva|about curva|à propos/,
     /\bequipe\b|\bteam\b|\bstaff\b/,
     /c.est quoi curva|what is curva|what.s curva/,
+    // Health & science
     /cortisol|hormone|métabolis|metabolism|yo.yo|famine/,
     /pourquoi.+(prise|grossi|gain)|why.+(gain|weight gain)/,
     /comment.+(perdre|lose|maigrir)|how to lose|tips.+(lose|weight)/,
@@ -85,23 +87,31 @@ function detectIntent(message) {
     /sommeil|sleep.*weight|dormir/,
     /stress|anxiet|depress|mental|moral|confiance|confidence/,
     /plateau.+(normal|pourquoi|why)|normal.+plateau/,
+    // Programs (show info, not product cards)
     /programme?|program|plan.+coach|coaching|coach/,
     /beginner|débutant|intermédiaire|intermediate|maintenance/,
     /comment.+(fonctionne|work|works)|how.+(work|program)/,
     /s.inscrire|sign up|inscription/,
+    // Contact / human support
     /contact|joindre|reach|parler.+(humain|person|quelqu)/,
     /whatsapp|telegram|email.*support|mail.*support/,
     /support|aide.+(équipe|team)/,
+    // Nutrition (general advice, not product)
     /nutrition|manger|what to eat|quoi manger|food|aliment/,
     /calorie|deficit|protéine|protein|régime|diet/,
     /eau|water.*drink|hydrat/,
     /repas|meal.*plan|plan.*repas/,
+    // Results / timeline
     /résultat|result|combien.+temps|how long|semaine|week/,
     /visible.+(result|résultat)|quand.+voir/,
+    // Discount codes (just info, not shopping)
     /code.+promo|promo.+code|discount.+code|code.+réduction/,
+    // Delivery info general
     /livraison|shipping.+info|delivery.+time|délai/,
+    // Trust
     /fiable|reliable|trust|sûr|safe|médecin|doctor/,
     /pilule|pill|complément|supplement/,
+    // Greetings / small talk
     /^(bonjour|bonsoir|salut|hello|hi|hey|allo)\b/,
     /^(merci|thank|thanks|ok|okay|d.accord|super|parfait|génial|great)\b/,
   ];
@@ -110,6 +120,7 @@ function detectIntent(message) {
     if (pattern.test(q)) return 'general';
   }
 
+  // ── Explicit PRODUCT patterns → show product cards ──
   const productPatterns = [
     /acheter|buy|commander|order/,
     /produit|product|article/,
@@ -118,6 +129,7 @@ function detectIntent(message) {
     /montre.+(produit)|show.+(product|me)/,
     /meilleur.+(pour).+(ventre|belly|poids|weight|taille|waist)/,
     /best.+(for|pour).+(belly|ventre|weight|waist)/,
+    // Specific product categories
     /hula.?hoop|\bhoop\b/,
     /waist.?trainer|gainant/,
     /jump.?rope|corde.+sauter/,
@@ -134,8 +146,10 @@ function detectIntent(message) {
     /neck.?pillow|oreiller.+nuque/,
     /\bearbuds?\b|écouteur.+sport/,
     /tie.?dye/,
+    // Color/size shopping intent
     /quelle.+(couleur|taille).+disponible|available.+(color|size)/,
     /existe.+(couleur|taille)|come in.+(color|size)/,
+    // Price with shopping intent
     /\$\d+|under \$|moins de \$|budget.+(produit|product)/,
     /combien.+(coûte|cost).+(ce|this|le|la)/,
   ];
@@ -144,6 +158,7 @@ function detectIntent(message) {
     if (pattern.test(q)) return 'product';
   }
 
+  // Default: general (no products shown)
   return 'general';
 }
 
@@ -165,22 +180,22 @@ function searchProducts(query, products) {
     });
 
     const themes = [
-      { words: ['hula','hoop','belly','ventre'],                   id: 'resistance-bands', boost: 12 },
-      { words: ['waist trainer','gainant','waist cinch','corset'], id: 'yoga-mat',         boost: 12 },
-      { words: ['jump rope','corde','skip','sauter'],              id: 'leggings',         boost: 12 },
-      { words: ['legging','yoga pant','high waist','peach'],       id: 'sports-bra',       boost: 12 },
-      { words: ['jumpsuit','combinaison','pilates'],               id: 'hydration-bottle', boost: 12 },
-      { words: ['tie dye','seamless legging'],                     id: 'workout-towel',    boost: 12 },
-      { words: ['sport bra','bra','brassiere','soutien'],          id: 'fitness-tracker',  boost: 12 },
-      { words: ['knee','genoux','genouillère','pad'],              id: 'protein-shaker',   boost: 12 },
-      { words: ['posture','dos','back','corrector','correcteur'],  id: 'dumbbell-set',     boost: 12 },
-      { words: ['bracelet','tracker','heart rate','sleep'],        id: 'jump-rope',        boost: 12 },
-      { words: ['acupressure','stress mat','recovery','tapis'],    id: 'foam-roller',      boost: 12 },
-      { words: ['belly belt','ceinture ventre','cramp','chaleur'], id: 'yoga-blocks',      boost: 12 },
-      { words: ['bottle','water','gourde','bouteille'],            id: 'ankle-weights',    boost: 12 },
-      { words: ['shoe','chaussure','running','sneaker'],           id: 'cooling-towel',    boost: 12 },
-      { words: ['pillow','oreiller','neck','cervical','nuque'],    id: 'massage-ball',     boost: 12 },
-      { words: ['earbuds','headphone','music','écouteur'],         id: 'gym-bag',          boost: 12 },
+      { words: ['hula','hoop','belly','ventre'],                      id: 'resistance-bands',  boost: 12 },
+      { words: ['waist trainer','gainant','waist cinch','corset'],    id: 'yoga-mat',          boost: 12 },
+      { words: ['jump rope','corde','skip','sauter'],                 id: 'leggings',          boost: 12 },
+      { words: ['legging','yoga pant','high waist','peach'],          id: 'sports-bra',        boost: 12 },
+      { words: ['jumpsuit','combinaison','pilates'],                  id: 'hydration-bottle',  boost: 12 },
+      { words: ['tie dye','seamless legging'],                        id: 'workout-towel',     boost: 12 },
+      { words: ['sport bra','bra','brassiere','soutien'],             id: 'fitness-tracker',   boost: 12 },
+      { words: ['knee','genoux','genouillère','pad'],                 id: 'protein-shaker',    boost: 12 },
+      { words: ['posture','dos','back','corrector','correcteur'],     id: 'dumbbell-set',      boost: 12 },
+      { words: ['bracelet','tracker','heart rate','sleep','pouls'],   id: 'jump-rope',         boost: 12 },
+      { words: ['acupressure','stress mat','recovery','tapis'],       id: 'foam-roller',       boost: 12 },
+      { words: ['belly belt','ceinture ventre','cramp','chaleur'],    id: 'yoga-blocks',       boost: 12 },
+      { words: ['bottle','water','gourde','bouteille'],               id: 'ankle-weights',     boost: 12 },
+      { words: ['shoe','chaussure','running','sneaker'],              id: 'cooling-towel',     boost: 12 },
+      { words: ['pillow','oreiller','neck','cervical','nuque'],       id: 'massage-ball',      boost: 12 },
+      { words: ['earbuds','headphone','music','écouteur'],            id: 'gym-bag',           boost: 12 },
     ];
 
     themes.forEach(t => {
@@ -262,88 +277,106 @@ Use emojis naturally but do not overuse them.
 ═══════════════════════════════════════
 🚦 CRITICAL BEHAVIOR RULE
 ═══════════════════════════════════════
-NEVER suggest products for general questions.
-ONLY suggest products when user explicitly asks to buy or mentions a product type.
+You must analyze each question carefully.
 
-═══════════════════════════════════════
-✍️ FORMATTING — IMPORTANT
-═══════════════════════════════════════
-Always use **bold** (double asterisks) for:
-- Founder name: always **Paul Francenel**
-- All promo codes: **PAUL81**, **CURVA15**, **FITNESS25**, etc.
-- Product titles when mentioned in text
-- Key numbers: prices, percentages, weights
-- Important phrases: **Order now**, **Free shipping**, **Click below**
+NEVER suggest or display products for these types of questions:
+- Who is the founder / team / about the brand
+- What is the objective/mission of CurvaFit
+- Health questions, hormones, metabolism, cortisol
+- Nutrition advice, meal tips, calorie questions
+- Fitness tips and exercise advice
+- Results timeline, how long to see results
+- Programs and coaching plans info
+- Contact / human support requests
+- Discount codes (just list them, no product cards)
+- General motivation, confidence, body positivity
+- Greetings and small talk
 
-═══════════════════════════════════════
-🔗 LINKS — NEVER write raw URLs
-═══════════════════════════════════════
-NEVER write raw paths like /products/product1.html or index.html.
-When referencing a page, ALWAYS use this exact format:
-[BUTTON:Label:url]
-Examples:
-- [BUTTON:View this product:/products/product1.html]
-- [BUTTON:Our Programs:/programs.html]
-- [BUTTON:Contact us:/contact.html]
-- [BUTTON:Shop now:/shop.html]
+ONLY suggest products when the user:
+- Explicitly asks to buy or order something
+- Asks "which product should I get" / "what do you recommend"
+- Mentions a specific product type (hoop, leggings, bra, etc.)
+- Asks about colors, sizes, or prices of a specific item
+
+When in doubt → answer the question like a coach. No products.
 
 ═══════════════════════════════════════
 🏢 ABOUT CURVAFIT
 ═══════════════════════════════════════
-Founder: **Paul Francenel**, 25 years old, entrepreneur. Not a doctor.
+Founder: Paul Francenel, 25 years old, entrepreneur. Not a doctor.
 Works with certified health and fitness professionals.
-Goal: Help plus-size women transform their lives sustainably.
+Goal: Help plus-size women transform their lives in a healthy, sustainable, and enjoyable way.
 
-Science-based:
-- Safe weight loss: 0.5–1 kg/week
-- No pills, no crash diets
-- 100% at-home
-- Results visible in **4–6 weeks**
-- **70% success rate** when advice followed
+Science-based approach:
+- Safe weight loss: 0.5–1 kg per week (2–4 kg per month)
+- No pills, no crash diets, no extreme workouts
+- 100% at-home approach
+- Results visible in 4–6 weeks with real consistency
+- 70% success rate when advice is followed
 
 ═══════════════════════════════════════
 💪 PROGRAMS
 ═══════════════════════════════════════
 ${programsText}
 
-[BUTTON:See all programs:/programs.html]
+How it works:
+- Plans available at /programs.html
+- After purchase: email + password sent automatically
+- Access to partner professional platform
+- Can update personal info at any time
 
 ═══════════════════════════════════════
-🛍️ DISCOUNT CODES
+🛍️ PRODUCTS — RULES
 ═══════════════════════════════════════
+NEVER use internal IDs (resistance-bands, yoga-mat, leggings, etc.)
+ALWAYS use the exact product Title
+ALWAYS use exact prices — never guess
+NEVER invent products not in the catalog
+
+Discount codes:
 ${promosText}
 
 Free shipping over $${shipping.free_shipping_threshold || 120}
 
-═══════════════════════════════════════
-📦 PRODUCT CATALOG
-═══════════════════════════════════════
+PRODUCT CATALOG (use only for product questions):
 ${catalogText}
 
 ═══════════════════════════════════════
-🥗 NUTRITION
+🥗 NUTRITION (for advice questions)
 ═══════════════════════════════════════
-- Protein at every meal
-- Cut liquid sugars first
-- **2 liters** of water daily
-- Sleep **7–8 hours**
-- Target: **300–500 calorie** daily deficit
+- Protein at every meal (chicken, eggs, fish, legumes)
+- Cut liquid sugars (sodas, juices, sweetened coffee) first
+- 3 structured meals/day, limit uncontrolled snacking
+- 2 liters of water daily
+- Eat until 80% full — satiety signal takes 20 minutes
+- Target: 300–500 calorie daily deficit
+- Sleep 7–8 hours — critical for hunger hormones (ghrelin/leptin)
+- High cortisol from stress = more belly fat storage → manage stress
+
+═══════════════════════════════════════
+⚠️ HEALTH DISCLAIMER
+═══════════════════════════════════════
+CurvaFit is not a medical service.
+Always add when needed: "For any health concern, please consult a doctor."
 
 ═══════════════════════════════════════
 🤝 HUMAN SUPPORT
 ═══════════════════════════════════════
-If user wants human support:
-"Our team is here for you! 😊
-👉 **WhatsApp:** ${socials.whatsapp || 'available on contact page'}
-[BUTTON:Contact our team:/contact.html]"
+If user wants to speak to a human, is unhappy, or insists:
+"I understand 😊 Our team is here for you:
+👉 WhatsApp: ${socials.whatsapp || 'https://wa.me/contact'}
+👉 Contact page: /contact.html
+We'll be happy to help you personally!"
 
 ═══════════════════════════════════════
 🚫 NEVER
 ═══════════════════════════════════════
-- Write raw URLs like /products/product1.html
-- Use internal product IDs
+- Send internal product IDs to the user
 - Invent prices or data
-- Promise guaranteed results`;
+- Promise guaranteed results
+- Give advanced medical advice
+- Show products for non-product questions
+- Be robotic or use filler phrases`;
 }
 
 /* ── Main handler ── */
@@ -364,6 +397,7 @@ exports.handler = async (event, context) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message is required' }) };
     }
 
+    // ── Load dynamic data ──
     let products = [], settings = {};
     try {
       const rawData = await loadProductsData();
@@ -374,11 +408,15 @@ exports.handler = async (event, context) => {
       console.error('Could not load products.data.json:', err.message);
     }
 
+    // ── Detect intent ──
     const intent = detectIntent(message);
+
+    // ── Search products ONLY for product intent ──
     const relevantProducts = (intent === 'product')
       ? searchProducts(message, products)
       : [];
 
+    // ── Build prompt + call Groq ──
     const systemPrompt = buildSystemPrompt(products, settings);
 
     const groqMessages = [
@@ -410,7 +448,7 @@ exports.handler = async (event, context) => {
     const reply = data.choices?.[0]?.message?.content
       || "I'm sorry, I couldn't generate a response. Please try again. 🙏";
 
-    // FIX 4 : inclure images variantes par couleur
+    // ── Format product cards ──
     const productCards = relevantProducts.map(p => ({
       title:         p.title,
       description:   p.description,
@@ -418,11 +456,7 @@ exports.handler = async (event, context) => {
       compare_price: p.compare_price,
       url:           p.url,
       image:         p.image,
-      colors:        p.colors.map(c => ({
-        name:  c.name,
-        hex:   c.hex,
-        image: c.image  // image spécifique à la couleur
-      })),
+      colors:        p.colors.map(c => ({ name: c.name, hex: c.hex, image: c.image })),
       sizes:         p.sizes,
       delivery:      formatDelivery(p.startDate, p.endDate),
       rating:        p.rating,

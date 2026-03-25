@@ -3449,101 +3449,39 @@ function initStockBar(cjId) {
 
 /* ================================================================
    CURVAFIT AI CHATBOT — FRONTEND JS
-   6 FIXES CHIRURGICAUX
 ================================================================ */
 document.addEventListener('DOMContentLoaded', function () {
   (function () {
     'use strict';
 
-    var widget   = document.getElementById('cf-chat-widget');
-    var toggle   = document.getElementById('cf-chat-toggle');
-    var window_  = document.getElementById('cf-chat-window');
-    var messages = document.getElementById('cf-messages');
-    var input    = document.getElementById('cf-input');
-    var sendBtn  = document.getElementById('cf-send-btn');
-    var typing   = document.getElementById('cf-typing');
-    var closeBtn = document.getElementById('cf-close-btn');
-    var chips    = document.querySelectorAll('.cf-chip');
-    var iconOpen  = toggle ? toggle.querySelector('.cf-icon-open')  : null;
-    var iconClose = toggle ? toggle.querySelector('.cf-icon-close') : null;
-    var notifDot  = toggle ? toggle.querySelector('.cf-notif-dot')  : null;
+    /* ── DOM refs ── */
+    const widget   = document.getElementById('cf-chat-widget');
+    const toggle   = document.getElementById('cf-chat-toggle');
+    const window_  = document.getElementById('cf-chat-window');
+    const messages = document.getElementById('cf-messages');
+    const input    = document.getElementById('cf-input');
+    const sendBtn  = document.getElementById('cf-send-btn');
+    const typing   = document.getElementById('cf-typing');
+    const closeBtn = document.getElementById('cf-close-btn');
+    const chips    = document.querySelectorAll('.cf-chip');
+    const iconOpen  = toggle ? toggle.querySelector('.cf-icon-open')  : null;
+    const iconClose = toggle ? toggle.querySelector('.cf-icon-close') : null;
+    const notifDot  = toggle ? toggle.querySelector('.cf-notif-dot')  : null;
 
     if (!widget || !toggle || !window_ || !messages || !input || !sendBtn) return;
 
-    var isOpen  = false;
-    var isLoading = false;
-    var conversationHistory = [];
-    var notifShown = false;
+    /* ── State ── */
+    let isOpen  = false;
+    let isLoading = false;
+    let conversationHistory = [];
+    let notifShown = false;
 
     /* ══════════════════════════════════════
-       FIX 6 — PERSISTANCE localStorage
-    ══════════════════════════════════════ */
-    var CF_KEY_HISTORY  = 'cf_conv_history';
-    var CF_KEY_MESSAGES = 'cf_conv_messages';
-    var CF_KEY_OPEN     = 'cf_conv_open';
-    var CF_KEY_CHIPS    = 'cf_conv_chips';
-
-    function saveConversation() {
-      try {
-        localStorage.setItem(CF_KEY_HISTORY, JSON.stringify(conversationHistory));
-        localStorage.setItem(CF_KEY_MESSAGES, messages.innerHTML);
-        var chipsEl = document.getElementById('cf-quick-chips');
-        localStorage.setItem(CF_KEY_CHIPS, (chipsEl && chipsEl.style.display === 'none') ? '1' : '0');
-      } catch (e) {}
-    }
-
-    function loadConversation() {
-      try {
-        var savedHistory  = localStorage.getItem(CF_KEY_HISTORY);
-        var savedMessages = localStorage.getItem(CF_KEY_MESSAGES);
-        var chipsHidden   = localStorage.getItem(CF_KEY_CHIPS);
-        if (savedHistory && savedHistory !== '[]') {
-          conversationHistory = JSON.parse(savedHistory);
-        }
-        if (savedMessages && savedMessages.trim() !== '') {
-          messages.innerHTML = savedMessages;
-          reAttachCardEvents();
-        }
-        if (chipsHidden === '1') {
-          var chipsEl = document.getElementById('cf-quick-chips');
-          if (chipsEl) chipsEl.style.display = 'none';
-        }
-      } catch (e) {}
-    }
-
-    function reAttachCardEvents() {
-      messages.querySelectorAll('.cf-product-card').forEach(function(card) {
-        var url = card.dataset.productUrl;
-        if (!url) return;
-        var img = card.querySelector('.cf-pc-img');
-        if (img) {
-          img.style.cursor = 'pointer';
-          img.addEventListener('click', function() { window.location.href = url; });
-        }
-        var swatches   = card.querySelectorAll('.cf-pc-swatch');
-        var colorLabel = card.querySelector('.cf-pc-color-label');
-        var mainImg    = card.querySelector('.cf-pc-img');
-        swatches.forEach(function(sw) {
-          var activate = function() {
-            swatches.forEach(function(s) { s.classList.remove('cf-pc-swatch--active'); });
-            sw.classList.add('cf-pc-swatch--active');
-            if (colorLabel) colorLabel.textContent = sw.dataset.name;
-            if (mainImg && sw.dataset.img && sw.dataset.img.trim() !== '') {
-              mainImg.src = sw.dataset.img;
-            }
-          };
-          sw.addEventListener('mouseenter', activate);
-          sw.addEventListener('click', activate);
-        });
-      });
-    }
-
-    /* ══════════════════════════════════════
-       DRAGGABLE WIDGET (inchangé)
+       DRAGGABLE WIDGET
     ══════════════════════════════════════ */
     (function initDrag() {
-      var isDragging = false;
-      var startX, startY, origLeft, origBottom, hasMoved;
+      let isDragging = false;
+      let startX, startY, origLeft, origBottom, hasMoved;
 
       function onDown(e) {
         if (
@@ -3559,7 +3497,7 @@ document.addEventListener('DOMContentLoaded', function () {
         startX     = e.clientX;
         startY     = e.clientY;
 
-        var rect = widget.getBoundingClientRect();
+        const rect = widget.getBoundingClientRect();
         origLeft   = rect.left;
         origBottom = window.innerHeight - rect.bottom;
 
@@ -3573,14 +3511,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
       function onMove(e) {
         if (!isDragging) return;
-        var dx = e.clientX - startX;
-        var dy = e.clientY - startY;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
         if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
 
-        var bW = toggle.offsetWidth;
-        var bH = toggle.offsetHeight;
-        var nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft   + dx));
-        var nb = Math.max(8, Math.min(window.innerHeight - bH - 8, origBottom - dy));
+        const bW = toggle.offsetWidth;
+        const bH = toggle.offsetHeight;
+        let nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft   + dx));
+        let nb = Math.max(8, Math.min(window.innerHeight - bH - 8, origBottom - dy));
 
         widget.style.left   = nl + 'px';
         widget.style.bottom = nb + 'px';
@@ -3598,12 +3536,12 @@ document.addEventListener('DOMContentLoaded', function () {
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);
 
-      toggle.addEventListener('touchstart', function(e) {
-        var t = e.touches[0];
-        onDown({ clientX: t.clientX, clientY: t.clientY, target: e.target, preventDefault: function() { e.preventDefault(); } });
+      toggle.addEventListener('touchstart', e => {
+        const t = e.touches[0];
+        onDown({ clientX: t.clientX, clientY: t.clientY, target: e.target, preventDefault: () => e.preventDefault() });
       }, { passive: false });
 
-      document.addEventListener('touchmove', function(e) {
+      document.addEventListener('touchmove', e => {
         if (!isDragging) return;
         onMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
         e.preventDefault();
@@ -3627,8 +3565,6 @@ document.addEventListener('DOMContentLoaded', function () {
       if (notifDot)  notifDot.style.display  = 'none';
       input.focus();
       if (messages.children.length === 0) addWelcomeMessage();
-      try { localStorage.setItem(CF_KEY_OPEN, '1'); } catch(e) {}
-      scrollToBottom();
     }
 
     function closeChat() {
@@ -3637,70 +3573,48 @@ document.addEventListener('DOMContentLoaded', function () {
       window_.setAttribute('aria-hidden', 'true');
       if (iconOpen)  iconOpen.style.display  = '';
       if (iconClose) iconClose.style.display = 'none';
-      try { localStorage.setItem(CF_KEY_OPEN, '0'); } catch(e) {}
     }
 
     if (closeBtn) closeBtn.addEventListener('click', closeChat);
 
-    setTimeout(function() {
+    /* Notif dot after 3s */
+    setTimeout(() => {
       if (!isOpen && !notifShown && notifDot) {
         notifDot.style.display = 'block';
         notifShown = true;
       }
     }, 3000);
 
-    /* ── Welcome (anglais, inchangé) ── */
+    /* ── Welcome ── */
     function addWelcomeMessage() {
       addMessage(
-        "Hi! 👋 I'm **Curva**, your personal CurvaFit coach!\n\nI'm here to help you with:\n- 🔥 Weight loss tips & advice\n- 🥗 Nutrition guidance\n- 💪 Product recommendations\n- 📋 Programs & coaching plans\n\nWhat can I help you with today? 😊",
+        `Hi! 👋 I'm **Curva**, your personal CurvaFit coach!\n\nI'm here to help you with:\n- 🔥 Weight loss tips & advice\n- 🥗 Nutrition guidance\n- 💪 Product recommendations\n- 📋 Programs & coaching plans\n\nWhat can I help you with today? 😊`,
         'ai',
         []
       );
     }
 
-    /* ══════════════════════════════════════
-       FIX 5 — FORMAT MARKDOWN
-       FIX 3 — [BUTTON:label:url] → boutons
-    ══════════════════════════════════════ */
+    /* ── Format Markdown ── */
     function formatMarkdown(text) {
-      var internalIds = [
+      // Strip internal IDs that might slip through
+      const internalIds = [
         'resistance-bands','yoga-mat','leggings','sports-bra',
         'hydration-bottle','workout-towel','fitness-tracker','protein-shaker',
         'dumbbell-set','jump-rope','foam-roller','yoga-blocks',
         'ankle-weights','cooling-towel','massage-ball','gym-bag'
       ];
-      var out = text;
-      internalIds.forEach(function(id) {
+      let out = text;
+      internalIds.forEach(id => {
         out = out.replace(new RegExp('\\b' + id + '\\b', 'gi'), '');
       });
 
-      // FIX 3 : [BUTTON:label:url] → bouton HTML cliquable
-      out = out.replace(/\[BUTTON:([^\]:]+):([^\]]+)\]/g, function(_, label, url) {
-        return '<a href="' + url.trim() + '" class="cf-inline-btn" target="_self">' +
-          '<span>' + label.trim() + '</span>' +
-          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none">' +
-          '<path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>' +
-          '</svg></a>';
-      });
-
-      // Supprimer liens Markdown [texte](url) → texte en gras seulement
-      out = out.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<strong>$1</strong>');
-
-      // FIX 5 : codes promo en gras (ex: PAUL81, CURVA15)
-      out = out.replace(/\b([A-Z]{2,}[0-9]{1,3})\b/g, '<strong class="cf-promo-code">$1</strong>');
-
-      // FIX 3 : masquer les paths HTML bruts résiduels (/xxx.html)
-      out = out.replace(/(?<!["\(='])(\/[a-z][a-z0-9\-_/]*\.html)/gi, '<span style="display:none"></span>');
-
-      // Markdown standard
-      out = out
+      return out
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<strong>$1</strong>') // remove markdown links
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.+?)\*/g,     '<em>$1</em>')
         .replace(/`(.+?)`/g,       '<code>$1</code>')
         .replace(/\n\n/g, '<br><br>')
         .replace(/\n/g,   '<br>');
-
-      return out;
     }
 
     function getTime() {
@@ -3708,102 +3622,110 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ══════════════════════════════════════
-       ADD MESSAGE — FIX 1,2,4
+       ADD MESSAGE — with responsive cards
     ══════════════════════════════════════ */
     function addMessage(text, role, products) {
-      var msgEl = document.createElement('div');
-      msgEl.className = 'cf-message cf-message--' + role;
+      const msgEl  = document.createElement('div');
+      msgEl.className = `cf-message cf-message--${role}`;
 
-      var bubble = document.createElement('div');
+      /* Text bubble */
+      const bubble = document.createElement('div');
       bubble.className = 'cf-msg-bubble';
       bubble.innerHTML = formatMarkdown(text);
       msgEl.appendChild(bubble);
 
+      /* Product cards — only if products array has items */
       if (role === 'ai' && Array.isArray(products) && products.length > 0) {
-        var cardsWrap = document.createElement('div');
+        const cardsWrap = document.createElement('div');
         cardsWrap.className = 'cf-product-cards';
 
-        products.forEach(function(p) {
-          var card = document.createElement('div');
+        products.forEach(p => {
+          const card = document.createElement('div');
           card.className = 'cf-product-card';
-          card.dataset.productUrl = p.url;
 
-          // FIX 1 : image sans espace blanc
-          var imgHTML = '';
+          /* ── Product image ── */
+          let imgHTML = '';
           if (p.image) {
-            imgHTML = '<div class="cf-pc-img-wrap">' +
-              '<img class="cf-pc-img" src="' + p.image + '" alt="' + p.title + '" loading="lazy"' +
-              ' onerror="this.parentElement.style.display=\'none\'">' +
-              '</div>';
+            imgHTML = `
+              <div class="cf-pc-img-wrap">
+                <img class="cf-pc-img" src="${p.image}" alt="${p.title}" loading="lazy"
+                     onerror="this.parentElement.style.display='none'">
+              </div>`;
           }
 
-          var ratingHTML = p.rating ? '<div class="cf-pc-rating">⭐ ' + p.rating + '/5</div>' : '';
+          /* ── Rating ── */
+          const ratingHTML = p.rating
+            ? `<div class="cf-pc-rating">⭐ ${p.rating}/5</div>`
+            : '';
 
-          var priceHTML = '<div class="cf-pc-price">' +
-            '<span class="cf-pc-price-current">$' + Number(p.price).toFixed(2) + '</span>' +
-            '<span class="cf-pc-price-compare">$' + Number(p.compare_price).toFixed(2) + '</span>' +
-            '</div>';
+          /* ── Price ── */
+          const priceHTML = `
+            <div class="cf-pc-price">
+              <span class="cf-pc-price-current">$${Number(p.price).toFixed(2)}</span>
+              <span class="cf-pc-price-compare">$${Number(p.compare_price).toFixed(2)}</span>
+            </div>`;
 
-          // FIX 4 : swatches avec data-img pour image variante
-          var colorsHTML = '';
+          /* ── Colors ── */
+          let colorsHTML = '';
           if (p.colors && p.colors.length > 0) {
-            var swatchesHTML = p.colors.slice(0, 6).map(function(c) {
-              return '<span class="cf-pc-swatch"' +
-                ' title="' + c.name + '"' +
-                ' style="background:' + (c.hex || '#ccc') + '"' +
-                ' data-img="' + (c.image || '') + '"' +
-                ' data-name="' + c.name + '"></span>';
-            }).join('');
-            var moreHTML = p.colors.length > 6
-              ? '<span class="cf-pc-swatch-more">+' + (p.colors.length - 6) + '</span>' : '';
-            colorsHTML = '<div class="cf-pc-colors">' + swatchesHTML + moreHTML + '</div>' +
-                         '<div class="cf-pc-color-label"></div>';
+            const swatchesHTML = p.colors.slice(0, 6).map(c => `
+              <span
+                class="cf-pc-swatch"
+                title="${c.name}"
+                style="background:${c.hex || '#ccc'}"
+                data-img="${c.image || ''}"
+                data-name="${c.name}"
+              ></span>`).join('');
+            const moreHTML = p.colors.length > 6
+              ? `<span class="cf-pc-swatch-more">+${p.colors.length - 6}</span>` : '';
+            colorsHTML = `
+              <div class="cf-pc-colors">${swatchesHTML}${moreHTML}</div>
+              <div class="cf-pc-color-label"></div>`;
           }
 
-          var sizesHTML = (p.sizes && p.sizes.length > 0)
-            ? '<div class="cf-pc-sizes"><strong>Sizes:</strong> ' + p.sizes.join(' · ') + '</div>' : '';
+          /* ── Sizes ── */
+          const sizesHTML = (p.sizes && p.sizes.length > 0)
+            ? `<div class="cf-pc-sizes"><strong>Sizes:</strong> ${p.sizes.join(' · ')}</div>` : '';
 
-          var deliveryHTML = p.delivery
-            ? '<div class="cf-pc-delivery">🚚 ' + p.delivery + '</div>' : '';
+          /* ── Delivery ── */
+          const deliveryHTML = (p.delivery)
+            ? `<div class="cf-pc-delivery">🚚 ${p.delivery}</div>` : '';
 
-          // FIX 2 : bouton View Product
-          var ctaHTML = '<a href="' + p.url + '" class="cf-pc-btn" onclick="event.stopPropagation()">' +
-            '<span>View Product</span>' +
-            '<svg width="11" height="11" viewBox="0 0 24 24" fill="none">' +
-            '<path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>' +
-            '</svg></a>';
+          /* ── CTA button ── */
+          const ctaHTML = `
+            <a href="${p.url}" class="cf-pc-btn" onclick="event.stopPropagation()">
+              View Product
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </a>`;
 
-          card.innerHTML = imgHTML +
-            '<div class="cf-pc-info">' +
-              '<div class="cf-pc-title">' + p.title + '</div>' +
-              ratingHTML + priceHTML + colorsHTML + sizesHTML + deliveryHTML + ctaHTML +
-            '</div>';
+          card.innerHTML = `
+            ${imgHTML}
+            <div class="cf-pc-info">
+              <div class="cf-pc-title">${p.title}</div>
+              ${ratingHTML}
+              ${priceHTML}
+              ${colorsHTML}
+              ${sizesHTML}
+              ${deliveryHTML}
+              ${ctaHTML}
+            </div>`;
 
-          // FIX 2 : image cliquable
-          var mainImg = card.querySelector('.cf-pc-img');
-          if (mainImg) {
-            mainImg.style.cursor = 'pointer';
-            (function(u, im) {
-              im.addEventListener('click', function() { window.location.href = u; });
-            })(p.url, mainImg);
-          }
+          /* ── Swatch interaction ── */
+          const swatches  = card.querySelectorAll('.cf-pc-swatch');
+          const colorLabel = card.querySelector('.cf-pc-color-label');
+          const mainImg    = card.querySelector('.cf-pc-img');
 
-          // FIX 4 : swatch → change image variante
-          var swatches   = card.querySelectorAll('.cf-pc-swatch');
-          var colorLabel = card.querySelector('.cf-pc-color-label');
-          var imgRef     = card.querySelector('.cf-pc-img');
-
-          swatches.forEach(function(sw) {
-            var activate = function() {
-              swatches.forEach(function(s) { s.classList.remove('cf-pc-swatch--active'); });
+          swatches.forEach(sw => {
+            const activate = () => {
+              swatches.forEach(s => s.classList.remove('cf-pc-swatch--active'));
               sw.classList.add('cf-pc-swatch--active');
               if (colorLabel) colorLabel.textContent = sw.dataset.name;
-              if (imgRef && sw.dataset.img && sw.dataset.img.trim() !== '') {
-                imgRef.src = sw.dataset.img;
-              }
+              if (mainImg && sw.dataset.img) mainImg.src = sw.dataset.img;
             };
             sw.addEventListener('mouseenter', activate);
-            sw.addEventListener('click', activate);
+            sw.addEventListener('click',      activate);
           });
 
           cardsWrap.appendChild(card);
@@ -3812,14 +3734,14 @@ document.addEventListener('DOMContentLoaded', function () {
         msgEl.appendChild(cardsWrap);
       }
 
-      var time = document.createElement('span');
-      time.className   = 'cf-msg-time';
+      /* Timestamp */
+      const time = document.createElement('span');
+      time.className  = 'cf-msg-time';
       time.textContent = getTime();
       msgEl.appendChild(time);
 
       messages.appendChild(msgEl);
       scrollToBottom();
-      saveConversation(); // FIX 6
     }
 
     function addErrorMessage() {
@@ -3839,23 +3761,24 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ── Send message ── */
     async function sendMessage(userText) {
       if (!userText || !userText.trim() || isLoading) return;
-      var text = userText.trim();
+      const text = userText.trim();
 
-      var chipsEl = document.getElementById('cf-quick-chips');
+      /* Hide chips */
+      const chipsEl = document.getElementById('cf-quick-chips');
       if (chipsEl) chipsEl.style.display = 'none';
 
       addMessage(text, 'user', []);
       conversationHistory.push({ role: 'user', content: text });
 
-      input.value = '';
+      input.value      = '';
       input.style.height = 'auto';
       sendBtn.disabled = true;
-      isLoading = true;
+      isLoading        = true;
 
       showTyping();
 
       try {
-        var response = await fetch('/.netlify/functions/chat', {
+        const response = await fetch('/.netlify/functions/chat', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify({
@@ -3865,13 +3788,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         hideTyping();
-        if (!response.ok) throw new Error('HTTP ' + response.status);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        var data = await response.json();
+        const data = await response.json();
         if (data.error) throw new Error(data.error);
 
-        var aiReply  = data.reply    || "I'm not sure how to answer that. Could you rephrase? 😊";
-        var products = data.products || [];
+        const aiReply  = data.reply    || "I'm not sure how to answer that. Could you rephrase? 😊";
+        const products = data.products || [];   // empty for general questions
 
         addMessage(aiReply, 'ai', products);
         conversationHistory.push({ role: 'assistant', content: aiReply });
@@ -3885,31 +3808,33 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Chat error:', err);
         addErrorMessage();
       } finally {
-        isLoading = false;
+        isLoading        = false;
         sendBtn.disabled = input.value.trim().length === 0;
       }
     }
 
-    input.addEventListener('input', function() {
+    /* ── Input handlers ── */
+    input.addEventListener('input', function () {
       this.style.height = 'auto';
       this.style.height = Math.min(this.scrollHeight, 100) + 'px';
       sendBtn.disabled  = this.value.trim().length === 0;
     });
 
-    input.addEventListener('keydown', function(e) {
+    input.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         if (!sendBtn.disabled) sendMessage(this.value);
       }
     });
 
-    sendBtn.addEventListener('click', function() {
+    sendBtn.addEventListener('click', () => {
       if (!sendBtn.disabled) sendMessage(input.value);
     });
 
-    chips.forEach(function(chip) {
-      chip.addEventListener('click', function() {
-        var msg = chip.dataset.msg;
+    /* ── Quick chips ── */
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const msg = chip.dataset.msg;
         if (msg) {
           input.value      = msg;
           sendBtn.disabled = false;
@@ -3918,24 +3843,15 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
 
-    document.addEventListener('keydown', function(e) {
+    /* ── Keyboard & outside click ── */
+    document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && isOpen) closeChat();
     });
 
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', e => {
       if (isOpen && !widget.contains(e.target)) closeChat();
     });
 
-    /* FIX 6 : Charger conversation + ré-ouvrir si nécessaire */
-    loadConversation();
-    var wasOpen = localStorage.getItem(CF_KEY_OPEN);
-    if (wasOpen === '1') {
-      openChat();
-    }
-
-    console.log('✅ CurvaFit Chatbot ready');
+    console.log('✅ CurvaFit Chatbot (Curva Support) ready');
   })();
-});
-
-
-
+}); // end DOMContentLoaded
