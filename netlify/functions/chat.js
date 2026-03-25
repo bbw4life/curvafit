@@ -1,220 +1,271 @@
+// ═══════════════════════════════════════════════════════════════
+//  CURVAFIT — Netlify Function: chat.js
+//  Lit toutes les données depuis data.json (produits, programmes,
+//  promos, settings) et les transmet dynamiquement à l'API Groq.
+// ═══════════════════════════════════════════════════════════════
+
 const fetch = require('node-fetch');
+const path  = require('path');
+const fs    = require('fs');
 
-const PRODUCTS_DATA = [
-  {
-    id: "resistance-bands",
-    title: "Smart Hula Hoop — Waist Burner",
-    description: "Burns belly fat while you watch TV. The magnetic design stays on your waist automatically — adjustable from 18 to 24 sections to fit every size.",
-    price: 79.99,
-    compare_price: 148.99,
-    colors: ["Blue", "Purple", "Pink"],
-    sizes: ["18 sections", "21 sections", "24 sections"],
-    url: "/products/product1.html"
-  },
-  {
-    id: "yoga-mat",
-    title: "Plus Size Waist Trainer — S to 6XL",
-    description: "High-compression waist cincher with zipper closure that supports your core during workouts. Improves posture, reduces waist size visually — from S to 6XL.",
-    price: 34.99,
-    compare_price: 54.99,
-    colors: ["Fuchsia", "Black"],
-    sizes: ["S","M","L","XL","XXL","XXXL","4XL","5XL","6XL"],
-    url: "/products/product2.html"
-  },
-  {
-    id: "leggings",
-    title: "Smart Jump Rope — LCD Counter",
-    description: "Count every jump automatically. Burns 200+ calories in 20 minutes — no gym needed. The LCD display tracks your daily cardio progress.",
-    price: 17.99,
-    compare_price: 29.99,
-    colors: ["Pink", "Black", "Blue"],
-    sizes: [],
-    url: "/products/product3.html"
-  },
-  {
-    id: "sports-bra",
-    title: "High Waist Yoga Pants — Peach Lift",
-    description: "Buttery-soft seamless pants that lift and shape your peach. High waist stays put during squats and floor exercises — 10 stunning colors from S to XL.",
-    price: 16.99,
-    compare_price: 28.99,
-    colors: ["Army Green","Dark Blue","Wine Red","Khaki","Light Gray","Plain Black"],
-    sizes: ["S","M","L","XL"],
-    url: "/products/product4.html"
-  },
-  {
-    id: "hydration-bottle",
-    title: "Half-Zip Yoga Jumpsuit — Slim Fit",
-    description: "All-in-one yoga jumpsuit with bare-skin feel fabric and high elasticity. Perfect for home yoga, pilates and stretching sessions.",
-    price: 34.99,
-    compare_price: 54.99,
-    colors: ["Dark Red","Black","Navy Blue","Chestnut","White Gray"],
-    sizes: ["S","M","L","XL"],
-    url: "/products/product5.html"
-  },
-  {
-    id: "workout-towel",
-    title: "Seamless Tie Dye Leggings — High Waist",
-    description: "Ultra-stretchy seamless leggings that sculpt your curves and stay in place. Perfect for yoga, walks, and home workouts.",
-    price: 22.99,
-    compare_price: 38.99,
-    colors: ["Yellow","Pink","Blue","Black"],
-    sizes: ["S","M","L"],
-    url: "/products/product6.html"
-  },
-  {
-    id: "fitness-tracker",
-    title: "Shock-Absorbing Sports Bra — S to 5XL",
-    description: "High-impact support bra built for curvy women. Wide straps, moisture-wicking fabric — from morning walks to intense home workouts.",
-    price: 24.99,
-    compare_price: 44.99,
-    colors: ["Dream Sky Blue","Purple Verbenaceae","Brick Red","Khaki","Black"],
-    sizes: ["S","M","L","XL","XXL","3XL","4XL","5XL"],
-    url: "/products/product7.html"
-  },
-  {
-    id: "protein-shaker",
-    title: "Anti-Shock Knee Support Pads",
-    description: "Protect your knees during home workouts, walks, and floor exercises. Anti-collision design absorbs impact and reduces joint pain.",
-    price: 14.99,
-    compare_price: 24.99,
-    colors: ["Grey","Navy Blue","Black"],
-    sizes: ["M","L","XL"],
-    url: "/products/product8.html"
-  },
-  {
-    id: "dumbbell-set",
-    title: "Invisible Posture Corrector — S to XXL",
-    description: "Straighten your posture effortlessly and reduce back pain. Lightweight and invisible under clothes — available from S to XXL.",
-    price: 14.99,
-    compare_price: 24.99,
-    colors: ["Pink","Black","Nude"],
-    sizes: ["S","M","L","XL","XXL"],
-    url: "/products/product9.html"
-  },
-  {
-    id: "jump-rope",
-    title: "C6S Smart Bracelet — Heart Rate & Sleep",
-    description: "Track heart rate, blood oxygen, steps and sleep quality in real time. Know exactly how your body responds to your workouts.",
-    price: 32.99,
-    compare_price: 54.99,
-    colors: ["Purple","Red","Pink","White","Black","Blue"],
-    sizes: [],
-    url: "/products/product10.html"
-  },
-  {
-    id: "foam-roller",
-    title: "Acupressure Mat — Stress & Recovery",
-    description: "Lie down 20 minutes and feel the tension dissolve. Reduces cortisol, eases sore muscles and improves your sleep after every workout.",
-    price: 22.99,
-    compare_price: 39.99,
-    colors: ["Black","Light Green","Purple","Blue"],
-    sizes: [],
-    url: "/products/product11.html"
-  },
-  {
-    id: "yoga-blocks",
-    title: "Warm Belly Belt — Cramp Relief",
-    description: "Gentle heat therapy for your belly and lower back. Relieves cramps, cold tension and post-workout soreness — wear it discreetly under your clothes.",
-    price: 25.99,
-    compare_price: 42.99,
-    colors: ["Pink","White"],
-    sizes: [],
-    url: "/products/product12.html"
-  },
-  {
-    id: "ankle-weights",
-    title: "Sports Water Bottle 650ml — Spray Cap",
-    description: "Stay hydrated and curb false hunger. This 650ml spray bottle supports metabolism and reduces cravings naturally.",
-    price: 9.99,
-    compare_price: 17.99,
-    colors: ["Gray","Green","Orange","Pink","Blue"],
-    sizes: [],
-    url: "/products/product13.html"
-  },
-  {
-    id: "cooling-towel",
-    title: "Lightweight Running Shoes — EU 39-44",
-    description: "Ultra-light mesh sneakers with soft soles that protect your joints. Breathable and comfortable — designed for women building their daily movement habit.",
-    price: 22.99,
-    compare_price: 39.99,
-    colors: ["Grey","Black"],
-    sizes: ["39","40","41","42","43","44"],
-    url: "/products/product14.html"
-  },
-  {
-    id: "massage-ball",
-    title: "Water Cube Neck Pillow — SPA Support",
-    description: "Washable water-filled pillow that contours perfectly to your neck. Relieves cervical tension after long sitting sessions and improves deep sleep.",
-    price: 14.99,
-    compare_price: 24.99,
-    colors: ["Purple White","Yellow White","Blue White","Pink White","White"],
-    sizes: ["800g","850g","900g","1000g"],
-    url: "/products/product15.html"
-  },
-  {
-    id: "gym-bag",
-    title: "Wireless Sport Earbuds — Noise Cancelling",
-    description: "Block distractions and stay in the zone. Noise-cancelling wireless earbuds make every walk and workout more enjoyable.",
-    price: 22.99,
-    compare_price: 39.99,
-    colors: ["Dark Green","Rose Gold","White","Royal Blue","Black"],
-    sizes: [],
-    url: "/products/product16.html"
-  }
-];
+// ── Chargement dynamique de data.json ──────────────────────────
+// Le fichier est lu à chaque appel pour garantir les dernières
+// données après chaque redéploiement.
+function loadData() {
+  const dataPath = path.join(__dirname, '..', 'data.json');
+  const raw = fs.readFileSync(dataPath, 'utf-8');
+  return JSON.parse(raw);
+}
 
-function searchProducts(query) {
-  if (!query) return [];
-  const q = query.toLowerCase();
-  const keywords = q.split(/\s+/);
-  
-  const scored = PRODUCTS_DATA.map(p => {
+// ── Extraction des entités depuis data.json ────────────────────
+function parseData(allData) {
+  const settings = allData.find(item => item.type === 'settings') || {};
+  const products  = allData.filter(item => item.type !== 'settings' && item.active !== false);
+  return { settings, products };
+}
+
+// ── Construction de l'URL produit ─────────────────────────────
+function buildProductUrl(productId) {
+  return `/products/${productId}.html`;
+}
+
+// ── Recherche de produits pertinents ──────────────────────────
+function searchProducts(query, products) {
+  if (!query || products.length === 0) return [];
+
+  const q        = query.toLowerCase();
+  const keywords = q.split(/\s+/).filter(k => k.length >= 3);
+
+  const scored = products.map(p => {
     let score = 0;
-    const searchText = `${p.title} ${p.description} ${p.id}`.toLowerCase();
-    
+
+    const searchText = [
+      p.title        || '',
+      p.description  || '',
+      p.id           || '',
+      (p.colors || []).map(c => c.name).join(' '),
+      (p.sizes  || []).join(' ')
+    ].join(' ').toLowerCase();
+
     keywords.forEach(kw => {
-      if (kw.length < 3) return;
       if (searchText.includes(kw)) score += 3;
-      if (p.title.toLowerCase().includes(kw)) score += 2;
+      if ((p.title || '').toLowerCase().includes(kw)) score += 2;
     });
-    
-    // Thematic matching
-    if ((q.includes('hula') || q.includes('hoop') || q.includes('belly') || q.includes('ventre')) && p.id === 'resistance-bands') score += 10;
-    if ((q.includes('waist') || q.includes('taille') || q.includes('trainer') || q.includes('gainant')) && p.id === 'yoga-mat') score += 10;
-    if ((q.includes('jump') || q.includes('rope') || q.includes('corde') || q.includes('cardio')) && p.id === 'leggings') score += 10;
-    if ((q.includes('legging') || q.includes('pants') || q.includes('yoga') || q.includes('pantalon')) && p.id === 'sports-bra') score += 10;
-    if ((q.includes('jumpsuit') || q.includes('combinaison') || q.includes('pilates')) && p.id === 'hydration-bottle') score += 10;
-    if ((q.includes('sport bra') || q.includes('bra') || q.includes('brassiere') || q.includes('soutien')) && p.id === 'fitness-tracker') score += 10;
-    if ((q.includes('knee') || q.includes('genoux') || q.includes('protection')) && p.id === 'protein-shaker') score += 10;
-    if ((q.includes('posture') || q.includes('dos') || q.includes('back') || q.includes('corrector')) && p.id === 'dumbbell-set') score += 10;
-    if ((q.includes('bracelet') || q.includes('tracker') || q.includes('heart') || q.includes('sleep') || q.includes('sommeil')) && p.id === 'jump-rope') score += 10;
-    if ((q.includes('acupressure') || q.includes('mat') || q.includes('stress') || q.includes('recovery') || q.includes('recuperation')) && p.id === 'foam-roller') score += 10;
-    if ((q.includes('belly') || q.includes('cramp') || q.includes('chaleur') || q.includes('heat') || q.includes('belt')) && p.id === 'yoga-blocks') score += 10;
-    if ((q.includes('bottle') || q.includes('water') || q.includes('eau') || q.includes('hydrat')) && p.id === 'ankle-weights') score += 10;
-    if ((q.includes('shoe') || q.includes('chaussure') || q.includes('running') || q.includes('sneaker')) && p.id === 'cooling-towel') score += 10;
-    if ((q.includes('pillow') || q.includes('oreiller') || q.includes('neck') || q.includes('cervical')) && p.id === 'massage-ball') score += 10;
-    if ((q.includes('earbuds') || q.includes('headphone') || q.includes('music') || q.includes('musique') || q.includes('ecouteur')) && p.id === 'gym-bag') score += 10;
-    if ((q.includes('legging') || q.includes('tie dye') || q.includes('seamless')) && p.id === 'workout-towel') score += 10;
-    
-    // Price range
-    if ((q.includes('cheap') || q.includes('budget') || q.includes('pas cher') || q.includes('moins cher')) && p.price < 20) score += 5;
-    if ((q.includes('premium') || q.includes('best') || q.includes('top') || q.includes('meilleur')) && p.price > 30) score += 3;
-    
+
+    // Correspondances thématiques multilingues
+    const themes = [
+      { keys: ['hula','hoop','belly','ventre','graisse'], id: 'resistance-bands' },
+      { keys: ['waist','taille','trainer','gainant','cincher'], id: 'yoga-mat' },
+      { keys: ['jump','rope','corde','cardio','sauter'], id: 'leggings' },
+      { keys: ['legging','pants','yoga','pantalon','lift','peach'], id: 'sports-bra' },
+      { keys: ['jumpsuit','combinaison','pilates','one-piece'], id: 'hydration-bottle' },
+      { keys: ['tie dye','seamless','stretchy'], id: 'workout-towel' },
+      { keys: ['sport bra','bra','brassiere','soutien','support','chest'], id: 'fitness-tracker' },
+      { keys: ['knee','genoux','protection','articulation'], id: 'protein-shaker' },
+      { keys: ['posture','dos','back','corrector','correction'], id: 'dumbbell-set' },
+      { keys: ['bracelet','tracker','heart','sleep','sommeil','steps'], id: 'jump-rope' },
+      { keys: ['acupressure','stress','recovery','recuperation','mat'], id: 'foam-roller' },
+      { keys: ['belly','cramp','chaleur','heat','belt','ventre'], id: 'yoga-blocks' },
+      { keys: ['bottle','water','eau','hydrat','bouteille'], id: 'ankle-weights' },
+      { keys: ['shoe','chaussure','running','sneaker','walk'], id: 'cooling-towel' },
+      { keys: ['pillow','oreiller','neck','cervical','nuque'], id: 'massage-ball' },
+      { keys: ['earbuds','headphone','music','musique','ecouteur','audio'], id: 'gym-bag' }
+    ];
+
+    themes.forEach(theme => {
+      if (theme.keys.some(k => q.includes(k)) && p.id === theme.id) {
+        score += 10;
+      }
+    });
+
+    // Prix budget / premium
+    if (['cheap','budget','pas cher','moins cher','economique'].some(k => q.includes(k)) && p.price < 20) score += 5;
+    if (['premium','best','top','meilleur','qualite'].some(k => q.includes(k)) && p.price > 30)           score += 3;
+
+    // Taille plus-size
+    if (['plus size','grande taille','xxl','xxxl','4xl','5xl','6xl','curvy'].some(k => q.includes(k))) {
+      const bigSizes = (p.sizes || []).some(s => ['XXL','XXXL','4XL','5XL','6XL'].includes(s));
+      if (bigSizes) score += 8;
+    }
+
     return { ...p, score };
   });
-  
+
   return scored
     .filter(p => p.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
 }
 
+// ── Formatage d'un produit pour le contexte AI ────────────────
+function formatProductForContext(p, index) {
+  const url    = buildProductUrl(p.id);
+  const colors = (p.colors || []).map(c => {
+    const imgPart = c.image ? ` [image: ${c.image}]` : '';
+    return `${c.name}${imgPart}`;
+  }).join(' | ');
+
+  const sizes   = (p.sizes || []).length > 0 ? p.sizes.join(', ') : 'Taille unique';
+  const savings = p.compare_price ? (p.compare_price - p.price).toFixed(2) : null;
+  const savePct = p.compare_price ? Math.round((1 - p.price / p.compare_price) * 100) : null;
+
+  let promoInfo = '';
+  if (p.single_discount > 0 || p.duo_discount > 0 || p.trio_discount > 0) {
+    promoInfo = `\n   - Promotions: 1 article -${p.single_discount}% | 2 articles -${p.duo_discount}% | 3 articles -${p.trio_discount}%`;
+  }
+
+  let ratingInfo = '';
+  if (p.rating) {
+    ratingInfo = `\n   - Note: ${p.rating}/5 (${p.reviews_count || 0} avis)`;
+  }
+
+  return `
+${index + 1}. **${p.title}**
+   - ID interne: ${p.id} (NE PAS mentionner à l'utilisateur)
+   - URL page produit: ${url}
+   - Prix actuel: $${p.price}
+   - Prix barré: $${p.compare_price}${savings ? ` (économie: $${savings} — ${savePct}% de réduction)` : ''}
+   - Description: ${p.description}
+   - Couleurs disponibles (avec image): ${colors}
+   - Tailles disponibles: ${sizes}
+   - Délai de livraison: 7 à 15 jours ouvrables${promoInfo}${ratingInfo}`;
+}
+
+// ── Formatage des programmes depuis settings ───────────────────
+function formatPrograms(settings) {
+  if (!settings.programs) return '';
+  const { beginner, intermediate, maintenance } = settings.programs;
+  return `
+PROGRAMMES CURVAFIT:
+- Soft Start (Débutant): $${beginner?.price || 'N/A'} — "${beginner?.label || ''}"
+- Deeper Refiner (Intermédiaire): $${intermediate?.price || 'N/A'} — "${intermediate?.label || ''}"
+- Forever Fit (Maintenance): $${maintenance?.price || 'N/A'} — "${maintenance?.label || ''}"
+→ Après achat: email + mot de passe envoyé, accès à la plateforme partenaire.`;
+}
+
+// ── Formatage des codes promo depuis settings ──────────────────
+function formatPromos(settings) {
+  if (!settings.promos || settings.promos.length === 0) return '';
+  const promoLines = settings.promos.map(p =>
+    `Code "${p.code}": -${p.percent}% dès ${p.items} articles`
+  ).join('\n   ');
+  return `\nCODES PROMO ACTIFS:\n   ${promoLines}`;
+}
+
+// ── Formatage du cart drawer / shipping ───────────────────────
+function formatShipping(settings) {
+  const freeThreshold = settings.cart_drawer?.free_shipping_threshold;
+  const shippingCost  = settings.shipping_cost;
+  let info = `\nLIVRAISON:\n   - Délai: 7 à 15 jours ouvrables pour tous les pays`;
+  if (shippingCost)  info += `\n   - Frais de port: $${shippingCost}`;
+  if (freeThreshold) info += `\n   - Livraison GRATUITE dès $${freeThreshold} d'achat`;
+  return info;
+}
+
+// ── Liens sociaux / contact ────────────────────────────────────
+function formatContactLinks(settings) {
+  const s = settings.social_links || {};
+  return `
+CONTACT & RÉSEAUX:
+   - WhatsApp: ${s.whatsapp || '[non configuré]'}
+   - Instagram: ${s.instagram || '[non configuré]'}
+   - TikTok: ${s.tiktok || '[non configuré]'}
+   - Facebook: ${s.facebook || '[non configuré]'}
+   - YouTube: ${s.youtube || '[non configuré]'}`;
+}
+
+// ── System prompt complet ──────────────────────────────────────
+function buildSystemPrompt(settings, productContext) {
+  return `Tu es **Curva Support**, l'assistante officielle de CurvaFit — une marque fitness premium dédiée aux femmes plus-size.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 TON IDENTITÉ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Tu t'appelles **Curva Support** (jamais "Cora", jamais "AI").
+Tu es :
+- Un coach motivant et bienveillant
+- Un conseiller stratégique fitness
+- Un guide doux, jamais condescendant
+- Un vendeur intelligent (pertinent, jamais agressif)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧠 MISSION CURVAFIT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CurvaFit aide les femmes plus-size à :
+- Perdre du poids sainement et progressivement (pas extrême)
+- Rester actives à domicile, sans salle de sport
+- Adopter un mode de vie durable et motivant
+- Retrouver confiance en elles
+
+Approche : science + expérience réelle + bienveillance.
+Résultats visibles : en moyenne 4 à 6 semaines avec constance.
+Probabilité de succès : ~70% si les conseils sont bien suivis.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏋️ PROGRAMMES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${formatPrograms(settings)}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 PRODUITS — CATALOGUE COMPLET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${productContext}
+${formatShipping(settings)}
+${formatPromos(settings)}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📞 SUPPORT HUMAIN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Si l'utilisateur insiste, n'est pas satisfait, ou demande un humain :
+"Je comprends 👍 Tu peux contacter notre équipe directement :
+${formatContactLinks(settings)}
+Nous serons ravis de t'aider personnellement 😊"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👤 À PROPOS DU FONDATEUR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Paul Francenel, 25 ans, entrepreneur.
+Pas médecin — travaille avec des professionnels certifiés.
+Objectif : transformer la vie des femmes plus-size sainement.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 RÈGLES ABSOLUES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. TOUJOURS répondre dans la même langue que l'utilisateur (FR ou EN).
+2. Ne JAMAIS mentionner les IDs internes (resistance-bands, yoga-mat, etc.).
+3. Ne JAMAIS inventer des prix, couleurs ou données non présentes dans le catalogue.
+4. Ne JAMAIS promettre des résultats garantis.
+5. Ne JAMAIS donner de conseils médicaux avancés — rediriger vers un médecin.
+6. Quand tu mentionnes un produit, TOUJOURS inclure : titre, prix, couleurs disponibles.
+7. Quand une couleur est mentionnée, préciser son image si disponible.
+8. Les liens produits suivent ce format : /products/[id-produit].html
+   Ex: /products/resistance-bands.html — NE JAMAIS générer d'autres formats d'URL.
+9. Ne jamais forcer la vente — proposer intelligemment.
+10. Réponses concises (3-5 phrases max par point), naturelles, avec émojis.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🥗 NUTRITION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Conseils simples et pratiques : déficit calorique modéré (300-500 cal), 
+protéines à chaque repas, 2L d'eau/jour, 3 repas structurés, 
+pas de pilules ni suppléments — approche naturelle uniquement.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 COMPORTEMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Ton chaud, humain, motivant — jamais robotique
+- Adapter le niveau de détail à la question
+- Terminer par une invitation douce à l'action si pertinent
+- Si hors sujet fitness/produits : rediriger poliment`;
+}
+
+// ── Handler principal ──────────────────────────────────────────
 exports.handler = async (event, context) => {
   const headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin':  '*',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json'
+    'Content-Type':                 'application/json'
   };
 
   if (event.httpMethod === 'OPTIONS') {
@@ -226,75 +277,57 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    // ── Chargement des données ──
+    const allData = loadData();
+    const { settings, products } = parseData(allData);
+
+    // ── Parsing de la requête ──
     const { message, history = [] } = JSON.parse(event.body);
-    
+
     if (!message || message.trim().length === 0) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message is required' }) };
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message requis' }) };
     }
 
-    const relevantProducts = searchProducts(message);
-    
+    // ── Recherche produits pertinents ──
+    const relevantProducts = searchProducts(message, products);
+
+    // ── Contexte produits pour le prompt ──
     let productContext = '';
     if (relevantProducts.length > 0) {
-      productContext = '\n\n📦 RELEVANT PRODUCTS FROM OUR CATALOG:\n';
-      relevantProducts.forEach((p, i) => {
-        productContext += `\n${i + 1}. **${p.title}**
-   - Price: $${p.price} (was $${p.compare_price})
-   - Description: ${p.description}
-   - Colors: ${p.colors.join(', ') || 'One size fits all'}
-   - Sizes: ${p.sizes.length > 0 ? p.sizes.join(', ') : 'No size selection needed'}
-   - Product page: ${p.url}\n`;
-      });
+      productContext = '📦 PRODUITS PERTINENTS POUR CETTE REQUÊTE:\n';
+      productContext += relevantProducts.map((p, i) => formatProductForContext(p, i)).join('\n');
+    } else {
+      // Donner le catalogue complet condensé si aucun produit spécifique
+      productContext = '📦 CATALOGUE COMPLET (condensé):\n';
+      productContext += products.map((p, i) => {
+        const url = buildProductUrl(p.id);
+        return `${i + 1}. ${p.title} — $${p.price} — ${url}`;
+      }).join('\n');
     }
 
-    const systemPrompt = `You are Cora, the friendly and expert fitness advisor for CurvaFit — a premium fitness brand designed specifically for curvy women.
+    // ── Construction du prompt système ──
+    const systemPrompt = buildSystemPrompt(settings, productContext);
 
-YOUR PERSONALITY:
-- Warm, empowering, and body-positive
-- Expert in fitness, nutrition, and wellness for plus-size women
-- Enthusiastic about helping women feel confident and strong
-- Conversational, not robotic
-
-YOUR RULES:
-1. ONLY recommend products from the catalog provided below. NEVER invent products or prices.
-2. If no product matches, say you'll check and suggest browsing the shop.
-3. Always mention the exact price from the catalog — never guess or round.
-4. Respond in the SAME LANGUAGE as the user (French or English).
-5. Keep responses concise (2-4 sentences max per point).
-6. Use emojis naturally to make responses feel warm and human.
-7. If asked about sizing, mention available sizes from the catalog.
-8. Always end with a gentle call-to-action when recommending a product.
-9. NEVER make up health claims beyond what's in the descriptions.
-10. If asked something outside fitness/products, politely redirect.
-
-ABOUT CURVAFIT:
-- Women's fitness brand focused on curvy/plus-size women
-- Products range from $9.99 to $79.99
-- Free shipping on orders over $120
-- 30-day money-back guarantee
-- Ships to 50+ countries
-${productContext}
-
-Respond naturally and helpfully. If products are listed above, reference them specifically.`;
-
+    // ── Messages pour Groq ──
     const messages = [
       { role: 'system', content: systemPrompt },
-      ...history.slice(-6).map(h => ({ role: h.role, content: h.content })),
+      ...history.slice(-8).map(h => ({ role: h.role, content: h.content })),
       { role: 'user', content: message }
     ];
 
+    // ── Appel API Groq ──
     const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-        'Content-Type': 'application/json'
+        'Content-Type':  'application/json'
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model:       'llama-3.3-70b-versatile',
         messages,
-        max_tokens: 512,
+        max_tokens:  600,
         temperature: 0.7,
-        stream: false
+        stream:      false
       })
     });
 
@@ -304,22 +337,44 @@ Respond naturally and helpfully. If products are listed above, reference them sp
       throw new Error(`Groq API error: ${groqResponse.status}`);
     }
 
-    const data = await groqResponse.json();
-    const reply = data.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response. Please try again.";
+    const data  = await groqResponse.json();
+    const reply = data.choices[0]?.message?.content || "Je suis désolée, je n'ai pas pu générer une réponse. Réessaie !";
+
+    // ── Préparation des cartes produits pour le frontend ──
+    const productCards = relevantProducts.slice(0, 2).map(p => {
+      // Trouver la première couleur avec image
+      const firstColorWithImage = (p.colors || []).find(c => c.image && c.active !== false);
+      const allColors = (p.colors || [])
+        .filter(c => c.active !== false)
+        .map(c => ({
+          name:  c.name,
+          hex:   c.hex  || null,
+          image: c.image || null
+        }));
+
+      return {
+        id:            p.id,
+        title:         p.title,
+        description:   p.description,
+        price:         p.price,
+        compare_price: p.compare_price,
+        url:           buildProductUrl(p.id),
+        colors:        allColors,
+        sizes:         p.sizes || [],
+        image:         firstColorWithImage?.image || p.image || null,
+        rating:        p.rating || null,
+        reviews_count: p.reviews_count || null,
+        delivery:      '7 à 15 jours ouvrables',
+        single_discount: p.single_discount || 0,
+        duo_discount:    p.duo_discount    || 0,
+        trio_discount:   p.trio_discount   || 0
+      };
+    });
 
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({
-        reply,
-        products: relevantProducts.slice(0, 2).map(p => ({
-          title: p.title,
-          price: p.price,
-          compare_price: p.compare_price,
-          url: p.url,
-          id: p.id
-        }))
-      })
+      body: JSON.stringify({ reply, products: productCards })
     };
 
   } catch (error) {
@@ -327,7 +382,7 @@ Respond naturally and helpfully. If products are listed above, reference them sp
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Internal server error', message: error.message })
+      body: JSON.stringify({ error: 'Erreur interne', message: error.message })
     };
   }
 };
