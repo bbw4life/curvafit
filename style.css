@@ -11382,7 +11382,7 @@ html.fonts-loaded [class*="fa-"] {
 
   .cf-chat-window {
     width: calc(100vw - 32px);
-    max-height: min(80vh, calc(100vh - 120px));
+    max-height: min(70vh, calc(100vh - 120px));
     bottom: 50px;
   }
 
