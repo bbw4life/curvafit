@@ -3449,6 +3449,13 @@ function initStockBar(cjId) {
 
 /* ================================================================
    CURVAFIT AI CHATBOT — FRONTEND JS
+   FIXES:
+   1. Images: pas de whitespace (géré en CSS)
+   2. Images cliquables → page produit
+   3. Liens affichés comme de beaux boutons
+   4. Images variantes au hover des swatches
+   5. Mots importants en gras dans la réponse IA
+   6. Chat persiste après actualisation (localStorage)
 ================================================================ */
 document.addEventListener('DOMContentLoaded', function () {
   (function () {
@@ -3475,6 +3482,81 @@ document.addEventListener('DOMContentLoaded', function () {
     let isLoading = false;
     let conversationHistory = [];
     let notifShown = false;
+
+    /* ── FIX 6: Persistence localStorage ── */
+    const STORAGE_KEY_HISTORY  = 'cf_chat_history';
+    const STORAGE_KEY_MESSAGES = 'cf_chat_messages';
+    const MAX_STORED_MESSAGES  = 30; // limite pour éviter trop de données
+
+    function saveToStorage() {
+      try {
+        // Sauvegarder l'historique de conversation
+        localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(conversationHistory.slice(-20)));
+        // Sauvegarder les messages rendus (sérialisés)
+        const storedMsgs = [];
+        messages.querySelectorAll('.cf-message').forEach(el => {
+          storedMsgs.push({
+            html: el.innerHTML,
+            role: el.classList.contains('cf-message--user') ? 'user' : 'ai'
+          });
+        });
+        localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(storedMsgs.slice(-MAX_STORED_MESSAGES)));
+      } catch (e) { /* localStorage peut être désactivé */ }
+    }
+
+    function loadFromStorage() {
+      try {
+        const savedHistory = localStorage.getItem(STORAGE_KEY_HISTORY);
+        if (savedHistory) {
+          conversationHistory = JSON.parse(savedHistory);
+        }
+        const savedMessages = localStorage.getItem(STORAGE_KEY_MESSAGES);
+        if (savedMessages) {
+          const msgs = JSON.parse(savedMessages);
+          if (msgs && msgs.length > 0) {
+            msgs.forEach(msg => {
+              const msgEl = document.createElement('div');
+              msgEl.className = `cf-message cf-message--${msg.role}`;
+              msgEl.innerHTML = msg.html;
+              // Réattacher les event listeners sur swatches et liens
+              reattachSwatchListeners(msgEl);
+              messages.appendChild(msgEl);
+            });
+            scrollToBottom();
+            return true; // messages restaurés
+          }
+        }
+      } catch (e) { /* ignore */ }
+      return false;
+    }
+
+    function clearStorage() {
+      try {
+        localStorage.removeItem(STORAGE_KEY_HISTORY);
+        localStorage.removeItem(STORAGE_KEY_MESSAGES);
+      } catch (e) {}
+    }
+
+    /* ── Réattacher les listeners sur swatches après restauration ── */
+    function reattachSwatchListeners(container) {
+      const swatches   = container.querySelectorAll('.cf-pc-swatch');
+      const colorLabel = container.querySelector('.cf-pc-color-label');
+      const mainImg    = container.querySelector('.cf-pc-img');
+
+      swatches.forEach(sw => {
+        const activate = () => {
+          swatches.forEach(s => s.classList.remove('cf-pc-swatch--active'));
+          sw.classList.add('cf-pc-swatch--active');
+          if (colorLabel) colorLabel.textContent = sw.dataset.name;
+          // FIX 4: changer l'image avec l'image de la variante couleur
+          if (mainImg && sw.dataset.img && sw.dataset.img !== '') {
+            mainImg.src = sw.dataset.img;
+          }
+        };
+        sw.addEventListener('mouseenter', activate);
+        sw.addEventListener('click', activate);
+      });
+    }
 
     /* ══════════════════════════════════════
        DRAGGABLE WIDGET
@@ -3564,7 +3646,16 @@ document.addEventListener('DOMContentLoaded', function () {
       if (iconClose) iconClose.style.display = '';
       if (notifDot)  notifDot.style.display  = 'none';
       input.focus();
-      if (messages.children.length === 0) addWelcomeMessage();
+      // FIX 6: charger depuis localStorage si pas encore chargé
+      if (messages.children.length === 0) {
+        const restored = loadFromStorage();
+        if (!restored) addWelcomeMessage();
+      }
+      // Cacher les chips si déjà des messages
+      const chipsEl = document.getElementById('cf-quick-chips');
+      if (chipsEl && messages.children.length > 1) {
+        chipsEl.style.display = 'none';
+      }
     }
 
     function closeChat() {
@@ -3588,15 +3679,15 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ── Welcome ── */
     function addWelcomeMessage() {
       addMessage(
-        `Hi! 👋 I'm **Curva**, your personal CurvaFit coach!\n\nI'm here to help you with:\n- 🔥 Weight loss tips & advice\n- 🥗 Nutrition guidance\n- 💪 Product recommendations\n- 📋 Programs & coaching plans\n\nWhat can I help you with today? 😊`,
+        `Bonjour ! 👋 Je suis **Curva**, votre coach personnel **CurvaFit** !\n\nJe suis ici pour vous aider avec :\n- 🔥 Conseils minceur & perte de poids\n- 🥗 Guidance nutritionnelle\n- 💪 Recommandations de produits\n- 📋 Programmes & coaching\n\nQue puis-je faire pour vous aujourd'hui ? 😊`,
         'ai',
         []
       );
     }
 
-    /* ── Format Markdown ── */
+    /* ── FIX 3 & 5: Format Markdown + beautifier les liens + mots en gras ── */
     function formatMarkdown(text) {
-      // Strip internal IDs that might slip through
+      // Nettoyer les IDs internes
       const internalIds = [
         'resistance-bands','yoga-mat','leggings','sports-bra',
         'hydration-bottle','workout-towel','fitness-tracker','protein-shaker',
@@ -3605,16 +3696,70 @@ document.addEventListener('DOMContentLoaded', function () {
       ];
       let out = text;
       internalIds.forEach(id => {
-        out = out.replace(new RegExp('\\b' + id + '\\b', 'gi'), '');
+        out = out.replace(new RegExp('\\b' + id.replace(/-/g,'[- ]') + '\\b', 'gi'), '');
       });
 
-      return out
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<strong>$1</strong>') // remove markdown links
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g,     '<em>$1</em>')
-        .replace(/`(.+?)`/g,       '<code>$1</code>')
-        .replace(/\n\n/g, '<br><br>')
-        .replace(/\n/g,   '<br>');
+      // FIX 3: Convertir les liens Markdown [texte](url) → bouton HTML
+      out = out.replace(
+        /\[([^\]]+)\]\((\/[^\s)]+|https?:\/\/[^\s)]+)\)/g,
+        (match, label, url) => {
+          const cleanLabel = label.replace(/^(voir|visit|click|go to|aller sur|cliquez?( ici)?|page|ouvrir)\s*/i, '').trim();
+          return `<a href="${url}" class="cf-msg-link-btn" target="_self" onclick="event.stopPropagation()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+            ${cleanLabel || 'Voir la page'}
+          </a>`;
+        }
+      );
+
+      // FIX 3: Convertir les URLs brutes (chemins locaux ou http) → bouton
+      // Éviter de re-traiter des URLs déjà dans un href
+      out = out.replace(
+        /(?<!href=["'])(?<![">])(\/[a-z0-9\-_/]+\.html(?:\?[^\s<]*)?|\/[a-z0-9\-_/]+\.html)/g,
+        (match) => {
+          // Ignorer si déjà dans une balise
+          const label = match.replace('/', '').replace('.html', '').replace(/-/g, ' ').replace(/\//g, ' › ');
+          const cleanLabel = label.charAt(0).toUpperCase() + label.slice(1);
+          return `<a href="${match}" class="cf-msg-link-btn" target="_self" onclick="event.stopPropagation()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+            ${cleanLabel || 'Voir la page'}
+          </a>`;
+        }
+      );
+
+      // WhatsApp links → bouton vert
+      out = out.replace(
+        /(https?:\/\/wa\.me\/[^\s<"]+)/g,
+        (match) => `<a href="${match}" class="cf-msg-link-btn" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25d366,#128c7e);" onclick="event.stopPropagation()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp Support
+        </a>`
+      );
+
+      // FIX 5: Mettre en gras les mots/éléments importants automatiquement
+      // Codes promos en gras
+      out = out.replace(
+        /\b([A-Z]{2,}[0-9]{0,3})\b(?=.*?%)/g,
+        '<strong>$1</strong>'
+      );
+
+      // Noms des fondateurs en gras
+      out = out.replace(/\b(Paul Francenel|Paul|Francenel)\b/g, '<strong>$1</strong>');
+
+      // Markdown **bold**
+      out = out.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      // Markdown *italic*
+      out = out.replace(/\*(.+?)\*/g, '<em>$1</em>');
+      // Markdown `code`
+      out = out.replace(/`(.+?)`/g, '<code>$1</code>');
+
+      // FIX 5: Prix en gras
+      out = out.replace(/(\$\d+(?:\.\d{2})?)/g, '<strong>$1</strong>');
+
+      // Sauts de ligne
+      out = out.replace(/\n\n/g, '<br><br>');
+      out = out.replace(/\n/g, '<br>');
+
+      return out;
     }
 
     function getTime() {
@@ -3622,7 +3767,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ══════════════════════════════════════
-       ADD MESSAGE — with responsive cards
+       ADD MESSAGE — FIX 1, 2, 4
     ══════════════════════════════════════ */
     function addMessage(text, role, products) {
       const msgEl  = document.createElement('div');
@@ -3634,7 +3779,7 @@ document.addEventListener('DOMContentLoaded', function () {
       bubble.innerHTML = formatMarkdown(text);
       msgEl.appendChild(bubble);
 
-      /* Product cards — only if products array has items */
+      /* Product cards */
       if (role === 'ai' && Array.isArray(products) && products.length > 0) {
         const cardsWrap = document.createElement('div');
         cardsWrap.className = 'cf-product-cards';
@@ -3643,29 +3788,31 @@ document.addEventListener('DOMContentLoaded', function () {
           const card = document.createElement('div');
           card.className = 'cf-product-card';
 
-          /* ── Product image ── */
+          /* FIX 1 & 2: Image sans whitespace + cliquable */
           let imgHTML = '';
           if (p.image) {
             imgHTML = `
               <div class="cf-pc-img-wrap">
-                <img class="cf-pc-img" src="${p.image}" alt="${p.title}" loading="lazy"
-                     onerror="this.parentElement.style.display='none'">
+                <a href="${p.url}" class="cf-pc-img-link" onclick="event.stopPropagation()">
+                  <img class="cf-pc-img" src="${p.image}" alt="${p.title}" loading="lazy"
+                       onerror="this.parentElement.parentElement.style.display='none'">
+                </a>
               </div>`;
           }
 
-          /* ── Rating ── */
+          /* Rating */
           const ratingHTML = p.rating
             ? `<div class="cf-pc-rating">⭐ ${p.rating}/5</div>`
             : '';
 
-          /* ── Price ── */
+          /* Prix */
           const priceHTML = `
             <div class="cf-pc-price">
               <span class="cf-pc-price-current">$${Number(p.price).toFixed(2)}</span>
               <span class="cf-pc-price-compare">$${Number(p.compare_price).toFixed(2)}</span>
             </div>`;
 
-          /* ── Colors ── */
+          /* FIX 4: Swatches avec data-img pour les images variantes */
           let colorsHTML = '';
           if (p.colors && p.colors.length > 0) {
             const swatchesHTML = p.colors.slice(0, 6).map(c => `
@@ -3683,19 +3830,19 @@ document.addEventListener('DOMContentLoaded', function () {
               <div class="cf-pc-color-label"></div>`;
           }
 
-          /* ── Sizes ── */
+          /* Tailles */
           const sizesHTML = (p.sizes && p.sizes.length > 0)
-            ? `<div class="cf-pc-sizes"><strong>Sizes:</strong> ${p.sizes.join(' · ')}</div>` : '';
+            ? `<div class="cf-pc-sizes"><strong>Tailles:</strong> ${p.sizes.join(' · ')}</div>` : '';
 
-          /* ── Delivery ── */
-          const deliveryHTML = (p.delivery)
+          /* Livraison */
+          const deliveryHTML = p.delivery
             ? `<div class="cf-pc-delivery">🚚 ${p.delivery}</div>` : '';
 
-          /* ── CTA button ── */
+          /* FIX 3: CTA bouton propre */
           const ctaHTML = `
             <a href="${p.url}" class="cf-pc-btn" onclick="event.stopPropagation()">
-              View Product
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+              Voir le Produit
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                 <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
               </svg>
             </a>`;
@@ -3712,21 +3859,8 @@ document.addEventListener('DOMContentLoaded', function () {
               ${ctaHTML}
             </div>`;
 
-          /* ── Swatch interaction ── */
-          const swatches  = card.querySelectorAll('.cf-pc-swatch');
-          const colorLabel = card.querySelector('.cf-pc-color-label');
-          const mainImg    = card.querySelector('.cf-pc-img');
-
-          swatches.forEach(sw => {
-            const activate = () => {
-              swatches.forEach(s => s.classList.remove('cf-pc-swatch--active'));
-              sw.classList.add('cf-pc-swatch--active');
-              if (colorLabel) colorLabel.textContent = sw.dataset.name;
-              if (mainImg && sw.dataset.img) mainImg.src = sw.dataset.img;
-            };
-            sw.addEventListener('mouseenter', activate);
-            sw.addEventListener('click',      activate);
-          });
+          /* FIX 4: Réattacher les swatches listeners */
+          reattachSwatchListeners(card);
 
           cardsWrap.appendChild(card);
         });
@@ -3742,11 +3876,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
       messages.appendChild(msgEl);
       scrollToBottom();
+
+      // FIX 6: Sauvegarder après chaque nouveau message
+      saveToStorage();
     }
 
     function addErrorMessage() {
       addMessage(
-        "Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏",
+        "Désolée, j'ai un petit problème en ce moment. Veuillez réessayer dans un instant ! 🙏",
         'ai', []
       );
     }
@@ -3763,7 +3900,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!userText || !userText.trim() || isLoading) return;
       const text = userText.trim();
 
-      /* Hide chips */
+      /* Cacher les chips */
       const chipsEl = document.getElementById('cf-quick-chips');
       if (chipsEl) chipsEl.style.display = 'none';
 
@@ -3793,8 +3930,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const data = await response.json();
         if (data.error) throw new Error(data.error);
 
-        const aiReply  = data.reply    || "I'm not sure how to answer that. Could you rephrase? 😊";
-        const products = data.products || [];   // empty for general questions
+        const aiReply  = data.reply    || "Je ne suis pas sûre de comprendre. Pouvez-vous reformuler ? 😊";
+        const products = data.products || [];
 
         addMessage(aiReply, 'ai', products);
         conversationHistory.push({ role: 'assistant', content: aiReply });
@@ -3852,7 +3989,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isOpen && !widget.contains(e.target)) closeChat();
     });
 
-    console.log('✅ CurvaFit Chatbot (Curva Support) ready');
+    console.log('✅ CurvaFit Chatbot (Curva Support) ready — 6 fixes applied');
   })();
 }); // end DOMContentLoaded
 

@@ -10708,6 +10708,8 @@ html.fonts-loaded [class*="fa-"] {
 
 /* ═══════════════════════════════════════════
    CURVAFIT AI CHATBOT — COMPLETE STYLES
+   FIXES: image whitespace, cliquable imgs,
+   link buttons, bold text, persistence
 ═══════════════════════════════════════════ */
 
 /* Variables */
@@ -10740,7 +10742,6 @@ html.fonts-loaded [class*="fa-"] {
   align-items: flex-start;
   gap: 12px;
   font-family: var(--cf-font);
-  /* Draggable: position sera gérée par JS */
   touch-action: none;
   user-select: none;
 }
@@ -10768,7 +10769,6 @@ html.fonts-loaded [class*="fa-"] {
   white-space: nowrap;
 }
 
-/* Au hover : le bouton s'étend pour montrer le label */
 #cf-chat-toggle:hover {
   width: 160px;
   border-radius: 28px;
@@ -10793,7 +10793,6 @@ html.fonts-loaded [class*="fa-"] {
   margin: 0 auto;
 }
 
-/* Quand le bouton est en mode cercle, centrer l'icône */
 #cf-chat-toggle:not(:hover) .cf-toggle-inner {
   margin: 0 auto;
   width: 100%;
@@ -10847,7 +10846,6 @@ html.fonts-loaded [class*="fa-"] {
   50% { transform: scale(1.3); opacity: 0.75; }
 }
 
-/* ── Drag handle indicator ── */
 #cf-chat-toggle::before {
   content: '';
   position: absolute;
@@ -10872,7 +10870,6 @@ html.fonts-loaded [class*="fa-"] {
   bottom: 50px;
   left: 0;
   width: 380px;
-  /* FIX DESKTOP HEIGHT: ne jamais déborder de l'écran */
   max-height: min(500px, calc(100vh - 120px));
   background: var(--cf-surface);
   border-radius: var(--cf-radius);
@@ -10888,14 +10885,12 @@ html.fonts-loaded [class*="fa-"] {
   transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Repositionnement automatique si le widget est en bas à droite */
 #cf-chat-widget.cf-right .cf-chat-window {
   left: auto;
   right: 0;
   transform-origin: bottom right;
 }
 
-/* Repositionnement si proche du haut */
 #cf-chat-widget.cf-top .cf-chat-window {
   bottom: auto;
   top: 72px;
@@ -11080,18 +11075,11 @@ html.fonts-loaded [class*="fa-"] {
   gap: 12px;
   scroll-behavior: smooth;
   background: var(--cf-bg);
-  /* FIX: assure que le scroll fonctionne bien */
   min-height: 0;
 }
 
-.cf-messages::-webkit-scrollbar {
-  width: 4px;
-}
-
-.cf-messages::-webkit-scrollbar-track {
-  background: transparent;
-}
-
+.cf-messages::-webkit-scrollbar { width: 4px; }
+.cf-messages::-webkit-scrollbar-track { background: transparent; }
 .cf-messages::-webkit-scrollbar-thumb {
   background: rgba(192,56,94,0.20);
   border-radius: 4px;
@@ -11110,15 +11098,8 @@ html.fonts-loaded [class*="fa-"] {
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.cf-message--ai {
-  align-self: flex-start;
-  align-items: flex-start;
-}
-
-.cf-message--user {
-  align-self: flex-end;
-  align-items: flex-end;
-}
+.cf-message--ai  { align-self: flex-start; align-items: flex-start; }
+.cf-message--user { align-self: flex-end; align-items: flex-end; }
 
 .cf-msg-bubble {
   padding: 12px 16px;
@@ -11143,6 +11124,18 @@ html.fonts-loaded [class*="fa-"] {
   box-shadow: 0 4px 16px rgba(192,56,94,0.30);
 }
 
+/* FIX 5: Bold important words */
+.cf-msg-bubble strong,
+.cf-msg-bubble b {
+  font-weight: 700;
+  color: #c0385e;
+}
+
+.cf-message--user .cf-msg-bubble strong,
+.cf-message--user .cf-msg-bubble b {
+  color: #ffd6e0;
+}
+
 .cf-msg-time {
   font-size: 0.68rem;
   color: var(--cf-muted);
@@ -11150,99 +11143,228 @@ html.fonts-loaded [class*="fa-"] {
   padding: 0 4px;
 }
 
-/* ── Product Cards (liens cachés derrière bouton) ── */
+/* ── FIX 3: Link buttons inside messages ── */
+.cf-msg-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  margin: 6px 4px 4px 0;
+  background: var(--cf-gradient);
+  color: #fff !important;
+  font-family: var(--cf-font);
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 100px;
+  text-decoration: none !important;
+  cursor: pointer;
+  border: none;
+  transition: all 0.22s ease;
+  box-shadow: 0 3px 12px rgba(192, 56, 94, 0.32);
+  letter-spacing: 0.02em;
+}
+
+.cf-msg-link-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(192, 56, 94, 0.48);
+  opacity: 0.92;
+}
+
+.cf-msg-link-btn svg {
+  flex-shrink: 0;
+}
+
+.cf-msg-links-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+/* ── FIX 1 & 2 & 4: Product Cards ── */
 .cf-product-cards {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   margin-top: 10px;
   width: 100%;
-  max-width: 280px;
+  max-width: 300px;
 }
 
 .cf-product-card {
   background: #fff;
-  border: 1px solid var(--cf-border);
-  border-radius: 14px;
-  padding: 12px 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  transition: all 0.22s ease;
-  box-shadow: 0 2px 8px rgba(107,52,96,0.06);
+  border: 1px solid rgba(192, 56, 94, 0.14);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(107, 52, 96, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
 }
 
 .cf-product-card:hover {
-  transform: translateX(3px);
-  box-shadow: 0 6px 20px rgba(192,56,94,0.15);
-  border-color: rgba(192,56,94,0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(192, 56, 94, 0.15);
 }
 
-.cf-product-card-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.cf-product-card-title {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--cf-text);
-  line-height: 1.3;
-  margin-bottom: 4px;
-  white-space: nowrap;
+/* FIX 1 & 2: Image wrapper — no whitespace, clickable */
+.cf-pc-img-wrap {
+  width: 100%;
+  /* FIX 1: hauteur fixe, pas de whitespace */
+  height: 160px;
   overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cf-product-card-price {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.cf-price-current {
-  font-size: 0.88rem;
-  font-weight: 800;
-  color: var(--cf-rose);
-}
-
-.cf-price-compare {
-  font-size: 0.72rem;
-  color: var(--cf-muted);
-  text-decoration: line-through;
-}
-
-/* Bouton CTA "Voir le produit" — remplace l'icône flèche */
-.cf-product-card-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  background: var(--cf-gradient);
-  color: #fff;
-  font-family: var(--cf-font);
-  font-size: 0.72rem;
-  font-weight: 700;
-  border-radius: 100px;
-  border: none;
-  cursor: pointer;
-  white-space: nowrap;
+  background: #f7f3f5;
   flex-shrink: 0;
-  transition: all 0.22s ease;
-  box-shadow: 0 3px 10px rgba(192,56,94,0.30);
+  display: block;
+  cursor: pointer;
+  position: relative;
+}
+
+/* FIX 2: image cliquable via le lien parent */
+.cf-pc-img-link {
+  display: block;
+  width: 100%;
+  height: 100%;
   text-decoration: none;
 }
 
-.cf-product-card-btn:hover {
-  transform: scale(1.05) translateY(-1px);
-  box-shadow: 0 6px 18px rgba(192,56,94,0.45);
+.cf-pc-img {
+  width: 100%;
+  height: 100%;
+  /* FIX 1: cover pour remplir sans whitespace */
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: transform 0.35s ease, opacity 0.3s ease;
 }
 
-.cf-product-card-btn svg {
-  flex-shrink: 0;
+.cf-pc-img-wrap:hover .cf-pc-img {
+  transform: scale(1.04);
 }
+
+/* ── Info section ── */
+.cf-pc-info {
+  padding: 10px 12px 12px;
+}
+
+.cf-pc-title {
+  font-size: 0.80rem;
+  font-weight: 700;
+  color: #1e1a1c;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+
+.cf-pc-rating {
+  font-size: 0.72rem;
+  color: #c0385e;
+  margin-bottom: 5px;
+}
+
+.cf-pc-price {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 6px;
+}
+
+.cf-pc-price-current {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #c0385e;
+}
+
+.cf-pc-price-compare {
+  font-size: 0.72rem;
+  color: #8e7e85;
+  text-decoration: line-through;
+}
+
+/* FIX 4: Color swatches — au hover change image */
+.cf-pc-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.cf-pc-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.22);
+  transition: transform 0.18s ease, border-color 0.18s ease;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.cf-pc-swatch:hover,
+.cf-pc-swatch--active {
+  transform: scale(1.3);
+  border-color: #c0385e;
+}
+
+.cf-pc-swatch-more {
+  font-size: 0.70rem;
+  color: #8e7e85;
+  line-height: 18px;
+}
+
+.cf-pc-color-label {
+  font-size: 0.70rem;
+  color: #555;
+  font-style: italic;
+  min-height: 14px;
+  margin-bottom: 4px;
+  transition: color 0.2s ease;
+}
+
+.cf-pc-sizes {
+  font-size: 0.70rem;
+  color: #555;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.cf-pc-sizes strong { color: #333; }
+
+.cf-pc-delivery {
+  font-size: 0.70rem;
+  color: #27ae60;
+  margin-bottom: 8px;
+}
+
+/* CTA Button */
+.cf-pc-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  padding: 9px 10px;
+  background: linear-gradient(135deg, #c0385e 0%, #7b3f6e 100%);
+  color: #fff !important;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none !important;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 3px 10px rgba(192, 56, 94, 0.28);
+  margin-top: 4px;
+}
+
+.cf-pc-btn:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(192, 56, 94, 0.38);
+}
+
+.cf-pc-btn svg { flex-shrink: 0; }
 
 /* ── Typing Indicator ── */
 .cf-typing {
@@ -11361,9 +11483,7 @@ html.fonts-loaded [class*="fa-"] {
   box-shadow: 0 6px 18px rgba(192,56,94,0.45);
 }
 
-.cf-send-btn:not(:disabled):active {
-  transform: scale(0.95);
-}
+.cf-send-btn:not(:disabled):active { transform: scale(0.95); }
 
 .cf-input-hint {
   font-size: 0.66rem;
@@ -11400,198 +11520,18 @@ html.fonts-loaded [class*="fa-"] {
   }
 }
 
-/* ── Welcome message markdown styles ── */
-.cf-msg-bubble strong { font-weight: 700; }
-.cf-msg-bubble em { font-style: italic; }
-.cf-msg-bubble a { color: var(--cf-rose); text-decoration: underline; }
+/* ── Markdown styles ── */
+.cf-msg-bubble strong,
+.cf-msg-bubble b    { font-weight: 700; }
+.cf-msg-bubble em   { font-style: italic; }
+.cf-msg-bubble code {
+  background: rgba(192,56,94,0.10);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 0.82em;
+  font-family: monospace;
+}
 
 /* ── Drag cursor ── */
-#cf-chat-widget.cf-dragging {
-  cursor: grabbing !important;
-}
-
-#cf-chat-widget.cf-dragging * {
-  cursor: grabbing !important;
-  pointer-events: none;
-}
-
-
-
-/* ================================================================
-   CURVAFIT CHATBOT — Product Card CSS (responsive & compact)
-================================================================ */
-
-/* ── Cards wrapper: vertical stack, no horizontal scroll ── */
-.cf-product-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 10px;
-  width: 100%;
-  max-width: 300px;
-}
-
-/* ── Single card ── */
-.cf-product-card {
-  background: #fff;
-  border: 1px solid rgba(192, 56, 94, 0.14);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(107, 52, 96, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  width: 100%;
-}
-
-.cf-product-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(192, 56, 94, 0.15);
-}
-
-/* ── Product image ── */
-.cf-pc-img-wrap {
-  width: 100%;
-  height: 130px;
-  overflow: hidden;
-  background: #f7f3f5;
-  flex-shrink: 0;
-}
-
-.cf-pc-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: opacity 0.3s ease;
-}
-
-/* ── Info section ── */
-.cf-pc-info {
-  padding: 10px 12px 12px;
-}
-
-/* ── Title ── */
-.cf-pc-title {
-  font-size: 0.80rem;
-  font-weight: 700;
-  color: #1e1a1c;
-  line-height: 1.35;
-  margin-bottom: 4px;
-}
-
-/* ── Rating ── */
-.cf-pc-rating {
-  font-size: 0.72rem;
-  color: #c0385e;
-  margin-bottom: 5px;
-}
-
-/* ── Price ── */
-.cf-pc-price {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-bottom: 6px;
-}
-
-.cf-pc-price-current {
-  font-size: 0.92rem;
-  font-weight: 800;
-  color: #c0385e;
-}
-
-.cf-pc-price-compare {
-  font-size: 0.72rem;
-  color: #8e7e85;
-  text-decoration: line-through;
-}
-
-/* ── Color swatches ── */
-.cf-pc-colors {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  align-items: center;
-  margin-bottom: 3px;
-}
-
-.cf-pc-swatch {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.18);
-  transition: transform 0.18s ease, border-color 0.18s ease;
-  flex-shrink: 0;
-}
-
-.cf-pc-swatch:hover,
-.cf-pc-swatch--active {
-  transform: scale(1.25);
-  border-color: #c0385e;
-}
-
-.cf-pc-swatch-more {
-  font-size: 0.70rem;
-  color: #8e7e85;
-  line-height: 16px;
-}
-
-.cf-pc-color-label {
-  font-size: 0.70rem;
-  color: #555;
-  font-style: italic;
-  min-height: 14px;
-  margin-bottom: 4px;
-}
-
-/* ── Sizes ── */
-.cf-pc-sizes {
-  font-size: 0.70rem;
-  color: #555;
-  margin-bottom: 4px;
-  line-height: 1.4;
-}
-
-.cf-pc-sizes strong {
-  color: #333;
-}
-
-/* ── Delivery ── */
-.cf-pc-delivery {
-  font-size: 0.70rem;
-  color: #27ae60;
-  margin-bottom: 8px;
-}
-
-/* ── CTA Button ── */
-.cf-pc-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  width: 100%;
-  padding: 8px 10px;
-  background: linear-gradient(135deg, #c0385e 0%, #7b3f6e 100%);
-  color: #fff !important;
-  font-size: 0.78rem;
-  font-weight: 700;
-  border-radius: 8px;
-  text-decoration: none !important;
-  cursor: pointer;
-  border: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  box-shadow: 0 3px 10px rgba(192, 56, 94, 0.28);
-  margin-top: 4px;
-}
-
-.cf-pc-btn:hover {
-  opacity: 0.92;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(192, 56, 94, 0.38);
-}
-
-.cf-pc-btn svg {
-  flex-shrink: 0;
-}
+#cf-chat-widget.cf-dragging { cursor: grabbing !important; }
+#cf-chat-widget.cf-dragging * { cursor: grabbing !important; pointer-events: none; }
