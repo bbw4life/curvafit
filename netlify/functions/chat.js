@@ -28,30 +28,39 @@ function buildProductIndex(rawData) {
   const settings  = rawData.find(p => p.type === 'settings') || {};
 
   const products = allActive.map((item, index) => {
+    // FIX 4 : on inclut TOUTES les infos couleur avec image variant
     const colorsWithImages = (item.colors || [])
       .filter(c => c.active !== false)
       .map(c => ({
         name:  c.name,
-        hex:   c.hex || '',
-        // FIX 4: image spécifique à la couleur, sinon fallback image principale
-        image: c.image || item.image || ''
+        hex:   c.hex  || '',
+        image: c.image || item.image || ''   // image spécifique à la couleur
       }));
 
     const variantPrices = (item.variants || []).map(v => v.price).filter(Boolean);
     const minPrice = variantPrices.length ? Math.min(...variantPrices) : item.price;
 
+    // FIX 4 : on expose aussi les variants complets pour lookup image par couleur+taille
+    const variantsDetailed = (item.variants || []).map(v => ({
+      vid:   v.vid   || '',
+      color: v.color || '',
+      size:  v.size  || '',
+      price: v.price || item.price,
+      image: v.image || (item.colors || []).find(c => c.name === v.color)?.image || item.image || ''
+    }));
+
     return {
-      id:            item.id,
-      productNumber: index + 1,
-      title:         item.title,
-      description:   item.description,
-      price:         minPrice,
-      maxPrice:      item.price,
-      compare_price: item.compare_price,
-      image:         item.image,
-      colors:        colorsWithImages,
-      sizes:         item.sizes || [],
-      variants:      item.variants || [],
+      id:             item.id,
+      productNumber:  index + 1,
+      title:          item.title,
+      description:    item.description,
+      price:          minPrice,
+      maxPrice:       item.price,
+      compare_price:  item.compare_price,
+      image:          item.image,
+      colors:         colorsWithImages,
+      variants:       variantsDetailed,   // FIX 4 : variants complets
+      sizes:          item.sizes || [],
       discounts: {
         single: item.single_discount || 0,
         duo:    item.duo_discount    || 0,
@@ -71,20 +80,15 @@ function buildProductIndex(rawData) {
 
 /* ══════════════════════════════════════════════════════
    SMART INTENT DETECTION
-   Returns: 'product' | 'general'
-   Only 'product' shows product cards in the frontend
 ══════════════════════════════════════════════════════ */
 function detectIntent(message) {
   const q = message.toLowerCase();
 
-  // ── Explicit GENERAL patterns → never show products ──
   const generalPatterns = [
-    // Brand / founder / team
     /fondateur|founder|qui.+(fond|creat|créat)|paul|francenel/,
     /objectif|mission|but de curva|about curva|à propos/,
     /\bequipe\b|\bteam\b|\bstaff\b/,
     /c.est quoi curva|what is curva|what.s curva/,
-    // Health & science
     /cortisol|hormone|métabolis|metabolism|yo.yo|famine/,
     /pourquoi.+(prise|grossi|gain)|why.+(gain|weight gain)/,
     /comment.+(perdre|lose|maigrir)|how to lose|tips.+(lose|weight)/,
@@ -92,31 +96,23 @@ function detectIntent(message) {
     /sommeil|sleep.*weight|dormir/,
     /stress|anxiet|depress|mental|moral|confiance|confidence/,
     /plateau.+(normal|pourquoi|why)|normal.+plateau/,
-    // Programs (show info, not product cards)
     /programme?|program|plan.+coach|coaching|coach/,
     /beginner|débutant|intermédiaire|intermediate|maintenance/,
     /comment.+(fonctionne|work|works)|how.+(work|program)/,
     /s.inscrire|sign up|inscription/,
-    // Contact / human support
     /contact|joindre|reach|parler.+(humain|person|quelqu)/,
     /whatsapp|telegram|email.*support|mail.*support/,
     /support|aide.+(équipe|team)/,
-    // Nutrition (general advice, not product)
     /nutrition|manger|what to eat|quoi manger|food|aliment/,
     /calorie|deficit|protéine|protein|régime|diet/,
     /eau|water.*drink|hydrat/,
     /repas|meal.*plan|plan.*repas/,
-    // Results / timeline
     /résultat|result|combien.+temps|how long|semaine|week/,
     /visible.+(result|résultat)|quand.+voir/,
-    // Discount codes (just info, not shopping)
     /code.+promo|promo.+code|discount.+code|code.+réduction/,
-    // Delivery info general
     /livraison|shipping.+info|delivery.+time|délai/,
-    // Trust
     /fiable|reliable|trust|sûr|safe|médecin|doctor/,
     /pilule|pill|complément|supplement/,
-    // Greetings / small talk
     /^(bonjour|bonsoir|salut|hello|hi|hey|allo)\b/,
     /^(merci|thank|thanks|ok|okay|d.accord|super|parfait|génial|great)\b/,
   ];
@@ -125,7 +121,6 @@ function detectIntent(message) {
     if (pattern.test(q)) return 'general';
   }
 
-  // ── Explicit PRODUCT patterns → show product cards ──
   const productPatterns = [
     /acheter|buy|commander|order/,
     /produit|product|article/,
@@ -134,7 +129,6 @@ function detectIntent(message) {
     /montre.+(produit)|show.+(product|me)/,
     /meilleur.+(pour).+(ventre|belly|poids|weight|taille|waist)/,
     /best.+(for|pour).+(belly|ventre|weight|waist)/,
-    // Specific product categories
     /hula.?hoop|\bhoop\b/,
     /waist.?trainer|gainant/,
     /jump.?rope|corde.+sauter/,
@@ -151,10 +145,8 @@ function detectIntent(message) {
     /neck.?pillow|oreiller.+nuque/,
     /\bearbuds?\b|écouteur.+sport/,
     /tie.?dye/,
-    // Color/size shopping intent
     /quelle.+(couleur|taille).+disponible|available.+(color|size)/,
     /existe.+(couleur|taille)|come in.+(color|size)/,
-    // Price with shopping intent
     /\$\d+|under \$|moins de \$|budget.+(produit|product)/,
     /combien.+(coûte|cost).+(ce|this|le|la)/,
   ];
@@ -163,7 +155,6 @@ function detectIntent(message) {
     if (pattern.test(q)) return 'product';
   }
 
-  // Default: general (no products shown)
   return 'general';
 }
 
@@ -279,14 +270,6 @@ You are calm, human, and never robotic.
 You respond in the SAME LANGUAGE the user writes in (French or English).
 Use emojis naturally but do not overuse them.
 
-FORMATTING RULE — Always bold (**word**) these elements:
-- Founder name: **Paul Francenel**
-- Promo codes: **PAUL81**, **CURVA15**, **FITNESS25**, etc.
-- Important prices: **$29.99**
-- Recommended product names
-- Key data (important percentages, durations)
-- Important page links
-
 ═══════════════════════════════════════
 🚦 CRITICAL BEHAVIOR RULE
 ═══════════════════════════════════════
@@ -314,6 +297,30 @@ ONLY suggest products when the user:
 When in doubt → answer the question like a coach. No products.
 
 ═══════════════════════════════════════
+✍️ FORMATTING RULES — IMPORTANT
+═══════════════════════════════════════
+Always use **bold** (double asterisks) for these:
+- Founder name: always write **Paul Francenel**
+- All promo codes: write them as **CODE** (ex: **PAUL81**, **CURVA15**)
+- Product titles when mentioning them in text
+- Key numbers (prices, percentages, weights)
+- Important action words: **Order now**, **Click here**, **Free shipping**
+- Section headers in your reply when listing multiple items
+
+═══════════════════════════════════════
+🔗 LINKS & PAGES — FORMATTING RULE
+═══════════════════════════════════════
+NEVER write raw URLs like /products/product1.html or index.html.
+When you need to reference a page or link, use this exact format:
+[BUTTON:Label:url]
+Examples:
+- [BUTTON:Voir le produit:/products/product1.html]
+- [BUTTON:Nos programmes:/programs.html]
+- [BUTTON:Page de contact:/contact.html]
+- [BUTTON:Notre boutique:/shop.html]
+This will be rendered as a beautiful clickable button on the frontend.
+
+═══════════════════════════════════════
 🏢 ABOUT CURVAFIT
 ═══════════════════════════════════════
 Founder: **Paul Francenel**, 25 years old, entrepreneur. Not a doctor.
@@ -333,7 +340,7 @@ Science-based approach:
 ${programsText}
 
 How it works:
-- Plans available at /programs.html
+- Plans available → [BUTTON:Voir nos programmes:/programs.html]
 - After purchase: email + password sent automatically
 - Access to partner professional platform
 - Can update personal info at any time
@@ -342,11 +349,12 @@ How it works:
 🛍️ PRODUCTS — RULES
 ═══════════════════════════════════════
 NEVER use internal IDs (resistance-bands, yoga-mat, leggings, etc.)
-ALWAYS use the exact product Title
+ALWAYS use the exact product Title in **bold**
 ALWAYS use exact prices — never guess
 NEVER invent products not in the catalog
+NEVER write raw page URLs — use [BUTTON:label:url] format instead
 
-Discount codes:
+Discount codes (always bold the code):
 ${promosText}
 
 Free shipping over $${shipping.free_shipping_threshold || 120}
@@ -362,7 +370,7 @@ ${catalogText}
 - 3 structured meals/day, limit uncontrolled snacking
 - 2 liters of water daily
 - Eat until 80% full — satiety signal takes 20 minutes
-- Target: 300–500 calorie daily deficit
+- Target: **300–500 calorie** daily deficit
 - Sleep **7–8 hours** — critical for hunger hormones (ghrelin/leptin)
 - High cortisol from stress = more belly fat storage → manage stress
 
@@ -377,14 +385,15 @@ Always add when needed: "For any health concern, please consult a doctor."
 ═══════════════════════════════════════
 If user wants to speak to a human, is unhappy, or insists:
 "I understand 😊 Our team is here for you:
-👉 WhatsApp: ${socials.whatsapp || 'https://wa.me/contact'}
-👉 Contact page: /contact.html
+👉 **WhatsApp:** ${socials.whatsapp || 'https://wa.me/contact'}
+→ [BUTTON:Nous contacter:/contact.html]
 We'll be happy to help you personally!"
 
 ═══════════════════════════════════════
 🚫 NEVER
 ═══════════════════════════════════════
 - Send internal product IDs to the user
+- Write raw URLs like /products/product1.html or index.html
 - Invent prices or data
 - Promise guaranteed results
 - Give advanced medical advice
@@ -461,7 +470,7 @@ exports.handler = async (event, context) => {
     const reply = data.choices?.[0]?.message?.content
       || "I'm sorry, I couldn't generate a response. Please try again. 🙏";
 
-    // ── FIX 4: Format product cards with variant images ──
+    // ── Format product cards — FIX 4: include all variant images by color ──
     const productCards = relevantProducts.map(p => ({
       title:         p.title,
       description:   p.description,
@@ -469,11 +478,18 @@ exports.handler = async (event, context) => {
       compare_price: p.compare_price,
       url:           p.url,
       image:         p.image,
-      // FIX 4: each color includes its own variant image
+      // FIX 4: couleurs avec images variantes
       colors:        p.colors.map(c => ({
         name:  c.name,
         hex:   c.hex,
-        image: c.image || p.image   // variant image, fallback to main
+        image: c.image   // image spécifique à cette couleur
+      })),
+      // FIX 4: variants complets avec images
+      variants:      p.variants.map(v => ({
+        color: v.color,
+        size:  v.size,
+        price: v.price,
+        image: v.image
       })),
       sizes:         p.sizes,
       delivery:      formatDelivery(p.startDate, p.endDate),

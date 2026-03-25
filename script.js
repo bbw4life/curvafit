@@ -3449,13 +3449,13 @@ function initStockBar(cjId) {
 
 /* ================================================================
    CURVAFIT AI CHATBOT — FRONTEND JS
-   6 FIXES APPLIED (original code preserved):
-   FIX 1: Image whitespace → CSS only (see chatbot.css)
-   FIX 2: Product images clickable → wrapped in <a> link
-   FIX 3: Raw links → beautiful buttons
-   FIX 4: Variant color images on swatch hover
-   FIX 5: Important words bolded in AI response
-   FIX 6: Chat persists after page refresh (localStorage)
+   FIXES:
+   1. Espace blanc images → object-fit cover CSS
+   2. Images cliquables → redirect vers page produit
+   3. Liens bruts → beaux boutons [BUTTON:label:url]
+   4. Images variantes par couleur → swap sur clic swatch
+   5. Mots importants en gras → formatMarkdown amélioré
+   6. Persistance chat après refresh → localStorage
 ================================================================ */
 document.addEventListener('DOMContentLoaded', function () {
   (function () {
@@ -3477,6 +3477,71 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!widget || !toggle || !window_ || !messages || !input || !sendBtn) return;
 
+    /* ══════════════════════════════════════
+       FIX 6 — PERSISTANCE CHAT localStorage
+    ══════════════════════════════════════ */
+    const STORAGE_KEY_HISTORY  = 'cf_conversation_history';
+    const STORAGE_KEY_MESSAGES = 'cf_messages_html';
+    const STORAGE_KEY_OPEN     = 'cf_chat_open';
+    const STORAGE_KEY_CHIPS    = 'cf_chips_hidden';
+
+    function saveConversation() {
+      try {
+        localStorage.setItem(STORAGE_KEY_HISTORY,  JSON.stringify(conversationHistory));
+        localStorage.setItem(STORAGE_KEY_MESSAGES, messages.innerHTML);
+        localStorage.setItem(STORAGE_KEY_CHIPS,
+          document.getElementById('cf-quick-chips')?.style.display === 'none' ? '1' : '0'
+        );
+      } catch (e) { /* quota exceeded – ignore */ }
+    }
+
+    function loadConversation() {
+      try {
+        const savedHistory  = localStorage.getItem(STORAGE_KEY_HISTORY);
+        const savedMessages = localStorage.getItem(STORAGE_KEY_MESSAGES);
+        const chipsHidden   = localStorage.getItem(STORAGE_KEY_CHIPS);
+
+        if (savedHistory)  conversationHistory = JSON.parse(savedHistory);
+        if (savedMessages) {
+          messages.innerHTML = savedMessages;
+          // Ré-attacher les événements sur les cartes produit restaurées
+          reAttachRestoredCardEvents();
+        }
+        if (chipsHidden === '1') {
+          const chipsEl = document.getElementById('cf-quick-chips');
+          if (chipsEl) chipsEl.style.display = 'none';
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    /* Ré-attacher les liens sur les cartes produit après restauration HTML */
+    function reAttachRestoredCardEvents() {
+      messages.querySelectorAll('.cf-product-card').forEach(card => {
+        const url = card.dataset.productUrl;
+        if (!url) return;
+        // Image cliquable
+        const img = card.querySelector('.cf-pc-img');
+        if (img) {
+          img.style.cursor = 'pointer';
+          img.addEventListener('click', () => { window.location.href = url; });
+        }
+        // Swatches couleur
+        const swatches   = card.querySelectorAll('.cf-pc-swatch');
+        const colorLabel = card.querySelector('.cf-pc-color-label');
+        const mainImg    = card.querySelector('.cf-pc-img');
+        swatches.forEach(sw => {
+          const activate = () => {
+            swatches.forEach(s => s.classList.remove('cf-pc-swatch--active'));
+            sw.classList.add('cf-pc-swatch--active');
+            if (colorLabel) colorLabel.textContent = sw.dataset.name;
+            if (mainImg && sw.dataset.img) mainImg.src = sw.dataset.img;
+          };
+          sw.addEventListener('mouseenter', activate);
+          sw.addEventListener('click',      activate);
+        });
+      });
+    }
+
     /* ── State ── */
     let isOpen  = false;
     let isLoading = false;
@@ -3484,51 +3549,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let notifShown = false;
 
     /* ══════════════════════════════════════
-       FIX 6: PERSIST CHAT AFTER REFRESH
-    ══════════════════════════════════════ */
-    const CF_HISTORY_KEY  = 'cf_conv_history';
-    const CF_MESSAGES_KEY = 'cf_rendered_msgs';
-
-    function persistSave() {
-      try {
-        localStorage.setItem(CF_HISTORY_KEY, JSON.stringify(conversationHistory.slice(-20)));
-        const rendered = [];
-        messages.querySelectorAll('.cf-message').forEach(el => {
-          rendered.push({
-            role: el.classList.contains('cf-message--user') ? 'user' : 'ai',
-            html: el.innerHTML
-          });
-        });
-        localStorage.setItem(CF_MESSAGES_KEY, JSON.stringify(rendered.slice(-30)));
-      } catch (e) {}
-    }
-
-    function persistLoad() {
-      try {
-        const savedHistory = localStorage.getItem(CF_HISTORY_KEY);
-        if (savedHistory) conversationHistory = JSON.parse(savedHistory);
-
-        const savedMsgs = localStorage.getItem(CF_MESSAGES_KEY);
-        if (savedMsgs) {
-          const list = JSON.parse(savedMsgs);
-          if (list && list.length > 0) {
-            list.forEach(m => {
-              const el = document.createElement('div');
-              el.className = `cf-message cf-message--${m.role}`;
-              el.innerHTML = m.html;
-              _attachSwatchListeners(el);
-              messages.appendChild(el);
-            });
-            scrollToBottom();
-            return true;
-          }
-        }
-      } catch (e) {}
-      return false;
-    }
-
-    /* ══════════════════════════════════════
-       DRAGGABLE WIDGET (original — unchanged)
+       DRAGGABLE WIDGET
     ══════════════════════════════════════ */
     (function initDrag() {
       let isDragging = false;
@@ -3616,15 +3637,12 @@ document.addEventListener('DOMContentLoaded', function () {
       if (notifDot)  notifDot.style.display  = 'none';
       input.focus();
 
-      // FIX 6: restore persisted messages, else show welcome
-      if (messages.children.length === 0) {
-        const restored = persistLoad();
-        if (!restored) addWelcomeMessage();
-      }
+      /* FIX 6 : affiche le message de bienvenue seulement si chat vide */
+      if (messages.children.length === 0) addWelcomeMessage();
 
-      // Hide chips if conversation already started
-      const chipsEl = document.getElementById('cf-quick-chips');
-      if (chipsEl && messages.children.length > 1) chipsEl.style.display = 'none';
+      /* FIX 6 : sauvegarder état ouvert */
+      try { localStorage.setItem(STORAGE_KEY_OPEN, '1'); } catch(e) {}
+      scrollToBottom();
     }
 
     function closeChat() {
@@ -3633,6 +3651,7 @@ document.addEventListener('DOMContentLoaded', function () {
       window_.setAttribute('aria-hidden', 'true');
       if (iconOpen)  iconOpen.style.display  = '';
       if (iconClose) iconClose.style.display = 'none';
+      try { localStorage.setItem(STORAGE_KEY_OPEN, '0'); } catch(e) {}
     }
 
     if (closeBtn) closeBtn.addEventListener('click', closeChat);
@@ -3648,19 +3667,18 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ── Welcome ── */
     function addWelcomeMessage() {
       addMessage(
-        `Hi! 👋 I'm **Curva**, your personal CurvaFit coach!\n\nI'm here to help you with:\n- 🔥 Weight loss tips & advice\n- 🥗 Nutrition guidance\n- 💪 Product recommendations\n- 📋 Programs & coaching plans\n\nWhat can I help you with today? 😊`,
+        `Bonjour ! 👋 Je suis **Curva**, votre coach personnel CurvaFit !\n\nJe suis là pour vous aider avec :\n- 🔥 Conseils minceur & perte de poids\n- 🥗 Guidance nutrition\n- 💪 Recommandations produits\n- 📋 Programmes & plans de coaching\n\nComment puis-je vous aider aujourd'hui ? 😊`,
         'ai',
         []
       );
     }
 
     /* ══════════════════════════════════════
-       FIX 3 & 5: FORMAT MARKDOWN
-       - Raw links → pretty buttons
-       - Important words → bold
+       FIX 5 — FORMAT MARKDOWN AMÉLIORÉ
+       + FIX 3 — Boutons pour les liens [BUTTON:label:url]
     ══════════════════════════════════════ */
     function formatMarkdown(text) {
-      // Strip internal IDs
+      // Supprimer les IDs internes
       const internalIds = [
         'resistance-bands','yoga-mat','leggings','sports-bra',
         'hydration-bottle','workout-towel','fitness-tracker','protein-shaker',
@@ -3672,56 +3690,48 @@ document.addEventListener('DOMContentLoaded', function () {
         out = out.replace(new RegExp('\\b' + id + '\\b', 'gi'), '');
       });
 
-      // FIX 3: Markdown links [label](url) → pretty button
+      // FIX 3 : Convertir [BUTTON:label:url] → bouton HTML cliquable
       out = out.replace(
-        /\[([^\]]+)\]\((\/[^\s)]+|https?:\/\/[^\s)]+)\)/g,
-        (match, label, url) => _makeLinkBtn(label, url)
-      );
-
-      // FIX 3: bare local paths like /contact.html /products/product1.html → button
-      // Must not match URLs already inside href="" or src=""
-      out = out.replace(
-        /(?<![=\w"'`])(\/(?:products\/product\d+|[a-z0-9\-_/]+)\.html)/g,
-        (match) => {
-          // Build a readable label from the path
-          const slug = match.replace(/^\//, '').replace('.html', '').replace(/\//g, ' › ');
-          const label = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-          return _makeLinkBtn(label || 'View Page', match);
+        /\[BUTTON:([^\]|:]+):([^\]]+)\]/g,
+        (_, label, url) => {
+          const cleanUrl = url.trim();
+          const cleanLabel = label.trim();
+          return `<a href="${cleanUrl}" class="cf-inline-btn" target="_self">
+            <span>${cleanLabel}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </a>`;
         }
       );
 
-      // FIX 3: bare WhatsApp / https links that are not already in href
+      // FIX 3 : Supprimer les liens Markdown restants, garder juste le texte en gras
+      out = out.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<strong>$1</strong>');
+
+      // FIX 3 : Remplacer les URLs brutes restantes par un texte neutre
       out = out.replace(
-        /(?<![=\w"'`])(https?:\/\/wa\.me\/[^\s<"]+)/g,
-        (match) => _makeWABtn(match)
+        /(?<!\[)(https?:\/\/[^\s<>"]+|\/[a-z0-9\-._/]+\.html)(?!\])/gi,
+        (match) => {
+          // Ignorer si déjà dans un href
+          return `<em class="cf-url-hidden">[lien]</em>`;
+        }
       );
 
-      // FIX 5: bold **text**
-      out = out.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-      // italic *text*
-      out = out.replace(/\*(.+?)\*/g, '<em>$1</em>');
-      // code `text`
-      out = out.replace(/`(.+?)`/g, '<code>$1</code>');
+      // FIX 5 : Mettre en gras les codes promo (format XXXX00 en majuscules)
+      out = out.replace(
+        /\b([A-Z]{2,}[0-9]{1,3})\b/g,
+        '<strong class="cf-promo-code">$1</strong>'
+      );
 
-      // Line breaks
-      out = out.replace(/\n\n/g, '<br><br>');
-      out = out.replace(/\n/g,   '<br>');
+      // Markdown standard
+      out = out
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g,     '<em>$1</em>')
+        .replace(/`(.+?)`/g,       '<code>$1</code>')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g,   '<br>');
 
       return out;
-    }
-
-    function _makeLinkBtn(label, url) {
-      return `<a href="${url}" class="cf-msg-link-btn" onclick="event.stopPropagation()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
-        ${label}
-      </a>`;
-    }
-
-    function _makeWABtn(url) {
-      return `<a href="${url}" class="cf-msg-link-btn cf-msg-link-btn--wa" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        WhatsApp
-      </a>`;
     }
 
     function getTime() {
@@ -3729,31 +3739,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ══════════════════════════════════════
-       FIX 4: Re-attach swatch listeners
-       (needed after localStorage restore)
-    ══════════════════════════════════════ */
-    function _attachSwatchListeners(container) {
-      const swatches   = container.querySelectorAll('.cf-pc-swatch');
-      const colorLabel = container.querySelector('.cf-pc-color-label');
-      const mainImg    = container.querySelector('.cf-pc-img');
-
-      swatches.forEach(sw => {
-        const activate = () => {
-          swatches.forEach(s => s.classList.remove('cf-pc-swatch--active'));
-          sw.classList.add('cf-pc-swatch--active');
-          if (colorLabel) colorLabel.textContent = sw.dataset.name;
-          // FIX 4: switch to variant image
-          if (mainImg && sw.dataset.img && sw.dataset.img !== '') {
-            mainImg.src = sw.dataset.img;
-          }
-        };
-        sw.addEventListener('mouseenter', activate);
-        sw.addEventListener('click',      activate);
-      });
-    }
-
-    /* ══════════════════════════════════════
        ADD MESSAGE
+       FIX 1 : image sans espace blanc
+       FIX 2 : image cliquable → page produit
+       FIX 4 : swatch → image variante
     ══════════════════════════════════════ */
     function addMessage(text, role, products) {
       const msgEl  = document.createElement('div');
@@ -3773,32 +3762,31 @@ document.addEventListener('DOMContentLoaded', function () {
         products.forEach(p => {
           const card = document.createElement('div');
           card.className = 'cf-product-card';
+          card.dataset.productUrl = p.url; // FIX 2 : stocker l'URL pour persistance
 
-          /* FIX 1 & 2: Image — no whitespace + clickable */
+          /* ── FIX 1 : image sans espace blanc (pas de hauteur fixe vide) ── */
           let imgHTML = '';
           if (p.image) {
             imgHTML = `
               <div class="cf-pc-img-wrap">
-                <a href="${p.url}" class="cf-pc-img-link" onclick="event.stopPropagation()">
-                  <img class="cf-pc-img" src="${p.image}" alt="${p.title}" loading="lazy"
-                       onerror="this.closest('.cf-pc-img-wrap').style.display='none'">
-                </a>
+                <img class="cf-pc-img" src="${p.image}" alt="${p.title}" loading="lazy"
+                     onerror="this.parentElement.style.display='none'">
               </div>`;
           }
 
-          /* Rating */
+          /* ── Rating ── */
           const ratingHTML = p.rating
             ? `<div class="cf-pc-rating">⭐ ${p.rating}/5</div>`
             : '';
 
-          /* Price */
+          /* ── Price ── */
           const priceHTML = `
             <div class="cf-pc-price">
               <span class="cf-pc-price-current">$${Number(p.price).toFixed(2)}</span>
               <span class="cf-pc-price-compare">$${Number(p.compare_price).toFixed(2)}</span>
             </div>`;
 
-          /* FIX 4: swatches with data-img for variant images */
+          /* ── FIX 4 : couleurs avec images variantes ── */
           let colorsHTML = '';
           if (p.colors && p.colors.length > 0) {
             const swatchesHTML = p.colors.slice(0, 6).map(c => `
@@ -3816,18 +3804,18 @@ document.addEventListener('DOMContentLoaded', function () {
               <div class="cf-pc-color-label"></div>`;
           }
 
-          /* Sizes */
+          /* ── Sizes ── */
           const sizesHTML = (p.sizes && p.sizes.length > 0)
-            ? `<div class="cf-pc-sizes"><strong>Sizes:</strong> ${p.sizes.join(' · ')}</div>` : '';
+            ? `<div class="cf-pc-sizes"><strong>Tailles :</strong> ${p.sizes.join(' · ')}</div>` : '';
 
-          /* Delivery */
+          /* ── Delivery ── */
           const deliveryHTML = p.delivery
             ? `<div class="cf-pc-delivery">🚚 ${p.delivery}</div>` : '';
 
-          /* FIX 3: CTA as a proper button */
+          /* ── FIX 2 : CTA bouton ET image cliquable ── */
           const ctaHTML = `
             <a href="${p.url}" class="cf-pc-btn" onclick="event.stopPropagation()">
-              View Product
+              <span>Voir le produit</span>
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
                 <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
               </svg>
@@ -3845,8 +3833,32 @@ document.addEventListener('DOMContentLoaded', function () {
               ${ctaHTML}
             </div>`;
 
-          /* FIX 4: attach swatch listeners */
-          _attachSwatchListeners(card);
+          /* ── FIX 2 : Image cliquable → page produit ── */
+          const mainImg = card.querySelector('.cf-pc-img');
+          if (mainImg) {
+            mainImg.style.cursor = 'pointer';
+            mainImg.addEventListener('click', () => {
+              window.location.href = p.url;
+            });
+          }
+
+          /* ── FIX 4 : Swatch → change image variante ── */
+          const swatches   = card.querySelectorAll('.cf-pc-swatch');
+          const colorLabel = card.querySelector('.cf-pc-color-label');
+
+          swatches.forEach(sw => {
+            const activate = () => {
+              swatches.forEach(s => s.classList.remove('cf-pc-swatch--active'));
+              sw.classList.add('cf-pc-swatch--active');
+              if (colorLabel) colorLabel.textContent = sw.dataset.name;
+              /* FIX 4 : swap image si la couleur a une image variante */
+              if (mainImg && sw.dataset.img && sw.dataset.img.trim() !== '') {
+                mainImg.src = sw.dataset.img;
+              }
+            };
+            sw.addEventListener('mouseenter', activate);
+            sw.addEventListener('click',      activate);
+          });
 
           cardsWrap.appendChild(card);
         });
@@ -3863,13 +3875,13 @@ document.addEventListener('DOMContentLoaded', function () {
       messages.appendChild(msgEl);
       scrollToBottom();
 
-      // FIX 6: save after every message
-      persistSave();
+      /* FIX 6 : sauvegarder après chaque message */
+      saveConversation();
     }
 
     function addErrorMessage() {
       addMessage(
-        "Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏",
+        "Désolée, j'ai un petit problème en ce moment. Veuillez réessayer dans un instant ! 🙏",
         'ai', []
       );
     }
@@ -3916,7 +3928,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const data = await response.json();
         if (data.error) throw new Error(data.error);
 
-        const aiReply  = data.reply    || "I'm not sure how to answer that. Could you rephrase? 😊";
+        const aiReply  = data.reply    || "Je ne suis pas sûre de comprendre. Pourriez-vous reformuler ? 😊";
         const products = data.products || [];
 
         addMessage(aiReply, 'ai', products);
@@ -3975,9 +3987,20 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isOpen && !widget.contains(e.target)) closeChat();
     });
 
-    console.log('✅ CurvaFit Chatbot ready');
+    /* ══════════════════════════════════════
+       FIX 6 : INITIALISATION — charger la conversation sauvegardée
+    ══════════════════════════════════════ */
+    loadConversation();
+
+    /* Ré-ouvrir le chat si c'était ouvert avant le refresh */
+    const wasOpen = localStorage.getItem(STORAGE_KEY_OPEN);
+    if (wasOpen === '1') {
+      openChat();
+    }
+
+    console.log('✅ CurvaFit Chatbot (Curva Support) ready — v2.0 with 6 fixes');
   })();
-}); // end DOMContentLoaded
+});
 
 
 
