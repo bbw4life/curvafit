@@ -267,7 +267,7 @@ function searchProducts(query, products) {
       if (p.id === t.id && t.words.some(w => q.includes(w))) score += t.boost;
     });
 
-    if ((q.includes('cheap') || q.includes('budget') || q.includes('pas cher') || q.includes('barato') || q.includes('económico')) && p.price < 20) score += 5;
+    if ((q.includes('cheap') || q.includes('budget') || q.includes('pas cher') || q.includes('barato') || q.includes('économico')) && p.price < 20) score += 5;
 
     return { ...p, score };
   });
@@ -278,27 +278,18 @@ function searchProducts(query, products) {
 
   if (filtered.length === 0) return { results: [], isVague: false };
 
-  /* 
-   * Logique de précision :
-   * - Si le meilleur score est très élevé (>=14) et nettement supérieur au 2e → 1 produit précis
-   * - Si la demande est vague (plusieurs produits avec scores proches) → jusqu'à 4 + flag isVague
-   * - Sinon → 1-2 produits max
-   */
   const topScore    = filtered[0].score;
   const secondScore = filtered[1]?.score || 0;
   const gap         = topScore - secondScore;
 
-  /* Demande précise : score élevé ET écart significatif avec le 2e */
   if (topScore >= 14 && gap >= 6) {
     return { results: filtered.slice(0, 1), isVague: false };
   }
 
-  /* Demande vague : beaucoup de résultats proches → montrer jusqu'à 4 et demander confirmation */
   if (filtered.length >= 3 && gap <= 4) {
     return { results: filtered.slice(0, 4), isVague: true };
   }
 
-  /* Cas intermédiaire : 1-2 produits pertinents */
   return { results: filtered.slice(0, 2), isVague: false };
 }
 
@@ -353,7 +344,6 @@ PRODUCT ${i + 1}:
   Page: ${p.url}`;
   }).join('\n');
 
-  /* Build contact channels list based on what's configured */
   const contactChannels = [];
   if (contactInfo.hasWhatsapp) contactChannels.push('WhatsApp (button below)');
   if (contactInfo.hasTelegram) contactChannels.push('Telegram (button below)');
@@ -410,13 +400,44 @@ Use **bold** for: **Paul Francenel**, **CurvaFit**, promo codes, product names, 
    NEVER write a URL. NEVER write a phone number. Just reference "the button below".
 
 ═══════════════════════════════════════
-🚦 CRITICAL BEHAVIOR RULES
+🚦 CRITICAL BEHAVIOR RULES — NON-NEGOTIABLE
 ═══════════════════════════════════════
 NEVER suggest products for: brand info, nutrition advice, program info,
 contact requests, promo code questions, greetings, small talk,
 account questions, checkout questions, shipping questions (general).
 
 ONLY suggest products when user explicitly asks to buy or mentions a specific product type.
+
+🚫 CONTACT BUTTONS — ABSOLUTE RULE — READ CAREFULLY:
+The frontend shows contact buttons (WhatsApp, Telegram, Contact page) ONLY when you end your reply with 👇.
+
+You MUST NEVER end with 👇 unless the user is EXPLICITLY asking HOW to contact the team,
+HOW to send a message, or HOW to reach a human agent.
+
+FORBIDDEN triggers for 👇 — these MUST NOT show contact buttons:
+❌ "bonjour" / "hello" / "hola" — greetings NEVER show contact buttons
+❌ "qui est Paul Francenel" — founder info is NOT a contact request
+❌ "parle-moi de votre équipe" — team info is NOT a contact request
+❌ "c'est quoi CurvaFit" — brand info is NOT a contact request
+❌ "comment fonctionne votre programme" — program info is NOT a contact request
+❌ "quels sont vos réseaux sociaux" — social links are NOT contact requests
+❌ Any question about nutrition, products, shipping, pricing, results
+
+ALLOWED triggers for 👇 — ONLY these may show contact buttons:
+✅ "comment vous contacter / joindre / écrire"
+✅ "je veux parler à un humain / agent / conseiller"
+✅ "puis-je laisser un message à votre équipe"
+✅ "quel est votre WhatsApp / Telegram / email"
+✅ "j'ai besoin du service client / support"
+✅ "how can I contact you / reach you / message you"
+✅ "I want to speak to a human / real person / agent"
+✅ "can I leave a message for your team"
+✅ "what is your WhatsApp / Telegram / email"
+✅ "I need customer support / customer service"
+✅ "cómo los contacto / quiero hablar con alguien / servicio al cliente"
+
+DEFAULT RULE: If in any doubt → do NOT add 👇.
+Omitting the contact buttons is ALWAYS safer than showing them by mistake.
 
 ═══════════════════════════════════════
 🛒 PRODUCT DISPLAY RULES — VERY IMPORTANT
@@ -536,7 +557,8 @@ ${catalogText}
 - Invent prices or data
 - Promise guaranteed results
 - Reply in a different language than the user's message
-- Show multiple unrelated products when user asked for something specific`;
+- Show multiple unrelated products when user asked for something specific
+- Add 👇 unless the user is EXPLICITLY asking how to contact or reach the team`;
 }
 
 /* ── Fallback / Error messages ── */
@@ -598,7 +620,7 @@ exports.handler = async (event, context) => {
 
     const intent = detectIntent(message);
 
-    /* ── Recherche produits avec nouvelle logique de précision ── */
+    /* ── Recherche produits ── */
     let relevantProducts = [];
     let isVague = false;
 
@@ -608,27 +630,53 @@ exports.handler = async (event, context) => {
       isVague            = searchResult.isVague;
     }
 
-    /* Detect if this is a contact-related message
-       STRICT: only when user EXPLICITLY asks to contact a human / reach the team */
+    /* ══════════════════════════════════════════════════════
+       CONTACT INTENT DETECTION — STRICT
+       Boutons contact UNIQUEMENT si l'utilisateur demande
+       EXPLICITEMENT comment contacter / joindre l'équipe.
+       Jamais pour : salutations, infos fondateur, équipe,
+       réseaux sociaux, programmes, nutrition, produits.
+    ══════════════════════════════════════════════════════ */
     const EXPLICIT_CONTACT_PATTERNS = [
-      /parler\s+(à\s+)?(un\s+)?(humain|agent|conseiller|quelqu|personne réelle)/i,
+      // FRENCH — demande explicite de contact humain ou de message
+      /parler\s+(à\s+)?(un\s+)?(humain|agent|conseiller|quelqu|personne\s+réelle)/i,
+      /joindre\s+(votre|l['']|notre)?\s*(équipe|support|service)/i,
+      /contacter\s+(votre|l['']|notre)?\s*(équipe|support|service|team)/i,
+      /laisser\s+un\s+message/i,
+      /envoyer\s+un\s+message\s+à\s+(l['']équipe|votre|curva)/i,
+      /service\s+client/i,
+      /comment\s+(vous\s+)?(contacter|joindre|écrire)/i,
+      /je\s+veux\s+(vous\s+)?(contacter|écrire|parler\s+à)/i,
+      /moyen\s+de\s+contact/i,
+      /comment\s+vous\s+écrire/i,
+      /comment\s+vous\s+rejoindre/i,
+      /votre\s+(whatsapp|telegram|email|mail)\b/i,
+
+      // ENGLISH — explicit request to contact or reach the team
       /speak\s+(to\s+)?(a\s+)?(human|agent|person|someone|real)/i,
-      /hablar\s+(con\s+)?(un\s+)?(humano|agente|persona|alguien)/i,
-      /\bjoindre\s+(votre|l'|notre)?\s*(équipe|support|service)\b/i,
-      /\bcontacter\s+(votre|l'|notre)?\s*(équipe|support|service|team)\b/i,
-      /\bcontact\s+(your|the|our)?\s*(team|support|us|service)\b/i,
-      /\bcontactar\s+(a\s+)?(su|tu|el|nuestro)?\s*(equipo|soporte|servicio)\b/i,
-      /\blaisser\s+un\s+message\b/i,
-      /\bleave\s+(a\s+)?message\b/i,
-      /\bdejar\s+un\s+mensaje\b/i,
-      /\bservice\s+client\b/i,
-      /\bcustomer\s+service\b/i,
-      /\bservicio\s+al\s+cliente\b/i,
-      /\bwhatsapp\b.*\b(vous|team|equipo|contacter|contact)\b/i,
-      /\btelegram\b.*\b(vous|team|equipo|contacter|contact)\b/i,
-      /envoyer\s+un\s+message\s+à\s+(l'équipe|votre|curva)/i,
+      /contact\s+(your|the|our)?\s*(team|support|us|service)/i,
+      /leave\s+(a\s+)?message/i,
       /send\s+(a\s+)?message\s+to\s+(the\s+)?(team|you|curva)/i,
+      /customer\s+service/i,
+      /how\s+(can\s+I\s+)?(contact|reach|message)\s+(you|the\s+team)/i,
+      /I\s+want\s+to\s+(contact|reach|talk\s+to)\s+(you|the\s+team)/i,
+      /how\s+do\s+I\s+reach\s+you/i,
+      /ways?\s+to\s+contact/i,
+      /get\s+in\s+touch/i,
+      /your\s+(whatsapp|telegram|email)\b/i,
+
+      // SPANISH — petición explícita de contacto
+      /hablar\s+(con\s+)?(un\s+)?(humano|agente|persona|alguien)/i,
+      /contactar\s+(a\s+)?(su|tu|el|nuestro)?\s*(equipo|soporte|servicio)/i,
+      /dejar\s+un\s+mensaje/i,
+      /servicio\s+al\s+cliente/i,
+      /cómo\s+(puedo\s+)?(contactar|escribir|hablar\s+con)\s+(ustedes|el\s+equipo)/i,
+      /medios?\s+de\s+contacto/i,
+      /su\s+(whatsapp|telegram|email)\b/i,
     ];
+
+    // STRICT: contact buttons only if the user EXPLICITLY asks to contact someone.
+    // NOT for: greetings, founder info, team info, social media, general questions.
     const isContactIntent = intent !== 'product' && EXPLICIT_CONTACT_PATTERNS.some(p => p.test(message));
 
     const systemPrompt = buildSystemPrompt(products, settings, contactInfo);
@@ -639,10 +687,10 @@ exports.handler = async (event, context) => {
       : '\n[SPECIFIC PRODUCT REQUEST: Show ONLY the 1 most relevant product. Do NOT show others.]';
 
     const langInstruction = userLang === 'fr'
-      ? 'REMINDER: The user wrote in FRENCH. Your entire reply MUST be in FRENCH. End with 👇 if contact-related.'
+      ? 'REMINDER: The user wrote in FRENCH. Your entire reply MUST be in FRENCH. End with 👇 ONLY if the user explicitly asked how to contact or reach the team.'
       : userLang === 'es'
-      ? 'REMINDER: The user wrote in SPANISH. Your entire reply MUST be in SPANISH. End with 👇 if contact-related.'
-      : 'REMINDER: The user wrote in ENGLISH. Your entire reply MUST be in ENGLISH. End with 👇 if contact-related.';
+      ? 'REMINDER: The user wrote in SPANISH. Your entire reply MUST be in SPANISH. End with 👇 ONLY if the user explicitly asked how to contact or reach the team.'
+      : 'REMINDER: The user wrote in ENGLISH. Your entire reply MUST be in ENGLISH. End with 👇 ONLY if the user explicitly asked how to contact or reach the team.';
 
     const productContext = intent === 'product'
       ? vagueInstruction
@@ -728,8 +776,10 @@ exports.handler = async (event, context) => {
     const reply = data.choices?.[0]?.message?.content || getErrorMessage(userLang);
 
     /* Detect if AI signaled to show contact buttons (👇 at end)
-       NEVER show contact buttons when intent is product */
-    const showContactButtons = intent !== 'product' && (isContactIntent || reply.includes('👇'));
+       DOUBLE GUARD: intent !== 'product' AND isContactIntent must be true
+       OR the AI added 👇 AND isContactIntent is true.
+       NEVER show contact buttons based on 👇 alone — must be confirmed by isContactIntent. */
+    const showContactButtons = intent !== 'product' && isContactIntent && reply.includes('👇');
     const cleanReply = reply.replace(/👇\s*$/m, '').trim();
 
     /* Product cards */
