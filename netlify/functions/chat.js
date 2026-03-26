@@ -22,6 +22,48 @@ async function loadProductsData() {
   return res.json();
 }
 
+/* ── IMPROVEMENT #3: Load search.data.json ── */
+async function loadSearchData() {
+  const localPaths = [
+    path.join(process.cwd(), 'search.data.json'),
+    path.join(process.cwd(), 'public', 'search.data.json'),
+    path.join(__dirname, '..', '..', 'search.data.json'),
+    path.join(__dirname, '..', '..', 'public', 'search.data.json'),
+  ];
+  for (const p of localPaths) {
+    try {
+      if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf8'));
+    } catch (e) { /* continue */ }
+  }
+  try {
+    const siteUrl = process.env.SITE_URL || process.env.URL || 'https://curvafit.com';
+    const res = await fetch(`${siteUrl}/search.data.json`);
+    if (res.ok) return res.json();
+  } catch (e) { /* ignore */ }
+  return null;
+}
+
+/* ── IMPROVEMENT #3: Load blog/blog-articles.json ── */
+async function loadBlogArticles() {
+  const localPaths = [
+    path.join(process.cwd(), 'blog', 'blog-articles.json'),
+    path.join(process.cwd(), 'public', 'blog', 'blog-articles.json'),
+    path.join(__dirname, '..', '..', 'blog', 'blog-articles.json'),
+    path.join(__dirname, '..', '..', 'public', 'blog', 'blog-articles.json'),
+  ];
+  for (const p of localPaths) {
+    try {
+      if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf8'));
+    } catch (e) { /* continue */ }
+  }
+  try {
+    const siteUrl = process.env.SITE_URL || process.env.URL || 'https://curvafit.com';
+    const res = await fetch(`${siteUrl}/blog/blog-articles.json`);
+    if (res.ok) return res.json();
+  } catch (e) { /* ignore */ }
+  return null;
+}
+
 /* ── Build product index ── */
 function buildProductIndex(rawData) {
   const allActive = rawData.filter(p => p.type !== 'settings' && p.id && p.active);
@@ -118,7 +160,7 @@ function detectIntent(message) {
   const q = message.toLowerCase();
 
   const generalPatterns = [
-    /fondateur|founder|qui.+(fond|creat|créat)|paul|francenel/,
+    /fondateur|founder|qui.+(fond|cre[aé]t)|paul|francenel/,
     /objectif|mission|but de curva|about curva|à propos/,
     /\bequipe\b|\bteam\b|\bstaff\b/,
     /c.est quoi curva|what is curva|what.s curva/,
@@ -154,6 +196,9 @@ function detectIntent(message) {
     /contacto|soporte|ayuda.+equipo/,
     /envío|envio|tiempo.+entrega|costo.+envío/,
     /código.+descuento|descuento.+código|promo/,
+    /* ── BLOG patterns ── */
+    /\bblog\b|\barticle\b|\bpost\b|\bread\b|\blire\b|\barticles?\b/,
+    /derniers?.+article|latest.+article|nouveaux?.+article/,
     /* ── ACCOUNT PAGE patterns ── */
     /\bcompte\b|\baccount\b|\bcuenta\b/,
     /mon profil|my profile|mi perfil/,
@@ -226,7 +271,7 @@ function detectIntent(message) {
 }
 
 /* ══════════════════════════════════════════════════════
-   PRODUCT SEARCH — MODIFIÉ : précision + limite intelligente
+   PRODUCT SEARCH
 ══════════════════════════════════════════════════════ */
 function searchProducts(query, products) {
   if (!query) return { results: [], isVague: false };
@@ -305,19 +350,138 @@ function formatDelivery(startDate, endDate) {
 }
 
 /* ══════════════════════════════════════════════════════
+   IMPROVEMENT #3: Build search data context
+══════════════════════════════════════════════════════ */
+function buildSearchDataContext(searchData) {
+  if (!searchData || !Array.isArray(searchData)) return '';
+
+  const pages    = searchData.filter(i => i.type === 'page');
+  const programs = searchData.filter(i => i.type === 'program');
+  const coaches  = searchData.filter(i => i.type === 'coach');
+  const features = searchData.filter(i => i.type === 'feature');
+  const products = searchData.filter(i => i.type === 'product');
+  const policies = searchData.filter(i => i.type === 'policy');
+  const blogs    = searchData.filter(i => i.type === 'blog');
+
+  let text = '';
+
+  if (pages.length) {
+    text += '\nSITE PAGES:\n';
+    pages.forEach(p => {
+      text += `  • ${p.title} → ${p.url}\n`;
+    });
+  }
+
+  if (programs.length) {
+    text += '\nPROGRAMS:\n';
+    programs.forEach(p => {
+      text += `  • ${p.title} → ${p.url}\n`;
+    });
+  }
+
+  if (coaches.length) {
+    text += '\nCOACHES:\n';
+    coaches.forEach(p => {
+      text += `  • ${p.title} → ${p.url}\n`;
+    });
+  }
+
+  if (features.length) {
+    text += '\nFEATURES:\n';
+    features.forEach(p => {
+      text += `  • ${p.title} → ${p.url}\n`;
+    });
+  }
+
+  if (products.length) {
+    text += '\nPRODUCT PAGES (from search data):\n';
+    products.forEach(p => {
+      text += `  • ${p.title} → ${p.url}\n`;
+    });
+  }
+
+  if (policies.length) {
+    text += '\nPOLICIES:\n';
+    policies.forEach(p => {
+      text += `  • ${p.title} → ${p.url}\n`;
+    });
+  }
+
+  if (blogs.length) {
+    text += '\nBLOG ARTICLES (from search data):\n';
+    blogs.forEach(p => {
+      text += `  • ${p.title} → ${p.url}\n`;
+    });
+  }
+
+  return text;
+}
+
+/* ══════════════════════════════════════════════════════
+   IMPROVEMENT #3: Build blog articles context
+══════════════════════════════════════════════════════ */
+function buildBlogContext(blogData) {
+  if (!blogData) return '';
+
+  // Handle both array format and object format (e.g. { articles: [...] })
+  let articles = [];
+  if (Array.isArray(blogData)) {
+    articles = blogData;
+  } else if (blogData.articles && Array.isArray(blogData.articles)) {
+    articles = blogData.articles;
+  } else if (typeof blogData === 'object') {
+    // Try to extract any array value
+    const keys = Object.keys(blogData);
+    for (const key of keys) {
+      if (Array.isArray(blogData[key])) {
+        articles = blogData[key];
+        break;
+      }
+    }
+  }
+
+  if (!articles.length) return '';
+
+  let text = '\nBLOG ARTICLES (live from blog-articles.json):\n';
+  articles.forEach(a => {
+    const title    = a.title    || a.name    || 'Untitled';
+    const url      = a.url      || a.slug    || a.link    || '/blog/blog.html';
+    const summary  = a.summary  || a.excerpt || a.description || '';
+    const category = a.category || a.tag     || '';
+    const date     = a.date     || a.published_at || '';
+
+    text += `  • "${title}"`;
+    if (category) text += ` [${category}]`;
+    if (date)     text += ` (${date})`;
+    text += ` → ${url}`;
+    if (summary)  text += `\n    Summary: ${summary.substring(0, 150)}${summary.length > 150 ? '...' : ''}`;
+    text += '\n';
+  });
+
+  return text;
+}
+
+/* ══════════════════════════════════════════════════════
    BUILD SYSTEM PROMPT
 ══════════════════════════════════════════════════════ */
-function buildSystemPrompt(products, settings, contactInfo) {
+function buildSystemPrompt(products, settings, contactInfo, searchData, blogData) {
   const programs = settings.programs     || {};
   const promos   = settings.promos       || [];
   const shipping = settings.cart_drawer  || {};
+
+  /* ── IMPROVEMENT #1: Read tax_rate & shipping_cost from settings ── */
+  const taxRate         = settings.tax_rate      || 0.1;
+  const shippingCost    = settings.shipping_cost || 10.0;
+  const taxPercent      = Math.round(taxRate * 100);
+  const freeShipThresh  = shipping.free_shipping_threshold || 120;
 
   const programsText = Object.entries(programs)
     .map(([, val]) => `• ${val.label}: $${val.price}`)
     .join('\n');
 
+  /* ── IMPROVEMENT #2: Highlight promo codes with formatting markers ── */
   const promosText = promos.length
-    ? promos.map(p => `• Code "${p.code}" → ${p.percent}% off on ${p.items}+ items`).join('\n')
+    ? promos.map(p => `• Code **[[${p.code}]]** → **${p.percent}% off** on ${p.items}+ items`).join('\n')
     : '• No active promo codes at this time';
 
   const catalogText = products.map((p, i) => {
@@ -349,6 +513,10 @@ PRODUCT ${i + 1}:
   if (contactInfo.hasTelegram) contactChannels.push('Telegram (button below)');
   contactChannels.push('Contact page (button below)');
   const contactChannelsText = contactChannels.join(' · ');
+
+  /* ── IMPROVEMENT #3: Build search & blog context ── */
+  const searchContext = buildSearchDataContext(searchData);
+  const blogContext   = buildBlogContext(blogData);
 
   return `You are **Curva**, the official AI assistant and fitness coach of CurvaFit.
 
@@ -384,7 +552,13 @@ If unsure about the language, default to ENGLISH.
 ═══════════════════════════════════════
 ✏️ FORMATTING RULES — CRITICAL
 ═══════════════════════════════════════
-Use **bold** for: **Paul Francenel**, **CurvaFit**, promo codes, product names, key prices.
+Use **bold** for: **Paul Francenel**, **CurvaFit**, product names, key prices.
+
+🎟️ PROMO CODE FORMATTING — VERY IMPORTANT:
+When displaying a promo code, ALWAYS use this exact format: **[[CODE]]**
+Example: The code **[[CURVA15]]** gives you **20% off** on 4+ items.
+The frontend will render [[CODE]] with a special highlighted style automatically.
+NEVER display a promo code without the [[...]] markers.
 
 🚫 ABSOLUTE RULE — NEVER display any raw URL or link in your text.
    Examples of what is FORBIDDEN:
@@ -480,11 +654,19 @@ Goal: Help plus-size women transform their lives healthily and sustainably.
 ${programsText}
 
 ═══════════════════════════════════════
-🎟️ PROMO CODES
+🎟️ PROMO CODES — ALWAYS use [[CODE]] format when displaying
 ═══════════════════════════════════════
 ${promosText}
 
-Free shipping over $${shipping.free_shipping_threshold || 120}
+Free shipping over $${freeShipThresh}
+
+═══════════════════════════════════════
+💰 TAXES & SHIPPING (from live settings)
+═══════════════════════════════════════
+Tax rate: ${taxPercent}% applied at checkout
+Standard shipping cost: $${shippingCost}
+Free shipping on orders over $${freeShipThresh}
+Returns accepted within 30 days.
 
 ═══════════════════════════════════════
 👤 ACCOUNT PAGE — /account.html
@@ -512,7 +694,7 @@ NEVER display the URL. Say "in your account area" or "use the button below" as a
 The checkout page is where users complete their purchase. Key features:
 - **Order Summary**: See all cart items, quantities and prices
 - **Promo Code**: Enter a promo code to get a discount. Suggested code shown automatically
-- **Subtotal / Taxes (10%) / Shipping / Total**: Breakdown of the order cost
+- **Subtotal / Taxes (${taxPercent}%) / Shipping / Total**: Breakdown of the order cost
 - **Shipping Information**: Enter first name, last name, email, phone (with country code), country, city, state, postal code, address
 - **Shipping Methods** (4 options):
     • Standard Shipping — 7–12 business days (free)
@@ -534,7 +716,8 @@ NEVER display any URL. Direct them using "at checkout" or "on the checkout page"
 • Express DHL: Paid, 3–5 business days
 • Priority FedEx: Paid, 1–3 business days
 • Economy Shipping: Paid, 10–15 business days
-Free shipping on all orders over $${shipping.free_shipping_threshold || 120}
+Free shipping on all orders over $${freeShipThresh}
+Tax rate at checkout: ${taxPercent}%
 Returns accepted within 30 days. Contact: paulfrance13@gmail.com
 
 ═══════════════════════════════════════
@@ -550,6 +733,21 @@ ${catalogText}
 - Target: 300–500 calorie daily deficit, sleep 7-8h
 
 ═══════════════════════════════════════
+🌐 SITE NAVIGATION & CONTENT (live from search.data.json)
+═══════════════════════════════════════
+Use this to answer questions about pages, programs, coaches, features, blog articles, policies.
+When a user asks about a page or topic, you can tell them where to find it on the site.
+NEVER write the raw URL — say "see the [page name] section of the site" or reference the topic.
+${searchContext || '(search.data.json not available)'}
+
+═══════════════════════════════════════
+📝 BLOG ARTICLES (live from blog-articles.json)
+═══════════════════════════════════════
+Use this to answer questions about blog content. If a user asks about articles, topics covered,
+or specific blog posts — use this data. NEVER write raw URLs, just mention the article title.
+${blogContext || '(blog-articles.json not available)'}
+
+═══════════════════════════════════════
 🚫 NEVER
 ═══════════════════════════════════════
 - Write long responses (max 4-5 lines)
@@ -558,7 +756,8 @@ ${catalogText}
 - Promise guaranteed results
 - Reply in a different language than the user's message
 - Show multiple unrelated products when user asked for something specific
-- Add 👇 unless the user is EXPLICITLY asking how to contact or reach the team`;
+- Add 👇 unless the user is EXPLICITLY asking how to contact or reach the team
+- Display a promo code without the [[CODE]] format`;
 }
 
 /* ── Fallback / Error messages ── */
@@ -607,6 +806,18 @@ exports.handler = async (event, context) => {
       console.error('Could not load products.data.json:', err.message);
     }
 
+    /* ── IMPROVEMENT #3: Load search.data.json and blog-articles.json in parallel ── */
+    let searchData = null;
+    let blogData   = null;
+    try {
+      [searchData, blogData] = await Promise.all([
+        loadSearchData().catch(e => { console.warn('search.data.json load failed:', e.message); return null; }),
+        loadBlogArticles().catch(e => { console.warn('blog-articles.json load failed:', e.message); return null; })
+      ]);
+    } catch (err) {
+      console.warn('Could not load search/blog data:', err.message);
+    }
+
     /* ── Read contact settings ── */
     const contactSettings = settings.contact || {};
     const socials         = settings.social_links || {};
@@ -632,13 +843,8 @@ exports.handler = async (event, context) => {
 
     /* ══════════════════════════════════════════════════════
        CONTACT INTENT DETECTION — STRICT
-       Boutons contact UNIQUEMENT si l'utilisateur demande
-       EXPLICITEMENT comment contacter / joindre l'équipe.
-       Jamais pour : salutations, infos fondateur, équipe,
-       réseaux sociaux, programmes, nutrition, produits.
     ══════════════════════════════════════════════════════ */
     const EXPLICIT_CONTACT_PATTERNS = [
-      // FRENCH — demande explicite de contact humain ou de message
       /parler\s+(à\s+)?(un\s+)?(humain|agent|conseiller|quelqu|personne\s+réelle)/i,
       /joindre\s+(votre|l['']|notre)?\s*(équipe|support|service)/i,
       /contacter\s+(votre|l['']|notre)?\s*(équipe|support|service|team)/i,
@@ -651,8 +857,6 @@ exports.handler = async (event, context) => {
       /comment\s+vous\s+écrire/i,
       /comment\s+vous\s+rejoindre/i,
       /votre\s+(whatsapp|telegram|email|mail)\b/i,
-
-      // ENGLISH — explicit request to contact or reach the team
       /speak\s+(to\s+)?(a\s+)?(human|agent|person|someone|real)/i,
       /contact\s+(your|the|our)?\s*(team|support|us|service)/i,
       /leave\s+(a\s+)?message/i,
@@ -664,8 +868,6 @@ exports.handler = async (event, context) => {
       /ways?\s+to\s+contact/i,
       /get\s+in\s+touch/i,
       /your\s+(whatsapp|telegram|email)\b/i,
-
-      // SPANISH — petición explícita de contacto
       /hablar\s+(con\s+)?(un\s+)?(humano|agente|persona|alguien)/i,
       /contactar\s+(a\s+)?(su|tu|el|nuestro)?\s*(equipo|soporte|servicio)/i,
       /dejar\s+un\s+mensaje/i,
@@ -675,11 +877,10 @@ exports.handler = async (event, context) => {
       /su\s+(whatsapp|telegram|email)\b/i,
     ];
 
-    // STRICT: contact buttons only if the user EXPLICITLY asks to contact someone.
-    // NOT for: greetings, founder info, team info, social media, general questions.
     const isContactIntent = intent !== 'product' && EXPLICIT_CONTACT_PATTERNS.some(p => p.test(message));
 
-    const systemPrompt = buildSystemPrompt(products, settings, contactInfo);
+    /* ── Build system prompt with all 3 improvements ── */
+    const systemPrompt = buildSystemPrompt(products, settings, contactInfo, searchData, blogData);
 
     /* Inject language reminder + vague flag into every request */
     const vagueInstruction = isVague
@@ -775,10 +976,7 @@ exports.handler = async (event, context) => {
     const data  = await groqResponse.json();
     const reply = data.choices?.[0]?.message?.content || getErrorMessage(userLang);
 
-    /* Detect if AI signaled to show contact buttons (👇 at end)
-       DOUBLE GUARD: intent !== 'product' AND isContactIntent must be true
-       OR the AI added 👇 AND isContactIntent is true.
-       NEVER show contact buttons based on 👇 alone — must be confirmed by isContactIntent. */
+    /* Detect if AI signaled to show contact buttons (👇 at end) */
     const showContactButtons = intent !== 'product' && isContactIntent && reply.includes('👇');
     const cleanReply = reply.replace(/👇\s*$/m, '').trim();
 

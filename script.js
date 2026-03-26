@@ -3448,8 +3448,6 @@ function initStockBar(cjId) {
 
 /* ================================================================
    CURVAFIT AI CHATBOT — FRONTEND JS
-   Replace the entire chatbot block at the bottom of your script.js
-   NOTE: Le CSS du chatbot a été déplacé dans style.css
 ================================================================ */
 document.addEventListener('DOMContentLoaded', function () {
   (function () {
@@ -3498,7 +3496,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (enWords.includes(clean)) enScore += 1;
       });
 
-      // Spanish/French special characters boost
       if (/[áéíóúüñ¿¡]/.test(t)) esScore += 3;
       if (/[àâçèêëîïôùûü]/.test(t)) frScore += 3;
 
@@ -3638,11 +3635,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* ── Welcome ── */
     function addWelcomeMessage() {
-      // Default to English for the welcome message
       addMessage(welcomeMessages['en'], 'ai', []);
     }
 
-    /* ── Format Markdown ── */
+    /* ══════════════════════════════════════
+       IMPROVEMENT #2: Format Markdown + Promo Code Highlighting
+       [[CODE]] → rendered as a styled promo badge with copy button
+    ══════════════════════════════════════ */
     function formatMarkdown(text) {
       const internalIds = [
         'resistance-bands','yoga-mat','leggings','sports-bra',
@@ -3653,6 +3652,11 @@ document.addEventListener('DOMContentLoaded', function () {
       let out = text;
       internalIds.forEach(id => {
         out = out.replace(new RegExp('\\b' + id + '\\b', 'gi'), '');
+      });
+
+      /* ── IMPROVEMENT #2: Render [[CODE]] as a highlighted promo badge ── */
+      out = out.replace(/\[\[([A-Z0-9_-]+)\]\]/g, (match, code) => {
+        return `<span class="cf-promo-code" data-code="${code}" title="Click to copy">${code}<svg class="cf-promo-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></span>`;
       });
 
       out = out.replace(
@@ -3693,6 +3697,32 @@ document.addEventListener('DOMContentLoaded', function () {
       return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
+    /* ── IMPROVEMENT #2: Copy promo code on click ── */
+    function attachPromoCodeCopyEvents(container) {
+      container.querySelectorAll('.cf-promo-code').forEach(el => {
+        el.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const code = this.dataset.code;
+          if (!code) return;
+          navigator.clipboard.writeText(code).then(() => {
+            this.classList.add('cf-promo-code--copied');
+            const originalHTML = this.innerHTML;
+            this.innerHTML = code + ' ✓ Copied!';
+            setTimeout(() => {
+              this.classList.remove('cf-promo-code--copied');
+              this.innerHTML = originalHTML;
+            }, 2000);
+          }).catch(() => {
+            /* fallback: select text */
+            const range = document.createRange();
+            range.selectNode(this);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+          });
+        });
+      });
+    }
+
     /* Reattach events on cards restored from sessionStorage */
     function reattachCardEvents() {
       document.querySelectorAll('.cf-product-card').forEach(card => {
@@ -3719,6 +3749,9 @@ document.addEventListener('DOMContentLoaded', function () {
           sw.addEventListener('click',      activate);
         });
       });
+
+      /* Re-attach promo code copy events after restoring from sessionStorage */
+      attachPromoCodeCopyEvents(messages);
     }
 
     /* ══════════════════════════════════════
@@ -3732,6 +3765,9 @@ document.addEventListener('DOMContentLoaded', function () {
       bubble.className = 'cf-msg-bubble';
       bubble.innerHTML = formatMarkdown(text);
       msgEl.appendChild(bubble);
+
+      /* ── IMPROVEMENT #2: Attach copy events to promo codes in this message ── */
+      attachPromoCodeCopyEvents(bubble);
 
       if (role === 'ai' && Array.isArray(products) && products.length > 0) {
         const cardsWrap = document.createElement('div');
@@ -3903,7 +3939,6 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!userText || !userText.trim() || isLoading) return;
       const text = userText.trim();
 
-      /* Detect language on the client side for instant feedback */
       const userLang = detectUILanguage(text);
 
       const chipsEl = document.getElementById('cf-quick-chips');
@@ -3920,7 +3955,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
       showTyping();
 
-      /* Error messages in the user's language */
       const errorMessages = {
         fr: "Désolée, j'ai un petit problème technique. Réessayez dans un instant! 🙏",
         es: "Lo siento, tengo un pequeño problema técnico. ¡Inténtalo de nuevo en un momento! 🙏",
@@ -4009,4 +4043,3 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('✅ CurvaFit Chatbot ready — trilingual (EN/FR/ES)');
   })();
 }); // end DOMContentLoaded
-

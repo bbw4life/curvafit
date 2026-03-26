@@ -891,8 +891,8 @@
   },
   {
     "type": "settings",
-    "tax_rate": 0.1,
-    "shipping_cost": 10.0,
+    "tax_rate": 0.3,
+    "shipping_cost": 20.0,
     "cart_drawer": {
       "countdown_minutes": 10,
       "countdown_text": "⚡ Offer expires in:",
