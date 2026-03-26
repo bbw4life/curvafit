@@ -473,31 +473,65 @@ exports.handler = async (event, context) => {
       { role: 'user', content: `${message}\n\n[${langInstruction}]` }
     ];
 
-    /* ── Appel Groq avec retry sur 429 ── */
-    const groqBody = JSON.stringify({
-      model:       'llama-3.3-70b-versatile',
-      messages:    groqMessages,
-      max_tokens:  400,
-      temperature: 0.70,
-      stream:      false
-    });
+    /* ══════════════════════════════════════════════════════
+       CASCADE MODEL SYSTEM
+       - Toujours essayer 70b en premier (meilleure qualité)
+       - Si 429 → basculer sur 8b-instant (14x plus de quota)
+       - Au prochain message, on réessaie 70b automatiquement
+         (le quota se renouvelle à minuit UTC)
+    ══════════════════════════════════════════════════════ */
+    const MODELS = [
+      'llama-3.3-70b-versatile',  // Priorité 1 — meilleure qualité (1K/jour)
+      'llama-3.1-8b-instant'      // Priorité 2 — backup (14.4K/jour)
+    ];
 
     const sleep = ms => new Promise(r => setTimeout(r, ms));
-    let groqResponse, attempts = 0;
+    let groqResponse = null;
+    let usedModel    = null;
+    let reply        = null;
 
-    while (attempts < 3) {
-      attempts++;
-      groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-          'Content-Type':  'application/json'
-        },
-        body: groqBody
-      });
+    for (let mi = 0; mi < MODELS.length; mi++) {
+      const model = MODELS[mi];
+      let modelSuccess = false;
 
-      if (groqResponse.status === 429) {
-        if (attempts < 2) { await sleep(attempts * 3000); continue; }
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+            'Content-Type':  'application/json'
+          },
+          body: JSON.stringify({
+            model,
+            messages:    groqMessages,
+            max_tokens:  400,
+            temperature: 0.70,
+            stream:      false
+          })
+        });
+
+        if (groqResponse.status === 429) {
+          console.log(`[Chat] 429 on ${model} attempt ${attempt}`);
+          if (attempt < 2) { await sleep(2000); continue; }
+          // Both attempts failed → try next model
+          console.log(`[Chat] ${model} quota exhausted → switching to next model`);
+          break;
+        }
+
+        if (!groqResponse.ok) {
+          console.error(`[Chat] ${model} error: ${groqResponse.status}`);
+          break;
+        }
+
+        usedModel    = model;
+        modelSuccess = true;
+        break;
+      }
+
+      if (modelSuccess) break;
+
+      // All models exhausted
+      if (mi === MODELS.length - 1) {
         return {
           statusCode: 200,
           headers,
@@ -508,14 +542,13 @@ exports.handler = async (event, context) => {
           })
         };
       }
-
-      if (!groqResponse.ok) throw new Error(`Groq API error: ${groqResponse.status}`);
-      break;
     }
 
+    console.log(`[Chat] Answered using: ${usedModel}`);
+
     const data  = await groqResponse.json();
-    const reply = data.choices?.[0]?.message?.content
-      || getErrorMessage(userLang);
+    const reply_text = data.choices?.[0]?.message?.content || getErrorMessage(userLang);
+    reply = reply_text;
 
     /* Send product cards with color variant images */
     const productCards = relevantProducts.map(p => ({
@@ -536,7 +569,7 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ reply, products: productCards, intent })
+      body: JSON.stringify({ reply: reply, products: productCards, intent })
     };
 
   } catch (error) {
