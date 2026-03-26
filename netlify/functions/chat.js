@@ -608,8 +608,9 @@ exports.handler = async (event, context) => {
       isVague            = searchResult.isVague;
     }
 
-    /* Detect if this is a contact-related message */
-    const isContactIntent = /contact|message|whatsapp|telegram|humain|person|support|joindre|reach|ayuda|soporte|contacto/i.test(message);
+    /* Detect if this is a contact-related message
+       IMPORTANT: Only trigger on EXPLICIT contact requests, never on product queries */
+    const isContactIntent = intent !== 'product' && /\b(contact|joindre|whatsapp|telegram|parler.+(humain|personne|quelqu)|speak.+(human|person|agent)|hablar.+(humano|persona|agente)|laisser.+message|leave.+message|dejar.+mensaje|support.+(team|équipe|equipo)|service.+client|customer.+service)\b/i.test(message);
 
     const systemPrompt = buildSystemPrompt(products, settings, contactInfo);
 
@@ -707,8 +708,9 @@ exports.handler = async (event, context) => {
     const data  = await groqResponse.json();
     const reply = data.choices?.[0]?.message?.content || getErrorMessage(userLang);
 
-    /* Detect if AI signaled to show contact buttons (👇 at end) */
-    const showContactButtons = isContactIntent || reply.includes('👇');
+    /* Detect if AI signaled to show contact buttons (👇 at end)
+       NEVER show contact buttons when intent is product */
+    const showContactButtons = intent !== 'product' && (isContactIntent || reply.includes('👇'));
     const cleanReply = reply.replace(/👇\s*$/m, '').trim();
 
     /* Product cards */
