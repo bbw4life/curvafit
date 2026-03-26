@@ -154,33 +154,6 @@ function detectIntent(message) {
     /contacto|soporte|ayuda.+equipo/,
     /envío|envio|tiempo.+entrega|costo.+envío/,
     /código.+descuento|descuento.+código|promo/,
-    /* ── ACCOUNT PAGE patterns ── */
-    /\bcompte\b|\baccount\b|\bcuenta\b/,
-    /mon profil|my profile|mi perfil/,
-    /mes commandes|my orders|mis pedidos/,
-    /historique.+(commande|order|pedido)/,
-    /adresse.+(livraison|enregistr)|delivery address|dirección/,
-    /mode.+paiement|payment method|método.+pago/,
-    /changer.+(mot de passe|password|contraseña)/,
-    /sécurité|security|seguridad/,
-    /badge|niveau|level|membership|niveau.+membre/,
-    /points|récompense|reward/,
-    /wishlist|liste.+(souhaits|envie)|saved items/,
-    /suivre.+(commande|colis)|track.+(order|package)|rastrear/,
-    /* ── CHECKOUT PAGE patterns ── */
-    /checkout|passer.+(commande|à la caisse)|proceder.+pago/,
-    /panier|cart|carrito/,
-    /payer|pay now|pagar/,
-    /code promo|promo code|código.+descuento/,
-    /frais.+(port|livraison)|shipping cost|costo.+envío/,
-    /livraison standard|standard shipping|envío estándar/,
-    /livraison express|express shipping|express dhl/,
-    /livraison prioritaire|priority fedex|prioritaire/,
-    /livraison économique|economy shipping|económico/,
-    /délai.+livraison|delivery time|tiempo.+entrega/,
-    /total.+(commande|order)|order total|total.+pedido/,
-    /taxes|impôts|impuestos/,
-    /stripe|paypal|apple pay|google pay|carte.+crédit|credit card|tarjeta/,
   ];
 
   for (const pattern of generalPatterns) {
@@ -225,11 +198,9 @@ function detectIntent(message) {
   return 'general';
 }
 
-/* ══════════════════════════════════════════════════════
-   PRODUCT SEARCH — MODIFIÉ : précision + limite intelligente
-══════════════════════════════════════════════════════ */
+/* ── Search relevant products ── */
 function searchProducts(query, products) {
-  if (!query) return { results: [], isVague: false };
+  if (!query) return [];
   const q        = query.toLowerCase();
   const keywords = q.split(/\s+/).filter(k => k.length >= 2);
 
@@ -272,34 +243,10 @@ function searchProducts(query, products) {
     return { ...p, score };
   });
 
-  const filtered = scored
+  return scored
     .filter(p => p.score > 0)
-    .sort((a, b) => b.score - a.score);
-
-  if (filtered.length === 0) return { results: [], isVague: false };
-
-  /* 
-   * Logique de précision :
-   * - Si le meilleur score est très élevé (>=14) et nettement supérieur au 2e → 1 produit précis
-   * - Si la demande est vague (plusieurs produits avec scores proches) → jusqu'à 4 + flag isVague
-   * - Sinon → 1-2 produits max
-   */
-  const topScore    = filtered[0].score;
-  const secondScore = filtered[1]?.score || 0;
-  const gap         = topScore - secondScore;
-
-  /* Demande précise : score élevé ET écart significatif avec le 2e */
-  if (topScore >= 14 && gap >= 6) {
-    return { results: filtered.slice(0, 1), isVague: false };
-  }
-
-  /* Demande vague : beaucoup de résultats proches → montrer jusqu'à 4 et demander confirmation */
-  if (filtered.length >= 3 && gap <= 4) {
-    return { results: filtered.slice(0, 4), isVague: true };
-  }
-
-  /* Cas intermédiaire : 1-2 produits pertinents */
-  return { results: filtered.slice(0, 2), isVague: false };
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 2);
 }
 
 /* ── Format delivery dates ── */
@@ -387,6 +334,8 @@ EXAMPLES:
   User: "hello how are you"       → Reply in ENGLISH only
   User: "bonjour comment ça va"   → Reply in FRENCH only
   User: "hola cómo estás"         → Reply in SPANISH only
+  User: "imbeciles"               → English → Reply in ENGLISH only
+  User: "parles moi de curvafit"  → French  → Reply in FRENCH only
 
 NEVER default to French. NEVER mix languages. NEVER ignore this rule.
 If unsure about the language, default to ENGLISH.
@@ -402,8 +351,6 @@ Use **bold** for: **Paul Francenel**, **CurvaFit**, promo codes, product names, 
    ❌ "https://t.me/curvafit"
    ❌ "/contact.html"
    ❌ "visit our page at https://..."
-   ❌ "/account.html"
-   ❌ "/checkout.html"
    
    ALWAYS say "see the button below" or "use the buttons below".
    The frontend will automatically show the correct buttons.
@@ -413,24 +360,9 @@ Use **bold** for: **Paul Francenel**, **CurvaFit**, promo codes, product names, 
 🚦 CRITICAL BEHAVIOR RULES
 ═══════════════════════════════════════
 NEVER suggest products for: brand info, nutrition advice, program info,
-contact requests, promo code questions, greetings, small talk,
-account questions, checkout questions, shipping questions (general).
+contact requests, promo code questions, greetings, small talk.
 
-ONLY suggest products when user explicitly asks to buy or mentions a specific product type.
-
-═══════════════════════════════════════
-🛒 PRODUCT DISPLAY RULES — VERY IMPORTANT
-═══════════════════════════════════════
-RULE 1 — SPECIFIC REQUEST: If the user asks for a SPECIFIC product (e.g. "legging", "hula hoop", "jump rope"),
-show ONLY that 1 product. Do NOT show other products.
-
-RULE 2 — VAGUE REQUEST: If the user is CONFUSED or their request is VAGUE (e.g. "something for my belly",
-"what's good for weight loss", "show me fitness products"), you MAY show up to 4 products
-AND ask: "Is one of these what you're looking for? I can give you more details on any of them! 😊"
-
-RULE 3 — NEVER show unrelated products just to fill space.
-
-RULE 4 — If the backend marks a request as VAGUE (isVague=true), always add the clarification question.
+ONLY suggest products when user explicitly asks to buy or mentions a product type.
 
 ═══════════════════════════════════════
 🤝 HUMAN SUPPORT — CONTACT CHANNELS
@@ -466,57 +398,6 @@ ${promosText}
 Free shipping over $${shipping.free_shipping_threshold || 120}
 
 ═══════════════════════════════════════
-👤 ACCOUNT PAGE — /account.html
-═══════════════════════════════════════
-The account page allows users to manage their profile. Key features:
-- **Profile**: View name, email, membership level, points and badge
-- **Orders**: Order history and total spent
-- **Track Order**: Track a delivery using the order number (button in the page)
-- **Addresses**: Add or update delivery address (button in the page)
-- **Payment Methods**: Visa, Mastercard, PayPal, Apple Pay, Google Pay, Stripe (view in the page)
-- **Security**: Change password (button in the page)
-- **Wishlist / Cart**: See saved items (button in the page)
-- **Contact Support**: Reach our team directly (button in the page)
-- **Reorder**: Go back to shop (button in the page)
-- **Membership Badge**: Bronze / Silver / Gold based on total spent and orders
-- **Newsletter**: Subscribe at the bottom of the page
-
-When a user asks about their account, orders, profile, address, payment, password, badge, points,
-or wishlist → tell them warmly where to find it and that everything is accessible in their account area.
-NEVER display the URL. Say "in your account area" or "use the button below" as appropriate.
-
-═══════════════════════════════════════
-🛍️ CHECKOUT PAGE — /checkout.html
-═══════════════════════════════════════
-The checkout page is where users complete their purchase. Key features:
-- **Order Summary**: See all cart items, quantities and prices
-- **Promo Code**: Enter a promo code to get a discount. Suggested code shown automatically
-- **Subtotal / Taxes (10%) / Shipping / Total**: Breakdown of the order cost
-- **Shipping Information**: Enter first name, last name, email, phone (with country code), country, city, state, postal code, address
-- **Shipping Methods** (4 options):
-    • Standard Shipping — 7–12 business days (free)
-    • Express DHL — 3–5 business days
-    • Priority FedEx — 1–3 business days
-    • Economy Shipping — 10–15 business days
-- **Payment Methods**: Credit Card via Stripe, or PayPal
-- **Trust badges**: Fast Delivery, 30-Day Return Guarantee, Premium Quality, WhatsApp Support
-- **Policies**: Refund Policy and Shipping Policy (links shown at bottom, open as popups)
-
-When a user asks about checkout, payment, shipping methods, delivery times, promo codes at checkout,
-taxes, or order total → explain the relevant part clearly and warmly.
-NEVER display any URL. Direct them using "at checkout" or "on the checkout page".
-
-═══════════════════════════════════════
-🚚 SHIPPING METHODS DETAILS
-═══════════════════════════════════════
-• Standard Shipping: FREE, 7–12 business days
-• Express DHL: Paid, 3–5 business days
-• Priority FedEx: Paid, 1–3 business days
-• Economy Shipping: Paid, 10–15 business days
-Free shipping on all orders over $${shipping.free_shipping_threshold || 120}
-Returns accepted within 30 days. Contact: paulfrance13@gmail.com
-
-═══════════════════════════════════════
 🛍️ PRODUCT CATALOG
 ═══════════════════════════════════════
 NEVER use internal IDs. ALWAYS use exact product Title and prices.
@@ -535,8 +416,7 @@ ${catalogText}
 - Display any URL, link, or phone number — EVER
 - Invent prices or data
 - Promise guaranteed results
-- Reply in a different language than the user's message
-- Show multiple unrelated products when user asked for something specific`;
+- Reply in a different language than the user's message`;
 }
 
 /* ── Fallback / Error messages ── */
@@ -585,7 +465,7 @@ exports.handler = async (event, context) => {
       console.error('Could not load products.data.json:', err.message);
     }
 
-    /* ── Read contact settings ── */
+    /* ── Read NEW contact settings ── */
     const contactSettings = settings.contact || {};
     const socials         = settings.social_links || {};
     const contactInfo = {
@@ -597,51 +477,39 @@ exports.handler = async (event, context) => {
     };
 
     const intent = detectIntent(message);
+    const relevantProducts = (intent === 'product')
+      ? searchProducts(message, products)
+      : [];
 
-    /* ── Recherche produits avec nouvelle logique de précision ── */
-    let relevantProducts = [];
-    let isVague = false;
-
-    if (intent === 'product') {
-      const searchResult = searchProducts(message, products);
-      relevantProducts   = searchResult.results;
-      isVague            = searchResult.isVague;
-    }
-
-    /* Detect if this is a contact-related message
-       IMPORTANT: Only trigger on EXPLICIT contact requests, never on product queries */
-    const isContactIntent = intent !== 'product' && /\b(contact|joindre|whatsapp|telegram|parler.+(humain|personne|quelqu)|speak.+(human|person|agent)|hablar.+(humano|persona|agente)|laisser.+message|leave.+message|dejar.+mensaje|support.+(team|équipe|equipo)|service.+client|customer.+service)\b/i.test(message);
+    /* Detect if this is a contact-related message */
+    const isContactIntent = /contact|message|whatsapp|telegram|humain|person|support|joindre|reach|ayuda|soporte|contacto/i.test(message);
 
     const systemPrompt = buildSystemPrompt(products, settings, contactInfo);
 
-    /* Inject language reminder + vague flag into every request */
-    const vagueInstruction = isVague
-      ? '\n[VAGUE PRODUCT REQUEST: Show up to 4 products and ask the user to confirm which one they want.]'
-      : '\n[SPECIFIC PRODUCT REQUEST: Show ONLY the 1 most relevant product. Do NOT show others.]';
-
+    /* Inject language reminder into every request */
     const langInstruction = userLang === 'fr'
       ? 'REMINDER: The user wrote in FRENCH. Your entire reply MUST be in FRENCH. End with 👇 if contact-related.'
       : userLang === 'es'
       ? 'REMINDER: The user wrote in SPANISH. Your entire reply MUST be in SPANISH. End with 👇 if contact-related.'
       : 'REMINDER: The user wrote in ENGLISH. Your entire reply MUST be in ENGLISH. End with 👇 if contact-related.';
 
-    const productContext = intent === 'product'
-      ? vagueInstruction
-      : '';
-
     const groqMessages = [
       { role: 'system', content: systemPrompt },
       ...history.slice(-8).map(h => ({ role: h.role, content: h.content })),
-      { role: 'user', content: `${message}\n\n[${langInstruction}]${productContext}` }
+      { role: 'user', content: `${message}\n\n[${langInstruction}]` }
     ];
 
     /* ══════════════════════════════════════════════════════
        CASCADE MODEL SYSTEM — 3 models, automatic rotation
+       Each request ALWAYS starts from model 1 (best quality).
+       If quota exhausted (429) → try model 2 → try model 3.
+       Next request starts from model 1 again automatically.
+       Quotas are per-model and renew at midnight UTC.
     ══════════════════════════════════════════════════════ */
     const MODELS = [
-      'llama-3.3-70b-versatile',
-      'llama-3.1-8b-instant',
-      'meta-llama/llama-4-scout-17b-16e-instruct'
+      'llama-3.3-70b-versatile',               // #1 — Best quality     (1K req/day)
+      'llama-3.1-8b-instant',                  // #2 — Fast backup      (14.4K req/day)
+      'meta-llama/llama-4-scout-17b-16e-instruct' // #3 — Last resort   (1K req/day, separate quota)
     ];
 
     const sleep      = ms => new Promise(r => setTimeout(r, ms));
@@ -687,6 +555,7 @@ exports.handler = async (event, context) => {
 
       if (modelSuccess) break;
 
+      /* All 3 models failed → return friendly message */
       if (mi === MODELS.length - 1) {
         return {
           statusCode: 200,
@@ -695,7 +564,6 @@ exports.handler = async (event, context) => {
             reply:         getFallbackMessage(userLang),
             products:      [],
             intent:        'general',
-            isVague:       false,
             showContact:   false,
             contactInfo:   null
           })
@@ -708,9 +576,8 @@ exports.handler = async (event, context) => {
     const data  = await groqResponse.json();
     const reply = data.choices?.[0]?.message?.content || getErrorMessage(userLang);
 
-    /* Detect if AI signaled to show contact buttons (👇 at end)
-       NEVER show contact buttons when intent is product */
-    const showContactButtons = intent !== 'product' && (isContactIntent || reply.includes('👇'));
+    /* Detect if AI signaled to show contact buttons (👇 at end) */
+    const showContactButtons = isContactIntent || reply.includes('👇');
     const cleanReply = reply.replace(/👇\s*$/m, '').trim();
 
     /* Product cards */
@@ -736,7 +603,7 @@ exports.handler = async (event, context) => {
         reply:       cleanReply,
         products:    productCards,
         intent,
-        isVague,
+        /* NEW — contact buttons data sent to frontend */
         showContact: showContactButtons,
         contactInfo: showContactButtons ? {
           whatsapp: contactInfo.hasWhatsapp ? contactInfo.whatsappUrl : null,
