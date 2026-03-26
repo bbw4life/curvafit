@@ -497,7 +497,7 @@ exports.handler = async (event, context) => {
       });
 
       if (groqResponse.status === 429) {
-        if (attempts < 3) { await sleep(attempts * 1500); continue; }
+        if (attempts < 2) { await sleep(attempts * 3000); continue; }
         return {
           statusCode: 200,
           headers,
