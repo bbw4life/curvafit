@@ -46,7 +46,6 @@ function buildProductIndex(rawData) {
       image:         item.image,
       colors:        colorsWithImages,
       sizes:         item.sizes || [],
-      /* FIX #4 — on expose les variants complets avec leur image */
       variants:      (item.variants || []).map(v => ({
         vid:   v.vid,
         color: v.color || null,
@@ -69,6 +68,51 @@ function buildProductIndex(rawData) {
   });
 
   return { products, settings };
+}
+
+/* ══════════════════════════════════════════════════════
+   LANGUAGE DETECTION
+══════════════════════════════════════════════════════ */
+function detectLanguage(message) {
+  const text = message.toLowerCase().trim();
+
+  const spanishPatterns = [
+    /\b(hola|buenas|buenos|qué|que|cómo|como|puedo|quiero|necesito|tienes|tengo|gracias|por favor|ayuda|precio|envío|envio|producto|comprar|descuento|talla|color|disponible|cuánto|cuanto|dónde|donde|cuando|cuándo|si|también|tambien|estoy|peso|adelgazar|bajar|perder)\b/,
+    /[áéíóúüñ¿¡]/
+  ];
+
+  const frenchPatterns = [
+    /\b(bonjour|bonsoir|salut|merci|s'il vous|svp|comment|qu'est|c'est|je|vous|nous|les|des|une|pour|avec|dans|sur|mais|très|aussi|peut|plus|produit|livraison|taille|couleur|disponible|combien|où|quand|prix|acheter|réduction|programme)\b/,
+    /[àâçèêëîïôùûü]/
+  ];
+
+  const englishPatterns = [
+    /\b(hello|hi|hey|what|how|can|could|would|should|where|when|why|which|who|the|and|for|with|this|that|have|your|you|me|my|want|need|does|do|is|are|was|were|help|price|shipping|color|size|available|discount|program|product|buy|order)\b/
+  ];
+
+  let frScore = 0, esScore = 0, enScore = 0;
+
+  frenchPatterns.forEach(p  => { if (p.test(text)) frScore += 3; });
+  spanishPatterns.forEach(p => { if (p.test(text)) esScore += 3; });
+  englishPatterns.forEach(p => { if (p.test(text)) enScore += 1; });
+
+  // Count word matches for more accuracy
+  const frWords = ['je','tu','il','elle','nous','vous','ils','elles','le','la','les','un','une','des','du','et','est','sont','avec','dans','pour','sur','pas','plus','très','bien','aussi','mais','ou','donc','car','que','qui','quoi','comment','quand','où','pourquoi','quel','quelle','bonjour','merci','oui','non','avoir','être','faire','aller','pouvoir','vouloir','savoir'];
+  const esWords = ['yo','tú','él','ella','nosotros','vosotros','ellos','ellas','el','la','los','las','un','una','unos','unas','del','al','y','es','son','con','en','por','para','sobre','no','más','muy','bien','también','pero','o','porque','que','quien','como','cuando','donde','porque','qué','cómo','cuándo','dónde','hola','gracias','sí','tener','ser','estar','hacer','ir','poder','querer','saber'];
+  const enWords = ['i','you','he','she','it','we','they','the','a','an','is','are','was','were','have','has','had','do','does','did','will','would','can','could','should','may','might','and','or','but','for','with','at','by','from','to','in','on','of','that','this','what','how','when','where','why','who','which'];
+
+  const words = text.split(/\s+/);
+  words.forEach(w => {
+    const clean = w.replace(/[^a-záàâçèêëéíîïóôùûüñú]/gi, '');
+    if (frWords.includes(clean)) frScore += 2;
+    if (esWords.includes(clean)) esScore += 2;
+    if (enWords.includes(clean)) enScore += 1;
+  });
+
+  if (frScore === 0 && esScore === 0 && enScore === 0) return 'en';
+  if (frScore >= esScore && frScore >= enScore) return 'fr';
+  if (esScore > frScore && esScore >= enScore) return 'es';
+  return 'en';
 }
 
 /* ══════════════════════════════════════════════════════
@@ -106,8 +150,16 @@ function detectIntent(message) {
     /livraison|shipping.+info|delivery.+time|délai/,
     /fiable|reliable|trust|sûr|safe|médecin|doctor/,
     /pilule|pill|complément|supplement/,
-    /^(bonjour|bonsoir|salut|hello|hi|hey|allo)\b/,
-    /^(merci|thank|thanks|ok|okay|d.accord|super|parfait|génial|great)\b/,
+    /^(bonjour|bonsoir|salut|hello|hi|hey|hola|buenas|buenos|allo)\b/,
+    /^(merci|thank|thanks|gracias|ok|okay|d.accord|super|parfait|génial|great|bien|bueno)\b/,
+    // Spanish general
+    /fundador|fundadora|quién.+(fund|cre)|equipo|misión/,
+    /qué es curva|sobre curva/,
+    /consejo|consejos|nutrición|alimentación|comida/,
+    /programa|entrenamiento|coaching/,
+    /contacto|soporte|ayuda.+equipo/,
+    /envío|envio|tiempo.+entrega|costo.+envío/,
+    /código.+descuento|descuento.+código|promo/,
   ];
 
   for (const pattern of generalPatterns) {
@@ -115,33 +167,34 @@ function detectIntent(message) {
   }
 
   const productPatterns = [
-    /acheter|buy|commander|order/,
-    /produit|product|article/,
-    /recommande.+(produit|article)|recommend.+(product|item)/,
-    /quel.+(produit|article)|which.+(product|item)/,
-    /montre.+(produit)|show.+(product|me)/,
+    /acheter|buy|commander|order|comprar|pedir|ordenar/,
+    /produit|product|article|producto|artículo/,
+    /recommande.+(produit|article)|recommend.+(product|item)|recomienda.+(producto)/,
+    /quel.+(produit|article)|which.+(product|item)|qué.+(producto)/,
+    /montre.+(produit)|show.+(product|me)|muestra.+(producto)/,
     /meilleur.+(pour).+(ventre|belly|poids|weight|taille|waist)/,
     /best.+(for|pour).+(belly|ventre|weight|waist)/,
+    /mejor.+(para).+(barriga|vientre|peso|cintura)/,
     /hula.?hoop|\bhoop\b/,
-    /waist.?trainer|gainant/,
-    /jump.?rope|corde.+sauter/,
-    /\blegging\b|\bpantalon.+sport\b|\byoga.+pant\b/,
-    /\bjumpsuit\b|\bcombinaison.+sport\b/,
-    /sport.?bra|\bbrassière\b/,
-    /knee.?pad|genouillère/,
-    /posture.?correct|correcteur.+posture/,
-    /bracelet.+connect|smart.+bracelet|fitness.+track/,
-    /acupressure.?mat|tapis.+acupressure/,
-    /belly.?belt|ceinture.+(ventre|chaleur)/,
-    /water.?bottle|gourde|bouteille.+sport/,
-    /running.?shoe|chaussure.+running|\bsneaker\b/,
-    /neck.?pillow|oreiller.+nuque/,
-    /\bearbuds?\b|écouteur.+sport/,
+    /waist.?trainer|gainant|faja/,
+    /jump.?rope|corde.+sauter|cuerda.+saltar/,
+    /\blegging\b|\bpantalon.+sport\b|\byoga.+pant\b|\bmalla\b/,
+    /\bjumpsuit\b|\bcombinaison.+sport\b|\bmono.+deporte\b/,
+    /sport.?bra|\bbrassière\b|\bsujetador.+deporte\b|\btop.+deporte\b/,
+    /knee.?pad|genouillère|rodillera/,
+    /posture.?correct|correcteur.+posture|corrector.+postura/,
+    /bracelet.+connect|smart.+bracelet|fitness.+track|pulsera.+inteligente/,
+    /acupressure.?mat|tapis.+acupressure|esterilla.+acupresión/,
+    /belly.?belt|ceinture.+(ventre|chaleur)|cinturón.+(vientre|calor)/,
+    /water.?bottle|gourde|bouteille.+sport|botella.+agua/,
+    /running.?shoe|chaussure.+running|\bsneaker\b|zapatilla.+running/,
+    /neck.?pillow|oreiller.+nuque|almohada.+cervical/,
+    /\bearbuds?\b|écouteur.+sport|auricular.+deporte/,
     /tie.?dye/,
-    /quelle.+(couleur|taille).+disponible|available.+(color|size)/,
-    /existe.+(couleur|taille)|come in.+(color|size)/,
-    /\$\d+|under \$|moins de \$|budget.+(produit|product)/,
-    /combien.+(coûte|cost).+(ce|this|le|la)/,
+    /quelle.+(couleur|taille).+disponible|available.+(color|size)|qué.+(color|talla).+disponible/,
+    /existe.+(couleur|taille)|come in.+(color|size)|viene.+(color|talla)/,
+    /\$\d+|under \$|moins de \$|budget.+(produit|product)|menos de \$|presupuesto/,
+    /combien.+(coûte|cost).+(ce|this|le|la)|cuánto.+(cuesta|vale)/,
   ];
 
   for (const pattern of productPatterns) {
@@ -169,29 +222,29 @@ function searchProducts(query, products) {
     });
 
     const themes = [
-      { words: ['hula','hoop','belly','ventre'],                      id: 'resistance-bands',  boost: 12 },
-      { words: ['waist trainer','gainant','waist cinch','corset'],    id: 'yoga-mat',          boost: 12 },
-      { words: ['jump rope','corde','skip','sauter'],                 id: 'leggings',          boost: 12 },
-      { words: ['legging','yoga pant','high waist','peach'],          id: 'sports-bra',        boost: 12 },
-      { words: ['jumpsuit','combinaison','pilates'],                  id: 'hydration-bottle',  boost: 12 },
-      { words: ['tie dye','seamless legging'],                        id: 'workout-towel',     boost: 12 },
-      { words: ['sport bra','bra','brassiere','soutien'],             id: 'fitness-tracker',   boost: 12 },
-      { words: ['knee','genoux','genouillère','pad'],                 id: 'protein-shaker',    boost: 12 },
-      { words: ['posture','dos','back','corrector','correcteur'],     id: 'dumbbell-set',      boost: 12 },
-      { words: ['bracelet','tracker','heart rate','sleep','pouls'],   id: 'jump-rope',         boost: 12 },
-      { words: ['acupressure','stress mat','recovery','tapis'],       id: 'foam-roller',       boost: 12 },
-      { words: ['belly belt','ceinture ventre','cramp','chaleur'],    id: 'yoga-blocks',       boost: 12 },
-      { words: ['bottle','water','gourde','bouteille'],               id: 'ankle-weights',     boost: 12 },
-      { words: ['shoe','chaussure','running','sneaker'],              id: 'cooling-towel',     boost: 12 },
-      { words: ['pillow','oreiller','neck','cervical','nuque'],       id: 'massage-ball',      boost: 12 },
-      { words: ['earbuds','headphone','music','écouteur'],            id: 'gym-bag',           boost: 12 },
+      { words: ['hula','hoop','belly','ventre','barriga','vientre'],             id: 'resistance-bands',  boost: 12 },
+      { words: ['waist trainer','gainant','waist cinch','corset','faja'],        id: 'yoga-mat',          boost: 12 },
+      { words: ['jump rope','corde','skip','sauter','cuerda','saltar'],          id: 'leggings',          boost: 12 },
+      { words: ['legging','yoga pant','high waist','peach','malla'],             id: 'sports-bra',        boost: 12 },
+      { words: ['jumpsuit','combinaison','pilates','mono'],                      id: 'hydration-bottle',  boost: 12 },
+      { words: ['tie dye','seamless legging'],                                   id: 'workout-towel',     boost: 12 },
+      { words: ['sport bra','bra','brassiere','soutien','sujetador','top'],      id: 'fitness-tracker',   boost: 12 },
+      { words: ['knee','genoux','genouillère','pad','rodilla','rodillera'],      id: 'protein-shaker',    boost: 12 },
+      { words: ['posture','dos','back','corrector','correcteur','postura'],      id: 'dumbbell-set',      boost: 12 },
+      { words: ['bracelet','tracker','heart rate','sleep','pouls','pulsera'],    id: 'jump-rope',         boost: 12 },
+      { words: ['acupressure','stress mat','recovery','tapis','esterilla'],      id: 'foam-roller',       boost: 12 },
+      { words: ['belly belt','ceinture ventre','cramp','chaleur','cinturón'],    id: 'yoga-blocks',       boost: 12 },
+      { words: ['bottle','water','gourde','bouteille','botella','agua'],         id: 'ankle-weights',     boost: 12 },
+      { words: ['shoe','chaussure','running','sneaker','zapatilla'],             id: 'cooling-towel',     boost: 12 },
+      { words: ['pillow','oreiller','neck','cervical','nuque','almohada'],       id: 'massage-ball',      boost: 12 },
+      { words: ['earbuds','headphone','music','écouteur','auricular'],           id: 'gym-bag',           boost: 12 },
     ];
 
     themes.forEach(t => {
       if (p.id === t.id && t.words.some(w => q.includes(w))) score += t.boost;
     });
 
-    if ((q.includes('cheap') || q.includes('budget') || q.includes('pas cher')) && p.price < 20) score += 5;
+    if ((q.includes('cheap') || q.includes('budget') || q.includes('pas cher') || q.includes('barato') || q.includes('económico')) && p.price < 20) score += 5;
 
     return { ...p, score };
   });
@@ -260,14 +313,34 @@ PRODUCT ${i + 1}:
 You are a warm, motivating, and precise fitness coach.
 You help plus-size women lose weight in a healthy, sustainable way.
 You are calm, human, and never robotic.
-You respond in the SAME LANGUAGE the user writes in (French or English).
 Use emojis naturally but do not overuse them.
 KEEP RESPONSES SHORT AND PRECISE — max 4-5 lines. No long texts.
 
 ═══════════════════════════════════════
-✏️ FORMATTING RULES — VERY IMPORTANT
+🌍 LANGUAGE RULE — ABSOLUTE PRIORITY — NO EXCEPTION EVER
 ═══════════════════════════════════════
-Use **bold** (double asterisks) for these elements WITHOUT EXCEPTION:
+This is your MOST IMPORTANT rule. You MUST follow it without any exception.
+
+Step 1: READ the user's message carefully.
+Step 2: IDENTIFY the language they used.
+  - If they write in ENGLISH  → you MUST reply 100% in ENGLISH
+  - If they write in FRENCH   → you MUST reply 100% in FRENCH
+  - If they write in SPANISH  → you MUST reply 100% in SPANISH
+Step 3: REPLY only in that detected language. NEVER in another language.
+
+EXAMPLES:
+  User: "hello how are you" → Reply in ENGLISH only
+  User: "bonjour comment ça va" → Reply in FRENCH only
+  User: "hola cómo estás" → Reply in SPANISH only
+  User: "imbeciles" → This is English → Reply in ENGLISH only
+
+NEVER default to French. NEVER mix languages. NEVER ignore this rule.
+If unsure about the language, default to ENGLISH.
+
+═══════════════════════════════════════
+✏️ FORMATTING RULES
+═══════════════════════════════════════
+Use **bold** (double asterisks) for:
 - Founder name: always write **Paul Francenel**
 - Brand name: always write **CurvaFit**
 - All promo codes: always write **CODE** in bold
@@ -276,7 +349,7 @@ Use **bold** (double asterisks) for these elements WITHOUT EXCEPTION:
 - Important warnings or key facts
 
 NEVER display raw URLs like /products/product1.html in your text responses.
-If you need to reference a product page, just say "cliquez sur le bouton ci-dessous" or "see the button below".
+If you need to reference a product page, just say "see the button below".
 
 ═══════════════════════════════════════
 🚦 CRITICAL BEHAVIOR RULE
@@ -332,7 +405,21 @@ ${catalogText}
 - Write long responses (be short & direct)
 - Display raw URLs in text — buttons handle navigation
 - Invent prices or data
-- Promise guaranteed results`;
+- Promise guaranteed results
+- Reply in a different language than the user's message`;
+}
+
+/* ── Detect language for fallback messages ── */
+function getFallbackMessage(lang) {
+  if (lang === 'fr') return "Je suis très sollicitée en ce moment 😅 Réessayez dans quelques secondes!";
+  if (lang === 'es') return "Estoy muy ocupada en este momento 😅 ¡Por favor, inténtalo de nuevo en unos segundos!";
+  return "I'm a bit overloaded right now 😅 Please try again in a few seconds!";
+}
+
+function getErrorMessage(lang) {
+  if (lang === 'fr') return "Désolée, j'ai un petit problème technique. Réessayez dans un instant! 🙏";
+  if (lang === 'es') return "Lo siento, tengo un pequeño problema técnico. ¡Inténtalo de nuevo en un momento! 🙏";
+  return "Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏";
 }
 
 /* ── Main handler ── */
@@ -353,6 +440,9 @@ exports.handler = async (event, context) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message is required' }) };
     }
 
+    /* Detect language FIRST — used for fallback messages */
+    const userLang = detectLanguage(message);
+
     let products = [], settings = {};
     try {
       const rawData = await loadProductsData();
@@ -370,10 +460,17 @@ exports.handler = async (event, context) => {
 
     const systemPrompt = buildSystemPrompt(products, settings);
 
+    /* Inject explicit language instruction into every request */
+    const langInstruction = userLang === 'fr'
+      ? 'REMINDER: The user wrote in FRENCH. Your entire reply MUST be in FRENCH.'
+      : userLang === 'es'
+      ? 'REMINDER: The user wrote in SPANISH. Your entire reply MUST be in SPANISH.'
+      : 'REMINDER: The user wrote in ENGLISH. Your entire reply MUST be in ENGLISH.';
+
     const groqMessages = [
       { role: 'system', content: systemPrompt },
       ...history.slice(-8).map(h => ({ role: h.role, content: h.content })),
-      { role: 'user', content: message }
+      { role: 'user', content: `${message}\n\n[${langInstruction}]` }
     ];
 
     /* ── Appel Groq avec retry sur 429 ── */
@@ -405,9 +502,9 @@ exports.handler = async (event, context) => {
           statusCode: 200,
           headers,
           body: JSON.stringify({
-            reply: "Je suis très sollicitée en ce moment 😅 Réessayez dans quelques secondes!",
+            reply:    getFallbackMessage(userLang),
             products: [],
-            intent: 'general'
+            intent:   'general'
           })
         };
       }
@@ -418,9 +515,9 @@ exports.handler = async (event, context) => {
 
     const data  = await groqResponse.json();
     const reply = data.choices?.[0]?.message?.content
-      || "I'm sorry, I couldn't generate a response. Please try again. 🙏";
+      || getErrorMessage(userLang);
 
-    /* FIX #4 — envoyer variants avec images couleur */
+    /* Send product cards with color variant images */
     const productCards = relevantProducts.map(p => ({
       title:         p.title,
       description:   p.description,

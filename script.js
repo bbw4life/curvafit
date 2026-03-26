@@ -3446,9 +3446,9 @@ function initStockBar(cjId) {
 
 
 
-
 /* ================================================================
    CURVAFIT AI CHATBOT — FRONTEND JS
+   Replace the entire chatbot block at the bottom of your script.js
 ================================================================ */
 document.addEventListener('DOMContentLoaded', function () {
   (function () {
@@ -3471,13 +3471,48 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!widget || !toggle || !window_ || !messages || !input || !sendBtn) return;
 
     /* ── State ── */
-    let isOpen  = false;
+    let isOpen    = false;
     let isLoading = false;
     let notifShown = false;
 
-    /* FIX #6 — Persistance sessionStorage */
+    /* Persistance sessionStorage */
     let conversationHistory = [];
     try { conversationHistory = JSON.parse(sessionStorage.getItem('cf_history') || '[]'); } catch(e) {}
+
+    /* ── Client-side language detection (mirrors server) ── */
+    function detectUILanguage(text) {
+      const t = (text || '').toLowerCase().trim();
+
+      const frWords = ['je','tu','il','elle','nous','vous','les','des','une','est','sont','avec','dans','pour','sur','très','bien','aussi','mais','comment','quand','bonjour','merci','oui','salut','bonsoir','pourquoi','quoi','quel','quelle','cette','ce','mon','ma','mes','leur','leurs'];
+      const esWords = ['yo','tú','él','ella','nosotros','los','las','con','por','para','sobre','más','también','pero','porque','qué','cómo','cuándo','dónde','hola','gracias','sí','señor','señora','buenas','buenos','tiene','tengo','quiero','necesito','puedo','comprar','precio','envío','producto'];
+      const enWords = ['i','you','he','she','it','we','they','the','and','for','with','this','that','what','how','when','where','why','who','which','have','your','want','need','does','can','would','could','should','hello','hi','hey','thank','please'];
+
+      const words = t.split(/\s+/);
+      let frScore = 0, esScore = 0, enScore = 0;
+
+      words.forEach(w => {
+        const clean = w.replace(/[^a-záàâçèêëéíîïóôùûüñú]/gi, '');
+        if (frWords.includes(clean)) frScore += 2;
+        if (esWords.includes(clean)) esScore += 2;
+        if (enWords.includes(clean)) enScore += 1;
+      });
+
+      // Spanish/French special characters boost
+      if (/[áéíóúüñ¿¡]/.test(t)) esScore += 3;
+      if (/[àâçèêëîïôùûü]/.test(t)) frScore += 3;
+
+      if (frScore === 0 && esScore === 0 && enScore === 0) return 'en';
+      if (frScore >= esScore && frScore >= enScore) return 'fr';
+      if (esScore > frScore && esScore >= enScore) return 'es';
+      return 'en';
+    }
+
+    /* Welcome messages per language */
+    const welcomeMessages = {
+      fr: `Salut ! 👋 Je suis **Curva**, ta coach personnelle CurvaFit !\n\nJe suis là pour t'aider avec :\n- 🔥 Conseils minceur & perte de poids\n- 🥗 Nutrition et alimentation\n- 💪 Recommandations de produits\n- 📋 Programmes & plans de coaching\n\nComment puis-je t'aider aujourd'hui ? 😊`,
+      es: `¡Hola! 👋 Soy **Curva**, tu coach personal de CurvaFit!\n\nEstoy aquí para ayudarte con:\n- 🔥 Consejos para perder peso\n- 🥗 Orientación nutricional\n- 💪 Recomendaciones de productos\n- 📋 Programas & planes de coaching\n\n¿En qué puedo ayudarte hoy? 😊`,
+      en: `Hi! 👋 I'm **Curva**, your personal CurvaFit coach!\n\nI'm here to help you with:\n- 🔥 Weight loss tips & advice\n- 🥗 Nutrition guidance\n- 💪 Product recommendations\n- 📋 Programs & coaching plans\n\nWhat can I help you with today? 😊`
+    };
 
     /* ══════════════════════════════════════
        DRAGGABLE WIDGET
@@ -3568,15 +3603,12 @@ document.addEventListener('DOMContentLoaded', function () {
       if (notifDot)  notifDot.style.display  = 'none';
       input.focus();
 
-      /* FIX #6 — Restaurer messages au lieu de recréer le welcome */
       if (messages.children.length === 0) {
         const savedHTML = sessionStorage.getItem('cf_messages_html') || '';
         if (savedHTML) {
           messages.innerHTML = savedHTML;
-          /* Réattacher les events swatches après restauration */
           reattachCardEvents();
           scrollToBottom();
-          /* Cacher chips si conversation existe déjà */
           const chipsEl = document.getElementById('cf-quick-chips');
           if (chipsEl && conversationHistory.length > 0) chipsEl.style.display = 'none';
         } else {
@@ -3605,11 +3637,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* ── Welcome ── */
     function addWelcomeMessage() {
-      addMessage(
-        `Hi! 👋 I'm **Curva**, your personal CurvaFit coach!\n\nI'm here to help you with:\n- 🔥 Weight loss tips & advice\n- 🥗 Nutrition guidance\n- 💪 Product recommendations\n- 📋 Programs & coaching plans\n\nWhat can I help you with today? 😊`,
-        'ai',
-        []
-      );
+      // Default to English for the welcome message
+      addMessage(welcomeMessages['en'], 'ai', []);
     }
 
     /* ── Format Markdown ── */
@@ -3625,7 +3654,6 @@ document.addEventListener('DOMContentLoaded', function () {
         out = out.replace(new RegExp('\\b' + id + '\\b', 'gi'), '');
       });
 
-      /* FIX #3 — Transformer les URLs brutes en beaux boutons */
       out = out.replace(
         /\[([^\]]+)\]\(([^)]+)\)/g,
         (match, label, url) => {
@@ -3636,24 +3664,23 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       );
 
-      /* FIX #3 — URLs brutes /products/... /contact.html etc → bouton */
       out = out.replace(
         /(\/products\/product\d+\.html|\/contact\.html|\/shop\.html|\/programs\.html|\/checkout\.html)/g,
         (url) => {
           const labels = {
-            '/contact.html':  'Nous contacter',
-            '/shop.html':     'Voir la boutique',
-            '/programs.html': 'Voir les programmes',
-            '/checkout.html': 'Commander'
+            '/contact.html':  'Contact us',
+            '/shop.html':     'Visit shop',
+            '/programs.html': 'See programs',
+            '/checkout.html': 'Order now'
           };
-          const label = labels[url] || 'Voir le produit';
+          const label = labels[url] || 'View product';
           return `<a href="${url}" class="cf-link-btn">${label} →</a>`;
         }
       );
 
       return out
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<strong>$1</strong>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')  /* FIX #5 — gras */
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.+?)\*/g,     '<em>$1</em>')
         .replace(/`(.+?)`/g,       '<code>$1</code>')
         .replace(/\n\n/g, '<br><br>')
@@ -3664,7 +3691,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-    /* FIX #6 — Réattacher events sur cards restaurées */
+    /* Reattach events on cards restored from sessionStorage */
     function reattachCardEvents() {
       document.querySelectorAll('.cf-product-card').forEach(card => {
         const mainImg    = card.querySelector('.cf-pc-img');
@@ -3672,13 +3699,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const colorLabel = card.querySelector('.cf-pc-color-label');
         const productUrl = card.dataset.productUrl;
 
-        /* FIX #2 — image cliquable */
         if (mainImg && productUrl) {
           mainImg.style.cursor = 'pointer';
           mainImg.onclick = () => window.location.href = productUrl;
         }
 
-        /* FIX #4 — swatches avec images variants */
         swatches.forEach(sw => {
           const activate = () => {
             swatches.forEach(s => s.classList.remove('cf-pc-swatch--active'));
@@ -3701,13 +3726,11 @@ document.addEventListener('DOMContentLoaded', function () {
       const msgEl  = document.createElement('div');
       msgEl.className = `cf-message cf-message--${role}`;
 
-      /* Text bubble */
       const bubble = document.createElement('div');
       bubble.className = 'cf-msg-bubble';
       bubble.innerHTML = formatMarkdown(text);
       msgEl.appendChild(bubble);
 
-      /* Product cards */
       if (role === 'ai' && Array.isArray(products) && products.length > 0) {
         const cardsWrap = document.createElement('div');
         cardsWrap.className = 'cf-product-cards';
@@ -3715,9 +3738,8 @@ document.addEventListener('DOMContentLoaded', function () {
         products.forEach(p => {
           const card = document.createElement('div');
           card.className = 'cf-product-card';
-          card.dataset.productUrl = p.url; /* FIX #2 */
+          card.dataset.productUrl = p.url;
 
-          /* FIX #1 — image sans espace blanc : line-height:0, height fixe, object-fit:cover */
           let imgHTML = '';
           if (p.image) {
             imgHTML = `
@@ -3737,11 +3759,9 @@ document.addEventListener('DOMContentLoaded', function () {
               <span class="cf-pc-price-compare">$${Number(p.compare_price).toFixed(2)}</span>
             </div>`;
 
-          /* FIX #4 — swatches avec data-img = vraie image variant */
           let colorsHTML = '';
           if (p.colors && p.colors.length > 0) {
             const swatchesHTML = p.colors.slice(0, 6).map(c => {
-              /* chercher l'image dans colors puis dans variants */
               let variantImg = c.image || '';
               if (!variantImg && p.variants) {
                 const v = p.variants.find(vv => vv.color === c.name);
@@ -3768,7 +3788,6 @@ document.addEventListener('DOMContentLoaded', function () {
           const deliveryHTML = (p.delivery)
             ? `<div class="cf-pc-delivery">🚚 ${p.delivery}</div>` : '';
 
-          /* FIX #3 — beau bouton au lieu d'un lien brut */
           const ctaHTML = `
             <a href="${p.url}" class="cf-pc-btn" onclick="event.stopPropagation()">
               View Product
@@ -3789,7 +3808,6 @@ document.addEventListener('DOMContentLoaded', function () {
               ${ctaHTML}
             </div>`;
 
-          /* FIX #2 — image cliquable */
           const imgEl = card.querySelector('.cf-pc-img');
           if (imgEl) {
             imgEl.style.cursor = 'pointer';
@@ -3799,7 +3817,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
           }
 
-          /* FIX #4 — swatch change image vers variant */
           const swatches   = card.querySelectorAll('.cf-pc-swatch');
           const colorLabel = card.querySelector('.cf-pc-color-label');
           const mainImg    = card.querySelector('.cf-pc-img');
@@ -3823,7 +3840,6 @@ document.addEventListener('DOMContentLoaded', function () {
         msgEl.appendChild(cardsWrap);
       }
 
-      /* Timestamp */
       const time = document.createElement('span');
       time.className  = 'cf-msg-time';
       time.textContent = getTime();
@@ -3832,15 +3848,7 @@ document.addEventListener('DOMContentLoaded', function () {
       messages.appendChild(msgEl);
       scrollToBottom();
 
-      /* FIX #6 — sauvegarder dans sessionStorage */
       try { sessionStorage.setItem('cf_messages_html', messages.innerHTML); } catch(e) {}
-    }
-
-    function addErrorMessage() {
-      addMessage(
-        "Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏",
-        'ai', []
-      );
     }
 
     function scrollToBottom() {
@@ -3854,6 +3862,9 @@ document.addEventListener('DOMContentLoaded', function () {
     async function sendMessage(userText) {
       if (!userText || !userText.trim() || isLoading) return;
       const text = userText.trim();
+
+      /* Detect language on the client side for instant feedback */
+      const userLang = detectUILanguage(text);
 
       const chipsEl = document.getElementById('cf-quick-chips');
       if (chipsEl) chipsEl.style.display = 'none';
@@ -3869,6 +3880,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
       showTyping();
 
+      /* Error messages in the user's language */
+      const errorMessages = {
+        fr: "Désolée, j'ai un petit problème technique. Réessayez dans un instant! 🙏",
+        es: "Lo siento, tengo un pequeño problema técnico. ¡Inténtalo de nuevo en un momento! 🙏",
+        en: "Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏"
+      };
+
       try {
         const response = await fetch('/.netlify/functions/chat', {
           method:  'POST',
@@ -3880,12 +3898,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         hideTyping();
+
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const data = await response.json();
         if (data.error) throw new Error(data.error);
 
-        const aiReply  = data.reply    || "I'm not sure how to answer that. Could you rephrase? 😊";
+        const aiReply  = data.reply    || errorMessages[userLang] || errorMessages['en'];
         const products = data.products || [];
 
         addMessage(aiReply, 'ai', products);
@@ -3899,7 +3918,7 @@ document.addEventListener('DOMContentLoaded', function () {
       } catch (err) {
         hideTyping();
         console.error('Chat error:', err);
-        addErrorMessage();
+        addMessage(errorMessages[userLang] || errorMessages['en'], 'ai', []);
       } finally {
         isLoading        = false;
         sendBtn.disabled = input.value.trim().length === 0;
@@ -3945,6 +3964,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isOpen && !widget.contains(e.target)) closeChat();
     });
 
-    console.log('✅ CurvaFit Chatbot ready');
+    console.log('✅ CurvaFit Chatbot ready — trilingual (EN/FR/ES)');
   })();
 }); // end DOMContentLoaded
+
+
