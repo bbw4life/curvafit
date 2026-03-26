@@ -28,45 +28,31 @@ function buildProductIndex(rawData) {
   const settings  = rawData.find(p => p.type === 'settings') || {};
 
   const products = allActive.map((item, index) => {
-    // FIX #4 — récupère TOUTES les images variants (couleur → image)
     const colorsWithImages = (item.colors || [])
       .filter(c => c.active !== false)
-      .map(c => ({
-        name:  c.name,
-        hex:   c.hex || '',
-        image: c.image || item.image || ''
-      }));
-
-    // Construire une map variantId → image pour les variantes size+color
-    const variantImageMap = {};
-    (item.variants || []).forEach(v => {
-      if (v.color && v.image) variantImageMap[v.color] = v.image;
-      if (v.vid   && v.image) variantImageMap[v.vid]   = v.image;
-    });
+      .map(c => ({ name: c.name, hex: c.hex || '', image: c.image || item.image || '' }));
 
     const variantPrices = (item.variants || []).map(v => v.price).filter(Boolean);
     const minPrice = variantPrices.length ? Math.min(...variantPrices) : item.price;
 
     return {
-      id:             item.id,
-      productNumber:  index + 1,
-      title:          item.title,
-      description:    item.description,
-      price:          minPrice,
-      maxPrice:       item.price,
-      compare_price:  item.compare_price,
-      image:          item.image,
-      // FIX #4 — couleurs avec images complètes
-      colors:         colorsWithImages,
-      // FIX #4 — map couleur → image pour le frontend
-      variantImageMap: variantImageMap,
-      sizes:          item.sizes || [],
-      variants:       (item.variants || []).map(v => ({
+      id:            item.id,
+      productNumber: index + 1,
+      title:         item.title,
+      description:   item.description,
+      price:         minPrice,
+      maxPrice:      item.price,
+      compare_price: item.compare_price,
+      image:         item.image,
+      colors:        colorsWithImages,
+      sizes:         item.sizes || [],
+      /* FIX #4 — on expose les variants complets avec leur image */
+      variants:      (item.variants || []).map(v => ({
         vid:   v.vid,
         color: v.color || null,
         size:  v.size  || null,
         price: v.price || item.price,
-        image: v.image || (colorsWithImages.find(c => c.name === v.color) || {}).image || item.image
+        image: v.image || colorsWithImages.find(c => c.name === v.color)?.image || item.image || ''
       })),
       discounts: {
         single: item.single_discount || 0,
@@ -92,7 +78,7 @@ function detectIntent(message) {
   const q = message.toLowerCase();
 
   const generalPatterns = [
-    /fondateur|founder|qui.+(fond|creat|créat)|paul\b|francenel/,
+    /fondateur|founder|qui.+(fond|creat|créat)|paul|francenel/,
     /objectif|mission|but de curva|about curva|à propos/,
     /\bequipe\b|\bteam\b|\bstaff\b/,
     /c.est quoi curva|what is curva|what.s curva/,
@@ -182,6 +168,29 @@ function searchProducts(query, products) {
       p.sizes.forEach(s  => { if (String(s).toLowerCase().includes(kw)) score += 1; });
     });
 
+    const themes = [
+      { words: ['hula','hoop','belly','ventre'],                      id: 'resistance-bands',  boost: 12 },
+      { words: ['waist trainer','gainant','waist cinch','corset'],    id: 'yoga-mat',          boost: 12 },
+      { words: ['jump rope','corde','skip','sauter'],                 id: 'leggings',          boost: 12 },
+      { words: ['legging','yoga pant','high waist','peach'],          id: 'sports-bra',        boost: 12 },
+      { words: ['jumpsuit','combinaison','pilates'],                  id: 'hydration-bottle',  boost: 12 },
+      { words: ['tie dye','seamless legging'],                        id: 'workout-towel',     boost: 12 },
+      { words: ['sport bra','bra','brassiere','soutien'],             id: 'fitness-tracker',   boost: 12 },
+      { words: ['knee','genoux','genouillère','pad'],                 id: 'protein-shaker',    boost: 12 },
+      { words: ['posture','dos','back','corrector','correcteur'],     id: 'dumbbell-set',      boost: 12 },
+      { words: ['bracelet','tracker','heart rate','sleep','pouls'],   id: 'jump-rope',         boost: 12 },
+      { words: ['acupressure','stress mat','recovery','tapis'],       id: 'foam-roller',       boost: 12 },
+      { words: ['belly belt','ceinture ventre','cramp','chaleur'],    id: 'yoga-blocks',       boost: 12 },
+      { words: ['bottle','water','gourde','bouteille'],               id: 'ankle-weights',     boost: 12 },
+      { words: ['shoe','chaussure','running','sneaker'],              id: 'cooling-towel',     boost: 12 },
+      { words: ['pillow','oreiller','neck','cervical','nuque'],       id: 'massage-ball',      boost: 12 },
+      { words: ['earbuds','headphone','music','écouteur'],            id: 'gym-bag',           boost: 12 },
+    ];
+
+    themes.forEach(t => {
+      if (p.id === t.id && t.words.some(w => q.includes(w))) score += t.boost;
+    });
+
     if ((q.includes('cheap') || q.includes('budget') || q.includes('pas cher')) && p.price < 20) score += 5;
 
     return { ...p, score };
@@ -219,9 +228,8 @@ function buildSystemPrompt(products, settings) {
     ? promos.map(p => `• Code "${p.code}" → ${p.percent}% off on ${p.items}+ items`).join('\n')
     : '• No active promo codes at this time';
 
-  // FIX #4 — inclure les images variantes dans le catalogue
   const catalogText = products.map((p, i) => {
-    const colorsList = p.colors.map(c => `${c.name} (img: ${c.image || 'none'})`).join(', ');
+    const colorsList = p.colors.map(c => c.name).join(', ');
     const sizesList  = p.sizes.length ? p.sizes.join(', ') : 'No size needed';
     const discounts  = [
       p.discounts.single ? `1 item: -${p.discounts.single}%` : '',
@@ -231,55 +239,63 @@ function buildSystemPrompt(products, settings) {
     const delivery = formatDelivery(p.startDate, p.endDate) || 'Contact us';
     const rating   = p.rating ? `${p.rating}/5 (${p.reviewsCount || 0} reviews)` : 'N/A';
 
-    // Lister les variantes avec leurs images
-    const variantsText = p.variants.length
-      ? p.variants.slice(0, 6).map(v => `${v.color || ''}${v.size ? '/'+v.size : ''}: $${v.price}${v.image ? ' [img:'+v.image+']' : ''}`).join(', ')
-      : 'N/A';
-
     return `
 PRODUCT ${i + 1}:
   Title: ${p.title}
   Description: ${p.description}
   Price: $${p.price}${p.maxPrice !== p.price ? ` to $${p.maxPrice}` : ''} (was $${p.compare_price})
   Rating: ${rating}
-  Colors+Images: ${colorsList || 'N/A'}
+  Colors: ${colorsList || 'N/A'}
   Sizes: ${sizesList}
-  Variants: ${variantsText}
   Discounts: ${discounts}
   Delivery: ${delivery}
   Page: ${p.url}`;
   }).join('\n');
 
-  return `You are **Curva**, the official AI assistant of CurvaFit.
+  return `You are **Curva**, the official AI assistant and fitness coach of CurvaFit.
 
 ═══════════════════════════════════════
-🎯 IDENTITY & RESPONSE RULES
+🎯 YOUR IDENTITY
 ═══════════════════════════════════════
-- Warm, precise fitness coach. Never robotic.
-- Respond in the SAME LANGUAGE as the user (French or English).
-- **KEEP RESPONSES SHORT AND PRECISE** — max 4-5 lines for simple questions.
-- Never add filler phrases, long preambles, or unnecessary text.
-- Use emojis sparingly (1-2 max per response).
-
-BOLD FORMATTING RULES (use **text** for markdown bold):
-- **Always bold**: founder name (Paul Francenel), promo codes, product names, prices
-- **Always bold**: important warnings, key numbers, brand name CurvaFit
+You are a warm, motivating, and precise fitness coach.
+You help plus-size women lose weight in a healthy, sustainable way.
+You are calm, human, and never robotic.
+You respond in the SAME LANGUAGE the user writes in (French or English).
+Use emojis naturally but do not overuse them.
+KEEP RESPONSES SHORT AND PRECISE — max 4-5 lines. No long texts.
 
 ═══════════════════════════════════════
-🚦 PRODUCT DISPLAY RULES
+✏️ FORMATTING RULES — VERY IMPORTANT
 ═══════════════════════════════════════
-NEVER suggest products for: general advice, nutrition tips, program info, contact, greetings.
-ONLY show products when user explicitly asks to buy, see, or asks for a specific product type.
+Use **bold** (double asterisks) for these elements WITHOUT EXCEPTION:
+- Founder name: always write **Paul Francenel**
+- Brand name: always write **CurvaFit**
+- All promo codes: always write **CODE** in bold
+- Product names when mentioned
+- Key prices and important numbers
+- Important warnings or key facts
 
-FIX FOR VARIANT IMAGES: When user asks about a specific color/size variant,
-use the variant image URL from the Colors+Images or Variants data above.
-Never say "I don't have the variant image" — check the catalog data.
+NEVER display raw URLs like /products/product1.html in your text responses.
+If you need to reference a product page, just say "cliquez sur le bouton ci-dessous" or "see the button below".
+
+═══════════════════════════════════════
+🚦 CRITICAL BEHAVIOR RULE
+═══════════════════════════════════════
+NEVER suggest or display products for:
+- Brand info, founder, team questions
+- Health, hormones, nutrition advice
+- Program info, coaching plans
+- Contact / support requests
+- Discount code questions (just list codes, no cards)
+- General motivation, greetings, small talk
+
+ONLY suggest products when user explicitly asks to buy, see a product, or mentions a specific product type.
 
 ═══════════════════════════════════════
 🏢 ABOUT CURVAFIT
 ═══════════════════════════════════════
-Founder: **Paul Francenel**, 25 years old, entrepreneur.
-Goal: Help plus-size women transform their bodies at home, sustainably.
+Founder: **Paul Francenel**, 25 years old, entrepreneur. Not a doctor.
+Goal: Help plus-size women transform their lives healthily and sustainably.
 
 ═══════════════════════════════════════
 💪 PROGRAMS
@@ -287,7 +303,7 @@ Goal: Help plus-size women transform their bodies at home, sustainably.
 ${programsText}
 
 ═══════════════════════════════════════
-🎟️ PROMO CODES (always bold the codes)
+🎟️ PROMO CODES
 ═══════════════════════════════════════
 ${promosText}
 
@@ -300,22 +316,21 @@ NEVER use internal IDs. ALWAYS use exact product Title and prices.
 ${catalogText}
 
 ═══════════════════════════════════════
-🥗 NUTRITION (brief answers only)
+🥗 NUTRITION
 ═══════════════════════════════════════
 - Protein at every meal, cut liquid sugars, 2L water/day
-- Target: 300–500 calorie daily deficit
-- Sleep 7-8h — critical for weight loss hormones
+- Target: 300–500 calorie daily deficit, sleep 7-8h
 
 ═══════════════════════════════════════
 🤝 HUMAN SUPPORT
 ═══════════════════════════════════════
-"Our team is here: **WhatsApp**: ${socials.whatsapp || 'https://wa.me/contact'} | **/contact.html**"
+"Notre équipe: **WhatsApp**: ${socials.whatsapp || 'https://wa.me/contact'} | page **/contact.html**"
 
 ═══════════════════════════════════════
 🚫 NEVER
 ═══════════════════════════════════════
-- Write long responses (keep it short & direct)
-- Show raw URLs like /products/product1.html in text — use buttons instead
+- Write long responses (be short & direct)
+- Display raw URLs in text — buttons handle navigation
 - Invent prices or data
 - Promise guaranteed results`;
 }
@@ -361,55 +376,64 @@ exports.handler = async (event, context) => {
       { role: 'user', content: message }
     ];
 
-    const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-        'Content-Type':  'application/json'
-      },
-      body: JSON.stringify({
-        model:       'llama-3.3-70b-versatile',
-        messages:    groqMessages,
-        max_tokens:  350,        // FIX #5 — réponses courtes
-        temperature: 0.65,
-        stream:      false
-      })
+    /* ── Appel Groq avec retry sur 429 ── */
+    const groqBody = JSON.stringify({
+      model:       'llama-3.3-70b-versatile',
+      messages:    groqMessages,
+      max_tokens:  400,
+      temperature: 0.70,
+      stream:      false
     });
 
-    if (!groqResponse.ok) {
-      throw new Error(`Groq API error: ${groqResponse.status}`);
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    let groqResponse, attempts = 0;
+
+    while (attempts < 3) {
+      attempts++;
+      groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+          'Content-Type':  'application/json'
+        },
+        body: groqBody
+      });
+
+      if (groqResponse.status === 429) {
+        if (attempts < 3) { await sleep(attempts * 1500); continue; }
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            reply: "Je suis très sollicitée en ce moment 😅 Réessayez dans quelques secondes!",
+            products: [],
+            intent: 'general'
+          })
+        };
+      }
+
+      if (!groqResponse.ok) throw new Error(`Groq API error: ${groqResponse.status}`);
+      break;
     }
 
     const data  = await groqResponse.json();
     const reply = data.choices?.[0]?.message?.content
-      || "Désolé, je n'ai pas pu répondre. Réessayez! 🙏";
+      || "I'm sorry, I couldn't generate a response. Please try again. 🙏";
 
-    // FIX #4 — envoyer les images variantes complètes
+    /* FIX #4 — envoyer variants avec images couleur */
     const productCards = relevantProducts.map(p => ({
-      title:           p.title,
-      description:     p.description,
-      price:           p.price,
-      compare_price:   p.compare_price,
-      url:             p.url,
-      image:           p.image,
-      // FIX #4 — couleurs AVEC images
-      colors:          p.colors.map(c => ({
-        name:  c.name,
-        hex:   c.hex,
-        image: c.image   // image de la couleur variant
-      })),
-      // FIX #4 — variantes complètes avec images
-      variants:        p.variants.map(v => ({
-        vid:   v.vid,
-        color: v.color,
-        size:  v.size,
-        price: v.price,
-        image: v.image   // image de la variante
-      })),
-      sizes:           p.sizes,
-      delivery:        formatDelivery(p.startDate, p.endDate),
-      rating:          p.rating,
-      discounts:       p.discounts
+      title:         p.title,
+      description:   p.description,
+      price:         p.price,
+      compare_price: p.compare_price,
+      url:           p.url,
+      image:         p.image,
+      colors:        p.colors.map(c => ({ name: c.name, hex: c.hex, image: c.image })),
+      variants:      p.variants,
+      sizes:         p.sizes,
+      delivery:      formatDelivery(p.startDate, p.endDate),
+      rating:        p.rating,
+      discounts:     p.discounts
     }));
 
     return {

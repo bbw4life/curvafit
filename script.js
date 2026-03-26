@@ -3449,8 +3449,6 @@ function initStockBar(cjId) {
 
 /* ================================================================
    CURVAFIT AI CHATBOT — FRONTEND JS
-   FIXES: #1 image white space, #2 images cliquables, #3 beaux boutons,
-          #4 images variants, #5 mots en gras, #6 persistance session
 ================================================================ */
 document.addEventListener('DOMContentLoaded', function () {
   (function () {
@@ -3477,35 +3475,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let isLoading = false;
     let notifShown = false;
 
-    // FIX #6 — Persistance de la conversation dans sessionStorage
-    const SESSION_KEY = 'cf_chat_history';
-    const SESSION_MSGS = 'cf_chat_messages_html';
-
-    function loadHistory() {
-      try {
-        return JSON.parse(sessionStorage.getItem(SESSION_KEY) || '[]');
-      } catch(e) { return []; }
-    }
-
-    function saveHistory(history) {
-      try {
-        sessionStorage.setItem(SESSION_KEY, JSON.stringify(history.slice(-20)));
-      } catch(e) {}
-    }
-
-    function saveMessagesHTML() {
-      try {
-        sessionStorage.setItem(SESSION_MSGS, messages.innerHTML);
-      } catch(e) {}
-    }
-
-    function loadMessagesHTML() {
-      try {
-        return sessionStorage.getItem(SESSION_MSGS) || '';
-      } catch(e) { return ''; }
-    }
-
-    let conversationHistory = loadHistory();
+    /* FIX #6 — Persistance sessionStorage */
+    let conversationHistory = [];
+    try { conversationHistory = JSON.parse(sessionStorage.getItem('cf_history') || '[]'); } catch(e) {}
 
     /* ══════════════════════════════════════
        DRAGGABLE WIDGET
@@ -3596,20 +3568,20 @@ document.addEventListener('DOMContentLoaded', function () {
       if (notifDot)  notifDot.style.display  = 'none';
       input.focus();
 
-      // FIX #6 — restaurer les messages si déjà existants
-      const savedHTML = loadMessagesHTML();
-      if (savedHTML && messages.children.length === 0) {
-        messages.innerHTML = savedHTML;
-        // Réattacher les events sur les swatches restaurés
-        reattachSwatchEvents();
-        scrollToBottom();
-        // Masquer les chips si conversation existe
-        const chipsEl = document.getElementById('cf-quick-chips');
-        if (chipsEl && conversationHistory.length > 0) {
-          chipsEl.style.display = 'none';
+      /* FIX #6 — Restaurer messages au lieu de recréer le welcome */
+      if (messages.children.length === 0) {
+        const savedHTML = sessionStorage.getItem('cf_messages_html') || '';
+        if (savedHTML) {
+          messages.innerHTML = savedHTML;
+          /* Réattacher les events swatches après restauration */
+          reattachCardEvents();
+          scrollToBottom();
+          /* Cacher chips si conversation existe déjà */
+          const chipsEl = document.getElementById('cf-quick-chips');
+          if (chipsEl && conversationHistory.length > 0) chipsEl.style.display = 'none';
+        } else {
+          addWelcomeMessage();
         }
-      } else if (messages.children.length === 0) {
-        addWelcomeMessage();
       }
     }
 
@@ -3634,15 +3606,14 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ── Welcome ── */
     function addWelcomeMessage() {
       addMessage(
-        `Bonjour! 👋 Je suis **Curva**, coach IA de **CurvaFit**!\n\nComment puis-je vous aider? 😊`,
+        `Hi! 👋 I'm **Curva**, your personal CurvaFit coach!\n\nI'm here to help you with:\n- 🔥 Weight loss tips & advice\n- 🥗 Nutrition guidance\n- 💪 Product recommendations\n- 📋 Programs & coaching plans\n\nWhat can I help you with today? 😊`,
         'ai',
         []
       );
     }
 
-    /* ── FIX #5 — Format Markdown avec gras amélioré ── */
+    /* ── Format Markdown ── */
     function formatMarkdown(text) {
-      // Supprimer les IDs internes
       const internalIds = [
         'resistance-bands','yoga-mat','leggings','sports-bra',
         'hydration-bottle','workout-towel','fitness-tracker','protein-shaker',
@@ -3654,36 +3625,35 @@ document.addEventListener('DOMContentLoaded', function () {
         out = out.replace(new RegExp('\\b' + id + '\\b', 'gi'), '');
       });
 
-      // FIX #3 — Transformer les URLs en boutons beaux
-      // Pattern: /products/productX.html ou /contact.html ou tout lien internal
+      /* FIX #3 — Transformer les URLs brutes en beaux boutons */
       out = out.replace(
         /\[([^\]]+)\]\(([^)]+)\)/g,
         (match, label, url) => {
           if (url.startsWith('/') || url.startsWith('http')) {
-            return `<a href="${url}" class="cf-inline-btn" target="${url.startsWith('http') ? '_blank' : '_self'}">${label} →</a>`;
+            return `<a href="${url}" class="cf-link-btn" target="${url.startsWith('http') ? '_blank' : '_self'}">${label} →</a>`;
           }
           return `<strong>${label}</strong>`;
         }
       );
 
-      // FIX #3 — Transformer les URLs brutes en boutons
-      // /products/product1.html → bouton
+      /* FIX #3 — URLs brutes /products/... /contact.html etc → bouton */
       out = out.replace(
         /(\/products\/product\d+\.html|\/contact\.html|\/shop\.html|\/programs\.html|\/checkout\.html)/g,
         (url) => {
           const labels = {
-            '/contact.html':   'Nous contacter',
-            '/shop.html':      'Voir la boutique',
-            '/programs.html':  'Voir les programmes',
-            '/checkout.html':  'Commander'
+            '/contact.html':  'Nous contacter',
+            '/shop.html':     'Voir la boutique',
+            '/programs.html': 'Voir les programmes',
+            '/checkout.html': 'Commander'
           };
           const label = labels[url] || 'Voir le produit';
-          return `<a href="${url}" class="cf-inline-btn">${label} →</a>`;
+          return `<a href="${url}" class="cf-link-btn">${label} →</a>`;
         }
       );
 
       return out
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<strong>$1</strong>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')  /* FIX #5 — gras */
         .replace(/\*(.+?)\*/g,     '<em>$1</em>')
         .replace(/`(.+?)`/g,       '<code>$1</code>')
         .replace(/\n\n/g, '<br><br>')
@@ -3694,19 +3664,26 @@ document.addEventListener('DOMContentLoaded', function () {
       return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-    /* ── FIX #4 — Réattacher les events swatches après restauration ── */
-    function reattachSwatchEvents() {
+    /* FIX #6 — Réattacher events sur cards restaurées */
+    function reattachCardEvents() {
       document.querySelectorAll('.cf-product-card').forEach(card => {
+        const mainImg    = card.querySelector('.cf-pc-img');
         const swatches   = card.querySelectorAll('.cf-pc-swatch');
         const colorLabel = card.querySelector('.cf-pc-color-label');
-        const mainImg    = card.querySelector('.cf-pc-img');
+        const productUrl = card.dataset.productUrl;
 
+        /* FIX #2 — image cliquable */
+        if (mainImg && productUrl) {
+          mainImg.style.cursor = 'pointer';
+          mainImg.onclick = () => window.location.href = productUrl;
+        }
+
+        /* FIX #4 — swatches avec images variants */
         swatches.forEach(sw => {
           const activate = () => {
             swatches.forEach(s => s.classList.remove('cf-pc-swatch--active'));
             sw.classList.add('cf-pc-swatch--active');
             if (colorLabel) colorLabel.textContent = sw.dataset.name;
-            // FIX #4 — utilise l'image du variant
             if (mainImg && sw.dataset.img && sw.dataset.img !== 'undefined' && sw.dataset.img !== '') {
               mainImg.src = sw.dataset.img;
             }
@@ -3714,20 +3691,11 @@ document.addEventListener('DOMContentLoaded', function () {
           sw.addEventListener('mouseenter', activate);
           sw.addEventListener('click',      activate);
         });
-
-        // FIX #2 — rendre l'image cliquable
-        if (mainImg) {
-          const productUrl = card.dataset.url;
-          if (productUrl) {
-            mainImg.style.cursor = 'pointer';
-            mainImg.onclick = () => { window.location.href = productUrl; };
-          }
-        }
       });
     }
 
     /* ══════════════════════════════════════
-       ADD MESSAGE — corrections #1 #2 #3 #4
+       ADD MESSAGE
     ══════════════════════════════════════ */
     function addMessage(text, role, products) {
       const msgEl  = document.createElement('div');
@@ -3739,7 +3707,7 @@ document.addEventListener('DOMContentLoaded', function () {
       bubble.innerHTML = formatMarkdown(text);
       msgEl.appendChild(bubble);
 
-      /* Product cards — FIX #1 #2 #3 #4 */
+      /* Product cards */
       if (role === 'ai' && Array.isArray(products) && products.length > 0) {
         const cardsWrap = document.createElement('div');
         cardsWrap.className = 'cf-product-cards';
@@ -3747,9 +3715,9 @@ document.addEventListener('DOMContentLoaded', function () {
         products.forEach(p => {
           const card = document.createElement('div');
           card.className = 'cf-product-card';
-          card.dataset.url = p.url; // FIX #2 — stocker l'URL
+          card.dataset.productUrl = p.url; /* FIX #2 */
 
-          /* FIX #1 — image sans espace blanc: object-fit cover, height fixe */
+          /* FIX #1 — image sans espace blanc : line-height:0, height fixe, object-fit:cover */
           let imgHTML = '';
           if (p.image) {
             imgHTML = `
@@ -3759,23 +3727,21 @@ document.addEventListener('DOMContentLoaded', function () {
               </div>`;
           }
 
-          /* ── Rating ── */
           const ratingHTML = p.rating
             ? `<div class="cf-pc-rating">⭐ ${p.rating}/5</div>`
             : '';
 
-          /* ── Price ── */
           const priceHTML = `
             <div class="cf-pc-price">
               <span class="cf-pc-price-current">$${Number(p.price).toFixed(2)}</span>
               <span class="cf-pc-price-compare">$${Number(p.compare_price).toFixed(2)}</span>
             </div>`;
 
-          /* FIX #4 — Swatches avec vraies images variants */
+          /* FIX #4 — swatches avec data-img = vraie image variant */
           let colorsHTML = '';
           if (p.colors && p.colors.length > 0) {
             const swatchesHTML = p.colors.slice(0, 6).map(c => {
-              // Trouver l'image variant depuis colors ou variants
+              /* chercher l'image dans colors puis dans variants */
               let variantImg = c.image || '';
               if (!variantImg && p.variants) {
                 const v = p.variants.find(vv => vv.color === c.name);
@@ -3796,18 +3762,16 @@ document.addEventListener('DOMContentLoaded', function () {
               <div class="cf-pc-color-label"></div>`;
           }
 
-          /* ── Sizes ── */
           const sizesHTML = (p.sizes && p.sizes.length > 0)
-            ? `<div class="cf-pc-sizes"><strong>Tailles:</strong> ${p.sizes.join(' · ')}</div>` : '';
+            ? `<div class="cf-pc-sizes"><strong>Sizes:</strong> ${p.sizes.join(' · ')}</div>` : '';
 
-          /* ── Delivery ── */
           const deliveryHTML = (p.delivery)
             ? `<div class="cf-pc-delivery">🚚 ${p.delivery}</div>` : '';
 
-          /* FIX #3 — Beau bouton CTA à la place d'une URL brute */
+          /* FIX #3 — beau bouton au lieu d'un lien brut */
           const ctaHTML = `
             <a href="${p.url}" class="cf-pc-btn" onclick="event.stopPropagation()">
-              <span>Voir le produit</span>
+              View Product
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
                 <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
               </svg>
@@ -3825,7 +3789,7 @@ document.addEventListener('DOMContentLoaded', function () {
               ${ctaHTML}
             </div>`;
 
-          /* FIX #2 — Image cliquable */
+          /* FIX #2 — image cliquable */
           const imgEl = card.querySelector('.cf-pc-img');
           if (imgEl) {
             imgEl.style.cursor = 'pointer';
@@ -3835,7 +3799,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
           }
 
-          /* FIX #4 — Swatch interaction avec vraies images */
+          /* FIX #4 — swatch change image vers variant */
           const swatches   = card.querySelectorAll('.cf-pc-swatch');
           const colorLabel = card.querySelector('.cf-pc-color-label');
           const mainImg    = card.querySelector('.cf-pc-img');
@@ -3845,7 +3809,6 @@ document.addEventListener('DOMContentLoaded', function () {
               swatches.forEach(s => s.classList.remove('cf-pc-swatch--active'));
               sw.classList.add('cf-pc-swatch--active');
               if (colorLabel) colorLabel.textContent = sw.dataset.name;
-              // FIX #4 — changer l'image principale vers l'image du variant
               if (mainImg && sw.dataset.img && sw.dataset.img !== 'undefined' && sw.dataset.img !== '') {
                 mainImg.src = sw.dataset.img;
               }
@@ -3869,13 +3832,13 @@ document.addEventListener('DOMContentLoaded', function () {
       messages.appendChild(msgEl);
       scrollToBottom();
 
-      // FIX #6 — Sauvegarder le HTML après chaque message
-      saveMessagesHTML();
+      /* FIX #6 — sauvegarder dans sessionStorage */
+      try { sessionStorage.setItem('cf_messages_html', messages.innerHTML); } catch(e) {}
     }
 
     function addErrorMessage() {
       addMessage(
-        "Désolé, un problème est survenu. Réessayez! 🙏",
+        "Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏",
         'ai', []
       );
     }
@@ -3892,13 +3855,12 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!userText || !userText.trim() || isLoading) return;
       const text = userText.trim();
 
-      /* Hide chips */
       const chipsEl = document.getElementById('cf-quick-chips');
       if (chipsEl) chipsEl.style.display = 'none';
 
       addMessage(text, 'user', []);
       conversationHistory.push({ role: 'user', content: text });
-      saveHistory(conversationHistory);
+      try { sessionStorage.setItem('cf_history', JSON.stringify(conversationHistory.slice(-20))); } catch(e) {}
 
       input.value      = '';
       input.style.height = 'auto';
@@ -3923,16 +3885,15 @@ document.addEventListener('DOMContentLoaded', function () {
         const data = await response.json();
         if (data.error) throw new Error(data.error);
 
-        const aiReply  = data.reply    || "Je ne suis pas sûr. Pouvez-vous reformuler? 😊";
+        const aiReply  = data.reply    || "I'm not sure how to answer that. Could you rephrase? 😊";
         const products = data.products || [];
 
         addMessage(aiReply, 'ai', products);
         conversationHistory.push({ role: 'assistant', content: aiReply });
-        saveHistory(conversationHistory);
+        try { sessionStorage.setItem('cf_history', JSON.stringify(conversationHistory.slice(-20))); } catch(e) {}
 
         if (conversationHistory.length > 20) {
           conversationHistory = conversationHistory.slice(-16);
-          saveHistory(conversationHistory);
         }
 
       } catch (err) {
@@ -3984,6 +3945,6 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isOpen && !widget.contains(e.target)) closeChat();
     });
 
-    console.log('✅ CurvaFit Chatbot (Curva Support) ready — v2.0 fixes applied');
+    console.log('✅ CurvaFit Chatbot ready');
   })();
 }); // end DOMContentLoaded

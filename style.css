@@ -10707,11 +10707,7 @@ html.fonts-loaded [class*="fa-"] {
 
 
 /* ═══════════════════════════════════════════
-   CURVAFIT AI CHATBOT — COMPLETE STYLES v2.0
-   FIXES: #1 image white space removed
-          #2 images cliquables (cursor pointer)
-          #3 beaux boutons inline
-          #5 styles gras
+   CURVAFIT AI CHATBOT — COMPLETE STYLES
 ═══════════════════════════════════════════ */
 
 /* Variables */
@@ -11080,8 +11076,14 @@ html.fonts-loaded [class*="fa-"] {
   min-height: 0;
 }
 
-.cf-messages::-webkit-scrollbar { width: 4px; }
-.cf-messages::-webkit-scrollbar-track { background: transparent; }
+.cf-messages::-webkit-scrollbar {
+  width: 4px;
+}
+
+.cf-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .cf-messages::-webkit-scrollbar-thumb {
   background: rgba(192,56,94,0.20);
   border-radius: 4px;
@@ -11100,8 +11102,15 @@ html.fonts-loaded [class*="fa-"] {
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.cf-message--ai   { align-self: flex-start; align-items: flex-start; }
-.cf-message--user { align-self: flex-end;   align-items: flex-end;   }
+.cf-message--ai {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.cf-message--user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
 
 .cf-msg-bubble {
   padding: 12px 16px;
@@ -11126,41 +11135,35 @@ html.fonts-loaded [class*="fa-"] {
   box-shadow: 0 4px 16px rgba(192,56,94,0.30);
 }
 
-/* FIX #5 — Styles gras dans les messages */
-.cf-msg-bubble strong {
+/* FIX #5 — gras en rose dans les bulles AI */
+.cf-message--ai .cf-msg-bubble strong {
   font-weight: 700;
   color: var(--cf-rose);
 }
 
-.cf-message--user .cf-msg-bubble strong {
-  color: #fff;
-  font-weight: 800;
-}
-
-/* FIX #3 — Bouton inline dans les messages */
-.cf-inline-btn {
+/* FIX #3 — bouton lien inline dans le texte de l'IA */
+.cf-link-btn {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 7px 14px;
+  padding: 6px 14px;
   background: var(--cf-gradient);
   color: #fff !important;
-  font-size: 0.80rem;
+  font-size: 0.78rem;
   font-weight: 700;
   border-radius: 100px;
-  border: none;
-  cursor: pointer;
   text-decoration: none !important;
-  transition: all 0.22s ease;
-  box-shadow: 0 3px 10px rgba(192,56,94,0.30);
-  margin: 4px 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 10px rgba(192,56,94,0.28);
+  margin: 3px 2px;
   vertical-align: middle;
 }
 
-.cf-inline-btn:hover {
+.cf-link-btn:hover {
   opacity: 0.90;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(192,56,94,0.40);
+  box-shadow: 0 5px 16px rgba(192,56,94,0.40);
 }
 
 .cf-msg-time {
@@ -11174,64 +11177,61 @@ html.fonts-loaded [class*="fa-"] {
 .cf-product-cards {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   margin-top: 10px;
   width: 100%;
-  max-width: 300px;
+  max-width: 280px;
 }
 
 .cf-product-card {
   background: #fff;
-  border: 1px solid rgba(192, 56, 94, 0.14);
-  border-radius: 12px;
+  border: 1px solid var(--cf-border);
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(107, 52, 96, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  width: 100%;
+  box-shadow: 0 2px 8px rgba(107,52,96,0.06);
+  transition: all 0.22s ease;
 }
 
 .cf-product-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(192, 56, 94, 0.15);
+  box-shadow: 0 6px 20px rgba(192,56,94,0.15);
 }
 
-/* ── FIX #1 — Image sans espace blanc ── */
+/* FIX #1 — supprimer les espaces blancs autour de l'image */
 .cf-pc-img-wrap {
   width: 100%;
-  height: 160px;          /* hauteur fixe */
+  height: 150px;       /* hauteur fixe */
   overflow: hidden;
   background: #f7f3f5;
-  display: block;         /* pas de flex/inline-block qui crée des espaces */
-  line-height: 0;         /* supprime le gap lié aux inline elements */
+  display: block;
+  line-height: 0;      /* supprime gap inline */
   font-size: 0;
 }
 
-/* FIX #2 — image cliquable */
+/* FIX #2 — image cliquable + pas d'espace blanc */
 .cf-pc-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;      /* couvre tout sans espace */
+  object-fit: cover;       /* couvre sans espace */
   object-position: center;
-  display: block;         /* supprime l'espace blanc sous l'image */
-  cursor: pointer;        /* FIX #2 */
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  display: block;          /* supprime espace sous image */
+  cursor: pointer;         /* FIX #2 */
+  transition: transform 0.3s ease;
 }
 
 .cf-pc-img:hover {
   transform: scale(1.04);
-  opacity: 0.95;
 }
 
-/* ── Info section ── */
 .cf-pc-info {
   padding: 10px 12px 12px;
 }
 
 .cf-pc-title {
-  font-size: 0.80rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #1e1a1c;
-  line-height: 1.35;
+  color: var(--cf-text);
+  line-height: 1.3;
   margin-bottom: 4px;
 }
 
@@ -11244,23 +11244,22 @@ html.fonts-loaded [class*="fa-"] {
 .cf-pc-price {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   margin-bottom: 6px;
 }
 
 .cf-pc-price-current {
   font-size: 0.92rem;
   font-weight: 800;
-  color: #c0385e;
+  color: var(--cf-rose);
 }
 
 .cf-pc-price-compare {
   font-size: 0.72rem;
-  color: #8e7e85;
+  color: var(--cf-muted);
   text-decoration: line-through;
 }
 
-/* ── FIX #4 — Swatches couleurs ── */
 .cf-pc-colors {
   display: flex;
   flex-wrap: wrap;
@@ -11271,26 +11270,26 @@ html.fonts-loaded [class*="fa-"] {
 
 .cf-pc-swatch {
   display: inline-block;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   border: 2px solid transparent;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.20);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.18);
   transition: transform 0.18s ease, border-color 0.18s ease;
   flex-shrink: 0;
 }
 
 .cf-pc-swatch:hover,
 .cf-pc-swatch--active {
-  transform: scale(1.30);
+  transform: scale(1.25);
   border-color: #c0385e;
 }
 
 .cf-pc-swatch-more {
   font-size: 0.70rem;
-  color: #8e7e85;
-  line-height: 18px;
+  color: var(--cf-muted);
+  line-height: 16px;
 }
 
 .cf-pc-color-label {
@@ -11316,23 +11315,23 @@ html.fonts-loaded [class*="fa-"] {
   margin-bottom: 8px;
 }
 
-/* FIX #3 — Bouton CTA beau */
+/* FIX #3 — beau bouton CTA sur la card */
 .cf-pc-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
   width: 100%;
-  padding: 9px 12px;
+  padding: 8px 10px;
   background: linear-gradient(135deg, #c0385e 0%, #7b3f6e 100%);
   color: #fff !important;
-  font-size: 0.80rem;
+  font-size: 0.78rem;
   font-weight: 700;
   border-radius: 8px;
   text-decoration: none !important;
   cursor: pointer;
   border: none;
-  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
   box-shadow: 0 3px 10px rgba(192, 56, 94, 0.28);
   margin-top: 4px;
 }
@@ -11340,7 +11339,7 @@ html.fonts-loaded [class*="fa-"] {
 .cf-pc-btn:hover {
   opacity: 0.92;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(192, 56, 94, 0.40);
+  box-shadow: 0 6px 18px rgba(192, 56, 94, 0.38);
 }
 
 .cf-pc-btn svg { flex-shrink: 0; }
@@ -11500,11 +11499,13 @@ html.fonts-loaded [class*="fa-"] {
     padding: 0 16px 0 5px;
   }
 
-  /* FIX #1 mobile — image plus petite */
-  .cf-pc-img-wrap {
-    height: 130px;
-  }
+  .cf-pc-img-wrap { height: 120px; }
 }
+
+/* ── Welcome message markdown styles ── */
+.cf-msg-bubble strong { font-weight: 700; }
+.cf-msg-bubble em { font-style: italic; }
+.cf-msg-bubble a { color: var(--cf-rose); text-decoration: underline; }
 
 /* ── Drag cursor ── */
 #cf-chat-widget.cf-dragging {
@@ -11514,14 +11515,4 @@ html.fonts-loaded [class*="fa-"] {
 #cf-chat-widget.cf-dragging * {
   cursor: grabbing !important;
   pointer-events: none;
-}
-
-/* ── Markdown dans bulles ── */
-.cf-msg-bubble em     { font-style: italic; }
-.cf-msg-bubble a      { color: var(--cf-rose); text-decoration: underline; }
-.cf-msg-bubble code   {
-  background: rgba(192,56,94,0.08);
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-size: 0.85em;
 }
