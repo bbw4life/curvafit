@@ -3449,6 +3449,7 @@ function initStockBar(cjId) {
 /* ================================================================
    CURVAFIT AI CHATBOT — FRONTEND JS
    Replace the entire chatbot block at the bottom of your script.js
+   NOTE: Le CSS du chatbot a été déplacé dans style.css
 ================================================================ */
 document.addEventListener('DOMContentLoaded', function () {
   (function () {
@@ -3665,15 +3666,16 @@ document.addEventListener('DOMContentLoaded', function () {
       );
 
       out = out.replace(
-        /(\/products\/product\d+\.html|\/contact\.html|\/shop\.html|\/programs\.html|\/checkout\.html)/g,
+        /(\/products\/product\d+\.html|\/contact\.html|\/shop\.html|\/programs\.html|\/checkout\.html|\/account\.html)/g,
         (url) => {
           const labels = {
             '/contact.html':  'Contact us',
             '/shop.html':     'Visit shop',
             '/programs.html': 'See programs',
-            '/checkout.html': 'Order now'
+            '/checkout.html': 'Checkout',
+            '/account.html':  'My Account'
           };
-          const label = labels[url] || 'View product';
+          const label = labels[url] || 'View';
           return `<a href="${url}" class="cf-link-btn">${label} →</a>`;
         }
       );
@@ -3942,8 +3944,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const data = await response.json();
         if (data.error) throw new Error(data.error);
 
-        const aiReply    = data.reply       || errorMessages[userLang] || errorMessages['en'];
-        const products   = data.products    || [];
+        const aiReply     = data.reply       || errorMessages[userLang] || errorMessages['en'];
+        const products    = data.products    || [];
         const showContact = data.showContact || false;
         const contactInfo = data.contactInfo || null;
 
@@ -4007,49 +4009,4 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('✅ CurvaFit Chatbot ready — trilingual (EN/FR/ES)');
   })();
 }); // end DOMContentLoaded
-
-/* ================================================================
-   CONTACT BUTTONS CSS — injected automatically
-   Add this to your style.css if you prefer, or leave it here.
-================================================================ */
-(function injectContactBtnStyles() {
-  if (document.getElementById('cf-contact-btn-styles')) return;
-  const style = document.createElement('style');
-  style.id = 'cf-contact-btn-styles';
-  style.textContent = `
-    .cf-contact-btns {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 8px 0 4px 0;
-    }
-    .cf-contact-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.15s;
-      white-space: nowrap;
-    }
-    .cf-contact-btn:hover { opacity: 0.88; transform: translateY(-1px); }
-    .cf-contact-btn--whatsapp {
-      background: #25D366;
-      color: #fff;
-    }
-    .cf-contact-btn--telegram {
-      background: #0088cc;
-      color: #fff;
-    }
-    .cf-contact-btn--page {
-      background: var(--rose, #e91e63);
-      color: #fff;
-    }
-  `;
-  document.head.appendChild(style);
-})();
 
