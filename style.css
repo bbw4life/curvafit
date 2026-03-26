@@ -868,7 +868,7 @@ a { text-decoration: none; color: inherit; }
     border-radius: 50%;
     border: 2px solid rgba(255,255,255,0.25);
     object-fit: cover;
-    filter: brightness(0.92) saturate(0.85);
+    filter: none;
     transition: var(--transition);
     box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
@@ -1762,7 +1762,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .highlight-product-card:hover {
-    transform: translateY(-10px) perspective(600px) rotateX(2deg);
+    transform: translateY(-10px);
     box-shadow: var(--shadow-lift);
 }
 
@@ -7451,7 +7451,7 @@ tbody tr:hover { background: var(--rose-ultra); }
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 46px; height: 46px;
+    width: 40px; height: 40px;
     background: linear-gradient(135deg, #b83058, #6b3460);
     border: 2.5px solid rgba(232, 188, 106, 0.70);
     border-radius: 50%;
@@ -11566,7 +11566,6 @@ html.fonts-loaded [class*="fa-"] {
   color: #fff;
 }
 
-
 /* ═══════════════════════════════════════════════════════════
    CURVAFIT CHATBOT — PROMO CODE HIGHLIGHT STYLES
    Add this block to your style.css (anywhere in the chatbot section)
@@ -11622,4 +11621,7 @@ html.fonts-loaded [class*="fa-"] {
     box-shadow: 0 2px 8px rgba(238, 90, 36, 0.5);
   }
 }
+
+
+
 

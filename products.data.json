@@ -18,28 +18,28 @@
     "description": "Burns belly fat while you watch TV. The magnetic design stays on your waist automatically — adjustable from 18 to 24 sections to fit every size. No experience needed.",
     "price": 79.99,
     "compare_price": 148.99,
-    "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_produit_first.webp?v=1774271069&width=3000",
-    "image_hover": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_hover.avif?v=1774271070&width=3000",
+   "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_produit_first.webp?v=1774271069",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_hover.avif?v=1774271070",
     "sizes": ["18 sections","21 sections","24 sections"],
     "colors": [
       {
         "name": "Blue",
         "hex": "#2196F3",
-        "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_1_blue.webp?v=1774231220&width=3000",
+        "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_1_blue.webp?v=1774231220",
         "variant_id": "9984749996",
         "active": true
       },
       {
         "name": "Purple",
         "hex": "#9B59B6",
-        "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/purple_hoop.webp?v=1774271070&width=3000",
+        "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/purple_hoop.webp?v=1774271070",
         "variant_id": "9984749997",
         "active": true
       },
       {
         "name": "Pink",
         "hex": "#FF69B4",
-        "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_pink.jpg?v=1774227670&width=3000",
+        "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_pink.jpg?v=1774227670",
         "variant_id": "9984749998",
         "active": true
       }
@@ -56,21 +56,20 @@
       {"vid": "710072503","color": "Pink","size": "18 sections","price": 63.46,"active": true}
     ],
     "media": [
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/real_4.png?v=1774302893",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_tr.webp?v=1774271070&width=3000",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_4.webp?v=1774272457&width=3000",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_seconde.webp?v=1774271070&width=3000",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_7.jpg?v=1774272457&width=3000",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_produit_first.webp?v=1774271069&width=3000",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_5.webp?v=1774272457&width=3000",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_3.jpg?v=1774272457&width=3000",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_8.jpg?v=1774273600&width=3000",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_12.webp?v=1774274436&width=3000",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_10.webp?v=1774273600&width=3000",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_tr.webp?v=1774271070",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_4.webp?v=1774272457",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_seconde.webp?v=1774271070",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_7.jpg?v=1774272457",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_produit_first.webp?v=1774271069",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_5.webp?v=1774272457",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_3.jpg?v=1774272457",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_8.jpg?v=1774273600",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_12.webp?v=1774274436",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_10.webp?v=1774273600",
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_14.jpg?v=1774226054",
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_14.jpg?v=1774226054",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_2.jpg?v=1774272457&width=3000",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_13.webp?v=1774274436&width=3000"
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_2.jpg?v=1774272457",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_13.webp?v=1774274436"
     ],
     "promo": {"start_date": "2026-02-24","end_date": "2026-02-28","single_discount": 0,"duo_discount": 0,"trio_discount": 0}
   },

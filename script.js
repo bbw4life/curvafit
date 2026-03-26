@@ -1,13 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
-  function upgradeShopifyImageUrl(url) {
-    if (!url || typeof url !== 'string') return url;
-    if (!url.includes('cdn.shopify.com')) return url;
-    if (url.startsWith('data:') || url.includes('_master.')) return url;
-    return url.replace(
-      /_(pico|icon|thumb|small|compact|medium|large|grande|original|1024x1024|2048x2048|\d+x\d+|\d+x|x\d+)(\.(?:jpg|jpeg|png|webp|gif))(\?|$)/gi,
-      '_master$2$3'
-    );
-  }
+ function upgradeShopifyImageUrl(url) {
+  if (!url || typeof url !== 'string') return url;
+  if (!url.includes('cdn.shopify.com')) return url;
+  if (url.startsWith('data:')) return url;
+  
+  // Retire les anciens params width
+  url = url.replace(/[?&]width=\d+/g, '').replace(/\?&/, '?').replace(/\?$/, '');
+  
+  // Retire les suffixes basse résolution
+  url = url.replace(
+    /_(pico|icon|thumb|small|compact|medium|large|grande|original|master|1024x1024|2048x2048|\d+x\d+|\d+x|x\d+)(\.(?:jpg|jpeg|png|webp|gif|avif))(\?|$)/gi,
+    '$2$3'
+  );
+  
+  // Force 1000px de large via paramètre CDN Shopify officiel
+  const sep = url.includes('?') ? '&' : '?';
+  return url + sep + 'width=1000';
+}
 
 
    if ('fonts' in document) {
@@ -65,62 +74,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ====================== IMAGES NETTES (ANTI-FLOU GLOBAL) ======================
   (function injectSharpImageStyles() {
-    const style = document.createElement('style');
-    style.id = 'sharp-images-style';
-    style.textContent = `
-      img,
-      .main-image img,
-      .thumbnail-item img,
-      .mini-media-image,
-      .product-card img,
-      .wishlist-img,
-      .cart-item img,
-      .order-item-image,
-      .paul-banner-image,
-      .francenel-milliadaire-banner-image,
-      .hero-slide,
-      .paul-banner-slide img,
-      .mini-media-slider img,
-      .variant-preview img,
-      .review-item img,
-      .hero-thumb img,
-      [class*="banner"] img,
-      [class*="slider"] img,
-      [class*="product"] img {
-        image-rendering: -webkit-optimize-contrast;
-        image-rendering: crisp-edges;
-        -ms-interpolation-mode: nearest-neighbor;
-        filter: none !important;
-        -webkit-filter: none !important;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-        transform: translateZ(0);
-        -webkit-transform: translateZ(0);
-        will-change: transform;
-        max-width: 100%;
-        height: auto;
-      }
-
-      img {
-        image-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      img[style*="blur"],
-      img[class*="blur"] {
-        filter: none !important;
-        -webkit-filter: none !important;
-      }
-
-      @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-        img {
-          image-rendering: -webkit-optimize-contrast;
-          image-rendering: auto;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-  })();
+  const style = document.createElement('style');
+  style.id = 'sharp-images-style';
+  style.textContent = `
+    img,
+    .main-image img,
+    .thumbnail-item img,
+    .mini-media-image,
+    .product-card img,
+    .wishlist-img,
+    .cart-item img {
+      image-rendering: auto;
+      filter: none !important;
+      -webkit-filter: none !important;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      will-change: auto;
+      max-width: 100%;
+      height: auto;
+    }
+  `;
+  document.head.appendChild(style);
+})();
   // ====================== FIN IMAGES NETTES ======================
 
   let products = [];
@@ -233,6 +210,52 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(data => {
       products = data;
       window.__allProducts = data;
+
+
+
+
+
+      // ══ SHOP HIGHLIGHT — index.html ══
+(function initShopHighlight() {
+    const cards = document.querySelectorAll('.highlight-product-card[data-highlight-index]');
+    if (!cards.length) return;
+
+    const realProducts = products.filter(p => !p.type);
+
+    cards.forEach(card => {
+        const index   = parseInt(card.dataset.highlightIndex);
+        const prod    = realProducts[index];
+        if (!prod) return;
+
+        const img   = card.querySelector('img');
+        const title = card.querySelector('h3');
+        const link  = card.querySelector('.highlight-product-link');
+
+        const productUrl = getProductUrl(prod.id);
+
+        if (img) {
+            img.src = upgradeShopifyImageUrl(prod.image);
+            img.alt = prod.title;
+        }
+        if (title) {
+            title.textContent = prod.title;
+        }
+        if (link) {
+            link.href = productUrl;
+        }
+
+        // Hover image swap
+        if (prod.image_hover && img) {
+            const preload = new Image();
+            preload.src = upgradeShopifyImageUrl(prod.image_hover);
+            card.addEventListener('mouseenter', () => { img.src = upgradeShopifyImageUrl(prod.image_hover); });
+            card.addEventListener('mouseleave', () => { img.src = upgradeShopifyImageUrl(prod.image); });
+        }
+    });
+})();
+
+
+
 
       const settings = products.find(p => p.type === "settings") || {};
       const enableMediaZoom = (settings.enable_media_zoom || "no").toLowerCase() === "yes";
@@ -3438,14 +3461,6 @@ function initStockBar(cjId) {
 }
 
 
-
-
-
-
-
-
-
-
 /* ================================================================
    CURVAFIT AI CHATBOT — FRONTEND JS
 ================================================================ */
@@ -4042,4 +4057,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
     console.log('✅ CurvaFit Chatbot ready — trilingual (EN/FR/ES)');
   })();
-}); // end DOMContentLoaded
+});

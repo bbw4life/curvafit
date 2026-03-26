@@ -423,14 +423,12 @@ function buildSearchDataContext(searchData) {
 function buildBlogContext(blogData) {
   if (!blogData) return '';
 
-  // Handle both array format and object format (e.g. { articles: [...] })
   let articles = [];
   if (Array.isArray(blogData)) {
     articles = blogData;
   } else if (blogData.articles && Array.isArray(blogData.articles)) {
     articles = blogData.articles;
   } else if (typeof blogData === 'object') {
-    // Try to extract any array value
     const keys = Object.keys(blogData);
     for (const key of keys) {
       if (Array.isArray(blogData[key])) {
@@ -469,7 +467,6 @@ function buildSystemPrompt(products, settings, contactInfo, searchData, blogData
   const promos   = settings.promos       || [];
   const shipping = settings.cart_drawer  || {};
 
-  /* ── IMPROVEMENT #1: Read tax_rate & shipping_cost from settings ── */
   const taxRate         = settings.tax_rate      || 0.1;
   const shippingCost    = settings.shipping_cost || 10.0;
   const taxPercent      = Math.round(taxRate * 100);
@@ -479,7 +476,6 @@ function buildSystemPrompt(products, settings, contactInfo, searchData, blogData
     .map(([, val]) => `• ${val.label}: $${val.price}`)
     .join('\n');
 
-  /* ── IMPROVEMENT #2: Highlight promo codes with formatting markers ── */
   const promosText = promos.length
     ? promos.map(p => `• Code **[[${p.code}]]** → **${p.percent}% off** on ${p.items}+ items`).join('\n')
     : '• No active promo codes at this time';
@@ -514,7 +510,6 @@ PRODUCT ${i + 1}:
   contactChannels.push('Contact page (button below)');
   const contactChannelsText = contactChannels.join(' · ');
 
-  /* ── IMPROVEMENT #3: Build search & blog context ── */
   const searchContext = buildSearchDataContext(searchData);
   const blogContext   = buildBlogContext(blogData);
 
@@ -774,6 +769,40 @@ function getErrorMessage(lang) {
 }
 
 /* ══════════════════════════════════════════════════════
+   MODEL ROTATION STATE
+   Persistent across warm Lambda invocations (in-memory)
+══════════════════════════════════════════════════════ */
+
+/*
+  Full circular list of 10 models ordered by priority:
+    1. llama-3.3-70b-versatile          — original #1  (1K RPM / 1K RPD on free)
+    2. moonshotai/kimi-k2-instruct      — best new     (60 RPM free / 1K RPD dev)
+    3. meta-llama/llama-4-scout-17b-16e-instruct — original #3 (1K RPM / 1K RPD)
+    4. qwen/qwen3-32b                   — strong new   (60 RPM free / 1K RPD dev)
+    5. openai/gpt-oss-120b              — strong new   (30 RPM free / 1K RPD dev)
+    6. openai/gpt-oss-20b               — solid new    (30 RPM free / 1K RPD dev)
+    7. moonshotai/kimi-k2-instruct-0905 — kimi stable  (60 RPM free / 1K RPD dev)
+    8. openai/gpt-oss-safeguard-20b     — safety model (30 RPM free / 1K RPD dev)
+    9. llama-3.1-8b-instant             — original #2  (30 RPM free / 14.4K RPD)
+   10. meta-llama/llama-prompt-guard-2-22m — guard/fallback (100 RPM / 50K RPD dev)
+*/
+const MODELS = [
+  'llama-3.3-70b-versatile',
+  'moonshotai/kimi-k2-instruct',
+  'meta-llama/llama-4-scout-17b-16e-instruct',
+  'qwen/qwen3-32b',
+  'openai/gpt-oss-120b',
+  'openai/gpt-oss-20b',
+  'moonshotai/kimi-k2-instruct-0905',
+  'openai/gpt-oss-safeguard-20b',
+  'llama-3.1-8b-instant',
+  'meta-llama/llama-prompt-guard-2-22m',
+];
+
+/* currentModelIndex persists as long as the Lambda container stays warm */
+let currentModelIndex = 0;
+
+/* ══════════════════════════════════════════════════════
    MAIN HANDLER
 ══════════════════════════════════════════════════════ */
 exports.handler = async (event, context) => {
@@ -806,7 +835,7 @@ exports.handler = async (event, context) => {
       console.error('Could not load products.data.json:', err.message);
     }
 
-    /* ── IMPROVEMENT #3: Load search.data.json and blog-articles.json in parallel ── */
+    /* Load search.data.json and blog-articles.json in parallel */
     let searchData = null;
     let blogData   = null;
     try {
@@ -818,7 +847,7 @@ exports.handler = async (event, context) => {
       console.warn('Could not load search/blog data:', err.message);
     }
 
-    /* ── Read contact settings ── */
+    /* Read contact settings */
     const contactSettings = settings.contact || {};
     const socials         = settings.social_links || {};
     const contactInfo = {
@@ -831,7 +860,7 @@ exports.handler = async (event, context) => {
 
     const intent = detectIntent(message);
 
-    /* ── Recherche produits ── */
+    /* Product search */
     let relevantProducts = [];
     let isVague = false;
 
@@ -841,9 +870,7 @@ exports.handler = async (event, context) => {
       isVague            = searchResult.isVague;
     }
 
-    /* ══════════════════════════════════════════════════════
-       CONTACT INTENT DETECTION — STRICT
-    ══════════════════════════════════════════════════════ */
+    /* Contact intent detection */
     const EXPLICIT_CONTACT_PATTERNS = [
       /parler\s+(à\s+)?(un\s+)?(humain|agent|conseiller|quelqu|personne\s+réelle)/i,
       /joindre\s+(votre|l['']|notre)?\s*(équipe|support|service)/i,
@@ -879,10 +906,10 @@ exports.handler = async (event, context) => {
 
     const isContactIntent = intent !== 'product' && EXPLICIT_CONTACT_PATTERNS.some(p => p.test(message));
 
-    /* ── Build system prompt with all 3 improvements ── */
+    /* Build system prompt */
     const systemPrompt = buildSystemPrompt(products, settings, contactInfo, searchData, blogData);
 
-    /* Inject language reminder + vague flag into every request */
+    /* Language + vague instructions */
     const vagueInstruction = isVague
       ? '\n[VAGUE PRODUCT REQUEST: Show up to 4 products and ask the user to confirm which one they want.]'
       : '\n[SPECIFIC PRODUCT REQUEST: Show ONLY the 1 most relevant product. Do NOT show others.]';
@@ -893,9 +920,7 @@ exports.handler = async (event, context) => {
       ? 'REMINDER: The user wrote in SPANISH. Your entire reply MUST be in SPANISH. End with 👇 ONLY if the user explicitly asked how to contact or reach the team.'
       : 'REMINDER: The user wrote in ENGLISH. Your entire reply MUST be in ENGLISH. End with 👇 ONLY if the user explicitly asked how to contact or reach the team.';
 
-    const productContext = intent === 'product'
-      ? vagueInstruction
-      : '';
+    const productContext = intent === 'product' ? vagueInstruction : '';
 
     const groqMessages = [
       { role: 'system', content: systemPrompt },
@@ -904,74 +929,99 @@ exports.handler = async (event, context) => {
     ];
 
     /* ══════════════════════════════════════════════════════
-       CASCADE MODEL SYSTEM — 3 models, automatic rotation
+       CIRCULAR MODEL ROTATION SYSTEM
+       - Starts at currentModelIndex (persists across warm invocations)
+       - On 429 or error → tries next model in the ring
+       - Wraps around after the last model back to the first
+       - If ALL 10 models fail → returns fallback message
     ══════════════════════════════════════════════════════ */
-    const MODELS = [
-      'llama-3.3-70b-versatile',
-      'llama-3.1-8b-instant',
-      'meta-llama/llama-4-scout-17b-16e-instruct'
-    ];
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-    const sleep      = ms => new Promise(r => setTimeout(r, ms));
     let groqResponse = null;
     let usedModel    = null;
+    let modelSuccess = false;
 
-    for (let mi = 0; mi < MODELS.length; mi++) {
-      const model        = MODELS[mi];
-      let   modelSuccess = false;
+    /* Try each model starting from currentModelIndex, going around the full ring */
+    for (let attempt = 0; attempt < MODELS.length; attempt++) {
+      const idx   = (currentModelIndex + attempt) % MODELS.length;
+      const model = MODELS[idx];
 
-      for (let attempt = 1; attempt <= 2; attempt++) {
-        groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-            'Content-Type':  'application/json'
-          },
-          body: JSON.stringify({
-            model,
-            messages:    groqMessages,
-            max_tokens:  400,
-            temperature: 0.70,
-            stream:      false
-          })
-        });
+      /* Each model gets up to 2 tries before moving on */
+      let modelOk = false;
+      for (let retry = 1; retry <= 2; retry++) {
+        try {
+          groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+              'Content-Type':  'application/json'
+            },
+            body: JSON.stringify({
+              model,
+              messages:    groqMessages,
+              max_tokens:  400,
+              temperature: 0.70,
+              stream:      false
+            })
+          });
 
-        if (groqResponse.status === 429) {
-          console.log(`[Chat] 429 on ${model} attempt ${attempt}`);
-          if (attempt < 2) { await sleep(2000); continue; }
-          console.log(`[Chat] ${model} quota exhausted → next model`);
+          if (groqResponse.status === 429) {
+            console.log(`[Chat] 429 rate-limited on model "${model}" (retry ${retry}/2)`);
+            if (retry < 2) {
+              await sleep(1500);
+              continue;
+            }
+            /* Both retries hit 429 → advance the persistent index past this model */
+            console.log(`[Chat] Model "${model}" exhausted → moving to next`);
+            currentModelIndex = (idx + 1) % MODELS.length;
+            break; /* exit retry loop, try next model in outer loop */
+          }
+
+          if (!groqResponse.ok) {
+            console.error(`[Chat] Model "${model}" HTTP error: ${groqResponse.status}`);
+            break; /* non-rate-limit error → skip this model */
+          }
+
+          /* Success */
+          usedModel    = model;
+          modelOk      = true;
+          modelSuccess = true;
+
+          /*
+            Update currentModelIndex to THIS model so the next request starts here.
+            This avoids always hammering the first model and distributes load evenly.
+          */
+          currentModelIndex = idx;
+          break;
+
+        } catch (fetchErr) {
+          console.error(`[Chat] Fetch error on model "${model}" (retry ${retry}/2):`, fetchErr.message);
+          if (retry < 2) { await sleep(1000); continue; }
           break;
         }
-
-        if (!groqResponse.ok) {
-          console.error(`[Chat] ${model} HTTP error: ${groqResponse.status}`);
-          break;
-        }
-
-        usedModel    = model;
-        modelSuccess = true;
-        break;
       }
 
-      if (modelSuccess) break;
-
-      if (mi === MODELS.length - 1) {
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({
-            reply:         getFallbackMessage(userLang),
-            products:      [],
-            intent:        'general',
-            isVague:       false,
-            showContact:   false,
-            contactInfo:   null
-          })
-        };
-      }
+      if (modelOk) break;
     }
 
-    console.log(`[Chat] Answered using model: ${usedModel}`);
+    /* All 10 models failed */
+    if (!modelSuccess) {
+      console.error('[Chat] All models exhausted — returning fallback message');
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          reply:       getFallbackMessage(userLang),
+          products:    [],
+          intent:      'general',
+          isVague:     false,
+          showContact: false,
+          contactInfo: null
+        })
+      };
+    }
+
+    console.log(`[Chat] Answered using model: ${usedModel} (index ${currentModelIndex})`);
 
     const data  = await groqResponse.json();
     const reply = data.choices?.[0]?.message?.content || getErrorMessage(userLang);
