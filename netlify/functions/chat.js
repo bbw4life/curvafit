@@ -28,25 +28,46 @@ function buildProductIndex(rawData) {
   const settings  = rawData.find(p => p.type === 'settings') || {};
 
   const products = allActive.map((item, index) => {
+    // FIX #4 — récupère TOUTES les images variants (couleur → image)
     const colorsWithImages = (item.colors || [])
       .filter(c => c.active !== false)
-      .map(c => ({ name: c.name, hex: c.hex || '', image: c.image || item.image || '' }));
+      .map(c => ({
+        name:  c.name,
+        hex:   c.hex || '',
+        image: c.image || item.image || ''
+      }));
+
+    // Construire une map variantId → image pour les variantes size+color
+    const variantImageMap = {};
+    (item.variants || []).forEach(v => {
+      if (v.color && v.image) variantImageMap[v.color] = v.image;
+      if (v.vid   && v.image) variantImageMap[v.vid]   = v.image;
+    });
 
     const variantPrices = (item.variants || []).map(v => v.price).filter(Boolean);
     const minPrice = variantPrices.length ? Math.min(...variantPrices) : item.price;
 
     return {
-      id:            item.id,
-      productNumber: index + 1,
-      title:         item.title,
-      description:   item.description,
-      price:         minPrice,
-      maxPrice:      item.price,
-      compare_price: item.compare_price,
-      image:         item.image,
-      colors:        colorsWithImages,
-      sizes:         item.sizes || [],
-      variants:      item.variants || [],
+      id:             item.id,
+      productNumber:  index + 1,
+      title:          item.title,
+      description:    item.description,
+      price:          minPrice,
+      maxPrice:       item.price,
+      compare_price:  item.compare_price,
+      image:          item.image,
+      // FIX #4 — couleurs avec images complètes
+      colors:         colorsWithImages,
+      // FIX #4 — map couleur → image pour le frontend
+      variantImageMap: variantImageMap,
+      sizes:          item.sizes || [],
+      variants:       (item.variants || []).map(v => ({
+        vid:   v.vid,
+        color: v.color || null,
+        size:  v.size  || null,
+        price: v.price || item.price,
+        image: v.image || (colorsWithImages.find(c => c.name === v.color) || {}).image || item.image
+      })),
       discounts: {
         single: item.single_discount || 0,
         duo:    item.duo_discount    || 0,
@@ -66,20 +87,15 @@ function buildProductIndex(rawData) {
 
 /* ══════════════════════════════════════════════════════
    SMART INTENT DETECTION
-   Returns: 'product' | 'general'
-   Only 'product' shows product cards in the frontend
 ══════════════════════════════════════════════════════ */
 function detectIntent(message) {
   const q = message.toLowerCase();
 
-  // ── Explicit GENERAL patterns → never show products ──
   const generalPatterns = [
-    // Brand / founder / team
-    /fondateur|founder|qui.+(fond|creat|créat)|paul|francenel/,
+    /fondateur|founder|qui.+(fond|creat|créat)|paul\b|francenel/,
     /objectif|mission|but de curva|about curva|à propos/,
     /\bequipe\b|\bteam\b|\bstaff\b/,
     /c.est quoi curva|what is curva|what.s curva/,
-    // Health & science
     /cortisol|hormone|métabolis|metabolism|yo.yo|famine/,
     /pourquoi.+(prise|grossi|gain)|why.+(gain|weight gain)/,
     /comment.+(perdre|lose|maigrir)|how to lose|tips.+(lose|weight)/,
@@ -87,31 +103,23 @@ function detectIntent(message) {
     /sommeil|sleep.*weight|dormir/,
     /stress|anxiet|depress|mental|moral|confiance|confidence/,
     /plateau.+(normal|pourquoi|why)|normal.+plateau/,
-    // Programs (show info, not product cards)
     /programme?|program|plan.+coach|coaching|coach/,
     /beginner|débutant|intermédiaire|intermediate|maintenance/,
     /comment.+(fonctionne|work|works)|how.+(work|program)/,
     /s.inscrire|sign up|inscription/,
-    // Contact / human support
     /contact|joindre|reach|parler.+(humain|person|quelqu)/,
     /whatsapp|telegram|email.*support|mail.*support/,
     /support|aide.+(équipe|team)/,
-    // Nutrition (general advice, not product)
     /nutrition|manger|what to eat|quoi manger|food|aliment/,
     /calorie|deficit|protéine|protein|régime|diet/,
     /eau|water.*drink|hydrat/,
     /repas|meal.*plan|plan.*repas/,
-    // Results / timeline
     /résultat|result|combien.+temps|how long|semaine|week/,
     /visible.+(result|résultat)|quand.+voir/,
-    // Discount codes (just info, not shopping)
     /code.+promo|promo.+code|discount.+code|code.+réduction/,
-    // Delivery info general
     /livraison|shipping.+info|delivery.+time|délai/,
-    // Trust
     /fiable|reliable|trust|sûr|safe|médecin|doctor/,
     /pilule|pill|complément|supplement/,
-    // Greetings / small talk
     /^(bonjour|bonsoir|salut|hello|hi|hey|allo)\b/,
     /^(merci|thank|thanks|ok|okay|d.accord|super|parfait|génial|great)\b/,
   ];
@@ -120,7 +128,6 @@ function detectIntent(message) {
     if (pattern.test(q)) return 'general';
   }
 
-  // ── Explicit PRODUCT patterns → show product cards ──
   const productPatterns = [
     /acheter|buy|commander|order/,
     /produit|product|article/,
@@ -129,7 +136,6 @@ function detectIntent(message) {
     /montre.+(produit)|show.+(product|me)/,
     /meilleur.+(pour).+(ventre|belly|poids|weight|taille|waist)/,
     /best.+(for|pour).+(belly|ventre|weight|waist)/,
-    // Specific product categories
     /hula.?hoop|\bhoop\b/,
     /waist.?trainer|gainant/,
     /jump.?rope|corde.+sauter/,
@@ -146,10 +152,8 @@ function detectIntent(message) {
     /neck.?pillow|oreiller.+nuque/,
     /\bearbuds?\b|écouteur.+sport/,
     /tie.?dye/,
-    // Color/size shopping intent
     /quelle.+(couleur|taille).+disponible|available.+(color|size)/,
     /existe.+(couleur|taille)|come in.+(color|size)/,
-    // Price with shopping intent
     /\$\d+|under \$|moins de \$|budget.+(produit|product)/,
     /combien.+(coûte|cost).+(ce|this|le|la)/,
   ];
@@ -158,7 +162,6 @@ function detectIntent(message) {
     if (pattern.test(q)) return 'product';
   }
 
-  // Default: general (no products shown)
   return 'general';
 }
 
@@ -177,29 +180,6 @@ function searchProducts(query, products) {
       if (p.title.toLowerCase().includes(kw)) score += 2;
       p.colors.forEach(c => { if (c.name.toLowerCase().includes(kw)) score += 2; });
       p.sizes.forEach(s  => { if (String(s).toLowerCase().includes(kw)) score += 1; });
-    });
-
-    const themes = [
-      { words: ['hula','hoop','belly','ventre'],                      id: 'resistance-bands',  boost: 12 },
-      { words: ['waist trainer','gainant','waist cinch','corset'],    id: 'yoga-mat',          boost: 12 },
-      { words: ['jump rope','corde','skip','sauter'],                 id: 'leggings',          boost: 12 },
-      { words: ['legging','yoga pant','high waist','peach'],          id: 'sports-bra',        boost: 12 },
-      { words: ['jumpsuit','combinaison','pilates'],                  id: 'hydration-bottle',  boost: 12 },
-      { words: ['tie dye','seamless legging'],                        id: 'workout-towel',     boost: 12 },
-      { words: ['sport bra','bra','brassiere','soutien'],             id: 'fitness-tracker',   boost: 12 },
-      { words: ['knee','genoux','genouillère','pad'],                 id: 'protein-shaker',    boost: 12 },
-      { words: ['posture','dos','back','corrector','correcteur'],     id: 'dumbbell-set',      boost: 12 },
-      { words: ['bracelet','tracker','heart rate','sleep','pouls'],   id: 'jump-rope',         boost: 12 },
-      { words: ['acupressure','stress mat','recovery','tapis'],       id: 'foam-roller',       boost: 12 },
-      { words: ['belly belt','ceinture ventre','cramp','chaleur'],    id: 'yoga-blocks',       boost: 12 },
-      { words: ['bottle','water','gourde','bouteille'],               id: 'ankle-weights',     boost: 12 },
-      { words: ['shoe','chaussure','running','sneaker'],              id: 'cooling-towel',     boost: 12 },
-      { words: ['pillow','oreiller','neck','cervical','nuque'],       id: 'massage-ball',      boost: 12 },
-      { words: ['earbuds','headphone','music','écouteur'],            id: 'gym-bag',           boost: 12 },
-    ];
-
-    themes.forEach(t => {
-      if (p.id === t.id && t.words.some(w => q.includes(w))) score += t.boost;
     });
 
     if ((q.includes('cheap') || q.includes('budget') || q.includes('pas cher')) && p.price < 20) score += 5;
@@ -239,8 +219,9 @@ function buildSystemPrompt(products, settings) {
     ? promos.map(p => `• Code "${p.code}" → ${p.percent}% off on ${p.items}+ items`).join('\n')
     : '• No active promo codes at this time';
 
+  // FIX #4 — inclure les images variantes dans le catalogue
   const catalogText = products.map((p, i) => {
-    const colorsList = p.colors.map(c => c.name).join(', ');
+    const colorsList = p.colors.map(c => `${c.name} (img: ${c.image || 'none'})`).join(', ');
     const sizesList  = p.sizes.length ? p.sizes.join(', ') : 'No size needed';
     const discounts  = [
       p.discounts.single ? `1 item: -${p.discounts.single}%` : '',
@@ -250,133 +231,93 @@ function buildSystemPrompt(products, settings) {
     const delivery = formatDelivery(p.startDate, p.endDate) || 'Contact us';
     const rating   = p.rating ? `${p.rating}/5 (${p.reviewsCount || 0} reviews)` : 'N/A';
 
+    // Lister les variantes avec leurs images
+    const variantsText = p.variants.length
+      ? p.variants.slice(0, 6).map(v => `${v.color || ''}${v.size ? '/'+v.size : ''}: $${v.price}${v.image ? ' [img:'+v.image+']' : ''}`).join(', ')
+      : 'N/A';
+
     return `
 PRODUCT ${i + 1}:
   Title: ${p.title}
   Description: ${p.description}
   Price: $${p.price}${p.maxPrice !== p.price ? ` to $${p.maxPrice}` : ''} (was $${p.compare_price})
   Rating: ${rating}
-  Colors: ${colorsList || 'N/A'}
+  Colors+Images: ${colorsList || 'N/A'}
   Sizes: ${sizesList}
+  Variants: ${variantsText}
   Discounts: ${discounts}
   Delivery: ${delivery}
   Page: ${p.url}`;
   }).join('\n');
 
-  return `You are **Curva**, the official AI assistant and fitness coach of CurvaFit.
+  return `You are **Curva**, the official AI assistant of CurvaFit.
 
 ═══════════════════════════════════════
-🎯 YOUR IDENTITY
+🎯 IDENTITY & RESPONSE RULES
 ═══════════════════════════════════════
-You are a warm, motivating, and precise fitness coach.
-You help plus-size women lose weight in a healthy, sustainable way.
-You are calm, human, and never robotic.
-You respond in the SAME LANGUAGE the user writes in (French or English).
-Use emojis naturally but do not overuse them.
+- Warm, precise fitness coach. Never robotic.
+- Respond in the SAME LANGUAGE as the user (French or English).
+- **KEEP RESPONSES SHORT AND PRECISE** — max 4-5 lines for simple questions.
+- Never add filler phrases, long preambles, or unnecessary text.
+- Use emojis sparingly (1-2 max per response).
+
+BOLD FORMATTING RULES (use **text** for markdown bold):
+- **Always bold**: founder name (Paul Francenel), promo codes, product names, prices
+- **Always bold**: important warnings, key numbers, brand name CurvaFit
 
 ═══════════════════════════════════════
-🚦 CRITICAL BEHAVIOR RULE
+🚦 PRODUCT DISPLAY RULES
 ═══════════════════════════════════════
-You must analyze each question carefully.
+NEVER suggest products for: general advice, nutrition tips, program info, contact, greetings.
+ONLY show products when user explicitly asks to buy, see, or asks for a specific product type.
 
-NEVER suggest or display products for these types of questions:
-- Who is the founder / team / about the brand
-- What is the objective/mission of CurvaFit
-- Health questions, hormones, metabolism, cortisol
-- Nutrition advice, meal tips, calorie questions
-- Fitness tips and exercise advice
-- Results timeline, how long to see results
-- Programs and coaching plans info
-- Contact / human support requests
-- Discount codes (just list them, no product cards)
-- General motivation, confidence, body positivity
-- Greetings and small talk
-
-ONLY suggest products when the user:
-- Explicitly asks to buy or order something
-- Asks "which product should I get" / "what do you recommend"
-- Mentions a specific product type (hoop, leggings, bra, etc.)
-- Asks about colors, sizes, or prices of a specific item
-
-When in doubt → answer the question like a coach. No products.
+FIX FOR VARIANT IMAGES: When user asks about a specific color/size variant,
+use the variant image URL from the Colors+Images or Variants data above.
+Never say "I don't have the variant image" — check the catalog data.
 
 ═══════════════════════════════════════
 🏢 ABOUT CURVAFIT
 ═══════════════════════════════════════
-Founder: Paul Francenel, 25 years old, entrepreneur. Not a doctor.
-Works with certified health and fitness professionals.
-Goal: Help plus-size women transform their lives in a healthy, sustainable, and enjoyable way.
-
-Science-based approach:
-- Safe weight loss: 0.5–1 kg per week (2–4 kg per month)
-- No pills, no crash diets, no extreme workouts
-- 100% at-home approach
-- Results visible in 4–6 weeks with real consistency
-- 70% success rate when advice is followed
+Founder: **Paul Francenel**, 25 years old, entrepreneur.
+Goal: Help plus-size women transform their bodies at home, sustainably.
 
 ═══════════════════════════════════════
 💪 PROGRAMS
 ═══════════════════════════════════════
 ${programsText}
 
-How it works:
-- Plans available at /programs.html
-- After purchase: email + password sent automatically
-- Access to partner professional platform
-- Can update personal info at any time
-
 ═══════════════════════════════════════
-🛍️ PRODUCTS — RULES
+🎟️ PROMO CODES (always bold the codes)
 ═══════════════════════════════════════
-NEVER use internal IDs (resistance-bands, yoga-mat, leggings, etc.)
-ALWAYS use the exact product Title
-ALWAYS use exact prices — never guess
-NEVER invent products not in the catalog
-
-Discount codes:
 ${promosText}
 
 Free shipping over $${shipping.free_shipping_threshold || 120}
 
-PRODUCT CATALOG (use only for product questions):
+═══════════════════════════════════════
+🛍️ PRODUCT CATALOG
+═══════════════════════════════════════
+NEVER use internal IDs. ALWAYS use exact product Title and prices.
 ${catalogText}
 
 ═══════════════════════════════════════
-🥗 NUTRITION (for advice questions)
+🥗 NUTRITION (brief answers only)
 ═══════════════════════════════════════
-- Protein at every meal (chicken, eggs, fish, legumes)
-- Cut liquid sugars (sodas, juices, sweetened coffee) first
-- 3 structured meals/day, limit uncontrolled snacking
-- 2 liters of water daily
-- Eat until 80% full — satiety signal takes 20 minutes
+- Protein at every meal, cut liquid sugars, 2L water/day
 - Target: 300–500 calorie daily deficit
-- Sleep 7–8 hours — critical for hunger hormones (ghrelin/leptin)
-- High cortisol from stress = more belly fat storage → manage stress
-
-═══════════════════════════════════════
-⚠️ HEALTH DISCLAIMER
-═══════════════════════════════════════
-CurvaFit is not a medical service.
-Always add when needed: "For any health concern, please consult a doctor."
+- Sleep 7-8h — critical for weight loss hormones
 
 ═══════════════════════════════════════
 🤝 HUMAN SUPPORT
 ═══════════════════════════════════════
-If user wants to speak to a human, is unhappy, or insists:
-"I understand 😊 Our team is here for you:
-👉 WhatsApp: ${socials.whatsapp || 'https://wa.me/contact'}
-👉 Contact page: /contact.html
-We'll be happy to help you personally!"
+"Our team is here: **WhatsApp**: ${socials.whatsapp || 'https://wa.me/contact'} | **/contact.html**"
 
 ═══════════════════════════════════════
 🚫 NEVER
 ═══════════════════════════════════════
-- Send internal product IDs to the user
+- Write long responses (keep it short & direct)
+- Show raw URLs like /products/product1.html in text — use buttons instead
 - Invent prices or data
-- Promise guaranteed results
-- Give advanced medical advice
-- Show products for non-product questions
-- Be robotic or use filler phrases`;
+- Promise guaranteed results`;
 }
 
 /* ── Main handler ── */
@@ -397,7 +338,6 @@ exports.handler = async (event, context) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message is required' }) };
     }
 
-    // ── Load dynamic data ──
     let products = [], settings = {};
     try {
       const rawData = await loadProductsData();
@@ -408,15 +348,11 @@ exports.handler = async (event, context) => {
       console.error('Could not load products.data.json:', err.message);
     }
 
-    // ── Detect intent ──
     const intent = detectIntent(message);
-
-    // ── Search products ONLY for product intent ──
     const relevantProducts = (intent === 'product')
       ? searchProducts(message, products)
       : [];
 
-    // ── Build prompt + call Groq ──
     const systemPrompt = buildSystemPrompt(products, settings);
 
     const groqMessages = [
@@ -434,8 +370,8 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         model:       'llama-3.3-70b-versatile',
         messages:    groqMessages,
-        max_tokens:  600,
-        temperature: 0.70,
+        max_tokens:  350,        // FIX #5 — réponses courtes
+        temperature: 0.65,
         stream:      false
       })
     });
@@ -446,21 +382,34 @@ exports.handler = async (event, context) => {
 
     const data  = await groqResponse.json();
     const reply = data.choices?.[0]?.message?.content
-      || "I'm sorry, I couldn't generate a response. Please try again. 🙏";
+      || "Désolé, je n'ai pas pu répondre. Réessayez! 🙏";
 
-    // ── Format product cards ──
+    // FIX #4 — envoyer les images variantes complètes
     const productCards = relevantProducts.map(p => ({
-      title:         p.title,
-      description:   p.description,
-      price:         p.price,
-      compare_price: p.compare_price,
-      url:           p.url,
-      image:         p.image,
-      colors:        p.colors.map(c => ({ name: c.name, hex: c.hex, image: c.image })),
-      sizes:         p.sizes,
-      delivery:      formatDelivery(p.startDate, p.endDate),
-      rating:        p.rating,
-      discounts:     p.discounts
+      title:           p.title,
+      description:     p.description,
+      price:           p.price,
+      compare_price:   p.compare_price,
+      url:             p.url,
+      image:           p.image,
+      // FIX #4 — couleurs AVEC images
+      colors:          p.colors.map(c => ({
+        name:  c.name,
+        hex:   c.hex,
+        image: c.image   // image de la couleur variant
+      })),
+      // FIX #4 — variantes complètes avec images
+      variants:        p.variants.map(v => ({
+        vid:   v.vid,
+        color: v.color,
+        size:  v.size,
+        price: v.price,
+        image: v.image   // image de la variante
+      })),
+      sizes:           p.sizes,
+      delivery:        formatDelivery(p.startDate, p.endDate),
+      rating:          p.rating,
+      discounts:       p.discounts
     }));
 
     return {
