@@ -3497,6 +3497,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (enWords.includes(clean)) enScore += 1;
       });
 
+      // Spanish/French special characters boost
       if (/[áéíóúüñ¿¡]/.test(t)) esScore += 3;
       if (/[àâçèêëîïôùûü]/.test(t)) frScore += 3;
 
@@ -3636,6 +3637,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* ── Welcome ── */
     function addWelcomeMessage() {
+      // Default to English for the welcome message
       addMessage(welcomeMessages['en'], 'ai', []);
     }
 
@@ -3689,6 +3691,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
+    /* Reattach events on cards restored from sessionStorage */
     function reattachCardEvents() {
       document.querySelectorAll('.cf-product-card').forEach(card => {
         const mainImg    = card.querySelector('.cf-pc-img');
@@ -3716,6 +3719,9 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+    /* ══════════════════════════════════════
+       ADD MESSAGE
+    ══════════════════════════════════════ */
     function addMessage(text, role, products, contactInfo) {
       const msgEl  = document.createElement('div');
       msgEl.className = `cf-message cf-message--${role}`;
@@ -3734,42 +3740,146 @@ document.addEventListener('DOMContentLoaded', function () {
           card.className = 'cf-product-card';
           card.dataset.productUrl = p.url;
 
-          let imgHTML = p.image ? `<div class="cf-pc-img-wrap"><img class="cf-pc-img" src="${p.image}" alt="${p.title}" loading="lazy" onerror="this.closest('.cf-pc-img-wrap').style.display='none'"></div>` : '';
+          let imgHTML = '';
+          if (p.image) {
+            imgHTML = `
+              <div class="cf-pc-img-wrap">
+                <img class="cf-pc-img" src="${p.image}" alt="${p.title}" loading="lazy"
+                     onerror="this.closest('.cf-pc-img-wrap').style.display='none'">
+              </div>`;
+          }
 
-          const ratingHTML = p.rating ? `<div class="cf-pc-rating">⭐ ${p.rating}/5</div>` : '';
-          const priceHTML = `<div class="cf-pc-price"><span class="cf-pc-price-current">$${Number(p.price).toFixed(2)}</span><span class="cf-pc-price-compare">$${Number(p.compare_price).toFixed(2)}</span></div>`;
+          const ratingHTML = p.rating
+            ? `<div class="cf-pc-rating">⭐ ${p.rating}/5</div>`
+            : '';
+
+          const priceHTML = `
+            <div class="cf-pc-price">
+              <span class="cf-pc-price-current">$${Number(p.price).toFixed(2)}</span>
+              <span class="cf-pc-price-compare">$${Number(p.compare_price).toFixed(2)}</span>
+            </div>`;
 
           let colorsHTML = '';
           if (p.colors && p.colors.length > 0) {
-            const swatchesHTML = p.colors.slice(0,6).map(c => {
+            const swatchesHTML = p.colors.slice(0, 6).map(c => {
               let variantImg = c.image || '';
-              return `<span class="cf-pc-swatch" title="${c.name}" style="background:${c.hex || '#ccc'}" data-img="${variantImg}" data-name="${c.name}"></span>`;
+              if (!variantImg && p.variants) {
+                const v = p.variants.find(vv => vv.color === c.name);
+                if (v && v.image) variantImg = v.image;
+              }
+              return `<span
+                class="cf-pc-swatch"
+                title="${c.name}"
+                style="background:${c.hex || '#ccc'}"
+                data-img="${variantImg}"
+                data-name="${c.name}"
+              ></span>`;
             }).join('');
-            const moreHTML = p.colors.length > 6 ? `<span class="cf-pc-swatch-more">+${p.colors.length-6}</span>` : '';
-            colorsHTML = `<div class="cf-pc-colors">${swatchesHTML}${moreHTML}</div><div class="cf-pc-color-label"></div>`;
+            const moreHTML = p.colors.length > 6
+              ? `<span class="cf-pc-swatch-more">+${p.colors.length - 6}</span>` : '';
+            colorsHTML = `
+              <div class="cf-pc-colors">${swatchesHTML}${moreHTML}</div>
+              <div class="cf-pc-color-label"></div>`;
           }
 
-          const sizesHTML = (p.sizes && p.sizes.length) ? `<div class="cf-pc-sizes"><strong>Sizes:</strong> ${p.sizes.join(' · ')}</div>` : '';
-          const deliveryHTML = p.delivery ? `<div class="cf-pc-delivery">🚚 ${p.delivery}</div>` : '';
+          const sizesHTML = (p.sizes && p.sizes.length > 0)
+            ? `<div class="cf-pc-sizes"><strong>Sizes:</strong> ${p.sizes.join(' · ')}</div>` : '';
 
-          const ctaHTML = `<a href="${p.url}" class="cf-pc-btn" onclick="event.stopPropagation()">View Product <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></a>`;
+          const deliveryHTML = (p.delivery)
+            ? `<div class="cf-pc-delivery">🚚 ${p.delivery}</div>` : '';
 
-          card.innerHTML = `${imgHTML}<div class="cf-pc-info"><div class="cf-pc-title">${p.title}</div>${ratingHTML}${priceHTML}${colorsHTML}${sizesHTML}${deliveryHTML}${ctaHTML}</div>`;
+          const ctaHTML = `
+            <a href="${p.url}" class="cf-pc-btn" onclick="event.stopPropagation()">
+              View Product
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </a>`;
+
+          card.innerHTML = `
+            ${imgHTML}
+            <div class="cf-pc-info">
+              <div class="cf-pc-title">${p.title}</div>
+              ${ratingHTML}
+              ${priceHTML}
+              ${colorsHTML}
+              ${sizesHTML}
+              ${deliveryHTML}
+              ${ctaHTML}
+            </div>`;
+
+          const imgEl = card.querySelector('.cf-pc-img');
+          if (imgEl) {
+            imgEl.style.cursor = 'pointer';
+            imgEl.addEventListener('click', (e) => {
+              e.stopPropagation();
+              window.location.href = p.url;
+            });
+          }
+
+          const swatches   = card.querySelectorAll('.cf-pc-swatch');
+          const colorLabel = card.querySelector('.cf-pc-color-label');
+          const mainImg    = card.querySelector('.cf-pc-img');
+
+          swatches.forEach(sw => {
+            const activate = () => {
+              swatches.forEach(s => s.classList.remove('cf-pc-swatch--active'));
+              sw.classList.add('cf-pc-swatch--active');
+              if (colorLabel) colorLabel.textContent = sw.dataset.name;
+              if (mainImg && sw.dataset.img && sw.dataset.img !== 'undefined' && sw.dataset.img !== '') {
+                mainImg.src = sw.dataset.img;
+              }
+            };
+            sw.addEventListener('mouseenter', activate);
+            sw.addEventListener('click',      activate);
+          });
+
           cardsWrap.appendChild(card);
         });
 
         msgEl.appendChild(cardsWrap);
       }
 
+      /* Contact buttons — shown when API signals showContact=true */
       if (role === 'ai' && contactInfo) {
         const btnsWrap = document.createElement('div');
         btnsWrap.className = 'cf-contact-btns';
-        // (boutons WhatsApp, Telegram, Page restent gérés ici)
-        msgEl.appendChild(btnsWrap);
+
+        if (contactInfo.whatsapp) {
+          const waBtn = document.createElement('a');
+          waBtn.href      = contactInfo.whatsapp;
+          waBtn.target    = '_blank';
+          waBtn.rel       = 'noopener noreferrer';
+          waBtn.className = 'cf-contact-btn cf-contact-btn--whatsapp';
+          waBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg> WhatsApp';
+          btnsWrap.appendChild(waBtn);
+        }
+
+        if (contactInfo.telegram) {
+          const tgBtn = document.createElement('a');
+          tgBtn.href      = contactInfo.telegram;
+          tgBtn.target    = '_blank';
+          tgBtn.rel       = 'noopener noreferrer';
+          tgBtn.className = 'cf-contact-btn cf-contact-btn--telegram';
+          tgBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg> Telegram';
+          btnsWrap.appendChild(tgBtn);
+        }
+
+        if (contactInfo.page) {
+          const pgBtn = document.createElement('a');
+          pgBtn.href      = contactInfo.page;
+          pgBtn.className = 'cf-contact-btn cf-contact-btn--page';
+          pgBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> Contact Page';
+          btnsWrap.appendChild(pgBtn);
+        }
+
+        if (btnsWrap.children.length > 0) {
+          msgEl.appendChild(btnsWrap);
+        }
       }
 
       const time = document.createElement('span');
-      time.className = 'cf-msg-time';
+      time.className  = 'cf-msg-time';
       time.textContent = getTime();
       msgEl.appendChild(time);
 
@@ -3791,6 +3901,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!userText || !userText.trim() || isLoading) return;
       const text = userText.trim();
 
+      /* Detect language on the client side for instant feedback */
       const userLang = detectUILanguage(text);
 
       const chipsEl = document.getElementById('cf-quick-chips');
@@ -3800,13 +3911,14 @@ document.addEventListener('DOMContentLoaded', function () {
       conversationHistory.push({ role: 'user', content: text });
       try { sessionStorage.setItem('cf_history', JSON.stringify(conversationHistory.slice(-20))); } catch(e) {}
 
-      input.value = '';
+      input.value      = '';
       input.style.height = 'auto';
       sendBtn.disabled = true;
-      isLoading = true;
+      isLoading        = true;
 
       showTyping();
 
+      /* Error messages in the user's language */
       const errorMessages = {
         fr: "Désolée, j'ai un petit problème technique. Réessayez dans un instant! 🙏",
         es: "Lo siento, tengo un pequeño problema técnico. ¡Inténtalo de nuevo en un momento! 🙏",
@@ -3815,9 +3927,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
       try {
         const response = await fetch('/.netlify/functions/chat', {
-          method: 'POST',
+          method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+          body:    JSON.stringify({
             message: text,
             history: conversationHistory.slice(-8)
           })
@@ -3830,8 +3942,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const data = await response.json();
         if (data.error) throw new Error(data.error);
 
-        const aiReply = data.reply || errorMessages[userLang] || errorMessages['en'];
-        const products = data.products || [];
+        const aiReply    = data.reply       || errorMessages[userLang] || errorMessages['en'];
+        const products   = data.products    || [];
         const showContact = data.showContact || false;
         const contactInfo = data.contactInfo || null;
 
@@ -3839,12 +3951,16 @@ document.addEventListener('DOMContentLoaded', function () {
         conversationHistory.push({ role: 'assistant', content: aiReply });
         try { sessionStorage.setItem('cf_history', JSON.stringify(conversationHistory.slice(-20))); } catch(e) {}
 
+        if (conversationHistory.length > 20) {
+          conversationHistory = conversationHistory.slice(-16);
+        }
+
       } catch (err) {
         hideTyping();
         console.error('Chat error:', err);
         addMessage(errorMessages[userLang] || errorMessages['en'], 'ai', []);
       } finally {
-        isLoading = false;
+        isLoading        = false;
         sendBtn.disabled = input.value.trim().length === 0;
       }
     }
@@ -3853,7 +3969,7 @@ document.addEventListener('DOMContentLoaded', function () {
     input.addEventListener('input', function () {
       this.style.height = 'auto';
       this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-      sendBtn.disabled = this.value.trim().length === 0;
+      sendBtn.disabled  = this.value.trim().length === 0;
     });
 
     input.addEventListener('keydown', function (e) {
@@ -3867,17 +3983,19 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!sendBtn.disabled) sendMessage(input.value);
     });
 
+    /* ── Quick chips ── */
     chips.forEach(chip => {
       chip.addEventListener('click', () => {
         const msg = chip.dataset.msg;
         if (msg) {
-          input.value = msg;
+          input.value      = msg;
           sendBtn.disabled = false;
           sendMessage(msg);
         }
       });
     });
 
+    /* ── Keyboard & outside click ── */
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && isOpen) closeChat();
     });
@@ -3888,5 +4006,50 @@ document.addEventListener('DOMContentLoaded', function () {
 
     console.log('✅ CurvaFit Chatbot ready — trilingual (EN/FR/ES)');
   })();
-});
+}); // end DOMContentLoaded
+
+/* ================================================================
+   CONTACT BUTTONS CSS — injected automatically
+   Add this to your style.css if you prefer, or leave it here.
+================================================================ */
+(function injectContactBtnStyles() {
+  if (document.getElementById('cf-contact-btn-styles')) return;
+  const style = document.createElement('style');
+  style.id = 'cf-contact-btn-styles';
+  style.textContent = `
+    .cf-contact-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0 4px 0;
+    }
+    .cf-contact-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+    .cf-contact-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .cf-contact-btn--whatsapp {
+      background: #25D366;
+      color: #fff;
+    }
+    .cf-contact-btn--telegram {
+      background: #0088cc;
+      color: #fff;
+    }
+    .cf-contact-btn--page {
+      background: var(--rose, #e91e63);
+      color: #fff;
+    }
+  `;
+  document.head.appendChild(style);
+})();
 
