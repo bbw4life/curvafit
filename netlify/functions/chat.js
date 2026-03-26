@@ -80,25 +80,21 @@ function detectLanguage(message) {
     /\b(hola|buenas|buenos|qué|que|cómo|como|puedo|quiero|necesito|tienes|tengo|gracias|por favor|ayuda|precio|envío|envio|producto|comprar|descuento|talla|color|disponible|cuánto|cuanto|dónde|donde|cuando|cuándo|si|también|tambien|estoy|peso|adelgazar|bajar|perder)\b/,
     /[áéíóúüñ¿¡]/
   ];
-
   const frenchPatterns = [
     /\b(bonjour|bonsoir|salut|merci|s'il vous|svp|comment|qu'est|c'est|je|vous|nous|les|des|une|pour|avec|dans|sur|mais|très|aussi|peut|plus|produit|livraison|taille|couleur|disponible|combien|où|quand|prix|acheter|réduction|programme)\b/,
     /[àâçèêëîïôùûü]/
   ];
-
   const englishPatterns = [
     /\b(hello|hi|hey|what|how|can|could|would|should|where|when|why|which|who|the|and|for|with|this|that|have|your|you|me|my|want|need|does|do|is|are|was|were|help|price|shipping|color|size|available|discount|program|product|buy|order)\b/
   ];
 
   let frScore = 0, esScore = 0, enScore = 0;
-
   frenchPatterns.forEach(p  => { if (p.test(text)) frScore += 3; });
   spanishPatterns.forEach(p => { if (p.test(text)) esScore += 3; });
   englishPatterns.forEach(p => { if (p.test(text)) enScore += 1; });
 
-  // Count word matches for more accuracy
   const frWords = ['je','tu','il','elle','nous','vous','ils','elles','le','la','les','un','une','des','du','et','est','sont','avec','dans','pour','sur','pas','plus','très','bien','aussi','mais','ou','donc','car','que','qui','quoi','comment','quand','où','pourquoi','quel','quelle','bonjour','merci','oui','non','avoir','être','faire','aller','pouvoir','vouloir','savoir'];
-  const esWords = ['yo','tú','él','ella','nosotros','vosotros','ellos','ellas','el','la','los','las','un','una','unos','unas','del','al','y','es','son','con','en','por','para','sobre','no','más','muy','bien','también','pero','o','porque','que','quien','como','cuando','donde','porque','qué','cómo','cuándo','dónde','hola','gracias','sí','tener','ser','estar','hacer','ir','poder','querer','saber'];
+  const esWords = ['yo','tú','él','ella','nosotros','vosotros','ellos','ellas','el','la','los','las','un','una','unos','unas','del','al','y','es','son','con','en','por','para','sobre','no','más','muy','bien','también','pero','o','porque','que','quien','como','cuando','donde','qué','cómo','cuándo','dónde','hola','gracias','sí','tener','ser','estar','hacer','ir','poder','querer','saber'];
   const enWords = ['i','you','he','she','it','we','they','the','a','an','is','are','was','were','have','has','had','do','does','did','will','would','can','could','should','may','might','and','or','but','for','with','at','by','from','to','in','on','of','that','this','what','how','when','where','why','who','which'];
 
   const words = text.split(/\s+/);
@@ -137,8 +133,7 @@ function detectIntent(message) {
     /beginner|débutant|intermédiaire|intermediate|maintenance/,
     /comment.+(fonctionne|work|works)|how.+(work|program)/,
     /s.inscrire|sign up|inscription/,
-    /contact|joindre|reach|parler.+(humain|person|quelqu)/,
-    /whatsapp|telegram|email.*support|mail.*support/,
+    /contact|joindre|reach|parler.+(humain|person|quelqu)|message|whatsapp|telegram/,
     /support|aide.+(équipe|team)/,
     /nutrition|manger|what to eat|quoi manger|food|aliment/,
     /calorie|deficit|protéine|protein|régime|diet/,
@@ -152,7 +147,6 @@ function detectIntent(message) {
     /pilule|pill|complément|supplement/,
     /^(bonjour|bonsoir|salut|hello|hi|hey|hola|buenas|buenos|allo)\b/,
     /^(merci|thank|thanks|gracias|ok|okay|d.accord|super|parfait|génial|great|bien|bueno)\b/,
-    // Spanish general
     /fundador|fundadora|quién.+(fund|cre)|equipo|misión/,
     /qué es curva|sobre curva/,
     /consejo|consejos|nutrición|alimentación|comida/,
@@ -266,11 +260,12 @@ function formatDelivery(startDate, endDate) {
   } catch (_) { return null; }
 }
 
-/* ── Build system prompt ── */
-function buildSystemPrompt(products, settings) {
+/* ══════════════════════════════════════════════════════
+   BUILD SYSTEM PROMPT
+══════════════════════════════════════════════════════ */
+function buildSystemPrompt(products, settings, contactInfo) {
   const programs = settings.programs     || {};
   const promos   = settings.promos       || [];
-  const socials  = settings.social_links || {};
   const shipping = settings.cart_drawer  || {};
 
   const programsText = Object.entries(programs)
@@ -305,6 +300,13 @@ PRODUCT ${i + 1}:
   Page: ${p.url}`;
   }).join('\n');
 
+  /* Build contact channels list based on what's configured */
+  const contactChannels = [];
+  if (contactInfo.hasWhatsapp) contactChannels.push('WhatsApp (button below)');
+  if (contactInfo.hasTelegram) contactChannels.push('Telegram (button below)');
+  contactChannels.push('Contact page (button below)');
+  const contactChannelsText = contactChannels.join(' · ');
+
   return `You are **Curva**, the official AI assistant and fitness coach of CurvaFit.
 
 ═══════════════════════════════════════
@@ -329,40 +331,53 @@ Step 2: IDENTIFY the language they used.
 Step 3: REPLY only in that detected language. NEVER in another language.
 
 EXAMPLES:
-  User: "hello how are you" → Reply in ENGLISH only
-  User: "bonjour comment ça va" → Reply in FRENCH only
-  User: "hola cómo estás" → Reply in SPANISH only
-  User: "imbeciles" → This is English → Reply in ENGLISH only
+  User: "hello how are you"       → Reply in ENGLISH only
+  User: "bonjour comment ça va"   → Reply in FRENCH only
+  User: "hola cómo estás"         → Reply in SPANISH only
+  User: "imbeciles"               → English → Reply in ENGLISH only
+  User: "parles moi de curvafit"  → French  → Reply in FRENCH only
 
 NEVER default to French. NEVER mix languages. NEVER ignore this rule.
 If unsure about the language, default to ENGLISH.
 
 ═══════════════════════════════════════
-✏️ FORMATTING RULES
+✏️ FORMATTING RULES — CRITICAL
 ═══════════════════════════════════════
-Use **bold** (double asterisks) for:
-- Founder name: always write **Paul Francenel**
-- Brand name: always write **CurvaFit**
-- All promo codes: always write **CODE** in bold
-- Product names when mentioned
-- Key prices and important numbers
-- Important warnings or key facts
+Use **bold** for: **Paul Francenel**, **CurvaFit**, promo codes, product names, key prices.
 
-NEVER display raw URLs like /products/product1.html in your text responses.
-If you need to reference a product page, just say "see the button below".
+🚫 ABSOLUTE RULE — NEVER display any raw URL or link in your text.
+   Examples of what is FORBIDDEN:
+   ❌ "https://wa.me/1234567890"
+   ❌ "https://t.me/curvafit"
+   ❌ "/contact.html"
+   ❌ "visit our page at https://..."
+   
+   ALWAYS say "see the button below" or "use the buttons below".
+   The frontend will automatically show the correct buttons.
+   NEVER write a URL. NEVER write a phone number. Just reference "the button below".
 
 ═══════════════════════════════════════
-🚦 CRITICAL BEHAVIOR RULE
+🚦 CRITICAL BEHAVIOR RULES
 ═══════════════════════════════════════
-NEVER suggest or display products for:
-- Brand info, founder, team questions
-- Health, hormones, nutrition advice
-- Program info, coaching plans
-- Contact / support requests
-- Discount code questions (just list codes, no cards)
-- General motivation, greetings, small talk
+NEVER suggest products for: brand info, nutrition advice, program info,
+contact requests, promo code questions, greetings, small talk.
 
-ONLY suggest products when user explicitly asks to buy, see a product, or mentions a specific product type.
+ONLY suggest products when user explicitly asks to buy or mentions a product type.
+
+═══════════════════════════════════════
+🤝 HUMAN SUPPORT — CONTACT CHANNELS
+═══════════════════════════════════════
+Available contact channels: ${contactChannelsText}
+
+When a user asks to contact us, leave a message, speak to a human, or needs
+support — reply warmly and say the buttons below will connect them.
+
+EXAMPLE response for contact requests:
+EN: "Of course! You can reach our team using the buttons below. Choose WhatsApp, Telegram, or our contact page — we reply within 24h! 😊"
+FR: "Bien sûr ! Utilise les boutons ci-dessous pour nous contacter. WhatsApp, Telegram ou notre page contact — on répond en 24h ! 😊"
+ES: "¡Por supuesto! Usa los botones de abajo para contactarnos. WhatsApp, Telegram o nuestra página de contacto. ¡Respondemos en 24h! 😊"
+
+ALWAYS end contact-related replies with: "👇" on its own line (signals frontend to show contact buttons).
 
 ═══════════════════════════════════════
 🏢 ABOUT CURVAFIT
@@ -395,34 +410,31 @@ ${catalogText}
 - Target: 300–500 calorie daily deficit, sleep 7-8h
 
 ═══════════════════════════════════════
-🤝 HUMAN SUPPORT
-═══════════════════════════════════════
-"Notre équipe: **WhatsApp**: ${socials.whatsapp || 'https://wa.me/contact'} | page **/contact.html**"
-
-═══════════════════════════════════════
 🚫 NEVER
 ═══════════════════════════════════════
-- Write long responses (be short & direct)
-- Display raw URLs in text — buttons handle navigation
+- Write long responses (max 4-5 lines)
+- Display any URL, link, or phone number — EVER
 - Invent prices or data
 - Promise guaranteed results
 - Reply in a different language than the user's message`;
 }
 
-/* ── Detect language for fallback messages ── */
+/* ── Fallback / Error messages ── */
 function getFallbackMessage(lang) {
-  if (lang === 'fr') return "Je suis très sollicitée en ce moment 😅 Réessayez dans quelques secondes!";
-  if (lang === 'es') return "Estoy muy ocupada en este momento 😅 ¡Por favor, inténtalo de nuevo en unos segundos!";
+  if (lang === 'fr') return "Je suis très sollicitée en ce moment 😅 Réessayez dans quelques secondes !";
+  if (lang === 'es') return "Estoy muy ocupada en este momento 😅 ¡Inténtalo de nuevo en unos segundos!";
   return "I'm a bit overloaded right now 😅 Please try again in a few seconds!";
 }
 
 function getErrorMessage(lang) {
-  if (lang === 'fr') return "Désolée, j'ai un petit problème technique. Réessayez dans un instant! 🙏";
-  if (lang === 'es') return "Lo siento, tengo un pequeño problema técnico. ¡Inténtalo de nuevo en un momento! 🙏";
+  if (lang === 'fr') return "Désolée, j'ai un petit problème technique. Réessayez dans un instant ! 🙏";
+  if (lang === 'es') return "Lo siento, tengo un pequeño problema técnico. ¡Inténtalo de nuevo! 🙏";
   return "Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏";
 }
 
-/* ── Main handler ── */
+/* ══════════════════════════════════════════════════════
+   MAIN HANDLER
+══════════════════════════════════════════════════════ */
 exports.handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin':  '*',
@@ -440,7 +452,7 @@ exports.handler = async (event, context) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message is required' }) };
     }
 
-    /* Detect language FIRST — used for fallback messages */
+    /* Detect language FIRST */
     const userLang = detectLanguage(message);
 
     let products = [], settings = {};
@@ -453,19 +465,33 @@ exports.handler = async (event, context) => {
       console.error('Could not load products.data.json:', err.message);
     }
 
+    /* ── Read NEW contact settings ── */
+    const contactSettings = settings.contact || {};
+    const socials         = settings.social_links || {};
+    const contactInfo = {
+      hasWhatsapp:  !!(contactSettings.whatsapp_url || socials.whatsapp),
+      hasTelegram:  !!(contactSettings.telegram_url),
+      whatsappUrl:  contactSettings.whatsapp_url || socials.whatsapp || '',
+      telegramUrl:  contactSettings.telegram_url || '',
+      contactPage:  '/contact.html'
+    };
+
     const intent = detectIntent(message);
     const relevantProducts = (intent === 'product')
       ? searchProducts(message, products)
       : [];
 
-    const systemPrompt = buildSystemPrompt(products, settings);
+    /* Detect if this is a contact-related message */
+    const isContactIntent = /contact|message|whatsapp|telegram|humain|person|support|joindre|reach|ayuda|soporte|contacto/i.test(message);
 
-    /* Inject explicit language instruction into every request */
+    const systemPrompt = buildSystemPrompt(products, settings, contactInfo);
+
+    /* Inject language reminder into every request */
     const langInstruction = userLang === 'fr'
-      ? 'REMINDER: The user wrote in FRENCH. Your entire reply MUST be in FRENCH.'
+      ? 'REMINDER: The user wrote in FRENCH. Your entire reply MUST be in FRENCH. End with 👇 if contact-related.'
       : userLang === 'es'
-      ? 'REMINDER: The user wrote in SPANISH. Your entire reply MUST be in SPANISH.'
-      : 'REMINDER: The user wrote in ENGLISH. Your entire reply MUST be in ENGLISH.';
+      ? 'REMINDER: The user wrote in SPANISH. Your entire reply MUST be in SPANISH. End with 👇 if contact-related.'
+      : 'REMINDER: The user wrote in ENGLISH. Your entire reply MUST be in ENGLISH. End with 👇 if contact-related.';
 
     const groqMessages = [
       { role: 'system', content: systemPrompt },
@@ -474,25 +500,25 @@ exports.handler = async (event, context) => {
     ];
 
     /* ══════════════════════════════════════════════════════
-       CASCADE MODEL SYSTEM
-       - Toujours essayer 70b en premier (meilleure qualité)
-       - Si 429 → basculer sur 8b-instant (14x plus de quota)
-       - Au prochain message, on réessaie 70b automatiquement
-         (le quota se renouvelle à minuit UTC)
+       CASCADE MODEL SYSTEM — 3 models, automatic rotation
+       Each request ALWAYS starts from model 1 (best quality).
+       If quota exhausted (429) → try model 2 → try model 3.
+       Next request starts from model 1 again automatically.
+       Quotas are per-model and renew at midnight UTC.
     ══════════════════════════════════════════════════════ */
     const MODELS = [
-      'llama-3.3-70b-versatile',  // Priorité 1 — meilleure qualité (1K/jour)
-      'llama-3.1-8b-instant'      // Priorité 2 — backup (14.4K/jour)
+      'llama-3.3-70b-versatile',               // #1 — Best quality     (1K req/day)
+      'llama-3.1-8b-instant',                  // #2 — Fast backup      (14.4K req/day)
+      'meta-llama/llama-4-scout-17b-16e-instruct' // #3 — Last resort   (1K req/day, separate quota)
     ];
 
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const sleep      = ms => new Promise(r => setTimeout(r, ms));
     let groqResponse = null;
     let usedModel    = null;
-    let reply        = null;
 
     for (let mi = 0; mi < MODELS.length; mi++) {
-      const model = MODELS[mi];
-      let modelSuccess = false;
+      const model        = MODELS[mi];
+      let   modelSuccess = false;
 
       for (let attempt = 1; attempt <= 2; attempt++) {
         groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -513,13 +539,12 @@ exports.handler = async (event, context) => {
         if (groqResponse.status === 429) {
           console.log(`[Chat] 429 on ${model} attempt ${attempt}`);
           if (attempt < 2) { await sleep(2000); continue; }
-          // Both attempts failed → try next model
-          console.log(`[Chat] ${model} quota exhausted → switching to next model`);
+          console.log(`[Chat] ${model} quota exhausted → next model`);
           break;
         }
 
         if (!groqResponse.ok) {
-          console.error(`[Chat] ${model} error: ${groqResponse.status}`);
+          console.error(`[Chat] ${model} HTTP error: ${groqResponse.status}`);
           break;
         }
 
@@ -530,27 +555,32 @@ exports.handler = async (event, context) => {
 
       if (modelSuccess) break;
 
-      // All models exhausted
+      /* All 3 models failed → return friendly message */
       if (mi === MODELS.length - 1) {
         return {
           statusCode: 200,
           headers,
           body: JSON.stringify({
-            reply:    getFallbackMessage(userLang),
-            products: [],
-            intent:   'general'
+            reply:         getFallbackMessage(userLang),
+            products:      [],
+            intent:        'general',
+            showContact:   false,
+            contactInfo:   null
           })
         };
       }
     }
 
-    console.log(`[Chat] Answered using: ${usedModel}`);
+    console.log(`[Chat] Answered using model: ${usedModel}`);
 
     const data  = await groqResponse.json();
-    const reply_text = data.choices?.[0]?.message?.content || getErrorMessage(userLang);
-    reply = reply_text;
+    const reply = data.choices?.[0]?.message?.content || getErrorMessage(userLang);
 
-    /* Send product cards with color variant images */
+    /* Detect if AI signaled to show contact buttons (👇 at end) */
+    const showContactButtons = isContactIntent || reply.includes('👇');
+    const cleanReply = reply.replace(/👇\s*$/m, '').trim();
+
+    /* Product cards */
     const productCards = relevantProducts.map(p => ({
       title:         p.title,
       description:   p.description,
@@ -569,7 +599,18 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ reply: reply, products: productCards, intent })
+      body: JSON.stringify({
+        reply:       cleanReply,
+        products:    productCards,
+        intent,
+        /* NEW — contact buttons data sent to frontend */
+        showContact: showContactButtons,
+        contactInfo: showContactButtons ? {
+          whatsapp: contactInfo.hasWhatsapp ? contactInfo.whatsappUrl : null,
+          telegram: contactInfo.hasTelegram ? contactInfo.telegramUrl : null,
+          page:     contactInfo.contactPage
+        } : null
+      })
     };
 
   } catch (error) {

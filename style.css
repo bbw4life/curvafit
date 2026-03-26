@@ -11516,3 +11516,50 @@ html.fonts-loaded [class*="fa-"] {
   cursor: grabbing !important;
   pointer-events: none;
 }
+
+
+/* ================================================================
+   CONTACT BUTTONS CSS — CurvaFit Chatbot
+   (extrait du script JS)
+================================================================ */
+.cf-contact-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 4px 0;
+}
+
+.cf-contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+
+.cf-contact-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.cf-contact-btn--whatsapp {
+  background: #25D366;
+  color: #fff;
+}
+
+.cf-contact-btn--telegram {
+  background: #0088cc;
+  color: #fff;
+}
+
+.cf-contact-btn--page {
+  background: var(--rose, #e91e63);
+  color: #fff;
+}
+
