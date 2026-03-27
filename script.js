@@ -69,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const pos  = getPos();
       origLeft   = pos.left;
       origTop    = pos.top;
-      // ⚠️ NE PAS appeler preventDefault() ici — ça tue le click sur mobile
     }
 
     function onMove(e) {
@@ -78,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const dy = e.clientY - startY;
       if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
         hasMoved = true;
-        // preventDefault seulement quand on drag vraiment
         e.preventDefault();
       }
       if (!hasMoved) return;
@@ -106,19 +104,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // ✅ Sur mobile : simuler le click si c'était un tap (pas un drag)
+      // ✅ TAP mobile — bubbles:false pour ne pas déclencher les listeners "outside click"
       if (!hasMoved && e.type === 'touchend') {
-        const target = e.changedTouches
-          ? document.elementFromPoint(
-              e.changedTouches[0].clientX,
-              e.changedTouches[0].clientY
-            )
-          : null;
+        const touch = e.changedTouches[0];
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
         if (target) {
           const clickable = opts.blockClickSelector
-            ? target.closest(opts.blockClickSelector) || target
+            ? (target.closest(opts.blockClickSelector) || target)
             : target;
-          clickable.click();
+          clickable.dispatchEvent(new MouseEvent('click', {
+            bubbles: false,   // ← ne remonte PAS au document
+            cancelable: true
+          }));
         }
       }
     }
@@ -132,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
     widget.addEventListener('touchstart', e => {
       const t = e.touches[0];
       onDown({ clientX: t.clientX, clientY: t.clientY, target: e.target });
-      // ⚠️ passive:true ici — on ne bloque pas le scroll ni le click par défaut
     }, { passive: true });
 
     document.addEventListener('touchmove', e => {
@@ -146,86 +142,86 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Floating Nav ──
   const floatingNav = document.getElementById('floating-nav');
   if (floatingNav) {
-    makeDraggable(floatingNav, {
-      handleSelector: '#fnav-toggle'
-    });
+    makeDraggable(floatingNav, { handleSelector: '#fnav-toggle' });
   }
 
   // ── Paul Indicator ──
   const paulIndicator = document.querySelector('.paul-indicator-wrapper');
   if (paulIndicator) {
-    makeDraggable(paulIndicator, {
-      blockClickSelector: '#paulTrigger'
-    });
+    makeDraggable(paulIndicator, { blockClickSelector: '#paulTrigger' });
   }
 
 })();
 
 
 // ══ FLOATING NAV ══
-  const fnavToggle = document.getElementById('fnav-toggle');
-  const fnavWheel  = document.getElementById('fnav-wheel');
+const fnavToggle = document.getElementById('fnav-toggle');
+const fnavWheel  = document.getElementById('fnav-wheel');
 
-  if (fnavToggle && fnavWheel) {
-    fnavToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = fnavWheel.classList.toggle('open');
-      fnavToggle.classList.toggle('open', isOpen);
-    });
+if (fnavToggle && fnavWheel) {
 
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('#floating-nav')) {
-        fnavWheel.classList.remove('open');
-        fnavToggle.classList.remove('open');
-      }
-    });
+  let justToggled = false; // ← flag anti-conflit
 
-    const PAGE_ORDER = [
-      '/index.html',
-      '/method.html',
-      '/programs.html',
-      '/nutrition.html',
-      '/shop.html',
-      '/success.html',
-      '/community.html',
-      '/about.html',
-      '/contact.html',
-      '/blog/blog.html',
-      '/faq.html',
-      '/account.html'
-    ];
+  fnavToggle.addEventListener('click', (e) => {
+    e.stopPropagation(); // ← empêche la propagation vers document
+    justToggled = true;
+    const isOpen = fnavWheel.classList.toggle('open');
+    fnavToggle.classList.toggle('open', isOpen);
+    setTimeout(() => { justToggled = false; }, 100);
+  });
 
-    document.getElementById('fnav-next').addEventListener('click', () => {
-      const currentPath = window.location.pathname;
-      const idx = PAGE_ORDER.findIndex(p => currentPath.endsWith(p) || currentPath === p);
-      const nextPage = idx !== -1 && idx < PAGE_ORDER.length - 1
-        ? PAGE_ORDER[idx + 1]
-        : PAGE_ORDER[0];
-      window.location.href = nextPage;
-    });
-
-    // ── Scroll par paliers de 10% ──
-    const STEP = 0.10;
-
-    const btnUp = fnavWheel.querySelector('.fnav-top');
-    const btnDown = fnavWheel.querySelector('.fnav-bottom');
-
-    if (btnUp) {
-      btnUp.addEventListener('click', () => {
-        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-        const target = Math.max(0, window.scrollY - maxScroll * STEP);
-        window.scrollTo({ top: target, behavior: 'smooth' });
-      });
+  document.addEventListener('click', (e) => {
+    if (justToggled) return; // ← ignore si on vient de toggler
+    if (!e.target.closest('#floating-nav')) {
+      fnavWheel.classList.remove('open');
+      fnavToggle.classList.remove('open');
     }
+  });
 
-    if (btnDown) {
-      btnDown.addEventListener('click', () => {
-        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-        const target = Math.min(maxScroll, window.scrollY + maxScroll * STEP);
-        window.scrollTo({ top: target, behavior: 'smooth' });
-      });
-    }
+  const PAGE_ORDER = [
+    '/index.html',
+    '/method.html',
+    '/programs.html',
+    '/nutrition.html',
+    '/shop.html',
+    '/success.html',
+    '/community.html',
+    '/about.html',
+    '/contact.html',
+    '/blog/blog.html',
+    '/faq.html',
+    '/account.html'
+  ];
+
+  document.getElementById('fnav-next').addEventListener('click', () => {
+    const currentPath = window.location.pathname;
+    const idx = PAGE_ORDER.findIndex(p => currentPath.endsWith(p) || currentPath === p);
+    const nextPage = idx !== -1 && idx < PAGE_ORDER.length - 1
+      ? PAGE_ORDER[idx + 1]
+      : PAGE_ORDER[0];
+    window.location.href = nextPage;
+  });
+
+  const STEP = 0.10;
+  const btnUp   = fnavWheel.querySelector('.fnav-top');
+  const btnDown = fnavWheel.querySelector('.fnav-bottom');
+
+  if (btnUp) {
+    btnUp.addEventListener('click', () => {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const target = Math.max(0, window.scrollY - maxScroll * STEP);
+      window.scrollTo({ top: target, behavior: 'smooth' });
+    });
   }
+
+  if (btnDown) {
+    btnDown.addEventListener('click', () => {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const target = Math.min(maxScroll, window.scrollY + maxScroll * STEP);
+      window.scrollTo({ top: target, behavior: 'smooth' });
+    });
+  }
+}
 
   // ====================== IMAGES NETTES (ANTI-FLOU GLOBAL) ======================
   (function injectSharpImageStyles() {
