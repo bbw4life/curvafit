@@ -33,13 +33,15 @@ document.addEventListener('DOMContentLoaded', () => {
  
 
 
-// ====================== DRAG: FLOATING NAV + PAUL INDICATOR ======================
 (function initDraggables() {
 
   function makeDraggable(widget, opts) {
     opts = opts || {};
     let isDragging = false;
     let startX, startY, origLeft, origTop, hasMoved;
+
+    // ← CRITIQUE sur mobile : bloque le scroll natif sur l'élément
+    widget.style.touchAction = 'none';
 
     function getPos() {
       const rect = widget.getBoundingClientRect();
@@ -60,7 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ' right:auto !important;' +
         ' bottom:auto !important;' +
         ' left:' + left + 'px !important;' +
-        ' top:'  + top  + 'px !important;'
+        ' top:'  + top  + 'px !important;' +
+        ' touch-action:none;'
       );
     }
 
@@ -82,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const dy = clientY - startY;
       if (Math.abs(dx) > 5 || Math.abs(dy) > 5) hasMoved = true;
       if (!hasMoved) return;
-
       const bW = widget.offsetWidth;
       const bH = widget.offsetHeight;
       const nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft + dx));
@@ -93,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function endDrag() {
       if (!isDragging) return;
       isDragging = false;
-
       if (hasMoved && opts.blockClickSelector) {
         const el = widget.querySelector(opts.blockClickSelector);
         if (el) {
@@ -109,50 +110,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Mouse ──
     widget.addEventListener('mousedown', (e) => {
-      if (startDrag(e.clientX, e.clientY, e.target)) {
-        e.preventDefault();
-      }
+      if (startDrag(e.clientX, e.clientY, e.target)) e.preventDefault();
     });
-
-    document.addEventListener('mousemove', (e) => {
-      moveDrag(e.clientX, e.clientY);
-    });
-
+    document.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
     document.addEventListener('mouseup', endDrag);
 
-    // ── Touch : passive:true sur touchstart pour ne pas bloquer les clics ──
+    // ── Touch : tout sur le WIDGET, pas sur document ──
     widget.addEventListener('touchstart', (e) => {
-      const t = e.touches[0];
-      startDrag(t.clientX, t.clientY, e.target);
-      // PAS de preventDefault ici → les clics passent normalement
+      startDrag(e.touches[0].clientX, e.touches[0].clientY, e.target);
+      // pas de preventDefault → clics préservés
     }, { passive: true });
 
-    document.addEventListener('touchmove', (e) => {
-      if (!isDragging || !hasMoved) return;
-      // preventDefault seulement quand on drag vraiment
-      e.preventDefault();
+    // ← CRITIQUE : attaché sur widget, pas document, et passive:false
+    widget.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      e.preventDefault(); // bloque le scroll page pendant le drag
       moveDrag(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: false });
 
-    document.addEventListener('touchend', (e) => {
-      endDrag();
-    });
+    widget.addEventListener('touchend', endDrag);
   }
 
-  // ── Floating Nav ──
   const floatingNav = document.getElementById('floating-nav');
   if (floatingNav) {
-    makeDraggable(floatingNav, {
-      handleSelector: '#fnav-toggle'
-    });
+    makeDraggable(floatingNav, { handleSelector: '#fnav-toggle' });
   }
 
-  // ── Paul Indicator ──
   const paulIndicator = document.querySelector('.paul-indicator-wrapper');
   if (paulIndicator) {
-    makeDraggable(paulIndicator, {
-      blockClickSelector: '#paulTrigger'
-    });
+    makeDraggable(paulIndicator, { blockClickSelector: '#paulTrigger' });
   }
 
 })();
