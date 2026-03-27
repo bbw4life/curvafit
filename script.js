@@ -30,6 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+
+
+
+
+
  (function initDraggables() {
 
   function makeDraggable(widget, opts) {
@@ -92,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!isDragging) return;
       isDragging = false;
 
+      // Bloquer le click suivant SEULEMENT si drag a vraiment eu lieu
       if (hasMoved && opts.blockClickSelector) {
         const el = widget.querySelector(opts.blockClickSelector);
         if (el) {
@@ -104,20 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // ✅ TAP mobile — bubbles:false pour ne pas déclencher les listeners "outside click"
-      if (!hasMoved && e.type === 'touchend') {
-        const touch = e.changedTouches[0];
-        const target = document.elementFromPoint(touch.clientX, touch.clientY);
-        if (target) {
-          const clickable = opts.blockClickSelector
-            ? (target.closest(opts.blockClickSelector) || target)
-            : target;
-          clickable.dispatchEvent(new MouseEvent('click', {
-            bubbles: false,   // ← ne remonte PAS au document
-            cancelable: true
-          }));
-        }
-      }
+      // ✅ Pas de simulation de click — on laisse le navigateur
+      // générer son propre click natif après touchend
     }
 
     // ── Desktop ──
@@ -126,14 +120,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mouseup', onUp);
 
     // ── Mobile ──
+    // passive:true sur touchstart → le navigateur garde le click natif intact
     widget.addEventListener('touchstart', e => {
       const t = e.touches[0];
       onDown({ clientX: t.clientX, clientY: t.clientY, target: e.target });
     }, { passive: true });
 
+    // passive:false sur touchmove → on peut preventDefault quand on drag vraiment
     document.addEventListener('touchmove', e => {
-      if (!isDragging) return;
-      onMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY, preventDefault: () => e.preventDefault() });
+      if (!isDragging || !hasMoved) return;
+      onMove({ 
+        clientX: e.touches[0].clientX, 
+        clientY: e.touches[0].clientY, 
+        preventDefault: () => e.preventDefault() 
+      });
     }, { passive: false });
 
     document.addEventListener('touchend', e => onUp(e));
@@ -160,10 +160,10 @@ const fnavWheel  = document.getElementById('fnav-wheel');
 
 if (fnavToggle && fnavWheel) {
 
-  let justToggled = false; // ← flag anti-conflit
+  let justToggled = false;
 
   fnavToggle.addEventListener('click', (e) => {
-    e.stopPropagation(); // ← empêche la propagation vers document
+    e.stopPropagation();
     justToggled = true;
     const isOpen = fnavWheel.classList.toggle('open');
     fnavToggle.classList.toggle('open', isOpen);
@@ -171,7 +171,7 @@ if (fnavToggle && fnavWheel) {
   });
 
   document.addEventListener('click', (e) => {
-    if (justToggled) return; // ← ignore si on vient de toggler
+    if (justToggled) return;
     if (!e.target.closest('#floating-nav')) {
       fnavWheel.classList.remove('open');
       fnavToggle.classList.remove('open');
@@ -222,6 +222,11 @@ if (fnavToggle && fnavWheel) {
     });
   }
 }
+
+
+
+
+
 
   // ====================== IMAGES NETTES (ANTI-FLOU GLOBAL) ======================
   (function injectSharpImageStyles() {
