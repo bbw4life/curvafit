@@ -3764,14 +3764,18 @@ document.addEventListener('DOMContentLoaded', function () {
       }, { passive: false });
 
       toggle.addEventListener('touchend', (e) => {
-        if (!hasMoved) {
-          // C'est un tap → laisser le click natif se propager
-          endDrag();
-          return;
-        }
-        // C'est un drag → bloquer le click fantôme
-        e.preventDefault();
+        const wasTap = !hasMoved;
         endDrag();
+        
+        if (wasTap) {
+          // Bloquer uniquement le click fantôme qui suit ce tap
+          const blockOnce = (ev) => {
+            ev.stopImmediatePropagation();
+            ev.preventDefault();
+            toggle.removeEventListener('click', blockOnce, true);
+          };
+          toggle.addEventListener('click', blockOnce, true);
+        }
       }, { passive: false });
 
     })();
