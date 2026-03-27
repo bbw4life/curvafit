@@ -111,7 +111,7 @@ a { text-decoration: none; color: inherit; }
 /* ── Buttons ── */
 .button-3d {
     display: inline-block;
-    padding: 14px 32px;
+    padding: 10px 32px;
     background: linear-gradient(135deg, var(--rose-light), var(--rose));
     color: #fff;
     border-radius: var(--radius-xl);
@@ -802,7 +802,7 @@ a { text-decoration: none; color: inherit; }
     .hero-cta-group .secondary-cta {
         width: 100%;
         text-align: center;
-        padding: 11px 10px;
+        padding: 10px 10px;
         font-size: 0.80rem;
         white-space: nowrap;
     }
@@ -5734,7 +5734,7 @@ tbody tr:hover { background: var(--rose-ultra); }
     font-size: 1rem;
     font-weight: 600;
     letter-spacing: 0.05em;
-    padding: 16px 44px;
+    padding: 10px 40px;
     background: linear-gradient(135deg, var(--rose, #c0385e), var(--rose-light, #e8607e));
     color: #fff;
     border: none;
@@ -5754,6 +5754,13 @@ tbody tr:hover { background: var(--rose-ultra); }
 }
 
 .primary-cta.large:active { transform: translateY(0); }
+
+@media (max-width: 768px) {
+  .primary-cta.large {
+    padding: 10px 15px;
+    font-size: 0.8rem;
+  }
+}
 
 /* ================================================================
    STORE INFOS SECTION
@@ -11599,5 +11606,60 @@ html.fonts-loaded [class*="fa-"] {
 }
 
 
+/* ── Mind Body Icons — index.html ── */
+.mind-card-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 14px;
+  background: #fbeaf0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.mind-card-icon i {
+  font-size: 22px;
+  color: #d4537e;
+  transition: color 0.25s ease;
+}
+
+.mind-card:hover .mind-card-icon {
+  background: #d4537e;
+  transform: scale(1.1);
+}
+
+.mind-card:hover .mind-card-icon i {
+  color: #fff;
+}
+
+
+/* ── Real Timeline Icons — method.html ── */
+.rtl-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(212, 83, 126, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  transition: background 0.25s ease;
+}
+
+.rtl-icon i {
+  font-size: 25px;
+  color: #e8829e;
+  transition: color 0.25s ease;
+}
+
+.rtl-card:hover .rtl-icon {
+  background: #a65e07;
+}
+
+.rtl-card:hover .rtl-icon i {
+  color: #fff;
+}
 
 

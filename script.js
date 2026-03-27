@@ -142,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
 })();
 
 
-
 // ══ FLOATING NAV ══
   const fnavToggle = document.getElementById('fnav-toggle');
   const fnavWheel  = document.getElementById('fnav-wheel');
