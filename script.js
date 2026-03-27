@@ -3688,7 +3688,6 @@ document.addEventListener('DOMContentLoaded', function () {
     (function initDrag() {
       let isDragging = false;
       let startX, startY, origLeft, origBottom, hasMoved;
-      let ignorNextClick = false;
 
       function applyPosition(left, bottom) {
         toggle.style.left   = left   + 'px';
@@ -3722,7 +3721,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!hasMoved) return;
         const bW = toggle.offsetWidth;
         const bH = toggle.offsetHeight;
-        const nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft   + dx));
+        const nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft + dx));
         const nb = Math.max(8, Math.min(window.innerHeight - bH - 8, origBottom - dy));
         applyPosition(nl, nb);
       }
@@ -3730,7 +3729,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // ── Mouse ──
       toggle.addEventListener('mousedown', (e) => {
         startDrag(e.clientX, e.clientY);
-        e.preventDefault();
+        e.preventDefault(); // empêche le click souris de se déclencher après mouseup
       });
       document.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
       document.addEventListener('mouseup', () => {
@@ -3753,28 +3752,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
       toggle.addEventListener('touchend', (e) => {
         if (!isDragging) return;
+        e.preventDefault(); // bloque le click fantôme SANS bloquer l'action
         isDragging = false;
         widget.classList.remove('cf-dragging');
-
-        if (!hasMoved) {
-          // C'est un tap → ouvrir/fermer directement ici
-          isOpen ? closeChat() : openChat();
-          // Ignorer le click fantôme qui va arriver 300ms après
-          ignorNextClick = true;
-          setTimeout(() => { ignorNextClick = false; }, 400);
-        }
+        if (!hasMoved) { isOpen ? closeChat() : openChat(); }
       }, { passive: false });
-
-      // Intercepte le click fantôme uniquement si flag actif
-      toggle.addEventListener('click', (e) => {
-        if (ignorNextClick) {
-          ignorNextClick = false;
-          e.stopImmediatePropagation();
-          return;
-        }
-        // Vrai click souris → ouvrir/fermer
-        isOpen ? closeChat() : openChat();
-      });
 
     })();
 
