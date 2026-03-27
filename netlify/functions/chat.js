@@ -463,6 +463,10 @@ function buildBlogContext(blogData) {
    BUILD SYSTEM PROMPT
 ══════════════════════════════════════════════════════ */
 function buildSystemPrompt(products, settings, contactInfo, searchData, blogData) {
+  const contactEmails = settings.contact_emails || {};
+  const emailsText = Object.entries(contactEmails)
+    .map(([k, v]) => `• ${k}: ${v}`)
+    .join('\n') || '• No emails configured';
   const programs = settings.programs     || {};
   const promos   = settings.promos       || [];
   const shipping = settings.cart_drawer  || {};
@@ -627,13 +631,26 @@ RULE 4 — If the backend marks a request as VAGUE (isVague=true), always add th
 ═══════════════════════════════════════
 Available contact channels: ${contactChannelsText}
 
-When a user asks to contact us, leave a message, speak to a human, or needs
-support — reply warmly and say the buttons below will connect them.
+CONTACT EMAILS (use ONLY these — never invent emails):
+${emailsText}
+
+When a user asks to contact us, leave a message, speak to a human, needs support,
+OR asks for an email address → reply warmly using the emails above when relevant.
+Say the buttons below will also connect them directly.
+
+RULES FOR EMAILS:
+- general questions → use general email
+- billing questions → use billing email
+- tech issues → use tech email
+- coach questions → use coaches email
+- press → use press email
+- NEVER invent or guess an email
+- ALWAYS use exact emails from the list above
 
 EXAMPLE response for contact requests:
-EN: "Of course! You can reach our team using the buttons below. Choose WhatsApp, Telegram, or our contact page — we reply within 24h! 😊"
-FR: "Bien sûr ! Utilise les boutons ci-dessous pour nous contacter. WhatsApp, Telegram ou notre page contact — on répond en 24h ! 😊"
-ES: "¡Por supuesto! Usa los botones de abajo para contactarnos. WhatsApp, Telegram o nuestra página de contacto. ¡Respondemos en 24h! 😊"
+EN: "Of course! You can reach our team using the buttons below or by email at the address matching your need. We reply within 24h! 😊"
+FR: "Bien sûr ! Utilise les boutons ci-dessous ou écris-nous par email selon ton besoin. On répond en 24h ! 😊"
+ES: "¡Por supuesto! Usa los botones de abajo o escríbenos al email correspondiente a tu necesidad. ¡Respondemos en 24h! 😊"
 
 ALWAYS end contact-related replies with: "👇" on its own line (signals frontend to show contact buttons).
 
@@ -772,20 +789,6 @@ function getErrorMessage(lang) {
    MODEL ROTATION STATE
    Persistent across warm Lambda invocations (in-memory)
 ══════════════════════════════════════════════════════ */
-
-/*
-  Full circular list of 10 models ordered by priority:
-    1. llama-3.3-70b-versatile          — original #1  (1K RPM / 1K RPD on free)
-    2. moonshotai/kimi-k2-instruct      — best new     (60 RPM free / 1K RPD dev)
-    3. meta-llama/llama-4-scout-17b-16e-instruct — original #3 (1K RPM / 1K RPD)
-    4. qwen/qwen3-32b                   — strong new   (60 RPM free / 1K RPD dev)
-    5. openai/gpt-oss-120b              — strong new   (30 RPM free / 1K RPD dev)
-    6. openai/gpt-oss-20b               — solid new    (30 RPM free / 1K RPD dev)
-    7. moonshotai/kimi-k2-instruct-0905 — kimi stable  (60 RPM free / 1K RPD dev)
-    8. openai/gpt-oss-safeguard-20b     — safety model (30 RPM free / 1K RPD dev)
-    9. llama-3.1-8b-instant             — original #2  (30 RPM free / 14.4K RPD)
-   10. meta-llama/llama-prompt-guard-2-22m — guard/fallback (100 RPM / 50K RPD dev)
-*/
 const MODELS = [
   'llama-3.3-70b-versatile',
   'moonshotai/kimi-k2-instruct',

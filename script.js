@@ -1374,6 +1374,65 @@ document.addEventListener('DOMContentLoaded', () => {
       window.getProductUrl = getProductUrl;
 
 
+      function applyPromoFreeItems() {
+    const settings = products.find(p => p.type === 'settings');
+    if (!settings) return;
+    const cd = settings.cart_drawer || {};
+    const buyQty  = parseInt(cd.promo_buy_quantity) || 0;
+    const getQty  = parseInt(cd.promo_get_quantity)  || 0;
+    if (!buyQty || !getQty) return;
+
+    // Produits réels dans l'ordre du fichier (pas les items type settings, actifs uniquement)
+    const realProducts = products.filter(p => !p.type && p.active !== false);
+
+    // Compter uniquement les articles NON free promo
+    const paidQty = cart.filter(i => !i.isFreePromo).reduce((sum, i) => sum + i.quantity, 0);
+
+    // Retirer les anciens FREE promos
+    cart = cart.filter(i => !i.isFreePromo);
+
+    if (paidQty >= buyQty) {
+        for (let idx = 0; idx < getQty; idx++) {
+            const prod = realProducts[idx];
+            if (!prod) break;
+
+            // Toujours la première variant du produit
+            const firstVariant = (prod.variants && prod.variants.length > 0)
+                ? prod.variants[0]
+                : null;
+
+            const color = firstVariant ? (firstVariant.color || null) : null;
+            const size  = firstVariant ? (firstVariant.size  || null) : null;
+
+            // Image via la couleur de la première variant
+            const colorObj = (color && prod.colors)
+                ? prod.colors.find(c => c.name === color)
+                : null;
+            const image = colorObj
+                ? (colorObj.image || prod.image)
+                : prod.image;
+
+            cart.push({
+                id:            prod.id,
+                title:         prod.title + ' 🎁 FREE',
+                price:         0,
+                compare_price: firstVariant ? firstVariant.price : prod.price,
+                image:         upgradeShopifyImageUrl(image || prod.image),
+                size:          size  || null,
+                color:         color || null,
+                quantity:      1,
+                isFreePromo:   true,
+                cj_product_id: prod.cj_id,
+                cj_variant_id: firstVariant ? firstVariant.vid : null
+            });
+        }
+    }
+
+    // Sauvegarder dans localStorage pour que checkout.js le lise
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+
     //  STICKY ATC — initialise après le fetch products.data.json
     (function initStickyATC() {
 
@@ -1894,6 +1953,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderCart() {
     if (!cartItemsContainer) return;
+    if (typeof applyPromoFreeItems === 'function' && products && products.length) {
+        applyPromoFreeItems();
+    }
+
     cartItemsContainer.innerHTML = '';
 
     const emptyCart           = cartDrawer.querySelector('.empty-cart');

@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let promos = [];
     let appliedPromo = null;
     let discountAmount = 0;
+    let _promoFreeApplying = false;
 
     // ====================== POPUP ======================
     function showErrorPopup(message) {
@@ -41,7 +42,22 @@ document.addEventListener('DOMContentLoaded', () => {
           TAX_RATE = settings.tax_rate || 0.1;
           SHIPPING_COST = settings.shipping_cost || 10.00;
           promos = settings.promos || [];
+
+          const delayMap = {
+            'Standard Shipping': settings.shipping_standard_delay || '',
+            'Express DHL':        settings.shipping_dhl_delay      || '',
+            'Priority FedEx':     settings.shipping_priority_delay || '',
+            'Economy Shipping':   settings.shipping_economy_delay  || '',
+          };
+          document.querySelectorAll('.shipping-option').forEach(opt => {
+            const method = opt.dataset.method;
+            if (delayMap[method]) {
+              const p = opt.querySelector('p');
+              if (p) p.textContent = delayMap[method];
+            }
+          });
         }
+        applyPromoFreeItems();
         renderCart();
       })
       .catch(error => {
@@ -238,7 +254,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const shippingData = await getShippingData();
             const discountedCart = getDiscountedCart();
             const discountedSubtotal = discountedCart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
-            const taxes = discountedSubtotal * TAX_RATE;
+            const selectedMethodPay = document.querySelector('.shipping-option.selected')?.dataset.method || '';
+            const freeThreshPay = (() => { const s = productsData.find(i => i.type === 'settings'); return s?.cart_drawer?.free_shipping_threshold || 0; })();
+            const isFreePayMethod = ['Standard Shipping', 'Economy Shipping'].includes(selectedMethodPay);
+            const isFreePayThresh = freeThreshPay > 0 && discountedSubtotal >= freeThreshPay;
+            const taxes = (isFreePayMethod || isFreePayThresh) ? 0 : discountedSubtotal * TAX_RATE;
+            const effectiveShippingPay = (isFreePayMethod || isFreePayThresh) ? 0 : SHIPPING_COST;
 
             if (paymentMethod === 'stripe') {
                 const STRIPE_PUBLIC_KEY = "pk_test_51PMDwoF9QAVBUyaUqwc7ekbAhyZdI9oA3ubZT8b7TtWGrykoPLvsql4mexEwEoS5pggyssqN6jpj2w5VQMHOSftf00q97Rbt1f";
@@ -249,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({
                         cart: discountedCart,
                         shipping: shippingData,
-                        shipping_cost: SHIPPING_COST.toFixed(2),
+                        shipping_cost: effectiveShippingPay.toFixed(2),
                         tax: taxes.toFixed(2)
                     })
                 });
@@ -265,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({
                         cart: discountedCart,
                         shipping: shippingData,
-                        shipping_cost: SHIPPING_COST.toFixed(2),
+                        shipping_cost: effectiveShippingPay.toFixed(2),
                         tax: taxes.toFixed(2)
                     })
                 });
@@ -365,6 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
         option.addEventListener('click', () => {
             shippingOptions.forEach(opt => opt.classList.remove('selected'));
             option.classList.add('selected');
+            updateTotals();
         });
     });
 
@@ -398,12 +420,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateTotals() {
         const subtotal = getSubtotal();
-        const taxes = subtotal * TAX_RATE;
-        const finalTotal = subtotal + taxes + SHIPPING_COST - discountAmount;
+        const selectedMethod = document.querySelector('.shipping-option.selected')?.dataset.method || '';
+        const freeShipThresh = (() => {
+            const s = productsData.find(i => i.type === 'settings');
+            return s?.cart_drawer?.free_shipping_threshold || 0;
+        })();
+        const isFreeByThreshold = freeShipThresh > 0 && subtotal >= freeShipThresh;
+        const isFreeMethod = ['Standard Shipping', 'Economy Shipping'].includes(selectedMethod);
+        const effectiveShipping = (isFreeByThreshold || isFreeMethod) ? 0 : SHIPPING_COST;
+        const effectiveTax = (isFreeByThreshold || isFreeMethod) ? 0 : subtotal * TAX_RATE;
+        const finalTotal = subtotal + effectiveTax + effectiveShipping - discountAmount;
         document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
-        document.getElementById('taxes').textContent = `$${taxes.toFixed(2)}`;
-        document.getElementById('shipping').textContent = `$${SHIPPING_COST.toFixed(2)}`;
-        document.getElementById('total').textContent = `$${finalTotal.toFixed(2)}`;
+        document.getElementById('taxes').textContent = `$${effectiveTax.toFixed(2)}`;
+        document.getElementById('shipping').textContent = effectiveShipping === 0 ? 'FREE' : `$${effectiveShipping.toFixed(2)}`;
+        document.getElementById('total').textContent = `$${Math.max(0, finalTotal).toFixed(2)}`;
         const promoLine = document.getElementById('promo-line');
         const discountEl = document.getElementById('discount-amount');
         if (discountAmount > 0) {
@@ -413,6 +443,61 @@ document.addEventListener('DOMContentLoaded', () => {
             if (promoLine) promoLine.style.display = 'none';
         }
     }
+
+
+    function applyPromoFreeItems() {
+    const settings = productsData.find(i => i.type === 'settings');
+    if (!settings) return;
+    const cd = settings.cart_drawer || {};
+    const buyQty = parseInt(cd.promo_buy_quantity) || 0;
+    const getQty = parseInt(cd.promo_get_quantity)  || 0;
+    if (!buyQty || !getQty) return;
+
+    const realProducts = productsData.filter(p => !p.type && p.active !== false);
+
+    // Compter uniquement les articles payants
+    const paidQty = cart.filter(i => !i.isFreePromo).reduce((sum, i) => sum + i.quantity, 0);
+
+    // Retirer les anciens FREE
+    cart = cart.filter(i => !i.isFreePromo);
+
+    if (paidQty >= buyQty) {
+        for (let idx = 0; idx < getQty; idx++) {
+            const prod = realProducts[idx];
+            if (!prod) break;
+
+            const firstVariant = (prod.variants && prod.variants.length > 0)
+                ? prod.variants[0]
+                : null;
+
+            const color = firstVariant ? (firstVariant.color || null) : null;
+            const size  = firstVariant ? (firstVariant.size  || null) : null;
+
+            const colorObj = (color && prod.colors)
+                ? prod.colors.find(c => c.name === color)
+                : null;
+            const image = colorObj
+                ? (colorObj.image || prod.image)
+                : prod.image;
+
+            cart.push({
+                id:            prod.id,
+                title:         prod.title + ' 🎁 FREE',
+                price:         0,
+                compare_price: firstVariant ? firstVariant.price : prod.price,
+                image:         image || prod.image,
+                size:          size  || null,
+                color:         color || null,
+                quantity:      1,
+                isFreePromo:   true,
+                cj_product_id: prod.cj_id,
+                cj_variant_id: firstVariant ? firstVariant.vid : null
+            });
+        }
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
 
     document.getElementById('copy-suggested')?.addEventListener('click', () => {
         const code = document.getElementById('suggested-code').textContent;
