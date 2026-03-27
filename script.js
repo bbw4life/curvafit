@@ -29,7 +29,123 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-  // ══ FLOATING NAV ══
+
+ // ====================== DRAG: FLOATING NAV + PAUL INDICATOR ======================
+(function initDraggables() {
+
+  // ── Utilitaire drag générique ──
+  function makeDraggable(widget, opts) {
+    opts = opts || {};
+    let isDragging = false;
+    let startX, startY, origLeft, origTop, hasMoved;
+
+    function getPos() {
+      const rect = widget.getBoundingClientRect();
+      return { left: rect.left, top: rect.top };
+    }
+
+    function applyPos(left, top) {
+      // setAttribute override le !important du CSS
+      const current = widget.getAttribute('style') || '';
+      const cleaned = current
+        .replace(/\bright\s*:[^;]+;?/g, '')
+        .replace(/\bbottom\s*:[^;]+;?/g, '')
+        .replace(/\bleft\s*:[^;]+;?/g, '')
+        .replace(/\btop\s*:[^;]+;?/g, '')
+        .replace(/\bposition\s*:[^;]+;?/g, '');
+      widget.setAttribute('style',
+        cleaned +
+        ' position:fixed !important;' +
+        ' right:auto !important;' +
+        ' bottom:auto !important;' +
+        ' left:' + left + 'px !important;' +
+        ' top:'  + top  + 'px !important;'
+      );
+    }
+
+    function onDown(e) {
+      if (opts.handleSelector && !e.target.closest(opts.handleSelector)) return;
+      isDragging = true;
+      hasMoved   = false;
+      startX     = e.clientX;
+      startY     = e.clientY;
+      const pos  = getPos();
+      origLeft   = pos.left;
+      origTop    = pos.top;
+      e.preventDefault();
+    }
+
+    function onMove(e) {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
+
+      const bW = widget.offsetWidth;
+      const bH = widget.offsetHeight;
+      const nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft + dx));
+      const nt = Math.max(8, Math.min(window.innerHeight - bH - 8, origTop  + dy));
+      applyPos(nl, nt);
+    }
+
+    function onUp() {
+      if (!isDragging) return;
+      isDragging = false;
+
+      // Bloquer le click suivant si drag a eu lieu
+      if (hasMoved && opts.blockClickSelector) {
+        const el = widget.querySelector(opts.blockClickSelector);
+        if (el) {
+          const block = (ev) => {
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+            el.removeEventListener('click', block, true);
+          };
+          el.addEventListener('click', block, true);
+        }
+      }
+    }
+
+    widget.addEventListener('mousedown', onDown);
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+
+    widget.addEventListener('touchstart', e => {
+      const t = e.touches[0];
+      onDown({ clientX: t.clientX, clientY: t.clientY, target: e.target, preventDefault: () => e.preventDefault() });
+    }, { passive: false });
+
+    document.addEventListener('touchmove', e => {
+      if (!isDragging) return;
+      onMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+      e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchend', onUp);
+  }
+
+  // ── Floating Nav ──
+  const floatingNav = document.getElementById('floating-nav');
+  if (floatingNav) {
+    makeDraggable(floatingNav, {
+      handleSelector: '#fnav-toggle'
+      // pas de blockClickSelector → le toggle ouvre/ferme normalement si pas de drag
+    });
+  }
+
+  // ── Paul Indicator ──
+  const paulIndicator = document.querySelector('.paul-indicator-wrapper');
+  if (paulIndicator) {
+    makeDraggable(paulIndicator, {
+      // pas de handleSelector → tout le wrapper est draggable
+      blockClickSelector: '#paulTrigger'
+    });
+  }
+
+})();
+
+
+// ══ FLOATING NAV ══
   const fnavToggle = document.getElementById('fnav-toggle');
   const fnavWheel  = document.getElementById('fnav-wheel');
 
@@ -70,6 +186,28 @@ document.addEventListener('DOMContentLoaded', () => {
         : PAGE_ORDER[0];
       window.location.href = nextPage;
     });
+
+    // ── Scroll par paliers de 10% ──
+    const STEP = 0.10;
+
+    const btnUp = fnavWheel.querySelector('.fnav-top');
+    const btnDown = fnavWheel.querySelector('.fnav-bottom');
+
+    if (btnUp) {
+      btnUp.addEventListener('click', () => {
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const target = Math.max(0, window.scrollY - maxScroll * STEP);
+        window.scrollTo({ top: target, behavior: 'smooth' });
+      });
+    }
+
+    if (btnDown) {
+      btnDown.addEventListener('click', () => {
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const target = Math.min(maxScroll, window.scrollY + maxScroll * STEP);
+        window.scrollTo({ top: target, behavior: 'smooth' });
+      });
+    }
   }
 
   // ====================== IMAGES NETTES (ANTI-FLOU GLOBAL) ======================
@@ -210,10 +348,6 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(data => {
       products = data;
       window.__allProducts = data;
-
-
-
-
 
       // ══ SHOP HIGHLIGHT — index.html ══
 (function initShopHighlight() {
@@ -646,6 +780,32 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (btn.classList.contains('final-cta-btn--maintenance'))
           btn.textContent = `🌟 Start Maintenance — $${programMap.maintenance.price}`;
       });
+
+
+      // ══ INJECT CONTACT EMAILS FROM SETTINGS ══
+      (function injectContactEmails() {
+        const emails = settings.contact_emails || {};
+        if (!Object.keys(emails).length) return;
+
+        document.querySelectorAll('[data-email-key]').forEach(el => {
+          const key   = el.dataset.emailKey;
+          const email = emails[key];
+          if (!email) return;
+
+          // Bouton CTA spécial — on met juste le href, on garde le texte du bouton
+          if (el.dataset.emailCta) {
+            el.href = 'mailto:' + email;
+            return;
+          }
+
+          if (el.tagName === 'A') {
+            el.href        = 'mailto:' + email;
+            el.textContent = email;
+          } else {
+            el.textContent = email;
+          }
+        });
+      })();
 
       // ====================== SOCIAL CHANNELS SECTION ======================
       const iconClassMap = {
@@ -4052,9 +4212,13 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.addEventListener('click', e => {
-      if (isOpen && !widget.contains(e.target)) closeChat();
-    });
+  if (isOpen && !widget.contains(e.target) && !toggle.contains(e.target)) closeChat();
+});
 
     console.log('✅ CurvaFit Chatbot ready — trilingual (EN/FR/ES)');
   })();
 });
+
+
+
+

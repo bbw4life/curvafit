@@ -5731,6 +5731,17 @@ details p { padding:14px 22px 18px; border-top:1px solid var(--border); font-siz
     .contact-form-layout { grid-template-columns: 1fr; }
     .cf-row { grid-template-columns: 1fr; }
 }
+@media (max-width: 480px) {
+    .cf-checkbox {
+        gap: 8px;
+        font-size: 0.79rem;
+    }
+    .cf-checkbox input[type="checkbox"] {
+        width: 15px;
+        height: 15px;
+        margin-top: 1px;
+    }
+}
 
 /* ── SUPPORT HOURS ── */
 .support-hours-section {
@@ -5743,7 +5754,7 @@ details p { padding:14px 22px 18px; border-top:1px solid var(--border); font-siz
 .hours-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 40px;
+    gap: 41px;
     align-items: start;
 }
 .hours-grid {
@@ -5791,7 +5802,31 @@ details p { padding:14px 22px 18px; border-top:1px solid var(--border); font-siz
 .hours-note p { font-size: 0.82rem; color: rgba(255,255,255,0.60); line-height: 1.60; margin: 0; }
 .hours-note p strong { color: rgba(255,255,255,0.85); }
 .hours-note a { color: var(--gold-light); }
-@media (max-width: 768px) { .hours-layout { grid-template-columns: 1fr; } }
+@media (max-width: 768px) {
+    .hours-layout { grid-template-columns: 1fr; }
+
+    .hours-row {
+        padding: 12px 14px;
+        gap: 8px;
+    }
+    .hours-day {
+        font-size: 0.82rem;
+        min-width: 80px;
+    }
+    .hours-time {
+        font-size: 0.75rem;
+        flex: 1;
+        text-align: center;
+    }
+    .hours-badge {
+        font-size: 0.60rem;
+        padding: 3px 7px;
+        white-space: nowrap;
+    }
+    .hours-grid {
+        overflow-x: visible;
+    }
+}
 
 /* ── SAFETY TRUST ── */
 .safety-trust-section {

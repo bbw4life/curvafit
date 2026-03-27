@@ -1234,54 +1234,56 @@
     </div>
 
     <!-- ══ FLOATING NAV ══ -->
-    <div id="floating-nav">
-        <button class="fnav-toggle" id="fnav-toggle">
-            <i class="fi fi-rr-apps"></i>
+<div id="floating-nav">
+    <button class="fnav-toggle" id="fnav-toggle">
+        <i class="fi fi-rr-apps"></i>
+    </button>
+    <div class="fnav-wheel" id="fnav-wheel">
+        <button class="fnav-btn fnav-top" title="Scroll up 10%">
+            <i class="fi fi-rr-angle-up"></i>
         </button>
-        <div class="fnav-wheel" id="fnav-wheel">
-            <button class="fnav-btn fnav-top" title="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-                <i class="fi fi-rr-angle-up"></i>
-            </button>
-            <button class="fnav-btn fnav-right" title="Next page" id="fnav-next">
-                <i class="fi fi-rr-angle-right"></i>
-            </button>
-            <button class="fnav-btn fnav-bottom" title="Scroll to bottom" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">
-                <i class="fi fi-rr-angle-down"></i>
-            </button>
-            <button class="fnav-btn fnav-left" title="Previous page" onclick="history.back()">
-                <i class="fi fi-rr-angle-left"></i>
-            </button>
-            <button class="fnav-btn fnav-refresh" title="Refresh" onclick="location.reload()">
-                <i class="fi fi-rr-refresh"></i>
-            </button>
-        </div>
+        <button class="fnav-btn fnav-right" title="Next page" id="fnav-next">
+            <i class="fi fi-rr-angle-right"></i>
+        </button>
+        <button class="fnav-btn fnav-bottom" title="Scroll down 10%">
+            <i class="fi fi-rr-angle-down"></i>
+        </button>
+        <button class="fnav-btn fnav-left" title="Previous page" onclick="history.back()">
+            <i class="fi fi-rr-angle-left"></i>
+        </button>
+        <button class="fnav-btn fnav-refresh" title="Refresh" onclick="location.reload()">
+            <i class="fi fi-rr-refresh"></i>
+        </button>
     </div>
+</div>
+
 <!-- ═══════════════════════════════════════════════════════════
      CURVAFIT AI CHATBOT WIDGET
 ═══════════════════════════════════════════════════════════ -->
-<div id="cf-chat-widget">
 
-  <!-- Floating toggle button -->
-  <button id="cf-chat-toggle" aria-label="Open Curva Support Chat">
-    <div class="cf-toggle-inner">
-      <span class="cf-toggle-icon cf-icon-open">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z"
-                stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="8.5"  cy="10" r="1" fill="white"/>
-          <circle cx="12"   cy="10" r="1" fill="white"/>
-          <circle cx="15.5" cy="10" r="1" fill="white"/>
-        </svg>
-      </span>
-      <span class="cf-toggle-icon cf-icon-close" style="display:none">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M18 6L6 18M6 6L18 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
-      </span>
-    </div>
-    <span class="cf-toggle-label">Curva Support</span>
-    <span class="cf-notif-dot"></span>
-  </button>
+<!-- Floating toggle button — HORS du widget -->
+<button id="cf-chat-toggle" aria-label="Open Curva Support Chat">
+  <div class="cf-toggle-inner">
+    <span class="cf-toggle-icon cf-icon-open">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z"
+              stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="8.5"  cy="10" r="1" fill="white"/>
+        <circle cx="12"   cy="10" r="1" fill="white"/>
+        <circle cx="15.5" cy="10" r="1" fill="white"/>
+      </svg>
+    </span>
+    <span class="cf-toggle-icon cf-icon-close" style="display:none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M18 6L6 18M6 6L18 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </span>
+  </div>
+  <span class="cf-toggle-label">Curva Support</span>
+  <span class="cf-notif-dot"></span>
+</button>
+
+<div id="cf-chat-widget">
 
   <!-- Chat window -->
   <div id="cf-chat-window" class="cf-chat-window" aria-hidden="true">
@@ -1310,55 +1312,55 @@
     <div class="cf-quick-chips" id="cf-quick-chips">
       <!-- Row 1: Products -->
       <button class="cf-chip" data-msg="What is your best product to burn belly fat at home?">
-        🔥 Belly fat
+        <i class="fi fi-sr-flame"></i> Belly fat
       </button>
       <button class="cf-chip" data-msg="Show me your sports bra options for plus size women">
-        👙 Sports bra
+        <i class="fi fi-sr-shirt"></i> Sports bra
       </button>
       <button class="cf-chip" data-msg="I need leggings for yoga and home workouts">
-        🧘 Leggings
+        <i class="fi fi-sr-meditation"></i> Leggings
       </button>
       <button class="cf-chip" data-msg="What are your most affordable products under $20?">
-        💰 Under $20
+        <i class="fi fi-sr-badge-dollar"></i> Under $20
       </button>
       <!-- Row 2: Fitness Goals -->
       <button class="cf-chip" data-msg="I am a complete beginner, what do you recommend to start?">
-        🌱 Beginner
+        <i class="fi fi-sr-seedling"></i> Beginner
       </button>
       <button class="cf-chip" data-msg="I want to lose belly fat fast at home without gym">
-        🏠 Home workout
+        <i class="fi fi-sr-house-chimney"></i> Home workout
       </button>
       <button class="cf-chip" data-msg="What can help me recover after my workout and reduce soreness?">
-        💆 Recovery
+        <i class="fi fi-sr-spa"></i> Recovery
       </button>
       <button class="cf-chip" data-msg="I want to track my heart rate and sleep quality">
-        ❤️ Health tracking
+        <i class="fi fi-sr-heart-rate"></i> Health tracking
       </button>
       <!-- Row 3: Programs & Nutrition -->
       <button class="cf-chip" data-msg="Tell me about your fitness programs and their prices">
-        💪 Programs
+        <i class="fi fi-sr-dumbbell"></i> Programs
       </button>
       <button class="cf-chip" data-msg="Give me a nutrition plan to lose weight as a plus size woman">
-        🥗 Nutrition plan
+        <i class="fi fi-sr-salad"></i> Nutrition plan
       </button>
       <button class="cf-chip" data-msg="What foods should I eat to lose weight without starving?">
-        🍗 Foods to eat
+        <i class="fi fi-sr-drumstick"></i> Foods to eat
       </button>
       <button class="cf-chip" data-msg="How many calories should I eat per day to lose weight safely?">
-        🔢 Calories
+        <i class="fi fi-sr-calculator"></i> Calories
       </button>
       <!-- Row 4: Shopping & Support -->
       <button class="cf-chip" data-msg="Do you have any active discount or promo codes today?">
-        🎟️ Promo codes
+        <i class="fi fi-sr-ticket"></i> Promo codes
       </button>
       <button class="cf-chip" data-msg="What colors and sizes are available for your products?">
-        🎨 Colors & sizes
+        <i class="fi fi-sr-palette"></i> Colors & sizes
       </button>
       <button class="cf-chip" data-msg="How long does delivery take and what is the shipping cost?">
-        🚚 Delivery info
+        <i class="fi fi-sr-truck-side"></i> Delivery info
       </button>
       <button class="cf-chip" data-msg="I need to speak with a real person from your team">
-        🤝 Human support
+        <i class="fi fi-sr-headset"></i> Human support
       </button>
     </div>
 

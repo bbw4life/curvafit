@@ -18,6 +18,76 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.5.1/uicons-solid-rounded/css/uicons-solid-rounded.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-straight/css/uicons-regular-straight.css">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+
+    <style>
+        /* ── cf-checkbox responsive fix ── */
+        .cf-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.82rem;
+            color: var(--slate);
+            cursor: pointer;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        .cf-checkbox input[type="checkbox"] {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            margin-top: 2px;
+            accent-color: var(--rose);
+            cursor: pointer;
+        }
+        .cf-checkbox span {
+            flex: 1;
+            min-width: 0;
+        }
+        .cf-checkbox a { color: var(--rose); text-decoration: underline; }
+
+        @media (max-width: 900px) {
+            .contact-form-layout { grid-template-columns: 1fr; }
+            .cf-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .cf-checkbox {
+                gap: 8px;
+                font-size: 0.79rem;
+            }
+            .cf-checkbox input[type="checkbox"] {
+                width: 15px;
+                height: 15px;
+                margin-top: 1px;
+            }
+        }
+
+        /* ── hours-row responsive fix ── */
+        @media (max-width: 768px) {
+            .hours-layout { grid-template-columns: 1fr; }
+
+            .hours-row {
+                padding: 12px 14px;
+                gap: 8px;
+            }
+            .hours-day {
+                font-size: 0.82rem;
+                min-width: 80px;
+            }
+            .hours-time {
+                font-size: 0.75rem;
+                flex: 1;
+                text-align: center;
+            }
+            .hours-badge {
+                font-size: 0.60rem;
+                padding: 3px 7px;
+                white-space: nowrap;
+            }
+            .hours-grid {
+                overflow-x: visible;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -67,7 +137,7 @@
             </div>
         </section>
 
-        <!-- ══ NEW — contact-intro-section ══ -->
+        <!-- ══ contact-intro-section ══ -->
         <section id="contact-intro" class="contact-intro-section">
             <div class="container">
                 <div class="contact-intro-layout">
@@ -88,7 +158,7 @@
                             <div class="ccc-icon"><i class="fi fi-rr-envelope"></i></div>
                             <div>
                                 <h3>General Support</h3>
-                                <a href="mailto:support@curvafit.com">support@curvafit.com</a>
+                                <a data-email-key="general"></a>
                                 <span>Response within 24–48h</span>
                             </div>
                         </div>
@@ -96,7 +166,7 @@
                             <div class="ccc-icon"><i class="fi fi-rr-dumbbell"></i></div>
                             <div>
                                 <h3>Program &amp; Coach Questions</h3>
-                                <a href="mailto:coaches@curvafit.com">coaches@curvafit.com</a>
+                                <a data-email-key="coaches"></a>
                                 <span>Response within 24h</span>
                             </div>
                         </div>
@@ -104,7 +174,7 @@
                             <div class="ccc-icon"><i class="fi fi-rr-credit-card"></i></div>
                             <div>
                                 <h3>Billing &amp; Refunds</h3>
-                                <a href="mailto:billing@curvafit.com">billing@curvafit.com</a>
+                                <a data-email-key="billing"></a>
                                 <span>Response within 48h</span>
                             </div>
                         </div>
@@ -112,7 +182,7 @@
                             <div class="ccc-icon"><i class="fi fi-rr-settings"></i></div>
                             <div>
                                 <h3>Technical Issues</h3>
-                                <a href="mailto:tech@curvafit.com">tech@curvafit.com</a>
+                                <a data-email-key="tech"></a>
                                 <span>Response within 24h</span>
                             </div>
                         </div>
@@ -121,7 +191,7 @@
             </div>
         </section>
 
-        <!-- ══ NEW — right-channel-section ══ -->
+        <!-- ══ right-channel-section ══ -->
         <section id="right-channel" class="right-channel-section">
             <div class="container">
                 <div class="section-header">
@@ -142,7 +212,7 @@
                         </ul>
                         <div class="channel-send">
                             <i class="fi fi-rr-envelope"></i>
-                            <span>coaches@curvafit.com</span>
+                            <span data-email-key="coaches"></span>
                         </div>
                         <div class="channel-include">
                             <strong>Include:</strong> Your program name, how many weeks you have been following it, and your specific question.
@@ -160,7 +230,7 @@
                         </ul>
                         <div class="channel-send">
                             <i class="fi fi-rr-envelope"></i>
-                            <span>billing@curvafit.com</span>
+                            <span data-email-key="billing"></span>
                         </div>
                         <div class="channel-include">
                             <strong>Include:</strong> Your order number, the email used to purchase, and a description of the issue.
@@ -178,7 +248,7 @@
                         </ul>
                         <div class="channel-send">
                             <i class="fi fi-rr-envelope"></i>
-                            <span>tech@curvafit.com</span>
+                            <span data-email-key="tech"></span>
                         </div>
                         <div class="channel-include">
                             <strong>Include:</strong> Your device type, browser or app version, and a screenshot if possible.
@@ -196,7 +266,7 @@
                         </ul>
                         <div class="channel-send">
                             <i class="fi fi-rr-envelope"></i>
-                            <span>press@curvafit.com</span>
+                            <span data-email-key="press"></span>
                         </div>
                         <div class="channel-include">
                             <strong>Include:</strong> Your platform, audience size, and what you are proposing specifically.
@@ -206,7 +276,7 @@
             </div>
         </section>
 
-        <!-- ══ ORIGINAL — contact-options-section ══ -->
+        <!-- ══ contact-options-section ══ -->
         <section id="contact-options" class="contact-options-section">
             <div class="container">
                 <div class="section-header">
@@ -218,12 +288,12 @@
                     <div class="option-card">
                         <i class="fi fi-rr-envelope"></i>
                         <h3>Email Support</h3>
-                        <p>Reach out to <strong>support@curvafit.com</strong> for general inquiries. We respond within 24–48 hours with a real, personalized reply.</p>
+                        <p>Reach out to <strong><span data-email-key="general"></span></strong> for general inquiries. We respond within 24–48 hours with a real, personalized reply.</p>
                     </div>
                     <div class="option-card">
                         <i class="fi fi-rr-dumbbell"></i>
                         <h3>Program Questions</h3>
-                        <p>Questions about which program fits your body, your starting weight, or your medical situation — our coaches answer directly at <strong>coaches@curvafit.com</strong>.</p>
+                        <p>Questions about which program fits your body, your starting weight, or your medical situation — our coaches answer directly at <strong><span data-email-key="coaches"></span></strong>.</p>
                     </div>
                     <div class="option-card">
                         <i class="fi fi-rr-users"></i>
@@ -234,7 +304,7 @@
             </div>
         </section>
 
-        <!-- ══ ORIGINAL — contact-section (formulaire — NE PAS TOUCHER IDs) ══ -->
+        <!-- ══ contact-form-section ══ -->
         <section id="contact-section" class="contact-form-section">
             <div class="container">
                 <div class="contact-form-layout">
@@ -309,7 +379,7 @@
                             </div>
                             <label class="cf-checkbox">
                                 <input type="checkbox" required>
-                                I agree to the <a href="/policies/privacy.html">privacy policy</a> and consent to being contacted by CurvaFit.
+                                <span>I agree to the <a href="/policies/privacy.html">privacy policy</a> and consent to being contacted by CurvaFit.</span>
                             </label>
                             <button type="submit" class="cta button-3d" style="width:100%; text-align:center;">Send Message →</button>
                         </form>
@@ -319,7 +389,7 @@
             </div>
         </section>
 
-        <!-- ══ ORIGINAL — faq-section ══ -->
+        <!-- ══ faq-section ══ -->
         <section id="faq" class="faq-section">
             <div class="container">
                 <div class="section-header">
@@ -330,23 +400,23 @@
                 <div class="accordion">
                     <div class="accordion-item">
                         <button class="accordion-header">I didn't receive access to my program after purchasing — what do I do? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>Check your spam/junk folder first — our welcome email sometimes lands there. If it is not there after 15 minutes, email <strong>tech@curvafit.com</strong> with your purchase email and order number. We resolve access issues within 4 hours during business days.</p></div>
+                        <div class="accordion-content"><p>Check your spam/junk folder first — our welcome email sometimes lands there. If it is not there after 15 minutes, email <strong><span data-email-key="tech"></span></strong> with your purchase email and order number. We resolve access issues within 4 hours during business days.</p></div>
                     </div>
                     <div class="accordion-item">
                         <button class="accordion-header">How do I request a refund? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>CurvaFit offers a 30-day money-back guarantee. Email <strong>billing@curvafit.com</strong> with your order number and the email used to purchase. Include a brief note on why the program did not work for you — this helps us improve. Refunds are processed within 5–7 business days.</p></div>
+                        <div class="accordion-content"><p>CurvaFit offers a 30-day money-back guarantee. Email <strong><span data-email-key="billing"></span></strong> with your order number and the email used to purchase. Include a brief note on why the program did not work for you — this helps us improve. Refunds are processed within 5–7 business days.</p></div>
                     </div>
                     <div class="accordion-item">
                         <button class="accordion-header">Can I switch programs mid-way? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>Yes. If you started Beginner and feel ready for Intermediate after 4–6 weeks, email <strong>coaches@curvafit.com</strong>. A coach will assess your weekly logs and confirm whether the transition is appropriate for your body at this stage. Switching is free for current members.</p></div>
+                        <div class="accordion-content"><p>Yes. If you started Beginner and feel ready for Intermediate after 4–6 weeks, email <strong><span data-email-key="coaches"></span></strong>. A coach will assess your weekly logs and confirm whether the transition is appropriate for your body at this stage. Switching is free for current members.</p></div>
                     </div>
                     <div class="accordion-item">
                         <button class="accordion-header">How do I speak directly to a coach? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>Program members can email <strong>coaches@curvafit.com</strong> with their question and current program. Premium members receive priority response within 4 hours and have access to 1-on-1 coach messaging inside the platform. See the <a href="community.html" style="color:var(--rose);">Community page</a> for access level details.</p></div>
+                        <div class="accordion-content"><p>Program members can email <strong><span data-email-key="coaches"></span></strong> with their question and current program. Premium members receive priority response within 4 hours and have access to 1-on-1 coach messaging inside the platform. See the <a href="community.html" style="color:var(--rose);">Community page</a> for access level details.</p></div>
                     </div>
                     <div class="accordion-item">
                         <button class="accordion-header">Are your programs safe if I have PCOS or hypothyroidism? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>CurvaFit's nutrition and movement approach is compatible with both PCOS and hypothyroidism management — but we always recommend informing your doctor before starting. Email <strong>coaches@curvafit.com</strong> with your specific condition and a coach will advise on any adjustments needed for your situation.</p></div>
+                        <div class="accordion-content"><p>CurvaFit's nutrition and movement approach is compatible with both PCOS and hypothyroidism management — but we always recommend informing your doctor before starting. Email <strong><span data-email-key="coaches"></span></strong> with your specific condition and a coach will advise on any adjustments needed for your situation.</p></div>
                     </div>
                     <div class="accordion-item">
                         <button class="accordion-header">Do I need gym equipment or a gym membership? <i class="fi fi-rr-angle-down"></i></button>
@@ -358,13 +428,13 @@
                     </div>
                     <div class="accordion-item">
                         <button class="accordion-header">I cannot log into my account — how do I recover access? <i class="fi fi-rr-angle-down"></i></button>
-                        <div class="accordion-content"><p>Use the "Forgot Password" option on the login page first. If you do not receive the reset email within 10 minutes (check spam), email <strong>tech@curvafit.com</strong> with the email address you used to register. We will manually verify and restore access within 4 hours.</p></div>
+                        <div class="accordion-content"><p>Use the "Forgot Password" option on the login page first. If you do not receive the reset email within 10 minutes (check spam), email <strong><span data-email-key="tech"></span></strong> with the email address you used to register. We will manually verify and restore access within 4 hours.</p></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ══ NEW — support-hours-section ══ -->
+        <!-- ══ support-hours-section ══ -->
         <section id="support-hours" class="support-hours-section">
             <div class="container">
                 <div class="section-header">
@@ -444,7 +514,7 @@
             </div>
         </section>
 
-        <!-- ══ ORIGINAL — safety-trust-section ══ -->
+        <!-- ══ safety-trust-section ══ -->
         <section id="safety-trust" class="safety-trust-section">
             <div class="container">
                 <div class="section-header">
@@ -476,7 +546,7 @@
             </div>
         </section>
 
-        <!-- ══ ORIGINAL — social-proof-section ══ -->
+        <!-- ══ social-proof-section ══ -->
         <section id="social-proof" class="social-proof-section">
             <div class="container">
                 <div class="section-header">
@@ -504,7 +574,7 @@
             </div>
         </section>
 
-        <!-- ══ NEW — social-channels-section ══ -->
+        <!-- ══ social-channels-section ══ -->
         <section id="social-channels" class="social-channels-section">
             <div class="container">
                 <div class="section-header">
@@ -554,7 +624,7 @@
             </div>
         </section>
 
-        <!-- ══ ORIGINAL — business-info-section ══ -->
+        <!-- ══ business-info-section ══ -->
         <section id="business-info" class="business-info-section">
             <div class="container">
                 <div class="section-header">
@@ -573,7 +643,7 @@
                         <i class="fi fi-rr-envelope"></i>
                         <div>
                             <h4>General Support Email</h4>
-                            <p><a href="mailto:support@curvafit.com">support@curvafit.com</a></p>
+                            <p><a data-email-key="general"></a></p>
                         </div>
                     </div>
                     <div class="bi-item">
@@ -612,7 +682,7 @@
             </div>
         </section>
 
-        <!-- ══ NEW — join-team-section ══ -->
+        <!-- ══ join-team-section ══ -->
         <section id="join-team" class="join-team-section">
             <div class="container">
                 <div class="section-header">
@@ -647,14 +717,14 @@
                     <div class="jt-apply">
                         <h3>How to Apply</h3>
                         <p>Send your CV, a brief description of your experience with plus-size clients, and your philosophy on sustainable weight loss to:</p>
-                        <a href="mailto:careers@curvafit.com" class="jt-email">careers@curvafit.com</a>
+                        <a data-email-key="careers" class="jt-email"></a>
                         <p class="jt-note">We review applications within 2 weeks. If your profile matches our current needs, we will reach out for an interview.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ══ ORIGINAL — community-invitation-section ══ -->
+        <!-- ══ community-invitation-section ══ -->
         <section id="community-invitation" class="community-invitation-section">
             <div class="container">
                 <div class="section-header">
@@ -678,7 +748,7 @@
             </div>
         </section>
 
-        <!-- ══ ORIGINAL — final-cta-section ══ -->
+        <!-- ══ final-cta-section ══ -->
         <section id="final-cta" class="final-cta-section">
             <div class="final-cta-bg"></div>
             <div class="container">
@@ -686,7 +756,7 @@
                     <span class="section-label section-label--light">Still Hesitating?</span>
                     <h2>Your Question Is Not Too Small.<br>Just Write to Us.</h2>
                     <p>No question about your body, your program, or your progress is too basic to ask. Our team is here for all of it — from "what should I eat for breakfast" to "why did my plateau last 3 weeks".</p>
-                    <a href="mailto:support@curvafit.com" class="primary-cta button-3d large">Email Us Now →</a>
+                    <a data-email-key="general" data-email-cta="true" class="primary-cta button-3d large">Email Us Now →</a>
                     <p class="reassurance">⚡ Response within 24 hours · Real person reads every message · No automated replies</p>
                 </div>
             </div>
@@ -776,28 +846,30 @@
             <button onclick="this.parentElement.parentElement.style.display='none'">OK</button>
         </div>
     </div>
-  <!-- ══ FLOATING NAV ══ -->
-<div id="floating-nav">
-  <button class="fnav-toggle" id="fnav-toggle">
-    <i class="fi fi-rr-apps"></i>
-  </button>
-  <div class="fnav-wheel" id="fnav-wheel">
-    <button class="fnav-btn fnav-top"     title="Scroll to top"     onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <i class="fi fi-rr-angle-up"></i>
-    </button>
-    <button class="fnav-btn fnav-right"   title="Next page"         id="fnav-next">
-      <i class="fi fi-rr-angle-right"></i>
-    </button>
-    <button class="fnav-btn fnav-bottom"  title="Scroll to bottom"  onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">
-      <i class="fi fi-rr-angle-down"></i>
-    </button>
-    <button class="fnav-btn fnav-left"    title="Previous page"     onclick="history.back()">
-      <i class="fi fi-rr-angle-left"></i>
-    </button>
-    <button class="fnav-btn fnav-refresh" title="Refresh"           onclick="location.reload()">
-      <i class="fi fi-rr-refresh"></i>
-    </button>
-  </div>
-</div>
+
+    <!-- ══ FLOATING NAV ══ -->
+    <div id="floating-nav">
+        <button class="fnav-toggle" id="fnav-toggle">
+            <i class="fi fi-rr-apps"></i>
+        </button>
+        <div class="fnav-wheel" id="fnav-wheel">
+            <button class="fnav-btn fnav-top"     title="Scroll to top"     onclick="window.scrollTo({top:0,behavior:'smooth'})">
+                <i class="fi fi-rr-angle-up"></i>
+            </button>
+            <button class="fnav-btn fnav-right"   title="Next page"         id="fnav-next">
+                <i class="fi fi-rr-angle-right"></i>
+            </button>
+            <button class="fnav-btn fnav-bottom"  title="Scroll to bottom"  onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">
+                <i class="fi fi-rr-angle-down"></i>
+            </button>
+            <button class="fnav-btn fnav-left"    title="Previous page"     onclick="history.back()">
+                <i class="fi fi-rr-angle-left"></i>
+            </button>
+            <button class="fnav-btn fnav-refresh" title="Refresh"           onclick="location.reload()">
+                <i class="fi fi-rr-refresh"></i>
+            </button>
+        </div>
+    </div>
+
 </body>
 </html>
