@@ -30,170 +30,72 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+ 
 
+// ══ FLOATING NAV ══
+  const fnavToggle = document.getElementById('fnav-toggle');
+  const fnavWheel  = document.getElementById('fnav-wheel');
 
-
-
-
- (function initDraggables() {
-
-  function makeDraggable(widget, trigger, onTap) {
-    let isDragging = false;
-    let startX, startY, origLeft, origBottom, hasMoved;
-
-    function onDown(e) {
-      isDragging = true;
-      hasMoved   = false;
-      startX     = e.clientX;
-      startY     = e.clientY;
-
-      const rect = widget.getBoundingClientRect();
-      origLeft   = rect.left;
-      origBottom = window.innerHeight - rect.bottom;
-
-      widget.style.left   = origLeft   + 'px';
-      widget.style.bottom = origBottom + 'px';
-      widget.style.right  = 'auto';
-      widget.style.top    = 'auto';
-      e.preventDefault();
-    }
-
-    function onMove(e) {
-      if (!isDragging) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
-
-      const bW = trigger.offsetWidth;
-      const bH = trigger.offsetHeight;
-      const nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft   + dx));
-      const nb = Math.max(8, Math.min(window.innerHeight - bH - 8, origBottom - dy));
-
-      widget.style.left   = nl + 'px';
-      widget.style.bottom = nb + 'px';
-    }
-
-    function onUp() {
-      if (!isDragging) return;
-      isDragging = false;
-      if (!hasMoved && onTap) onTap();
-    }
-
-    // ── Desktop ──
-    trigger.addEventListener('mousedown', onDown);
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-
-    // ── Mobile ──
-    trigger.addEventListener('touchstart', e => {
-      const t = e.touches[0];
-      onDown({ clientX: t.clientX, clientY: t.clientY, preventDefault: () => e.preventDefault() });
-    }, { passive: false });
-
-    document.addEventListener('touchmove', e => {
-      if (!isDragging) return;
-      onMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
-      e.preventDefault();
-    }, { passive: false });
-
-    document.addEventListener('touchend', onUp);
-  }
-
-  // ── Floating Nav ──
-  const floatingNav = document.getElementById('floating-nav');
-  const fnavToggle  = document.getElementById('fnav-toggle');
-  if (floatingNav && fnavToggle) {
-    makeDraggable(floatingNav, fnavToggle, () => {
-      const fnavWheel = document.getElementById('fnav-wheel');
-      if (!fnavWheel) return;
+  if (fnavToggle && fnavWheel) {
+    fnavToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
       const isOpen = fnavWheel.classList.toggle('open');
       fnavToggle.classList.toggle('open', isOpen);
     });
-  }
 
-  // ── Paul Indicator ──
-  const paulIndicator = document.querySelector('.paul-indicator-wrapper');
-  const paulTrigger   = document.getElementById('paulTrigger');
-  if (paulIndicator && paulTrigger) {
-    makeDraggable(paulIndicator, paulTrigger, () => {
-      if (localStorage.getItem('isLoggedIn') === 'true') {
-        window.location.href = '/account.html';
-      } else {
-        const popup = document.getElementById('paulPopup');
-        const loginForm  = document.getElementById('loginForm');
-        const signupForm = document.getElementById('signupForm');
-        if (popup && loginForm && signupForm) {
-          popup.classList.add('active');
-          loginForm.style.display  = 'block';
-          signupForm.style.display = 'none';
-        }
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#floating-nav')) {
+        fnavWheel.classList.remove('open');
+        fnavToggle.classList.remove('open');
       }
     });
-  }
 
-})();
+    const PAGE_ORDER = [
+      '/index.html',
+      '/method.html',
+      '/programs.html',
+      '/nutrition.html',
+      '/shop.html',
+      '/success.html',
+      '/community.html',
+      '/about.html',
+      '/contact.html',
+      '/blog/blog.html',
+      '/faq.html',
+      '/account.html'
+    ];
 
+    document.getElementById('fnav-next').addEventListener('click', () => {
+      const currentPath = window.location.pathname;
+      const idx = PAGE_ORDER.findIndex(p => currentPath.endsWith(p) || currentPath === p);
+      const nextPage = idx !== -1 && idx < PAGE_ORDER.length - 1
+        ? PAGE_ORDER[idx + 1]
+        : PAGE_ORDER[0];
+      window.location.href = nextPage;
+    });
 
-// ══ FLOATING NAV ══
-const fnavToggle = document.getElementById('fnav-toggle');
-const fnavWheel  = document.getElementById('fnav-wheel');
+    // ── Scroll par paliers de 10% ──
+    const STEP = 0.10;
 
-if (fnavToggle && fnavWheel) {
+    const btnUp = fnavWheel.querySelector('.fnav-top');
+    const btnDown = fnavWheel.querySelector('.fnav-bottom');
 
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('#floating-nav')) {
-      fnavWheel.classList.remove('open');
-      fnavToggle.classList.remove('open');
+    if (btnUp) {
+      btnUp.addEventListener('click', () => {
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const target = Math.max(0, window.scrollY - maxScroll * STEP);
+        window.scrollTo({ top: target, behavior: 'smooth' });
+      });
     }
-  });
 
-  const PAGE_ORDER = [
-    '/index.html',
-    '/method.html',
-    '/programs.html',
-    '/nutrition.html',
-    '/shop.html',
-    '/success.html',
-    '/community.html',
-    '/about.html',
-    '/contact.html',
-    '/blog/blog.html',
-    '/faq.html',
-    '/account.html'
-  ];
-
-  document.getElementById('fnav-next').addEventListener('click', () => {
-    const currentPath = window.location.pathname;
-    const idx = PAGE_ORDER.findIndex(p => currentPath.endsWith(p) || currentPath === p);
-    const nextPage = idx !== -1 && idx < PAGE_ORDER.length - 1
-      ? PAGE_ORDER[idx + 1]
-      : PAGE_ORDER[0];
-    window.location.href = nextPage;
-  });
-
-  const STEP = 0.10;
-  const btnUp   = fnavWheel.querySelector('.fnav-top');
-  const btnDown = fnavWheel.querySelector('.fnav-bottom');
-
-  if (btnUp) {
-    btnUp.addEventListener('click', () => {
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      window.scrollTo({ top: Math.max(0, window.scrollY - maxScroll * STEP), behavior: 'smooth' });
-    });
+    if (btnDown) {
+      btnDown.addEventListener('click', () => {
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const target = Math.min(maxScroll, window.scrollY + maxScroll * STEP);
+        window.scrollTo({ top: target, behavior: 'smooth' });
+      });
+    }
   }
-
-  if (btnDown) {
-    btnDown.addEventListener('click', () => {
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      window.scrollTo({ top: Math.min(maxScroll, window.scrollY + maxScroll * STEP), behavior: 'smooth' });
-    });
-  }
-}
-
-
-
-
-
 
   // ====================== IMAGES NETTES (ANTI-FLOU GLOBAL) ======================
   (function injectSharpImageStyles() {
@@ -4203,7 +4105,3 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('✅ CurvaFit Chatbot ready — trilingual (EN/FR/ES)');
   })();
 });
-
-
-
-
