@@ -7441,7 +7441,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 }
 
 @media (max-width: 768px) {
-    .paul-indicator-wrapper { bottom: 430px; right: 5px; }
+    .paul-indicator-wrapper { bottom: 520px; right: 5px; }
 }
 
 .paul-indicator {

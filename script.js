@@ -30,10 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
- // ====================== DRAG: FLOATING NAV + PAUL INDICATOR ======================
-(function initDraggables() {
+ (function initDraggables() {
 
-  // ── Utilitaire drag générique ──
   function makeDraggable(widget, opts) {
     opts = opts || {};
     let isDragging = false;
@@ -45,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function applyPos(left, top) {
-      // setAttribute override le !important du CSS
       const current = widget.getAttribute('style') || '';
       const cleaned = current
         .replace(/\bright\s*:[^;]+;?/g, '')
@@ -72,14 +69,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const pos  = getPos();
       origLeft   = pos.left;
       origTop    = pos.top;
-      e.preventDefault();
+      // ⚠️ NE PAS appeler preventDefault() ici — ça tue le click sur mobile
     }
 
     function onMove(e) {
       if (!isDragging) return;
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
-      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+        hasMoved = true;
+        // preventDefault seulement quand on drag vraiment
+        e.preventDefault();
+      }
+      if (!hasMoved) return;
 
       const bW = widget.offsetWidth;
       const bH = widget.offsetHeight;
@@ -88,11 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
       applyPos(nl, nt);
     }
 
-    function onUp() {
+    function onUp(e) {
       if (!isDragging) return;
       isDragging = false;
 
-      // Bloquer le click suivant si drag a eu lieu
       if (hasMoved && opts.blockClickSelector) {
         const el = widget.querySelector(opts.blockClickSelector);
         if (el) {
@@ -104,24 +105,42 @@ document.addEventListener('DOMContentLoaded', () => {
           el.addEventListener('click', block, true);
         }
       }
+
+      // ✅ Sur mobile : simuler le click si c'était un tap (pas un drag)
+      if (!hasMoved && e.type === 'touchend') {
+        const target = e.changedTouches
+          ? document.elementFromPoint(
+              e.changedTouches[0].clientX,
+              e.changedTouches[0].clientY
+            )
+          : null;
+        if (target) {
+          const clickable = opts.blockClickSelector
+            ? target.closest(opts.blockClickSelector) || target
+            : target;
+          clickable.click();
+        }
+      }
     }
 
+    // ── Desktop ──
     widget.addEventListener('mousedown', onDown);
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
 
+    // ── Mobile ──
     widget.addEventListener('touchstart', e => {
       const t = e.touches[0];
-      onDown({ clientX: t.clientX, clientY: t.clientY, target: e.target, preventDefault: () => e.preventDefault() });
-    }, { passive: false });
+      onDown({ clientX: t.clientX, clientY: t.clientY, target: e.target });
+      // ⚠️ passive:true ici — on ne bloque pas le scroll ni le click par défaut
+    }, { passive: true });
 
     document.addEventListener('touchmove', e => {
       if (!isDragging) return;
-      onMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
-      e.preventDefault();
+      onMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY, preventDefault: () => e.preventDefault() });
     }, { passive: false });
 
-    document.addEventListener('touchend', onUp);
+    document.addEventListener('touchend', e => onUp(e));
   }
 
   // ── Floating Nav ──
@@ -129,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (floatingNav) {
     makeDraggable(floatingNav, {
       handleSelector: '#fnav-toggle'
-      // pas de blockClickSelector → le toggle ouvre/ferme normalement si pas de drag
     });
   }
 
@@ -137,7 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const paulIndicator = document.querySelector('.paul-indicator-wrapper');
   if (paulIndicator) {
     makeDraggable(paulIndicator, {
-      // pas de handleSelector → tout le wrapper est draggable
       blockClickSelector: '#paulTrigger'
     });
   }
