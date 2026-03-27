@@ -3685,24 +3685,20 @@ document.addEventListener('DOMContentLoaded', function () {
       en: `Hi! 👋 I'm **Curva**, your personal CurvaFit coach!\n\nI'm here to help you with:\n- 🔥 Weight loss tips & advice\n- 🥗 Nutrition guidance\n- 💪 Product recommendations\n- 📋 Programs & coaching plans\n\nWhat can I help you with today? 😊`
     };
 
-    /* ══════════════════════════════════════
-       DRAGGABLE WIDGET
-    ══════════════════════════════════════ */
     (function initDrag() {
       let isDragging = false;
       let startX, startY, origLeft, origBottom, hasMoved;
+      let ignorNextClick = false;
 
       function applyPosition(left, bottom) {
         toggle.style.left   = left   + 'px';
         toggle.style.bottom = bottom + 'px';
         toggle.style.right  = 'auto';
         toggle.style.top    = 'auto';
-
         widget.style.left   = left   + 'px';
         widget.style.bottom = bottom + 'px';
         widget.style.right  = 'auto';
         widget.style.top    = 'auto';
-
         updateWindowPos(left, bottom);
       }
 
@@ -3711,11 +3707,9 @@ document.addEventListener('DOMContentLoaded', function () {
         hasMoved   = false;
         startX     = clientX;
         startY     = clientY;
-
         const rect = toggle.getBoundingClientRect();
         origLeft   = rect.left;
         origBottom = window.innerHeight - rect.bottom;
-
         widget.classList.add('cf-dragging');
         applyPosition(origLeft, origBottom);
       }
@@ -3726,20 +3720,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const dy = clientY - startY;
         if (Math.abs(dx) > 5 || Math.abs(dy) > 5) hasMoved = true;
         if (!hasMoved) return;
-
         const bW = toggle.offsetWidth;
         const bH = toggle.offsetHeight;
         const nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft   + dx));
         const nb = Math.max(8, Math.min(window.innerHeight - bH - 8, origBottom - dy));
-
         applyPosition(nl, nb);
-      }
-
-      function endDrag() {
-        if (!isDragging) return;
-        isDragging = false;
-        widget.classList.remove('cf-dragging');
-        if (!hasMoved) { isOpen ? closeChat() : openChat(); }
       }
 
       // ── Mouse ──
@@ -3748,35 +3733,48 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
       });
       document.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
-      document.addEventListener('mouseup', endDrag);
+      document.addEventListener('mouseup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        widget.classList.remove('cf-dragging');
+        if (!hasMoved) { isOpen ? closeChat() : openChat(); }
+      });
 
       // ── Touch ──
-      // passive:false sur touchstart → permet preventDefault dans touchmove
       toggle.addEventListener('touchstart', (e) => {
         startDrag(e.touches[0].clientX, e.touches[0].clientY);
-        // PAS de preventDefault ici → laisse le tap/click se déclencher si pas de drag
       }, { passive: false });
 
       toggle.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
-        e.preventDefault(); // bloque le scroll pendant le drag
+        e.preventDefault();
         moveDrag(e.touches[0].clientX, e.touches[0].clientY);
       }, { passive: false });
 
       toggle.addEventListener('touchend', (e) => {
-        const wasTap = !hasMoved;
-        endDrag();
-        
-        if (wasTap) {
-          // Bloquer uniquement le click fantôme qui suit ce tap
-          const blockOnce = (ev) => {
-            ev.stopImmediatePropagation();
-            ev.preventDefault();
-            toggle.removeEventListener('click', blockOnce, true);
-          };
-          toggle.addEventListener('click', blockOnce, true);
+        if (!isDragging) return;
+        isDragging = false;
+        widget.classList.remove('cf-dragging');
+
+        if (!hasMoved) {
+          // C'est un tap → ouvrir/fermer directement ici
+          isOpen ? closeChat() : openChat();
+          // Ignorer le click fantôme qui va arriver 300ms après
+          ignorNextClick = true;
+          setTimeout(() => { ignorNextClick = false; }, 400);
         }
       }, { passive: false });
+
+      // Intercepte le click fantôme uniquement si flag actif
+      toggle.addEventListener('click', (e) => {
+        if (ignorNextClick) {
+          ignorNextClick = false;
+          e.stopImmediatePropagation();
+          return;
+        }
+        // Vrai click souris → ouvrir/fermer
+        isOpen ? closeChat() : openChat();
+      });
 
     })();
 
