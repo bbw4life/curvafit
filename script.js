@@ -134,9 +134,9 @@ document.addEventListener('DOMContentLoaded', () => {
     makeDraggable(floatingNav, { handleSelector: '#fnav-toggle' });
   }
 
-  const paulIndicator = document.querySelector('.paul-indicator-wrapper');
+ const paulIndicator = document.querySelector('.paul-indicator-wrapper');
   if (paulIndicator) {
-    makeDraggable(paulIndicator, { blockClickSelector: '#paulTrigger' });
+    makeDraggable(paulIndicator, {});
   }
 
 })();
