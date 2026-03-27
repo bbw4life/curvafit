@@ -37,118 +37,98 @@ document.addEventListener('DOMContentLoaded', () => {
 
  (function initDraggables() {
 
-  function makeDraggable(widget, opts) {
-    opts = opts || {};
+  function makeDraggable(widget, trigger, onTap) {
     let isDragging = false;
-    let startX, startY, origLeft, origTop, hasMoved;
-
-    function getPos() {
-      const rect = widget.getBoundingClientRect();
-      return { left: rect.left, top: rect.top };
-    }
-
-    function applyPos(left, top) {
-      const current = widget.getAttribute('style') || '';
-      const cleaned = current
-        .replace(/\bright\s*:[^;]+;?/g, '')
-        .replace(/\bbottom\s*:[^;]+;?/g, '')
-        .replace(/\bleft\s*:[^;]+;?/g, '')
-        .replace(/\btop\s*:[^;]+;?/g, '')
-        .replace(/\bposition\s*:[^;]+;?/g, '');
-      widget.setAttribute('style',
-        cleaned +
-        ' position:fixed !important;' +
-        ' right:auto !important;' +
-        ' bottom:auto !important;' +
-        ' left:' + left + 'px !important;' +
-        ' top:'  + top  + 'px !important;'
-      );
-    }
+    let startX, startY, origLeft, origBottom, hasMoved;
 
     function onDown(e) {
-      if (opts.handleSelector && !e.target.closest(opts.handleSelector)) return;
       isDragging = true;
       hasMoved   = false;
       startX     = e.clientX;
       startY     = e.clientY;
-      const pos  = getPos();
-      origLeft   = pos.left;
-      origTop    = pos.top;
+
+      const rect = widget.getBoundingClientRect();
+      origLeft   = rect.left;
+      origBottom = window.innerHeight - rect.bottom;
+
+      widget.style.left   = origLeft   + 'px';
+      widget.style.bottom = origBottom + 'px';
+      widget.style.right  = 'auto';
+      widget.style.top    = 'auto';
+      e.preventDefault();
     }
 
     function onMove(e) {
       if (!isDragging) return;
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
-      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
-        hasMoved = true;
-        e.preventDefault();
-      }
-      if (!hasMoved) return;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
 
-      const bW = widget.offsetWidth;
-      const bH = widget.offsetHeight;
-      const nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft + dx));
-      const nt = Math.max(8, Math.min(window.innerHeight - bH - 8, origTop  + dy));
-      applyPos(nl, nt);
+      const bW = trigger.offsetWidth;
+      const bH = trigger.offsetHeight;
+      const nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft   + dx));
+      const nb = Math.max(8, Math.min(window.innerHeight - bH - 8, origBottom - dy));
+
+      widget.style.left   = nl + 'px';
+      widget.style.bottom = nb + 'px';
     }
 
-    function onUp(e) {
+    function onUp() {
       if (!isDragging) return;
       isDragging = false;
-
-      // Bloquer le click suivant SEULEMENT si drag a vraiment eu lieu
-      if (hasMoved && opts.blockClickSelector) {
-        const el = widget.querySelector(opts.blockClickSelector);
-        if (el) {
-          const block = (ev) => {
-            ev.preventDefault();
-            ev.stopImmediatePropagation();
-            el.removeEventListener('click', block, true);
-          };
-          el.addEventListener('click', block, true);
-        }
-      }
-
-      // ✅ Pas de simulation de click — on laisse le navigateur
-      // générer son propre click natif après touchend
+      if (!hasMoved && onTap) onTap();
     }
 
     // ── Desktop ──
-    widget.addEventListener('mousedown', onDown);
+    trigger.addEventListener('mousedown', onDown);
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
 
     // ── Mobile ──
-    // passive:true sur touchstart → le navigateur garde le click natif intact
-    widget.addEventListener('touchstart', e => {
+    trigger.addEventListener('touchstart', e => {
       const t = e.touches[0];
-      onDown({ clientX: t.clientX, clientY: t.clientY, target: e.target });
-    }, { passive: true });
-
-    // passive:false sur touchmove → on peut preventDefault quand on drag vraiment
-    document.addEventListener('touchmove', e => {
-      if (!isDragging || !hasMoved) return;
-      onMove({ 
-        clientX: e.touches[0].clientX, 
-        clientY: e.touches[0].clientY, 
-        preventDefault: () => e.preventDefault() 
-      });
+      onDown({ clientX: t.clientX, clientY: t.clientY, preventDefault: () => e.preventDefault() });
     }, { passive: false });
 
-    document.addEventListener('touchend', e => onUp(e));
+    document.addEventListener('touchmove', e => {
+      if (!isDragging) return;
+      onMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+      e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchend', onUp);
   }
 
   // ── Floating Nav ──
   const floatingNav = document.getElementById('floating-nav');
-  if (floatingNav) {
-    makeDraggable(floatingNav, { handleSelector: '#fnav-toggle' });
+  const fnavToggle  = document.getElementById('fnav-toggle');
+  if (floatingNav && fnavToggle) {
+    makeDraggable(floatingNav, fnavToggle, () => {
+      const fnavWheel = document.getElementById('fnav-wheel');
+      if (!fnavWheel) return;
+      const isOpen = fnavWheel.classList.toggle('open');
+      fnavToggle.classList.toggle('open', isOpen);
+    });
   }
 
   // ── Paul Indicator ──
   const paulIndicator = document.querySelector('.paul-indicator-wrapper');
-  if (paulIndicator) {
-    makeDraggable(paulIndicator, { blockClickSelector: '#paulTrigger' });
+  const paulTrigger   = document.getElementById('paulTrigger');
+  if (paulIndicator && paulTrigger) {
+    makeDraggable(paulIndicator, paulTrigger, () => {
+      if (localStorage.getItem('isLoggedIn') === 'true') {
+        window.location.href = '/account.html';
+      } else {
+        const popup = document.getElementById('paulPopup');
+        const loginForm  = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        if (popup && loginForm && signupForm) {
+          popup.classList.add('active');
+          loginForm.style.display  = 'block';
+          signupForm.style.display = 'none';
+        }
+      }
+    });
   }
 
 })();
@@ -160,18 +140,7 @@ const fnavWheel  = document.getElementById('fnav-wheel');
 
 if (fnavToggle && fnavWheel) {
 
-  let justToggled = false;
-
-  fnavToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    justToggled = true;
-    const isOpen = fnavWheel.classList.toggle('open');
-    fnavToggle.classList.toggle('open', isOpen);
-    setTimeout(() => { justToggled = false; }, 100);
-  });
-
   document.addEventListener('click', (e) => {
-    if (justToggled) return;
     if (!e.target.closest('#floating-nav')) {
       fnavWheel.classList.remove('open');
       fnavToggle.classList.remove('open');
@@ -209,16 +178,14 @@ if (fnavToggle && fnavWheel) {
   if (btnUp) {
     btnUp.addEventListener('click', () => {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const target = Math.max(0, window.scrollY - maxScroll * STEP);
-      window.scrollTo({ top: target, behavior: 'smooth' });
+      window.scrollTo({ top: Math.max(0, window.scrollY - maxScroll * STEP), behavior: 'smooth' });
     });
   }
 
   if (btnDown) {
     btnDown.addEventListener('click', () => {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const target = Math.min(maxScroll, window.scrollY + maxScroll * STEP);
-      window.scrollTo({ top: target, behavior: 'smooth' });
+      window.scrollTo({ top: Math.min(maxScroll, window.scrollY + maxScroll * STEP), behavior: 'smooth' });
     });
   }
 }
