@@ -30,8 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
- 
-
 
 (function initDraggables() {
 
@@ -142,8 +140,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 })();
-
-
 
 
 
@@ -3696,71 +3692,76 @@ document.addEventListener('DOMContentLoaded', function () {
       let isDragging = false;
       let startX, startY, origLeft, origBottom, hasMoved;
 
-      function onDown(e) {
-        if (
-          e.target.closest('.cf-header-close') ||
-          e.target.closest('.cf-quick-chips')  ||
-          e.target.closest('.cf-input-area')   ||
-          e.target.closest('.cf-messages')
-        ) return;
-        if (!e.target.closest('#cf-chat-toggle')) return;
+      function applyPosition(left, bottom) {
+        toggle.style.left   = left   + 'px';
+        toggle.style.bottom = bottom + 'px';
+        toggle.style.right  = 'auto';
+        toggle.style.top    = 'auto';
 
+        widget.style.left   = left   + 'px';
+        widget.style.bottom = bottom + 'px';
+        widget.style.right  = 'auto';
+        widget.style.top    = 'auto';
+
+        updateWindowPos(left, bottom);
+      }
+
+      function startDrag(clientX, clientY) {
         isDragging = true;
         hasMoved   = false;
-        startX     = e.clientX;
-        startY     = e.clientY;
+        startX     = clientX;
+        startY     = clientY;
 
-        const rect = widget.getBoundingClientRect();
+        const rect = toggle.getBoundingClientRect();
         origLeft   = rect.left;
         origBottom = window.innerHeight - rect.bottom;
 
         widget.classList.add('cf-dragging');
-        widget.style.left   = origLeft   + 'px';
-        widget.style.bottom = origBottom + 'px';
-        widget.style.right  = 'auto';
-        widget.style.top    = 'auto';
-        e.preventDefault();
+        applyPosition(origLeft, origBottom);
       }
 
-      function onMove(e) {
+      function moveDrag(clientX, clientY) {
         if (!isDragging) return;
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
+        const dx = clientX - startX;
+        const dy = clientY - startY;
         if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
+        if (!hasMoved) return;
 
         const bW = toggle.offsetWidth;
         const bH = toggle.offsetHeight;
-        let nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft   + dx));
-        let nb = Math.max(8, Math.min(window.innerHeight - bH - 8, origBottom - dy));
+        const nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft   + dx));
+        const nb = Math.max(8, Math.min(window.innerHeight - bH - 8, origBottom - dy));
 
-        widget.style.left   = nl + 'px';
-        widget.style.bottom = nb + 'px';
-        updateWindowPos(nl, nb);
+        applyPosition(nl, nb);
       }
 
-      function onUp() {
+      function endDrag() {
         if (!isDragging) return;
         isDragging = false;
         widget.classList.remove('cf-dragging');
         if (!hasMoved) { isOpen ? closeChat() : openChat(); }
       }
 
-      toggle.addEventListener('mousedown', onDown);
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
+      toggle.style.touchAction = 'none';
 
-      toggle.addEventListener('touchstart', e => {
-        const t = e.touches[0];
-        onDown({ clientX: t.clientX, clientY: t.clientY, target: e.target, preventDefault: () => e.preventDefault() });
-      }, { passive: false });
-
-      document.addEventListener('touchmove', e => {
-        if (!isDragging) return;
-        onMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+      toggle.addEventListener('mousedown', (e) => {
+        startDrag(e.clientX, e.clientY);
         e.preventDefault();
+      });
+      document.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
+      document.addEventListener('mouseup', endDrag);
+
+      toggle.addEventListener('touchstart', (e) => {
+        startDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
+
+      toggle.addEventListener('touchmove', (e) => {
+        if (!isDragging || !hasMoved) return;
+        e.preventDefault();
+        moveDrag(e.touches[0].clientX, e.touches[0].clientY);
       }, { passive: false });
 
-      document.addEventListener('touchend', onUp);
+      toggle.addEventListener('touchend', endDrag);
     })();
 
     function updateWindowPos(left, bottom) {
