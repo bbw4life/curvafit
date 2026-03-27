@@ -32,6 +32,135 @@ document.addEventListener('DOMContentLoaded', () => {
 
  
 
+
+// ====================== DRAG: FLOATING NAV + PAUL INDICATOR ======================
+(function initDraggables() {
+
+  function makeDraggable(widget, opts) {
+    opts = opts || {};
+    let isDragging = false;
+    let startX, startY, origLeft, origTop, hasMoved;
+
+    function getPos() {
+      const rect = widget.getBoundingClientRect();
+      return { left: rect.left, top: rect.top };
+    }
+
+    function applyPos(left, top) {
+      const current = widget.getAttribute('style') || '';
+      const cleaned = current
+        .replace(/\bright\s*:[^;]+;?/g, '')
+        .replace(/\bbottom\s*:[^;]+;?/g, '')
+        .replace(/\bleft\s*:[^;]+;?/g, '')
+        .replace(/\btop\s*:[^;]+;?/g, '')
+        .replace(/\bposition\s*:[^;]+;?/g, '');
+      widget.setAttribute('style',
+        cleaned +
+        ' position:fixed !important;' +
+        ' right:auto !important;' +
+        ' bottom:auto !important;' +
+        ' left:' + left + 'px !important;' +
+        ' top:'  + top  + 'px !important;'
+      );
+    }
+
+    function startDrag(clientX, clientY, target) {
+      if (opts.handleSelector && !target.closest(opts.handleSelector)) return false;
+      isDragging = true;
+      hasMoved   = false;
+      startX     = clientX;
+      startY     = clientY;
+      const pos  = getPos();
+      origLeft   = pos.left;
+      origTop    = pos.top;
+      return true;
+    }
+
+    function moveDrag(clientX, clientY) {
+      if (!isDragging) return;
+      const dx = clientX - startX;
+      const dy = clientY - startY;
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) hasMoved = true;
+      if (!hasMoved) return;
+
+      const bW = widget.offsetWidth;
+      const bH = widget.offsetHeight;
+      const nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, origLeft + dx));
+      const nt = Math.max(8, Math.min(window.innerHeight - bH - 8, origTop  + dy));
+      applyPos(nl, nt);
+    }
+
+    function endDrag() {
+      if (!isDragging) return;
+      isDragging = false;
+
+      if (hasMoved && opts.blockClickSelector) {
+        const el = widget.querySelector(opts.blockClickSelector);
+        if (el) {
+          const block = (ev) => {
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+            el.removeEventListener('click', block, true);
+          };
+          el.addEventListener('click', block, true);
+        }
+      }
+    }
+
+    // ── Mouse ──
+    widget.addEventListener('mousedown', (e) => {
+      if (startDrag(e.clientX, e.clientY, e.target)) {
+        e.preventDefault();
+      }
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      moveDrag(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('mouseup', endDrag);
+
+    // ── Touch : passive:true sur touchstart pour ne pas bloquer les clics ──
+    widget.addEventListener('touchstart', (e) => {
+      const t = e.touches[0];
+      startDrag(t.clientX, t.clientY, e.target);
+      // PAS de preventDefault ici → les clics passent normalement
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (e) => {
+      if (!isDragging || !hasMoved) return;
+      // preventDefault seulement quand on drag vraiment
+      e.preventDefault();
+      moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: false });
+
+    document.addEventListener('touchend', (e) => {
+      endDrag();
+    });
+  }
+
+  // ── Floating Nav ──
+  const floatingNav = document.getElementById('floating-nav');
+  if (floatingNav) {
+    makeDraggable(floatingNav, {
+      handleSelector: '#fnav-toggle'
+    });
+  }
+
+  // ── Paul Indicator ──
+  const paulIndicator = document.querySelector('.paul-indicator-wrapper');
+  if (paulIndicator) {
+    makeDraggable(paulIndicator, {
+      blockClickSelector: '#paulTrigger'
+    });
+  }
+
+})();
+
+
+
+
+
 // ══ FLOATING NAV ══
   const fnavToggle = document.getElementById('fnav-toggle');
   const fnavWheel  = document.getElementById('fnav-wheel');
