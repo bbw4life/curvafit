@@ -3724,7 +3724,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!isDragging) return;
         const dx = clientX - startX;
         const dy = clientY - startY;
-        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) hasMoved = true;
         if (!hasMoved) return;
 
         const bW = toggle.offsetWidth;
@@ -3742,8 +3742,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!hasMoved) { isOpen ? closeChat() : openChat(); }
       }
 
-      toggle.style.touchAction = 'none';
-
+      // ── Mouse ──
       toggle.addEventListener('mousedown', (e) => {
         startDrag(e.clientX, e.clientY);
         e.preventDefault();
@@ -3751,17 +3750,30 @@ document.addEventListener('DOMContentLoaded', function () {
       document.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
       document.addEventListener('mouseup', endDrag);
 
+      // ── Touch ──
+      // passive:false sur touchstart → permet preventDefault dans touchmove
       toggle.addEventListener('touchstart', (e) => {
         startDrag(e.touches[0].clientX, e.touches[0].clientY);
-      }, { passive: true });
+        // PAS de preventDefault ici → laisse le tap/click se déclencher si pas de drag
+      }, { passive: false });
 
       toggle.addEventListener('touchmove', (e) => {
-        if (!isDragging || !hasMoved) return;
-        e.preventDefault();
+        if (!isDragging) return;
+        e.preventDefault(); // bloque le scroll pendant le drag
         moveDrag(e.touches[0].clientX, e.touches[0].clientY);
       }, { passive: false });
 
-      toggle.addEventListener('touchend', endDrag);
+      toggle.addEventListener('touchend', (e) => {
+        if (!hasMoved) {
+          // C'est un tap → laisser le click natif se propager
+          endDrag();
+          return;
+        }
+        // C'est un drag → bloquer le click fantôme
+        e.preventDefault();
+        endDrag();
+      }, { passive: false });
+
     })();
 
     function updateWindowPos(left, bottom) {
