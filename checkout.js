@@ -455,15 +455,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const realProducts = productsData.filter(p => !p.type && p.active !== false);
 
-    // Compter uniquement les articles payants
-    const paidQty = cart.filter(i => !i.isFreePromo).reduce((sum, i) => sum + i.quantity, 0);
+    // Si promo_free_product_ids défini → utiliser ces IDs dans l'ordre
+    // Sinon → fallback sur les premiers produits du catalogue
+    const freeIds = Array.isArray(cd.promo_free_product_ids) && cd.promo_free_product_ids.length > 0
+        ? cd.promo_free_product_ids
+        : null;
 
-    // Retirer les anciens FREE
+    const paidQty = cart.filter(i => !i.isFreePromo).reduce((sum, i) => sum + i.quantity, 0);
     cart = cart.filter(i => !i.isFreePromo);
 
     if (paidQty >= buyQty) {
         for (let idx = 0; idx < getQty; idx++) {
-            const prod = realProducts[idx];
+            let prod;
+            if (freeIds) {
+                // Utiliser l'ID spécifique à la position idx (si disponible)
+                const targetId = freeIds[idx];
+                if (!targetId) break;
+                prod = realProducts.find(p => p.id === targetId);
+            } else {
+                // Comportement original : prendre dans l'ordre du catalogue
+                prod = realProducts[idx];
+            }
             if (!prod) break;
 
             const firstVariant = (prod.variants && prod.variants.length > 0)

@@ -237,6 +237,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let products = [];
 
+// ====================== APPLY PROMO FREE ITEMS ======================
+function applyPromoFreeItems() {
+    const settings = products.find(p => p.type === 'settings');
+    if (!settings) return;
+    const cd = settings.cart_drawer || {};
+    const buyQty  = parseInt(cd.promo_buy_quantity) || 0;
+    const getQty  = parseInt(cd.promo_get_quantity)  || 0;
+    if (!buyQty || !getQty) return;
+
+    const realProducts = products.filter(p => !p.type && p.active !== false);
+
+    const freeIds = Array.isArray(cd.promo_free_product_ids) && cd.promo_free_product_ids.length > 0
+        ? cd.promo_free_product_ids
+        : null;
+
+    const paidQty = cart.filter(i => !i.isFreePromo).reduce((sum, i) => sum + i.quantity, 0);
+    cart = cart.filter(i => !i.isFreePromo);
+
+    if (paidQty >= buyQty) {
+        for (let idx = 0; idx < getQty; idx++) {
+            let prod;
+            if (freeIds) {
+                const targetId = freeIds[idx];
+                if (!targetId) break;
+                prod = realProducts.find(p => p.id === targetId);
+            } else {
+                prod = realProducts[idx];
+            }
+            if (!prod) break;
+
+            const firstVariant = (prod.variants && prod.variants.length > 0)
+                ? prod.variants[0]
+                : null;
+
+            const color = firstVariant ? (firstVariant.color || null) : null;
+            const size  = firstVariant ? (firstVariant.size  || null) : null;
+
+            const colorObj = (color && prod.colors)
+                ? prod.colors.find(c => c.name === color)
+                : null;
+            const image = colorObj
+                ? (colorObj.image || prod.image)
+                : prod.image;
+
+            cart.push({
+                id:            prod.id,
+                title:         prod.title + ' 🎁 FREE',
+                price:         0,
+                compare_price: firstVariant ? firstVariant.price : prod.price,
+                image:         upgradeShopifyImageUrl(image || prod.image),
+                size:          size  || null,
+                color:         color || null,
+                quantity:      1,
+                isFreePromo:   true,
+                cj_product_id: prod.cj_id,
+                cj_variant_id: firstVariant ? firstVariant.vid : null
+            });
+        }
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
   // ====================== POPUP ======================
   function showErrorPopup(message) {
     const popup = document.getElementById('error-popup');
@@ -990,13 +1053,18 @@ document.addEventListener('DOMContentLoaded', () => {
           if (sizeSelect && prod.sizes && prod.sizes.length > 0) {
             sizeSelect.innerHTML = '';
             const defaultOpt = document.createElement('option');
-            defaultOpt.value = ""; defaultOpt.textContent = "Select Size";
+            defaultOpt.value = '';
+            defaultOpt.textContent = 'Select Size';
+            defaultOpt.selected = true;
+            defaultOpt.disabled = true;
             sizeSelect.appendChild(defaultOpt);
             prod.sizes.forEach(size => {
               const opt = document.createElement('option');
-              opt.value = size; opt.textContent = size;
+              opt.value = size;
+              opt.textContent = size;
               sizeSelect.appendChild(opt);
             });
+            sizeSelect.selectedIndex = 0;
           } else if (sizeSelect) {
             sizeSelect.style.display = 'none';
             const sizeLabel = document.querySelector('label[for="size-select"]');
@@ -1362,75 +1430,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      setTimeout(() => {
-        document.querySelectorAll('.color-swatches .swatch').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('#main-image-slider .main-image').forEach(container => {
-          const img = container.querySelector('img');
-          if (img && container.dataset.originalSrc) img.src = container.dataset.originalSrc;
-        });
-        if (typeof updateProductPrice === 'function') updateProductPrice();
-      }, 300);
+    setTimeout(() => {
+    document.querySelectorAll('.color-swatches .swatch').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('#main-image-slider .main-image').forEach(container => {
+        const img = container.querySelector('img');
+        if (img && container.dataset.originalSrc) img.src = container.dataset.originalSrc;
+    });
+}, 300);
 
       window.getProductUrl = getProductUrl;
-
-
-      function applyPromoFreeItems() {
-    const settings = products.find(p => p.type === 'settings');
-    if (!settings) return;
-    const cd = settings.cart_drawer || {};
-    const buyQty  = parseInt(cd.promo_buy_quantity) || 0;
-    const getQty  = parseInt(cd.promo_get_quantity)  || 0;
-    if (!buyQty || !getQty) return;
-
-    // Produits réels dans l'ordre du fichier (pas les items type settings, actifs uniquement)
-    const realProducts = products.filter(p => !p.type && p.active !== false);
-
-    // Compter uniquement les articles NON free promo
-    const paidQty = cart.filter(i => !i.isFreePromo).reduce((sum, i) => sum + i.quantity, 0);
-
-    // Retirer les anciens FREE promos
-    cart = cart.filter(i => !i.isFreePromo);
-
-    if (paidQty >= buyQty) {
-        for (let idx = 0; idx < getQty; idx++) {
-            const prod = realProducts[idx];
-            if (!prod) break;
-
-            // Toujours la première variant du produit
-            const firstVariant = (prod.variants && prod.variants.length > 0)
-                ? prod.variants[0]
-                : null;
-
-            const color = firstVariant ? (firstVariant.color || null) : null;
-            const size  = firstVariant ? (firstVariant.size  || null) : null;
-
-            // Image via la couleur de la première variant
-            const colorObj = (color && prod.colors)
-                ? prod.colors.find(c => c.name === color)
-                : null;
-            const image = colorObj
-                ? (colorObj.image || prod.image)
-                : prod.image;
-
-            cart.push({
-                id:            prod.id,
-                title:         prod.title + ' 🎁 FREE',
-                price:         0,
-                compare_price: firstVariant ? firstVariant.price : prod.price,
-                image:         upgradeShopifyImageUrl(image || prod.image),
-                size:          size  || null,
-                color:         color || null,
-                quantity:      1,
-                isFreePromo:   true,
-                cj_product_id: prod.cj_id,
-                cj_variant_id: firstVariant ? firstVariant.vid : null
-            });
-        }
-    }
-
-    // Sauvegarder dans localStorage pour que checkout.js le lise
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
 
 
     //  STICKY ATC — initialise après le fetch products.data.json
@@ -1518,9 +1526,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // ── Tailles ──
         if (hasSizes) {
             const defaultOpt = document.createElement('option');
-            defaultOpt.value = '';
-            defaultOpt.textContent = 'Select size';
-            satcSizeEl.appendChild(defaultOpt);
+            defaultOpt.value = ""; 
+            defaultOpt.textContent = "Select Size";
+            defaultOpt.selected = true;
+            sizeSelect.appendChild(defaultOpt);
             product.sizes.forEach(sz => {
                 const opt = document.createElement('option');
                 opt.value = sz;
@@ -2052,7 +2061,15 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (btn.classList.contains('qty-minus') && item.quantity > 1) item.quantity--;
       else if (btn.classList.contains('qty-minus') && item.quantity === 1) { removeFromCart(e); return; }
       itemElement.querySelector('.quantity span').textContent = item.quantity;
-      saveCart(); updateCartQuantityInSheet(); updateSubtotal(); updateBadges(); renderCart();
+      saveCart();
+      updateCartQuantityInSheet();
+      if (products && products.length > 0 && typeof applyPromoFreeItems === 'function') {
+          applyPromoFreeItems();
+          saveCart();
+      }
+      updateSubtotal();
+      updateBadges();
+      renderCart();
     }
   }
 
@@ -2118,8 +2135,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let cartItem = cart.find(i => i.id === id && i.size === selectedSize && i.color === selectedColor);
     if (cartItem) cartItem.quantity += quantity;
     else cart.push({ id: product.id, title: product.title, price: varPrice, compare_price: varCompare, image: itemImage, size: selectedSize, color: selectedColor, quantity, cj_product_id: product.cj_id, cj_variant_id: cjVariantId });
-    saveCart(); updateCartQuantityInSheet(); updateBadges();
+   saveCart();
+    updateCartQuantityInSheet();
+    if (products && products.length > 0 && typeof applyPromoFreeItems === 'function') {
+        applyPromoFreeItems();
+    }
+    saveCart();
+    updateBadges();
     if (cartIcon) { cartIcon.classList.add('added'); setTimeout(() => cartIcon.classList.remove('added'), 500); }
+    renderCart();
     openCartDrawer();
   }
 
@@ -2185,11 +2209,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openCartDrawer() {
+    if (products && products.length > 0 && typeof applyPromoFreeItems === 'function') {
+        applyPromoFreeItems();
+        saveCart();
+        updateBadges();
+    }
     renderCart();
     cartDrawer.classList.add('active');
     overlay.classList.add('active');
     setTimeout(() => initCartDrawerExtras(), 100);
-  }
+}
 
   // ================================================================
   //   CART DRAWER EXTRAS
