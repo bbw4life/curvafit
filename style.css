@@ -7442,13 +7442,13 @@ tbody tr:hover { background: var(--rose-ultra); }
 .paul-indicator-wrapper {
     position: fixed;
     z-index: 999;
-    bottom: 520px;
+    bottom: 20px;
     right: 5px;
     transition: all 0.3s;
 }
 
 @media (max-width: 768px) {
-    .paul-indicator-wrapper { bottom: 550px; right: 5px; }
+    .paul-indicator-wrapper { bottom: 15px; right: 5px; }
 }
 
 .paul-indicator {
@@ -10427,7 +10427,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 /* ══ FLOATING NAV ══ */
 #floating-nav {
   position: fixed;
-  bottom: 40px !important;
+  bottom: 400px !important;
   right: 40px !important;
   z-index: 999;
 }
@@ -10594,7 +10594,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 
 @media (max-width: 768px) {
   #floating-nav {
-    bottom: 30px !important;
+    bottom: 380px !important;
     right: 20px !important;
   }
 
