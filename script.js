@@ -1064,7 +1064,7 @@ function applyPromoFreeItems() {
               opt.textContent = size;
               sizeSelect.appendChild(opt);
             });
-            sizeSelect.selectedIndex = 0;
+            sizeSelect.value = '';
           } else if (sizeSelect) {
             sizeSelect.style.display = 'none';
             const sizeLabel = document.querySelector('label[for="size-select"]');
@@ -2048,6 +2048,7 @@ function applyPromoFreeItems() {
       updateCartProgressBar(cd);
       updateCartPromoMessage(cd);
     }
+    updateBadges(); 
   }
 
   function handleQuantityChange(e) {
