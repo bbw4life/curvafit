@@ -242,6 +242,14 @@ function applyPromoFreeItems() {
     const settings = products.find(p => p.type === 'settings');
     if (!settings) return;
     const cd = settings.cart_drawer || {};
+
+    const showPromo = (cd.show_promo_message || 'Yes').toLowerCase() === 'yes';
+    if (!showPromo) {
+        cart = cart.filter(i => !i.isFreePromo);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        return;
+    }
+
     const buyQty  = parseInt(cd.promo_buy_quantity) || 0;
     const getQty  = parseInt(cd.promo_get_quantity)  || 0;
     if (!buyQty || !getQty) return;
@@ -283,7 +291,7 @@ function applyPromoFreeItems() {
 
             cart.push({
                 id:            prod.id,
-                title:         prod.title + ' 🎁 FREE',
+                title:         prod.title,
                 price:         0,
                 compare_price: firstVariant ? firstVariant.price : prod.price,
                 image:         upgradeShopifyImageUrl(image || prod.image),
@@ -1748,33 +1756,51 @@ function applyPromoFreeItems() {
   });
 
   // ====================== TESTIMONIAL CAROUSEL ======================
-  const carousel = document.querySelector('.testimonial-carousel');
-  if (carousel) {
+const carousel = document.querySelector('.testimonial-carousel');
+if (carousel) {
     let carouselSlides = Array.from(carousel.children);
     const gap = parseInt(getComputedStyle(carousel).gap) || 0;
-    let slideWidth = carouselSlides[0].offsetWidth + gap, carouselIndex = 0;
-    carousel.appendChild(carouselSlides[0].cloneNode(true));
-    carousel.prepend(carouselSlides[carouselSlides.length - 1].cloneNode(true));
+    let slideWidth = carouselSlides[0].offsetWidth + gap;
+    let carouselIndex = 0;
+
+    // Clone 3 premiers à la fin
+    [0, 1, 2].forEach(i => {
+        carousel.appendChild(carouselSlides[i].cloneNode(true));
+    });
+
+    // Clone 3 derniers au début (ordre inversé)
+    [carouselSlides.length - 1, carouselSlides.length - 2, carouselSlides.length - 3].forEach(i => {
+        carousel.prepend(carouselSlides[i].cloneNode(true));
+    });
+
+    // Mettre à jour la liste après les clones
     carouselSlides = Array.from(carousel.children);
-    carousel.style.transform = `translateX(-${slideWidth}px)`;
+
+    // Départ à la position du 4ème slide (après les 3 clones du début)
+    carousel.style.transform = `translateX(-${slideWidth * 3}px)`;
+
     const moveCarousel = () => {
-      carouselIndex++;
-      carousel.style.transition = 'transform 0.5s ease';
-      carousel.style.transform = `translateX(-${(carouselIndex + 1) * slideWidth}px)`;
+        carouselIndex++;
+        carousel.style.transition = 'transform 0.5s ease';
+        carousel.style.transform = `translateX(-${(carouselIndex + 3) * slideWidth}px)`;
     };
+
     carousel.addEventListener('transitionend', () => {
-      if (carouselIndex >= carouselSlides.length - 2) {
-        carouselIndex = 0; carousel.style.transition = 'none';
-        carousel.style.transform = `translateX(-${slideWidth}px)`;
-      }
+        if (carouselIndex >= carouselSlides.length - 6) {
+            carouselIndex = 0;
+            carousel.style.transition = 'none';
+            carousel.style.transform = `translateX(-${slideWidth * 3}px)`;
+        }
     });
+
     window.addEventListener('resize', () => {
-      slideWidth = carousel.querySelector('.testimonial').offsetWidth + gap;
-      carousel.style.transition = 'none';
-      carousel.style.transform = `translateX(-${(carouselIndex + 1) * slideWidth}px)`;
+        slideWidth = carousel.querySelector('.testimonial').offsetWidth + gap;
+        carousel.style.transition = 'none';
+        carousel.style.transform = `translateX(-${(carouselIndex + 3) * slideWidth}px)`;
     });
+
     setInterval(moveCarousel, 3000);
-  }
+}
 
   // ====================== AUDIO PLAYER ======================
   const audioPlayer = document.getElementById('audio-player');
@@ -2009,11 +2035,14 @@ function applyPromoFreeItems() {
         cartItem.dataset.id = item.id;
         if (item.size  != null) cartItem.dataset.size  = item.size;
         if (item.color != null) cartItem.dataset.color = item.color;
+       const freeTag = item.isFreePromo
+        ? `<span class="free-badge">🎁 Free 0.00$</span>`
+        : '';
         cartItem.innerHTML = `
           <img src="${item.image}" alt="${item.title}">
           <div class="item-meta">
-            <h4>${item.title}</h4>
-            <p>$${parseFloat(item.price).toFixed(2)}</p>
+            <h4>${item.title.replace('', '')} ${freeTag}</h4>
+            <p>${item.isFreePromo ? '' : '$' + parseFloat(item.price).toFixed(2)}</p>
             ${item.size  ? `<p class="item-variant">Size: ${item.size}</p>`   : ''}
             ${item.color ? `<p class="item-variant">Color: ${item.color}</p>` : ''}
             <div class="quantity-row">
@@ -2301,6 +2330,13 @@ function applyPromoFreeItems() {
   function updateCartProgressBar(cd) {
     const body = cartDrawer.querySelector('.cart-drawer__body');
     if (!body) return;
+
+    const showBar = (cd.show_free_shipping_bar || 'Yes').toLowerCase() === 'yes';
+    const existingContainer = body.querySelector('.cart-drawer__progress-container');
+    if (!showBar) {
+        if (existingContainer) existingContainer.style.display = 'none';
+        return;
+    }
     const threshold    = parseFloat(cd.free_shipping_threshold) || 75;
     const cartSubtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
     const remaining    = Math.max(0, threshold - cartSubtotal);
@@ -2344,6 +2380,13 @@ function applyPromoFreeItems() {
   function updateCartPromoMessage(cd) {
     const body = cartDrawer.querySelector('.cart-drawer__body');
     if (!body) return;
+
+    const showPromo = (cd.show_promo_message || 'Yes').toLowerCase() === 'yes';
+    const existingPromo = body.querySelector('.cart-promo-message');
+    if (!showPromo) {
+        if (existingPromo) existingPromo.style.display = 'none';
+        return;
+    }
     const buyQty = parseInt(cd.promo_buy_quantity) || 3;
     const getQty = parseInt(cd.promo_get_quantity) || 1;
     const count  = cart.reduce((s, i) => s + i.quantity, 0);

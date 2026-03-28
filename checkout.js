@@ -109,14 +109,20 @@ document.addEventListener('DOMContentLoaded', () => {
             img.alt = item.title || 'Product';
             img.loading = "lazy";
             const info = document.createElement('div');
+            
+            const freeBadge = item.isFreePromo
+                ? `<span class="free-badge">🎁 Free 0.00$</span>`
+                : '';
+
             info.innerHTML = `
-                <h3>${item.title || ''}</h3>
-                <p>Price: $${price.toFixed(2)} ${item.fromBundle ? '(Bundle Discount Applied)' : ''}</p>
+                <h3>${(item.title || '').replace('', '')} ${freeBadge}</h3>
+                <p>Price: ${item.isFreePromo ? '' : '$' + price.toFixed(2) + (item.fromBundle ? ' (Bundle Discount Applied)' : '')}</p>
                 <p>Quantity: ${quantity}</p>
                 ${item.size  ? `<p>Size: ${item.size}</p>`   : ''}
                 ${item.color ? `<p>Color: ${item.color}</p>` : ''}
-                <p>Total: $${(price * quantity).toFixed(2)}</p>
+                <p>Total: ${item.isFreePromo ? '' : '$' + (price * quantity).toFixed(2)}</p>
             `;
+
             itemDiv.appendChild(img);
             itemDiv.appendChild(info);
             cartItemsContainer.appendChild(itemDiv);
@@ -449,6 +455,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const settings = productsData.find(i => i.type === 'settings');
     if (!settings) return;
     const cd = settings.cart_drawer || {};
+
+    const showPromo = (cd.show_promo_message || 'Yes').toLowerCase() === 'yes';
+    if (!showPromo) {
+        cart = cart.filter(i => !i.isFreePromo);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        return;
+    }
     const buyQty = parseInt(cd.promo_buy_quantity) || 0;
     const getQty = parseInt(cd.promo_get_quantity)  || 0;
     if (!buyQty || !getQty) return;
@@ -494,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             cart.push({
                 id:            prod.id,
-                title:         prod.title + ' 🎁 FREE',
+                title:         prod.title,
                 price:         0,
                 compare_price: firstVariant ? firstVariant.price : prod.price,
                 image:         image || prod.image,
