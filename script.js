@@ -3864,7 +3864,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // ── Mouse ──
       toggle.addEventListener('mousedown', (e) => {
         startDrag(e.clientX, e.clientY);
-        e.preventDefault(); // empêche le click souris de se déclencher après mouseup
+        e.preventDefault();
       });
       document.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
       document.addEventListener('mouseup', () => {
@@ -3887,7 +3887,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       toggle.addEventListener('touchend', (e) => {
         if (!isDragging) return;
-        e.preventDefault(); // bloque le click fantôme SANS bloquer l'action
+        e.preventDefault();
         isDragging = false;
         widget.classList.remove('cf-dragging');
         if (!hasMoved) { isOpen ? closeChat() : openChat(); }
@@ -3944,12 +3944,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* ── Welcome ── */
     function addWelcomeMessage() {
-      addMessage(welcomeMessages['en'], 'ai', []);
+      addMessage(welcomeMessages['en'], 'ai', [], null, []);
     }
 
     /* ══════════════════════════════════════
        IMPROVEMENT #2: Format Markdown + Promo Code Highlighting
-       [[CODE]] → rendered as a styled promo badge with copy button
     ══════════════════════════════════════ */
     function formatMarkdown(text) {
       const internalIds = [
@@ -4022,7 +4021,6 @@ document.addEventListener('DOMContentLoaded', function () {
               this.innerHTML = originalHTML;
             }, 2000);
           }).catch(() => {
-            /* fallback: select text */
             const range = document.createRange();
             range.selectNode(this);
             window.getSelection().removeAllRanges();
@@ -4059,14 +4057,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       });
 
-      /* Re-attach promo code copy events after restoring from sessionStorage */
       attachPromoCodeCopyEvents(messages);
     }
 
     /* ══════════════════════════════════════
        ADD MESSAGE
+       pageButtons: array of { url, label, icon } — NEW param
     ══════════════════════════════════════ */
-    function addMessage(text, role, products, contactInfo) {
+    function addMessage(text, role, products, contactInfo, pageButtons) {
       const msgEl  = document.createElement('div');
       msgEl.className = `cf-message cf-message--${role}`;
 
@@ -4075,9 +4073,9 @@ document.addEventListener('DOMContentLoaded', function () {
       bubble.innerHTML = formatMarkdown(text);
       msgEl.appendChild(bubble);
 
-      /* ── IMPROVEMENT #2: Attach copy events to promo codes in this message ── */
       attachPromoCodeCopyEvents(bubble);
 
+      /* ── Product cards ── */
       if (role === 'ai' && Array.isArray(products) && products.length > 0) {
         const cardsWrap = document.createElement('div');
         cardsWrap.className = 'cf-product-cards';
@@ -4187,7 +4185,7 @@ document.addEventListener('DOMContentLoaded', function () {
         msgEl.appendChild(cardsWrap);
       }
 
-      /* Contact buttons — shown when API signals showContact=true */
+      /* ── Contact buttons ── */
       if (role === 'ai' && contactInfo) {
         const btnsWrap = document.createElement('div');
         btnsWrap.className = 'cf-contact-btns';
@@ -4225,6 +4223,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       }
 
+      /* ── PAGE NAVIGATION BUTTONS — NEW ── */
+      if (role === 'ai' && Array.isArray(pageButtons) && pageButtons.length > 0) {
+        const pageWrap = document.createElement('div');
+        pageWrap.className = 'cf-page-btns';
+
+        pageButtons.forEach(pb => {
+          const btn = document.createElement('a');
+          btn.href      = pb.url;
+          btn.className = 'cf-page-btn';
+          btn.innerHTML = `<span class="cf-page-btn-icon">${pb.icon}</span><span class="cf-page-btn-label">${pb.label}</span><svg class="cf-page-btn-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M13 6L19 12L13 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+          pageWrap.appendChild(btn);
+        });
+
+        msgEl.appendChild(pageWrap);
+      }
+
       const time = document.createElement('span');
       time.className  = 'cf-msg-time';
       time.textContent = getTime();
@@ -4253,7 +4267,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const chipsEl = document.getElementById('cf-quick-chips');
       if (chipsEl) chipsEl.style.display = 'none';
 
-      addMessage(text, 'user', []);
+      addMessage(text, 'user', [], null, []);
       conversationHistory.push({ role: 'user', content: text });
       try { sessionStorage.setItem('cf_history', JSON.stringify(conversationHistory.slice(-20))); } catch(e) {}
 
@@ -4291,8 +4305,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const products    = data.products    || [];
         const showContact = data.showContact || false;
         const contactInfo = data.contactInfo || null;
+        const pageButtons = data.pageButtons || []; /* ← NEW */
 
-        addMessage(aiReply, 'ai', products, showContact ? contactInfo : null);
+        addMessage(aiReply, 'ai', products, showContact ? contactInfo : null, pageButtons);
         conversationHistory.push({ role: 'assistant', content: aiReply });
         try { sessionStorage.setItem('cf_history', JSON.stringify(conversationHistory.slice(-20))); } catch(e) {}
 
@@ -4303,7 +4318,7 @@ document.addEventListener('DOMContentLoaded', function () {
       } catch (err) {
         hideTyping();
         console.error('Chat error:', err);
-        addMessage(errorMessages[userLang] || errorMessages['en'], 'ai', []);
+        addMessage(errorMessages[userLang] || errorMessages['en'], 'ai', [], null, []);
       } finally {
         isLoading        = false;
         sendBtn.disabled = input.value.trim().length === 0;
@@ -4346,8 +4361,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.addEventListener('click', e => {
-  if (isOpen && !widget.contains(e.target) && !toggle.contains(e.target)) closeChat();
-});
+      if (isOpen && !widget.contains(e.target) && !toggle.contains(e.target)) closeChat();
+    });
 
     console.log('✅ CurvaFit Chatbot ready — trilingual (EN/FR/ES)');
   })();

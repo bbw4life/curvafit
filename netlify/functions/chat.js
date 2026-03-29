@@ -366,49 +366,49 @@ function buildSearchDataContext(searchData) {
   let text = '';
 
   if (pages.length) {
-    text += '\nSITE PAGES (use Markdown [Title](url) format to link these):\n';
+    text += '\nSITE PAGES:\n';
     pages.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
   }
 
   if (programs.length) {
-    text += '\nPROGRAMS (use Markdown [Title](url) format to link these):\n';
+    text += '\nPROGRAMS:\n';
     programs.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
   }
 
   if (coaches.length) {
-    text += '\nCOACHES (use Markdown [Title](url) format to link these):\n';
+    text += '\nCOACHES:\n';
     coaches.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
   }
 
   if (features.length) {
-    text += '\nFEATURES (use Markdown [Title](url) format to link these):\n';
+    text += '\nFEATURES:\n';
     features.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
   }
 
   if (products.length) {
-    text += '\nPRODUCT PAGES (use Markdown [Title](url) format to link these):\n';
+    text += '\nPRODUCT PAGES (from search data):\n';
     products.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
   }
 
   if (policies.length) {
-    text += '\nPOLICIES (use Markdown [Title](url) format to link these):\n';
+    text += '\nPOLICIES:\n';
     policies.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
   }
 
   if (blogs.length) {
-    text += '\nBLOG ARTICLES (use Markdown [Title](url) format to link these):\n';
+    text += '\nBLOG ARTICLES (from search data):\n';
     blogs.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
@@ -458,6 +458,28 @@ function buildBlogContext(blogData) {
 
   return text;
 }
+
+/* ══════════════════════════════════════════════════════
+   PAGE NAVIGATION MAP
+   Maps page labels to their URLs and icons
+══════════════════════════════════════════════════════ */
+const PAGE_MAP = {
+  '/index.html':        { label: 'Home',           icon: '🏠' },
+  '/shop.html':         { label: 'Shop',            icon: '🛍️' },
+  '/programs.html':     { label: 'Programs',        icon: '💪' },
+  '/nutrition.html':    { label: 'Nutrition',       icon: '🥗' },
+  '/blog/blog.html':    { label: 'Blog',            icon: '📝' },
+  '/about.html':        { label: 'About Us',        icon: 'ℹ️' },
+  '/contact.html':      { label: 'Contact',         icon: '📩' },
+  '/account.html':      { label: 'My Account',      icon: '👤' },
+  '/checkout.html':     { label: 'Checkout',        icon: '🛒' },
+  '/success.html':      { label: 'Success Stories', icon: '🏆' },
+  '/community.html':    { label: 'Community',       icon: '👥' },
+  '/method.html':       { label: 'Our Method',      icon: '🔬' },
+  '/faq.html':          { label: 'FAQ',             icon: '❓' },
+  '/careers.html':      { label: 'Careers',         icon: '💼' },
+};
+// Product pages are handled dynamically (product1..product16)
 
 /* ══════════════════════════════════════════════════════
    BUILD SYSTEM PROMPT
@@ -560,32 +582,53 @@ Example: The code **[[CURVA15]]** gives you **20% off** on 4+ items.
 The frontend will render [[CODE]] with a special highlighted style automatically.
 NEVER display a promo code without the [[...]] markers.
 
-🚫 URL RULES — TWO CATEGORIES:
+🔗 PAGE NAVIGATION — VERY IMPORTANT:
+When a user asks to go to or visit a specific page of the site, add a navigation marker at the END of your reply.
+Use this exact format: 🔗[PAGE:/url]
 
-FORBIDDEN — never display these as raw text:
-   ❌ External URLs: "https://wa.me/...", "https://t.me/..."
-   ❌ Phone numbers
-   ❌ Raw URLs written alone in text: "/contact.html", "/shop.html" etc.
+Page URL reference:
+  - Home page           → 🔗[PAGE:/index.html]
+  - Shop / products     → 🔗[PAGE:/shop.html]
+  - Programs            → 🔗[PAGE:/programs.html]
+  - Nutrition           → 🔗[PAGE:/nutrition.html]
+  - Blog                → 🔗[PAGE:/blog/blog.html]
+  - About us            → 🔗[PAGE:/about.html]
+  - Contact             → 🔗[PAGE:/contact.html]
+  - My Account          → 🔗[PAGE:/account.html]
+  - Checkout            → 🔗[PAGE:/checkout.html]
+  - Success stories     → 🔗[PAGE:/success.html]
+  - Community           → 🔗[PAGE:/community.html]
+  - Our Method          → 🔗[PAGE:/method.html]
+  - FAQ                 → 🔗[PAGE:/faq.html]
+  - Careers             → 🔗[PAGE:/careers.html]
+  - Specific product N  → 🔗[PAGE:/products/productN.html]
 
-ALLOWED — internal site pages MUST use Markdown link format:
-   ✅ [FAQ](/faq.html)
-   ✅ [Programs](/programs.html)
-   ✅ [Shop](/shop.html)
-   ✅ [Contact](/contact.html)
-   ✅ [Blog](/blog/blog.html)
-   ✅ [About](/about.html)
-   ✅ [Success Stories](/success.html)
-   ✅ [Community](/community.html)
-   ✅ [Nutrition](/nutrition.html)
-   ✅ [Method](/method.html)
-   ✅ [Privacy Policy](/policies/privacy.html)
-   ✅ [Refund Policy](/policies/refund.html)
-   ✅ [My Account](/account.html)
-   ✅ [Checkout](/checkout.html)
-   The frontend renders [Label](url) as a styled clickable button automatically.
-   ALWAYS use [Label](url) for any internal page — NEVER say "see the button below" for pages.
+RULES for page navigation markers:
+- Add the marker ONLY when the user explicitly asks to go to, visit, or navigate to a page.
+- You can add multiple markers if the user asks for multiple pages: 🔗[PAGE:/shop.html] 🔗[PAGE:/programs.html]
+- NEVER write the raw URL in your text. Only use the marker at the end.
+- Say "use the button below" or "click the button below" to refer to the navigation button.
+- The frontend will render this marker as a clickable button automatically.
 
-For WhatsApp / Telegram / email contact ONLY → say "use the buttons below" and end with 👇
+EXAMPLES:
+  User: "I want to go to the shop"    → end reply with 🔗[PAGE:/shop.html]
+  User: "show me your programs"       → end reply with 🔗[PAGE:/programs.html]
+  User: "take me to the home page"    → end reply with 🔗[PAGE:/index.html]
+  User: "where is your blog?"         → end reply with 🔗[PAGE:/blog/blog.html]
+  User: "I want to see my account"    → end reply with 🔗[PAGE:/account.html]
+
+🚫 ABSOLUTE RULE — NEVER display any raw URL or link in your text.
+   Examples of what is FORBIDDEN:
+   ❌ "https://wa.me/1234567890"
+   ❌ "https://t.me/curvafit"
+   ❌ "/contact.html"
+   ❌ "visit our page at https://..."
+   ❌ "/account.html"
+   ❌ "/checkout.html"
+   
+   ALWAYS say "see the button below" or "use the buttons below".
+   The frontend will automatically show the correct buttons.
+   NEVER write a URL. NEVER write a phone number. Just reference "the button below".
 
 ═══════════════════════════════════════
 🚦 CRITICAL BEHAVIOR RULES — NON-NEGOTIABLE
@@ -712,7 +755,8 @@ The account page allows users to manage their profile. Key features:
 - **Newsletter**: Subscribe at the bottom of the page
 
 When a user asks about their account, orders, profile, address, payment, password, badge, points,
-or wishlist → tell them warmly where to find it and link them using [My Account](/account.html).
+or wishlist → tell them warmly where to find it and that everything is accessible in their account area.
+NEVER display the URL. Say "in your account area" or "use the button below" as appropriate.
 
 ═══════════════════════════════════════
 🛍️ CHECKOUT PAGE — /checkout.html
@@ -733,7 +777,7 @@ The checkout page is where users complete their purchase. Key features:
 
 When a user asks about checkout, payment, shipping methods, delivery times, promo codes at checkout,
 taxes, or order total → explain the relevant part clearly and warmly.
-Link them using [Checkout](/checkout.html) when relevant.
+NEVER display any URL. Direct them using "at checkout" or "on the checkout page".
 
 ═══════════════════════════════════════
 🚚 SHIPPING METHODS DETAILS
@@ -762,22 +806,22 @@ ${catalogText}
 🌐 SITE NAVIGATION & CONTENT (live from search.data.json)
 ═══════════════════════════════════════
 Use this to answer questions about pages, programs, coaches, features, blog articles, policies.
-When a user asks about a page or topic, link it using Markdown [Title](url) format.
-The frontend renders these as clickable buttons — ALWAYS use [Title](url), never write the raw URL alone.
+When a user asks about a page or topic, you can tell them where to find it on the site.
+NEVER write the raw URL — say "see the [page name] section of the site" or reference the topic.
 ${searchContext || '(search.data.json not available)'}
 
 ═══════════════════════════════════════
 📝 BLOG ARTICLES (live from blog-articles.json)
 ═══════════════════════════════════════
 Use this to answer questions about blog content. If a user asks about articles, topics covered,
-or specific blog posts — use this data and link using [Article Title](url) Markdown format.
+or specific blog posts — use this data. NEVER write raw URLs, just mention the article title.
 ${blogContext || '(blog-articles.json not available)'}
 
 ═══════════════════════════════════════
 🚫 NEVER
 ═══════════════════════════════════════
 - Write long responses (max 4-5 lines)
-- Display any raw URL or phone number directly in text — EVER
+- Display any URL, link, or phone number — EVER
 - Invent prices or data
 - Promise guaranteed results
 - Reply in a different language than the user's message
@@ -948,10 +992,6 @@ exports.handler = async (event, context) => {
 
     /* ══════════════════════════════════════════════════════
        CIRCULAR MODEL ROTATION SYSTEM
-       - Starts at currentModelIndex (persists across warm invocations)
-       - On 429 or error → tries next model in the ring
-       - Wraps around after the last model back to the first
-       - If ALL 10 models fail → returns fallback message
     ══════════════════════════════════════════════════════ */
     const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -959,12 +999,10 @@ exports.handler = async (event, context) => {
     let usedModel    = null;
     let modelSuccess = false;
 
-    /* Try each model starting from currentModelIndex, going around the full ring */
     for (let attempt = 0; attempt < MODELS.length; attempt++) {
       const idx   = (currentModelIndex + attempt) % MODELS.length;
       const model = MODELS[idx];
 
-      /* Each model gets up to 2 tries before moving on */
       let modelOk = false;
       for (let retry = 1; retry <= 2; retry++) {
         try {
@@ -989,26 +1027,19 @@ exports.handler = async (event, context) => {
               await sleep(1500);
               continue;
             }
-            /* Both retries hit 429 → advance the persistent index past this model */
             console.log(`[Chat] Model "${model}" exhausted → moving to next`);
             currentModelIndex = (idx + 1) % MODELS.length;
-            break; /* exit retry loop, try next model in outer loop */
+            break;
           }
 
           if (!groqResponse.ok) {
             console.error(`[Chat] Model "${model}" HTTP error: ${groqResponse.status}`);
-            break; /* non-rate-limit error → skip this model */
+            break;
           }
 
-          /* Success */
           usedModel    = model;
           modelOk      = true;
           modelSuccess = true;
-
-          /*
-            Update currentModelIndex to THIS model so the next request starts here.
-            This avoids always hammering the first model and distributes load evenly.
-          */
           currentModelIndex = idx;
           break;
 
@@ -1022,7 +1053,6 @@ exports.handler = async (event, context) => {
       if (modelOk) break;
     }
 
-    /* All 10 models failed */
     if (!modelSuccess) {
       console.error('[Chat] All models exhausted — returning fallback message');
       return {
@@ -1034,7 +1064,8 @@ exports.handler = async (event, context) => {
           intent:      'general',
           isVague:     false,
           showContact: false,
-          contactInfo: null
+          contactInfo: null,
+          pageButtons: []
         })
       };
     }
@@ -1047,6 +1078,33 @@ exports.handler = async (event, context) => {
     /* Detect if AI signaled to show contact buttons (👇 at end) */
     const showContactButtons = intent !== 'product' && isContactIntent && reply.includes('👇');
     const cleanReply = reply.replace(/👇\s*$/m, '').trim();
+
+    /* ── PAGE NAVIGATION: extract 🔗[PAGE:/url] markers from reply ── */
+    const pageMarkerRegex = /🔗\[PAGE:([^\]]+)\]/g;
+    const pageMatches = [...cleanReply.matchAll(pageMarkerRegex)];
+    const pageButtons = pageMatches.map(m => {
+      const url = m[1].trim();
+      // Resolve label and icon from PAGE_MAP, or build a generic one for product pages
+      if (PAGE_MAP[url]) {
+        return { url, label: PAGE_MAP[url].label, icon: PAGE_MAP[url].icon };
+      }
+      // Handle product pages dynamically: /products/productN.html
+      const productMatch = url.match(/^\/products\/product(\d+)\.html$/);
+      if (productMatch) {
+        const num = productMatch[1];
+        const prod = products[parseInt(num, 10) - 1];
+        return {
+          url,
+          label: prod ? prod.title : `Product ${num}`,
+          icon: '🛍️'
+        };
+      }
+      // Generic fallback
+      return { url, label: 'Visit Page', icon: '🔗' };
+    });
+
+    /* Remove the 🔗[PAGE:...] markers from the final reply text */
+    const finalReply = cleanReply.replace(pageMarkerRegex, '').trim();
 
     /* Product cards */
     const productCards = relevantProducts.map(p => ({
@@ -1068,7 +1126,7 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        reply:       cleanReply,
+        reply:       finalReply,
         products:    productCards,
         intent,
         isVague,
@@ -1077,7 +1135,8 @@ exports.handler = async (event, context) => {
           whatsapp: contactInfo.hasWhatsapp ? contactInfo.whatsappUrl : null,
           telegram: contactInfo.hasTelegram ? contactInfo.telegramUrl : null,
           page:     contactInfo.contactPage
-        } : null
+        } : null,
+        pageButtons  /* ← NEW: array of { url, label, icon } */
       })
     };
 

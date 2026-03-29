@@ -11686,3 +11686,64 @@ html.fonts-loaded [class*="fa-"] {
     transform: scale(1.12);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
+
+
+/* ══════════════════════════════════════════════════════
+   PAGE NAVIGATION BUTTONS — cf-page-btns
+   Ajouter dans chatbot.css (ou le fichier CSS du chatbot)
+══════════════════════════════════════════════════════ */
+
+.cf-page-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.cf-page-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #fff5f7 0%, #fff 100%);
+  border: 1.5px solid #f0c0cc;
+  border-radius: 12px;
+  color: #c0396b;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(192, 57, 107, 0.08);
+}
+
+.cf-page-btn:hover {
+  background: linear-gradient(135deg, #fce4ec 0%, #fff0f4 100%);
+  border-color: #c0396b;
+  box-shadow: 0 4px 12px rgba(192, 57, 107, 0.18);
+  transform: translateY(-1px);
+  color: #a0285a;
+}
+
+.cf-page-btn-icon {
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.cf-page-btn-label {
+  flex: 1;
+}
+
+.cf-page-btn-arrow {
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.cf-page-btn:hover .cf-page-btn-arrow {
+  transform: translateX(3px);
+  opacity: 1;
+}
+
+
