@@ -226,21 +226,40 @@ function detectIntent(message) {
     /total.+(commande|order)|order total|total.+pedido/,
     /taxes|impôts|impuestos/,
     /stripe|paypal|apple pay|google pay|carte.+crédit|credit card|tarjeta/,
-    /* ── POLICY pages patterns ── */
-    /confidentialit|privacy.+(policy|polic)|politique.+confidential/,
-    /données.+(personnelles|perso)|personal.+data|données.+privées/,
-    /gdpr|rgpd|mes.+droits.+(données|data)/,
+    /* ── POLICY pages patterns — FR/EN/ES ── */
+    /confidentialit/,
+    /privacy/,
+    /politique.+confidential/,
+    /données.+(personnelles|perso|privées)/,
+    /personal.+data/,
+    /gdpr|rgpd/,
+    /mes.+droits.+(données|data)/,
     /supprim.+(compte|données)|delete.+(account|data)/,
-    /remboursement|refund.+policy|politique.+rembours/,
-    /retour.+(produit|article)|return.+policy|política.+devolu/,
-    /annul.+(commande|abonnement)|cancel.+(order|subscription)|cancelar/,
-    /conditions.+(utilisation|service|générales)|terms.+(service|condition|use)|términos/,
-    /cgu|cgv|terms\b|conditions\b/,
-    /disclaimer|avertissement|déni.+responsabilité/,
-    /médical.+(avertissement|disclaimer)|avis.+médical|medical.+(notice|disclaimer)/,
-    /risque.+(exercice|sport)|exercise.+risk|riesgo.+ejercicio/,
-    /politique.+(retour|remboursement|confidential)|policy\b/,
-    /devolución|política.+(privacidad|reembolso|devolución|términos)/,
+    /\bremboursement\b/,
+    /\brefund\b/,
+    /politique.+rembours/,
+    /retour.+produit|return.+policy/,
+    /política.+devolu|devolución/,
+    /\bannulation\b|\bannuler\b/,
+    /cancel.+(order|subscription)/,
+    /\bcancelar\b/,
+    /conditions.+(utilisation|service|générales)/,
+    /terms.+(service|condition|use)/,
+    /\btérm[ei]nos\b/,
+    /\bcgu\b|\bcgv\b/,
+    /\bterms\b/,
+    /\bconditions\b/,
+    /\bdisclaimer\b/,
+    /\bavertissement\b/,
+    /déni.+responsabilité/,
+    /médical.+avertissement|avis.+médical/,
+    /medical.+(notice|disclaimer)/,
+    /risque.+(exercice|sport)|exercise.+risk/,
+    /\bpolitique\b/,
+    /\bpolicy\b/,
+    /política.+(privacidad|reembolso|términos)/,
+    /reembolso/,
+    /privacidad/,
   ];
 
   for (const pattern of generalPatterns) {
@@ -650,17 +669,29 @@ EXAMPLES:
    ❌ "https://wa.me/1234567890"
    ❌ "https://t.me/curvafit"
    ❌ "/contact.html"
-   ❌ "visit our page at https://..."
-   ❌ "/account.html"
-   ❌ "/checkout.html"
    ❌ "/policies/privacy.html"
    ❌ "/policies/refund.html"
    ❌ "/policies/terms.html"
    ❌ "/disclaimer.html"
+   ❌ "visit our page at https://..."
+   ❌ "/account.html"
+   ❌ "/checkout.html"
+   ❌ Any path that looks like a URL — FORBIDDEN
    
-   ALWAYS say "see the button below" or "use the buttons below".
-   The frontend will automatically show the correct buttons.
-   NEVER write a URL. NEVER write a phone number. Just reference "the button below".
+   ALWAYS say "use the button below" or "click the button below".
+   The frontend renders the 🔗[PAGE:...] marker as a clickable button automatically.
+   NEVER write a URL. NEVER write a phone number. NEVER write a path like /something.html.
+
+🔗 CRITICAL — POLICY PAGE NAVIGATION:
+When a user asks about OR asks to SEE any policy page, you MUST add the marker.
+These requests ALWAYS require a marker:
+  - "politique de confidentialité" / "privacy policy" / "privacidad"  → 🔗[PAGE:/policies/privacy.html]
+  - "politique de remboursement" / "refund policy" / "reembolso"      → 🔗[PAGE:/policies/refund.html]
+  - "conditions générales" / "terms" / "CGU" / "CGV" / "términos"    → 🔗[PAGE:/policies/terms.html]
+  - "disclaimer" / "avertissement médical" / "aviso médico"           → 🔗[PAGE:/disclaimer.html]
+
+The user does NOT need to say "je veux aller sur" — simply asking about or mentioning these pages
+is enough to add the marker at the end of your reply.
 
 ═══════════════════════════════════════
 🚦 CRITICAL BEHAVIOR RULES — NON-NEGOTIABLE
@@ -1185,6 +1216,45 @@ exports.handler = async (event, context) => {
 
     const isContactIntent = intent !== 'product' && EXPLICIT_CONTACT_PATTERNS.some(p => p.test(message));
 
+    /* ══════════════════════════════════════════════════════
+       HARDCODED PAGE DETECTION — safety net
+       Even if the AI forgets to add the marker, the backend
+       injects the correct page button based on the user's message.
+    ══════════════════════════════════════════════════════ */
+    function detectForcedPageButtons(msg) {
+      const q = msg.toLowerCase();
+      const forced = [];
+
+      if (/confidentialit|privacy|privacidad|données.+perso|personal.+data|gdpr|rgpd/.test(q)) {
+        forced.push('/policies/privacy.html');
+      }
+      if (/remboursement|refund|reembolso|retour.+produit|return.+policy|annul|cancel/.test(q)) {
+        forced.push('/policies/refund.html');
+      }
+      if (/conditions|terms|cgu|cgv|termin|términos|service.+condition/.test(q)) {
+        forced.push('/policies/terms.html');
+      }
+      if (/disclaimer|avertissement|aviso.+med|médical|medical.+notice/.test(q)) {
+        forced.push('/disclaimer.html');
+      }
+      if (/\bfaq\b|foire.+question|frequent/.test(q)) {
+        forced.push('/faq.html');
+      }
+      if (/\bshop\b|boutique|tienda|produits?\b|productos?\b/.test(q) && !/programme|program/.test(q)) {
+        forced.push('/shop.html');
+      }
+      if (/programme|program|coaching/.test(q) && !/conditions/.test(q)) {
+        forced.push('/programs.html');
+      }
+      if (/\bblog\b|article/.test(q)) {
+        forced.push('/blog/blog.html');
+      }
+
+      return [...new Set(forced)]; // deduplicate
+    }
+
+    const forcedUrls = detectForcedPageButtons(message);
+
     /* Build system prompt */
     const systemPrompt = buildSystemPrompt(products, settings, contactInfo, searchData, blogData);
 
@@ -1299,26 +1369,30 @@ exports.handler = async (event, context) => {
     /* ── PAGE NAVIGATION: extract 🔗[PAGE:/url] markers from reply ── */
     const pageMarkerRegex = /🔗\[PAGE:([^\]]+)\]/g;
     const pageMatches = [...cleanReply.matchAll(pageMarkerRegex)];
-    const pageButtons = pageMatches.map(m => {
-      const url = m[1].trim();
-      // Resolve label and icon from PAGE_MAP
+
+    function urlToButton(url, productsList) {
       if (PAGE_MAP[url]) {
         return { url, label: PAGE_MAP[url].label, icon: PAGE_MAP[url].icon };
       }
-      // Handle product pages dynamically: /products/productN.html
       const productMatch = url.match(/^\/products\/product(\d+)\.html$/);
       if (productMatch) {
-        const num = productMatch[1];
-        const prod = products[parseInt(num, 10) - 1];
-        return {
-          url,
-          label: prod ? prod.title : `Product ${num}`,
-          icon: '🛍️'
-        };
+        const num  = productMatch[1];
+        const prod = productsList[parseInt(num, 10) - 1];
+        return { url, label: prod ? prod.title : `Product ${num}`, icon: '🛍️' };
       }
-      // Generic fallback
       return { url, label: 'Visit Page', icon: '🔗' };
-    });
+    }
+
+    /* Buttons detected by the AI via markers */
+    const aiPageButtons = pageMatches.map(m => urlToButton(m[1].trim(), products));
+
+    /* Buttons forced server-side — safety net — always correct regardless of AI output */
+    const forcedPageButtons = forcedUrls
+      .filter(url => !aiPageButtons.some(b => b.url === url))
+      .map(url => urlToButton(url, products));
+
+    /* Merge: forced buttons first, then any extra AI buttons */
+    const pageButtons = [...forcedPageButtons, ...aiPageButtons];
 
     /* Remove the 🔗[PAGE:...] markers from the final reply text */
     const finalReply = cleanReply.replace(pageMarkerRegex, '').trim();
