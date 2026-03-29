@@ -4367,3 +4367,256 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('✅ CurvaFit Chatbot ready — trilingual (EN/FR/ES)');
   })();
 });
+
+
+
+
+
+
+/* ══════════════════════════════════════════════════════
+   CURVAFIT — COOKIE CONSENT POPUP
+   Inject this entire block into script.js
+══════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  const COOKIE_KEY = 'cf_cookie_consent';
+  const COOKIE_DAYS = 365;
+
+  /* ── Save consent to localStorage ── */
+  function saveConsent(preferences) {
+    const payload = {
+      date: new Date().toISOString(),
+      analytics: preferences.analytics,
+      marketing: preferences.marketing,
+      necessary: true
+    };
+    localStorage.setItem(COOKIE_KEY, JSON.stringify(payload));
+  }
+
+  /* ── Check if consent already given ── */
+  function hasConsent() {
+    try {
+      const saved = localStorage.getItem(COOKIE_KEY);
+      return saved !== null;
+    } catch (e) { return false; }
+  }
+
+  /* ── Build the popup HTML ── */
+  function buildPopup() {
+    const el = document.createElement('div');
+    el.id = 'cf-cookie-popup';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-modal', 'true');
+    el.setAttribute('aria-label', 'Cookie preferences');
+    el.innerHTML = `
+      <div id="cf-cookie-overlay"></div>
+      <div id="cf-cookie-modal">
+
+        <!-- ── Header ── -->
+        <div class="cfck-header">
+          <div class="cfck-header-left">
+            <div class="cfck-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10"/>
+                <circle cx="15.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/>
+                <circle cx="8.5" cy="11.5" r="1.5" fill="currentColor" stroke="none"/>
+                <circle cx="11.5" cy="15.5" r="1.5" fill="currentColor" stroke="none"/>
+                <path d="M17 2a5 5 0 0 0 5 5"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="cfck-title">We use cookies 🍪</h2>
+              <p class="cfck-subtitle">Customize your privacy preferences</p>
+            </div>
+          </div>
+          <button class="cfck-close-x" id="cfck-close-x" aria-label="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- ── Body ── -->
+        <div class="cfck-body">
+          <p class="cfck-desc">
+            CurvaFit uses cookies to improve your experience, analyze traffic, and — with your permission — personalize content. Your data is never sold. Read our
+            <a href="/policies/privacy.html" class="cfck-link">Privacy Policy</a> for full details.
+          </p>
+
+          <!-- ── Panels (default view) ── -->
+          <div class="cfck-panels" id="cfck-panels">
+
+            <div class="cfck-panel cfck-panel--required">
+              <div class="cfck-panel-left">
+                <div class="cfck-panel-icon cfck-panel-icon--shield">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                </div>
+                <div>
+                  <span class="cfck-panel-name">Necessary</span>
+                  <span class="cfck-panel-desc">Login, cart, checkout — the site cannot function without these.</span>
+                </div>
+              </div>
+              <span class="cfck-always-badge">Always on</span>
+            </div>
+
+            <div class="cfck-panel">
+              <div class="cfck-panel-left">
+                <div class="cfck-panel-icon cfck-panel-icon--chart">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="14"/>
+                  </svg>
+                </div>
+                <div>
+                  <span class="cfck-panel-name">Analytics</span>
+                  <span class="cfck-panel-desc">Google Analytics — anonymized traffic data to improve our site.</span>
+                </div>
+              </div>
+              <label class="cfck-toggle" aria-label="Toggle analytics cookies">
+                <input type="checkbox" id="cfck-analytics" checked>
+                <span class="cfck-toggle-track"><span class="cfck-toggle-thumb"></span></span>
+              </label>
+            </div>
+
+            <div class="cfck-panel">
+              <div class="cfck-panel-left">
+                <div class="cfck-panel-icon cfck-panel-icon--target">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+                  </svg>
+                </div>
+                <div>
+                  <span class="cfck-panel-name">Marketing</span>
+                  <span class="cfck-panel-desc">Personalized content and relevant offers based on your interests.</span>
+                </div>
+              </div>
+              <label class="cfck-toggle" aria-label="Toggle marketing cookies">
+                <input type="checkbox" id="cfck-marketing">
+                <span class="cfck-toggle-track"><span class="cfck-toggle-thumb"></span></span>
+              </label>
+            </div>
+
+          </div><!-- /cfck-panels -->
+        </div><!-- /cfck-body -->
+
+        <!-- ── Footer buttons ── -->
+        <div class="cfck-footer">
+          <button class="cfck-btn cfck-btn--ghost" id="cfck-reject">Reject all</button>
+          <button class="cfck-btn cfck-btn--outline" id="cfck-save">Save preferences</button>
+          <button class="cfck-btn cfck-btn--primary" id="cfck-accept">Accept all</button>
+        </div>
+
+        <!-- ── Confirmation banner (shown after action) ── -->
+        <div class="cfck-confirm" id="cfck-confirm" aria-live="polite">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span id="cfck-confirm-text">Preferences saved!</span>
+        </div>
+
+      </div><!-- /cf-cookie-modal -->
+    `;
+    return el;
+  }
+
+  /* ── Show confirmation then close ── */
+  function showConfirmAndClose(msg) {
+    const confirm = document.getElementById('cfck-confirm');
+    const confirmText = document.getElementById('cfck-confirm-text');
+    if (confirm && confirmText) {
+      confirmText.textContent = msg;
+      confirm.classList.add('cfck-confirm--visible');
+      setTimeout(() => {
+        closePopup();
+      }, 1400);
+    }
+  }
+
+  /* ── Close popup ── */
+  function closePopup() {
+    const popup = document.getElementById('cf-cookie-popup');
+    if (popup) {
+      popup.classList.add('cfck-hiding');
+      setTimeout(() => {
+        if (popup.parentNode) popup.parentNode.removeChild(popup);
+      }, 400);
+    }
+  }
+
+  /* ── Init ── */
+  function init() {
+    if (hasConsent()) return;
+
+    const popup = buildPopup();
+    document.body.appendChild(popup);
+
+    /* Animate in */
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        popup.classList.add('cfck-visible');
+      });
+    });
+
+    /* Close X */
+    document.getElementById('cfck-close-x').addEventListener('click', () => {
+      saveConsent({ analytics: false, marketing: false });
+      showConfirmAndClose('Preferences saved!');
+    });
+
+    /* Overlay click → reject */
+    document.getElementById('cf-cookie-overlay').addEventListener('click', () => {
+      saveConsent({ analytics: false, marketing: false });
+      closePopup();
+    });
+
+    /* Reject all */
+    document.getElementById('cfck-reject').addEventListener('click', () => {
+      const analyticsEl = document.getElementById('cfck-analytics');
+      const marketingEl = document.getElementById('cfck-marketing');
+      if (analyticsEl) analyticsEl.checked = false;
+      if (marketingEl) marketingEl.checked = false;
+      saveConsent({ analytics: false, marketing: false });
+      showConfirmAndClose('All optional cookies rejected.');
+    });
+
+    /* Save preferences */
+    document.getElementById('cfck-save').addEventListener('click', () => {
+      const analytics = document.getElementById('cfck-analytics')?.checked ?? true;
+      const marketing = document.getElementById('cfck-marketing')?.checked ?? false;
+      saveConsent({ analytics, marketing });
+      showConfirmAndClose('Your preferences have been saved!');
+    });
+
+    /* Accept all */
+    document.getElementById('cfck-accept').addEventListener('click', () => {
+      const analyticsEl = document.getElementById('cfck-analytics');
+      const marketingEl = document.getElementById('cfck-marketing');
+      if (analyticsEl) analyticsEl.checked = true;
+      if (marketingEl) marketingEl.checked = true;
+      saveConsent({ analytics: true, marketing: true });
+      showConfirmAndClose('All cookies accepted. Thank you! 🎉');
+    });
+
+    /* Escape key */
+    document.addEventListener('keydown', function onEsc(e) {
+      if (e.key === 'Escape') {
+        saveConsent({ analytics: false, marketing: false });
+        closePopup();
+        document.removeEventListener('keydown', onEsc);
+      }
+    });
+  }
+
+  /* ── Run after DOM ready ── */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 600);
+  }
+
+})();
+
+
