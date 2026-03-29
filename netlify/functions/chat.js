@@ -1217,40 +1217,35 @@ exports.handler = async (event, context) => {
     const isContactIntent = intent !== 'product' && EXPLICIT_CONTACT_PATTERNS.some(p => p.test(message));
 
     /* ══════════════════════════════════════════════════════
-       HARDCODED PAGE DETECTION — safety net
-       Even if the AI forgets to add the marker, the backend
-       injects the correct page button based on the user's message.
+       HARDCODED PAGE DETECTION — safety net for POLICY pages only
+       Triggered only on explicit policy-related keywords.
+       Does NOT interfere with contact buttons or normal conversation.
     ══════════════════════════════════════════════════════ */
     function detectForcedPageButtons(msg) {
       const q = msg.toLowerCase();
       const forced = [];
 
-      if (/confidentialit|privacy|privacidad|données.+perso|personal.+data|gdpr|rgpd/.test(q)) {
+      // Privacy policy — very specific keywords only
+      if (/\bconfidentialit|\bprivacy\s+policy|\bpolitique\s+de\s+confidential|\bprivacidad|\bgdpr\b|\brgpd\b/.test(q)) {
         forced.push('/policies/privacy.html');
       }
-      if (/remboursement|refund|reembolso|retour.+produit|return.+policy|annul|cancel/.test(q)) {
+
+      // Refund policy — must say "remboursement", "refund policy", "return policy", "politique de remboursement"
+      if (/\bpolitique\s+de\s+remboursement|\brefund\s+policy|\breturn\s+policy|\bpolitica\s+de\s+reembolso/.test(q)) {
         forced.push('/policies/refund.html');
       }
-      if (/conditions|terms|cgu|cgv|termin|términos|service.+condition/.test(q)) {
+
+      // Terms — must say "conditions générales", "terms and conditions", "CGU", "CGV", "terms of service"
+      if (/\bconditions\s+g[eé]n[eé]rales|\bterms\s+(and\s+)?(conditions|of\s+service)|\bcgu\b|\bcgv\b|\bt[eé]rminos\s+y\s+condiciones/.test(q)) {
         forced.push('/policies/terms.html');
       }
-      if (/disclaimer|avertissement|aviso.+med|médical|medical.+notice/.test(q)) {
+
+      // Disclaimer — must say "disclaimer", "avertissement médical", "aviso médico"
+      if (/\bdisclaimer\b|\bavertissement\s+m[eé]dical|\baviso\s+m[eé]dico/.test(q)) {
         forced.push('/disclaimer.html');
       }
-      if (/\bfaq\b|foire.+question|frequent/.test(q)) {
-        forced.push('/faq.html');
-      }
-      if (/\bshop\b|boutique|tienda|produits?\b|productos?\b/.test(q) && !/programme|program/.test(q)) {
-        forced.push('/shop.html');
-      }
-      if (/programme|program|coaching/.test(q) && !/conditions/.test(q)) {
-        forced.push('/programs.html');
-      }
-      if (/\bblog\b|article/.test(q)) {
-        forced.push('/blog/blog.html');
-      }
 
-      return [...new Set(forced)]; // deduplicate
+      return [...new Set(forced)];
     }
 
     const forcedUrls = detectForcedPageButtons(message);
