@@ -481,8 +481,9 @@ function buildSystemPrompt(products, settings, contactInfo, searchData, blogData
     .join('\n');
 
   const promosText = promos.length
-    ? promos.map(p => `• Code **[[${p.code}]]** → **${p.percent}% off** on ${p.items}+ items`).join('\n')
-    : '• No active promo codes at this time';
+  ? promos.map(p => `• Code **[[${p.code}]]** → **${p.percent}% off** on ${p.items}+ items (Shop products only — NOT valid on programs)`)
+    .join('\n')
+  : '• No active promo codes at this time';
 
   const catalogText = products.map((p, i) => {
     const colorsList = p.colors.map(c => c.name).join(', ');
@@ -769,6 +770,7 @@ ${blogContext || '(blog-articles.json not available)'}
 - Reply in a different language than the user's message
 - Show multiple unrelated products when user asked for something specific
 - Add 👇 unless the user is EXPLICITLY asking how to contact or reach the team
+- Apply or suggest promo codes for programs — promo codes are ONLY valid on Shop products
 - Display a promo code without the [[CODE]] format`;
 }
 

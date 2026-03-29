@@ -2380,7 +2380,7 @@ section#hero.faq-hero,
 
 .cr-img-wrap img {
     width: 100%;
-    aspect-ratio: 4/5;
+    aspect-ratio: 3/2;
     object-fit: cover;
     display: block;
     transition: transform 0.5s ease;
@@ -6111,3 +6111,22 @@ details p { padding:14px 22px 18px; border-top:1px solid var(--border); font-siz
     .comm-invite-layout { grid-template-columns: 1fr; }
 }
 
+
+/* ══ What Real Women Taught Us — icons ══ */
+#what-we-learned .cr-lcard-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #fce4ec;
+    color: #e91e8c;
+    font-size: 1.3rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#what-we-learned .cr-lcard-icon:hover {
+    background-color: #e91e8c;
+    color: #ffffff;
+}

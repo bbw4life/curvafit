@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           });
         }
-        applyPromoFreeItems();
+        applyPromoFreeItems();       
         renderCart();
       })
       .catch(error => {
