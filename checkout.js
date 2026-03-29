@@ -56,6 +56,32 @@ document.addEventListener('DOMContentLoaded', () => {
               if (p) p.textContent = delayMap[method];
             }
           });
+
+          // ══ INJECT CONTACT EMAILS FROM SETTINGS ══
+      (function injectContactEmails() {
+        const emails = settings.contact_emails || {};
+        if (!Object.keys(emails).length) return;
+
+        document.querySelectorAll('[data-email-key]').forEach(el => {
+          const key   = el.dataset.emailKey;
+          const email = emails[key];
+          if (!email) return;
+
+          // Bouton CTA spécial — on met juste le href, on garde le texte du bouton
+          if (el.dataset.emailCta) {
+            el.href = 'mailto:' + email;
+            return;
+          }
+
+          if (el.tagName === 'A') {
+            el.href        = 'mailto:' + email;
+            el.textContent = email;
+          } else {
+            el.textContent = email;
+          }
+        });
+      })();
+
         }
         applyPromoFreeItems();       
         renderCart();

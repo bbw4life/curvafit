@@ -366,49 +366,49 @@ function buildSearchDataContext(searchData) {
   let text = '';
 
   if (pages.length) {
-    text += '\nSITE PAGES:\n';
+    text += '\nSITE PAGES (use Markdown [Title](url) format to link these):\n';
     pages.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
   }
 
   if (programs.length) {
-    text += '\nPROGRAMS:\n';
+    text += '\nPROGRAMS (use Markdown [Title](url) format to link these):\n';
     programs.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
   }
 
   if (coaches.length) {
-    text += '\nCOACHES:\n';
+    text += '\nCOACHES (use Markdown [Title](url) format to link these):\n';
     coaches.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
   }
 
   if (features.length) {
-    text += '\nFEATURES:\n';
+    text += '\nFEATURES (use Markdown [Title](url) format to link these):\n';
     features.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
   }
 
   if (products.length) {
-    text += '\nPRODUCT PAGES (from search data):\n';
+    text += '\nPRODUCT PAGES (use Markdown [Title](url) format to link these):\n';
     products.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
   }
 
   if (policies.length) {
-    text += '\nPOLICIES:\n';
+    text += '\nPOLICIES (use Markdown [Title](url) format to link these):\n';
     policies.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
   }
 
   if (blogs.length) {
-    text += '\nBLOG ARTICLES (from search data):\n';
+    text += '\nBLOG ARTICLES (use Markdown [Title](url) format to link these):\n';
     blogs.forEach(p => {
       text += `  • ${p.title} → ${p.url}\n`;
     });
@@ -560,18 +560,32 @@ Example: The code **[[CURVA15]]** gives you **20% off** on 4+ items.
 The frontend will render [[CODE]] with a special highlighted style automatically.
 NEVER display a promo code without the [[...]] markers.
 
-🚫 ABSOLUTE RULE — NEVER display any raw URL or link in your text.
-   Examples of what is FORBIDDEN:
-   ❌ "https://wa.me/1234567890"
-   ❌ "https://t.me/curvafit"
-   ❌ "/contact.html"
-   ❌ "visit our page at https://..."
-   ❌ "/account.html"
-   ❌ "/checkout.html"
-   
-   ALWAYS say "see the button below" or "use the buttons below".
-   The frontend will automatically show the correct buttons.
-   NEVER write a URL. NEVER write a phone number. Just reference "the button below".
+🚫 URL RULES — TWO CATEGORIES:
+
+FORBIDDEN — never display these as raw text:
+   ❌ External URLs: "https://wa.me/...", "https://t.me/..."
+   ❌ Phone numbers
+   ❌ Raw URLs written alone in text: "/contact.html", "/shop.html" etc.
+
+ALLOWED — internal site pages MUST use Markdown link format:
+   ✅ [FAQ](/faq.html)
+   ✅ [Programs](/programs.html)
+   ✅ [Shop](/shop.html)
+   ✅ [Contact](/contact.html)
+   ✅ [Blog](/blog/blog.html)
+   ✅ [About](/about.html)
+   ✅ [Success Stories](/success.html)
+   ✅ [Community](/community.html)
+   ✅ [Nutrition](/nutrition.html)
+   ✅ [Method](/method.html)
+   ✅ [Privacy Policy](/policies/privacy.html)
+   ✅ [Refund Policy](/policies/refund.html)
+   ✅ [My Account](/account.html)
+   ✅ [Checkout](/checkout.html)
+   The frontend renders [Label](url) as a styled clickable button automatically.
+   ALWAYS use [Label](url) for any internal page — NEVER say "see the button below" for pages.
+
+For WhatsApp / Telegram / email contact ONLY → say "use the buttons below" and end with 👇
 
 ═══════════════════════════════════════
 🚦 CRITICAL BEHAVIOR RULES — NON-NEGOTIABLE
@@ -698,8 +712,7 @@ The account page allows users to manage their profile. Key features:
 - **Newsletter**: Subscribe at the bottom of the page
 
 When a user asks about their account, orders, profile, address, payment, password, badge, points,
-or wishlist → tell them warmly where to find it and that everything is accessible in their account area.
-NEVER display the URL. Say "in your account area" or "use the button below" as appropriate.
+or wishlist → tell them warmly where to find it and link them using [My Account](/account.html).
 
 ═══════════════════════════════════════
 🛍️ CHECKOUT PAGE — /checkout.html
@@ -720,7 +733,7 @@ The checkout page is where users complete their purchase. Key features:
 
 When a user asks about checkout, payment, shipping methods, delivery times, promo codes at checkout,
 taxes, or order total → explain the relevant part clearly and warmly.
-NEVER display any URL. Direct them using "at checkout" or "on the checkout page".
+Link them using [Checkout](/checkout.html) when relevant.
 
 ═══════════════════════════════════════
 🚚 SHIPPING METHODS DETAILS
@@ -749,22 +762,22 @@ ${catalogText}
 🌐 SITE NAVIGATION & CONTENT (live from search.data.json)
 ═══════════════════════════════════════
 Use this to answer questions about pages, programs, coaches, features, blog articles, policies.
-When a user asks about a page or topic, you can tell them where to find it on the site.
-NEVER write the raw URL — say "see the [page name] section of the site" or reference the topic.
+When a user asks about a page or topic, link it using Markdown [Title](url) format.
+The frontend renders these as clickable buttons — ALWAYS use [Title](url), never write the raw URL alone.
 ${searchContext || '(search.data.json not available)'}
 
 ═══════════════════════════════════════
 📝 BLOG ARTICLES (live from blog-articles.json)
 ═══════════════════════════════════════
 Use this to answer questions about blog content. If a user asks about articles, topics covered,
-or specific blog posts — use this data. NEVER write raw URLs, just mention the article title.
+or specific blog posts — use this data and link using [Article Title](url) Markdown format.
 ${blogContext || '(blog-articles.json not available)'}
 
 ═══════════════════════════════════════
 🚫 NEVER
 ═══════════════════════════════════════
 - Write long responses (max 4-5 lines)
-- Display any URL, link, or phone number — EVER
+- Display any raw URL or phone number directly in text — EVER
 - Invent prices or data
 - Promise guaranteed results
 - Reply in a different language than the user's message
