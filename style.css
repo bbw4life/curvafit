@@ -12100,7 +12100,7 @@ html.fonts-loaded [class*="fa-"] {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 24px;
+  padding: 2px 24px;
   background: rgba(212, 168, 83, 0.1);
   border-top: 1px solid rgba(212, 168, 83, 0.2);
   color: #d4a853;
@@ -12120,12 +12120,14 @@ html.fonts-loaded [class*="fa-"] {
 /* ── Mobile ── */
 @media (max-width: 520px) {
   #cf-cookie-popup {
-    padding: 0 8px 16px;
+    padding: 0 8px 10px;
     align-items: flex-end;
   }
   #cf-cookie-modal {
     border-radius: 16px;
     max-width: 100%;
+    max-height: 90dvh;       /* ← limite la hauteur à 90% de l'écran */
+    overflow-y: auto;        /* ← scroll interne si le contenu dépasse */
   }
   .cfck-header, .cfck-body, .cfck-footer {
     padding-left: 16px;
