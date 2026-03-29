@@ -842,11 +842,11 @@ function applyPromoFreeItems() {
       const finalBtns = document.querySelectorAll('.final-cta-btn');
       finalBtns.forEach(btn => {
         if (btn.classList.contains('final-cta-btn--beginner'))
-          btn.textContent = `🌱 Start Beginner — $${programMap.beginner.price}`;
+          btn.innerHTML = `<i class="fa-solid fa-seedling"></i> Start Beginner — $${programMap.beginner.price}`;
         else if (btn.classList.contains('final-cta-btn--featured'))
-          btn.textContent = `🔥 Start Intermediate — $${programMap.intermediate.price}`;
+          btn.innerHTML = `<i class="fa-solid fa-fire-flame-curved"></i> Start Intermediate — $${programMap.intermediate.price}`;
         else if (btn.classList.contains('final-cta-btn--maintenance'))
-          btn.textContent = `🌟 Start Maintenance — $${programMap.maintenance.price}`;
+          btn.innerHTML = `<i class="fa-solid fa-star"></i> Start Maintenance — $${programMap.maintenance.price}`;
       });
 
 

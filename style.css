@@ -2249,7 +2249,7 @@ a { text-decoration: none; color: inherit; }
    FINAL CTA
 ───────────────────────────────────────────── */
 .final-cta-section {
-    padding: 10px 0;
+    padding: 5px 0;
     background: linear-gradient(135deg, var(--charcoal) 0%, var(--plum) 50%, var(--rose) 100%);
     text-align: center;
     position: relative;
@@ -10427,7 +10427,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 /* ══ FLOATING NAV ══ */
 #floating-nav {
   position: fixed;
-  bottom: 450px !important;
+  bottom: 490px !important;
   right: 40px !important;
   z-index: 999;
 }
@@ -10594,7 +10594,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 
 @media (max-width: 768px) {
   #floating-nav {
-    bottom: 450px !important;
+    bottom: 460px !important;
     right: 20px !important;
   }
 
