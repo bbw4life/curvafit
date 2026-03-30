@@ -186,16 +186,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         // Vérifie aussi que le pays est sélectionné et a bien un cca2
-        const countrySelect = document.getElementById('country');
-        if (countrySelect) {
-            const selected = countrySelect.options[countrySelect.selectedIndex];
-            if (!selected || !selected.value || selected.value === '') {
-                valid = false;
-                countrySelect.style.borderColor = 'red';
-            } else {
-                countrySelect.style.borderColor = '#ccc';
-            }
+        // Vérifie le champ caché country
+        const countryHidden = document.getElementById('country');
+        if (!countryHidden || !countryHidden.value.trim()) {
+            valid = false;
+            const trigger = document.getElementById('country-trigger');
+            if (trigger) trigger.style.borderColor = 'red';
+        } else {
+            const trigger = document.getElementById('country-trigger');
+            if (trigger) trigger.style.borderColor = '#ccc';
         }
+        
         if (!valid) {
             showErrorPopup('Please fill all required fields before finalizing the payment');
             return false;
@@ -204,17 +205,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ====================== CORRECTION PAYPAL INTERMITTENT ======================
-    // Problème : loadCountries() est async → si le client paie avant la fin
-    // du chargement, selectedOption.dataset.cca2 est vide → PayPal rejette
-    // Solution : on récupère le cca2 depuis l'option OU depuis un fallback API
-    async function getCountryCode(countryName) {
-        const countrySelect = document.getElementById('country');
-        if (countrySelect) {
-            const selected = countrySelect.options[countrySelect.selectedIndex];
-            if (selected && selected.dataset.cca2 && selected.dataset.cca2.length === 2) {
-                return selected.dataset.cca2;
-            }
-        }
+                async function getCountryCode(countryName) {
+                if (selectedCountryCCA2 && selectedCountryCCA2.length === 2) return selectedCountryCCA2;
+                try {
+                    const res = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}?fields=cca2&fullText=true`);
+                    if (res.ok) { const d = await res.json(); return d[0]?.cca2 || 'US'; }
+                } catch(e) {}
+                return 'US';
+            
         // Fallback : si cca2 pas encore chargé, on l'appelle directement
         try {
             const res = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}?fields=cca2&fullText=true`);
@@ -227,33 +225,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function getShippingData() {
-        const countrySelect = document.getElementById('country');
-        const selectedOption = countrySelect.options[countrySelect.selectedIndex];
-        const countryName = selectedOption.value.trim();
+    const countryName = selectedCountryName || document.getElementById('country').value.trim();
+    const countryCode = await getCountryCode(countryName);
+    const phoneCode   = document.getElementById('phone-code').value.trim();
+    const phoneNumber = document.getElementById('phone').value.trim();
+    const fullPhone   = (phoneCode + phoneNumber).replace(/\s+/g, '');
+    const address2El  = document.getElementById('address2') || document.getElementById('address-line2');
 
-        // CORRECTION : attend le cca2 même si les pays ne sont pas encore chargés
-        const countryCode = await getCountryCode(countryName);
-
-        const phoneCode = document.getElementById('phone-code').value.trim();
-        const phoneNumber = document.getElementById('phone').value.trim();
-        const fullPhone = (phoneCode + phoneNumber).replace(/\s+/g, '');
-        const address2El = document.getElementById('address2') || document.getElementById('address-line2');
-
-        return {
-            firstName:       document.getElementById('first-name').value.trim(),
-            lastName:        document.getElementById('last-name').value.trim(),
-            email:           document.getElementById('email').value.trim(),
-            phone:           fullPhone,
-            country:         countryName,
-            countryCode:     countryCode,   // ← toujours fiable maintenant
-            city:            (document.getElementById('city') || {}).value?.trim() || '',
-            state:           (document.getElementById('state') || {}).value?.trim() || '',
-            postalCode:      document.getElementById('postal-code').value.trim(),
-            address:         document.getElementById('address').value.trim(),
-            address2:        address2El ? address2El.value.trim() : '',
-            shipping_method: document.querySelector('.shipping-option.selected')?.dataset.method || 'Standard Shipping',
-        };
-    }
+    return {
+        firstName:       document.getElementById('first-name').value.trim(),
+        lastName:        document.getElementById('last-name').value.trim(),
+        email:           document.getElementById('email').value.trim(),
+        phone:           fullPhone,
+        country:         countryName,
+        countryCode:     countryCode,
+        city:            selectedCityName || document.getElementById('city').value.trim() || '',
+        state:           (document.getElementById('state') || {}).value?.trim() || '',
+        postalCode:      document.getElementById('postal-code').value.trim(),
+        address:         document.getElementById('address').value.trim(),
+        address2:        address2El ? address2El.value.trim() : '',
+        shipping_method: document.querySelector('.shipping-option.selected')?.dataset.method || 'Standard Shipping',
+    };
+}
 
     function getDiscountedCart() {
         let workingCart = JSON.parse(JSON.stringify(cart));
@@ -353,65 +346,252 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === shippingModal) shippingModal.style.display = 'none';
     });
 
-    // ====================== PAYS & VILLES ======================
-    const countrySelect = document.getElementById('country');
-    const citySelect = document.getElementById('city');
-    const phoneCodeInput = document.getElementById('phone-code');
+    // ====================== PAYS & VILLES (CUSTOM SEARCHABLE SELECT) ======================
 
-    async function loadCountries() {
-        try {
-            const res = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,cca2');
-            const data = await res.json();
-            const countries = data.sort((a, b) => a.name.common.localeCompare(b.name.common));
-            countries.forEach(country => {
-                const option = document.createElement('option');
-                option.value = country.name.common;
-                option.textContent = country.name.common;
-                option.dataset.code = country.idd?.root ? country.idd.root + (country.idd.suffixes?.[0] || '') : '';
-                option.dataset.cca2 = country.cca2;
-                countrySelect.appendChild(option);
-            });
-            // Pré-sélectionne le pays sauvegardé
-            const savedCountry = localStorage.getItem('userCountry');
-            if (savedCountry && localStorage.getItem('isLoggedIn') === 'true') {
-                const opt = Array.from(countrySelect.options).find(o => o.value === savedCountry);
-                if (opt) { countrySelect.value = savedCountry; countrySelect.dispatchEvent(new Event('change')); }
-            }
-        } catch (err) { console.error("Country load error", err); }
+let allCountries = [];
+let allCities = [];
+let selectedCountryName = '';
+let selectedCountryCode = '';
+let selectedCountryCCA2 = '';
+let selectedCityName = '';
+
+function buildCustomSelect({ wrapperId, triggerId, displayId, dropdownId, searchId, listId, hiddenId, placeholder }) {
+    const wrapper  = document.getElementById(wrapperId);
+    const trigger  = document.getElementById(triggerId);
+    const display  = document.getElementById(displayId);
+    const dropdown = document.getElementById(dropdownId);
+    const search   = document.getElementById(searchId);
+    const list     = document.getElementById(listId);
+    const hidden   = document.getElementById(hiddenId);
+    if (!wrapper || !trigger || !display || !dropdown || !search || !list || !hidden) return;
+
+    function openDropdown() {
+        // Ferme tous les autres selects ouverts
+        document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
+            if (w.id !== wrapperId) w.classList.remove('open');
+        });
+        wrapper.classList.add('open');
+        search.value = '';
+        search.focus();
+        filterList('');
     }
 
-    countrySelect.addEventListener('change', async function () {
-        const selectedOption = this.options[this.selectedIndex];
-        phoneCodeInput.value = selectedOption.dataset.code || '';
-        citySelect.innerHTML = '<option value="">Loading cities...</option>';
-        try {
-            const res = await fetch('https://countriesnow.space/api/v0.1/countries/cities', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ country: selectedOption.value })
-            });
-            const data = await res.json();
-            citySelect.innerHTML = '<option value="">Select your city</option>';
-            if (data.data) {
-                data.data.forEach(city => {
-                    const option = document.createElement('option');
-                    option.value = city;
-                    option.textContent = city;
-                    citySelect.appendChild(option);
-                });
+    function closeDropdown() {
+        wrapper.classList.remove('open');
+    }
+
+    function filterList(query) {
+        const q = query.toLowerCase().trim();
+        const items = list.querySelectorAll('li:not(.no-results):not(.loading)');
+        let visibleCount = 0;
+        items.forEach(li => {
+            const text = (li.dataset.label || '').toLowerCase();
+            if (!q || text.includes(q)) {
+                li.style.display = '';
+                visibleCount++;
+            } else {
+                li.style.display = 'none';
             }
-            const savedCity = localStorage.getItem('userCity');
-            if (savedCity && localStorage.getItem('isLoggedIn') === 'true') {
-                const cityOpt = Array.from(citySelect.options).find(o => o.value === savedCity);
-                if (cityOpt) citySelect.value = savedCity;
-            }
-        } catch (err) {
-            console.error("City load error", err);
-            citySelect.innerHTML = '<option value="">No cities found</option>';
-        }
+        });
+        const noResults = list.querySelector('.no-results');
+        if (noResults) noResults.style.display = visibleCount === 0 ? '' : 'none';
+    }
+
+    trigger.addEventListener('click', () => {
+        wrapper.classList.contains('open') ? closeDropdown() : openDropdown();
     });
 
-    loadCountries();
+    trigger.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDropdown(); }
+        if (e.key === 'Escape') closeDropdown();
+    });
+
+    search.addEventListener('input', () => filterList(search.value));
+    search.addEventListener('keydown', e => { if (e.key === 'Escape') closeDropdown(); });
+
+    document.addEventListener('click', e => {
+        if (!wrapper.contains(e.target)) closeDropdown();
+    });
+
+    return { wrapper, trigger, display, dropdown, search, list, hidden, placeholder, closeDropdown };
+}
+
+// ── Initialisation Country ──
+const countryCtrl = buildCustomSelect({
+    wrapperId:  'country-wrapper',
+    triggerId:  'country-trigger',
+    displayId:  'country-display',
+    dropdownId: 'country-dropdown',
+    searchId:   'country-search',
+    listId:     'country-list',
+    hiddenId:   'country',
+    placeholder: 'Select your country'
+});
+
+// ── Initialisation City ──
+const cityCtrl = buildCustomSelect({
+    wrapperId:  'city-wrapper',
+    triggerId:  'city-trigger',
+    displayId:  'city-display',
+    dropdownId: 'city-dropdown',
+    searchId:   'city-search',
+    listId:     'city-list',
+    hiddenId:   'city',
+    placeholder: 'Select your city'
+});
+
+function populateCityList(cities, savedCity) {
+    const list   = document.getElementById('city-list');
+    const hidden = document.getElementById('city');
+    const display = document.getElementById('city-display');
+    if (!list) return;
+    list.innerHTML = '';
+
+    const noItem = document.createElement('li');
+    noItem.className = 'no-results';
+    noItem.textContent = 'No cities found';
+    noItem.style.display = 'none';
+    list.appendChild(noItem);
+
+    cities.forEach(city => {
+        const li = document.createElement('li');
+        li.dataset.label = city;
+        li.dataset.value = city;
+        li.textContent = city;
+        li.addEventListener('click', () => {
+            selectedCityName = city;
+            hidden.value = city;
+            display.textContent = city;
+            display.classList.remove('placeholder');
+            list.querySelectorAll('li').forEach(i => i.classList.remove('selected'));
+            li.classList.add('selected');
+            if (cityCtrl) cityCtrl.closeDropdown();
+        });
+        list.appendChild(li);
+    });
+
+    if (savedCity) {
+        const match = cities.find(c => c === savedCity);
+        if (match) {
+            hidden.value = match;
+            display.textContent = match;
+            display.classList.remove('placeholder');
+            selectedCityName = match;
+        }
+    }
+    allCities = cities;
+}
+
+async function loadCitiesForCountry(countryName, savedCity) {
+    const list    = document.getElementById('city-list');
+    const display = document.getElementById('city-display');
+    const hidden  = document.getElementById('city');
+    if (!list) return;
+
+    list.innerHTML = '<li class="loading">Loading cities…</li>';
+    if (display) { display.textContent = 'Select your city'; display.classList.add('placeholder'); }
+    if (hidden)  hidden.value = '';
+    selectedCityName = '';
+
+    try {
+        const res = await fetch('https://countriesnow.space/api/v0.1/countries/cities', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ country: countryName })
+        });
+        const data = await res.json();
+        const cities = (data.data && data.data.length) ? data.data : [];
+        populateCityList(cities, savedCity);
+        if (!cities.length) {
+            list.innerHTML = '<li class="no-results">No cities found</li>';
+        }
+    } catch (err) {
+        console.error('City load error', err);
+        list.innerHTML = '<li class="no-results">No cities found</li>';
+    }
+}
+
+async function loadCountries() {
+    const list    = document.getElementById('country-list');
+    const hidden  = document.getElementById('country');
+    const display = document.getElementById('country-display');
+    const phoneCodeInput = document.getElementById('phone-code');
+    if (!list) return;
+
+    list.innerHTML = '<li class="loading">Loading countries…</li>';
+
+    try {
+        const res  = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,cca2');
+        const data = await res.json();
+        allCountries = data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+
+        list.innerHTML = '';
+        const noItem = document.createElement('li');
+        noItem.className = 'no-results';
+        noItem.textContent = 'No results';
+        noItem.style.display = 'none';
+        list.appendChild(noItem);
+
+        allCountries.forEach(country => {
+            const name = country.name.common;
+            const code = country.idd?.root ? country.idd.root + (country.idd.suffixes?.[0] || '') : '';
+            const cca2 = country.cca2;
+
+            const li = document.createElement('li');
+            li.dataset.label = name;
+            li.dataset.value = name;
+            li.dataset.code  = code;
+            li.dataset.cca2  = cca2;
+            li.textContent   = name;
+
+            li.addEventListener('click', () => {
+                selectedCountryName = name;
+                selectedCountryCode = code;
+                selectedCountryCCA2 = cca2;
+
+                hidden.value = name;
+                display.textContent = name;
+                display.classList.remove('placeholder');
+                if (phoneCodeInput) phoneCodeInput.value = code;
+
+                list.querySelectorAll('li').forEach(i => i.classList.remove('selected'));
+                li.classList.add('selected');
+                if (countryCtrl) countryCtrl.closeDropdown();
+
+                // Charge les villes
+                const savedCity = localStorage.getItem('isLoggedIn') === 'true' ? localStorage.getItem('userCity') || '' : '';
+                loadCitiesForCountry(name, savedCity);
+            });
+
+            list.appendChild(li);
+        });
+
+        // Pré-sélectionne si utilisateur connecté
+        const savedCountry = localStorage.getItem('isLoggedIn') === 'true' ? localStorage.getItem('userCountry') || '' : '';
+        if (savedCountry) {
+            const match = allCountries.find(c => c.name.common === savedCountry);
+            if (match) {
+                const name = match.name.common;
+                const code = match.idd?.root ? match.idd.root + (match.idd.suffixes?.[0] || '') : '';
+                selectedCountryName = name;
+                selectedCountryCode = code;
+                selectedCountryCCA2 = match.cca2;
+                hidden.value = name;
+                display.textContent = name;
+                display.classList.remove('placeholder');
+                if (phoneCodeInput) phoneCodeInput.value = code;
+                const savedCity = localStorage.getItem('userCity') || '';
+                loadCitiesForCountry(name, savedCity);
+            }
+        }
+
+    } catch (err) {
+        console.error('Country load error', err);
+        list.innerHTML = '<li class="no-results">Failed to load countries</li>';
+    }
+}
+
+loadCountries();
 
     const shippingOptions = document.querySelectorAll('.shipping-option');
     shippingOptions.forEach(option => {
@@ -425,7 +605,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // ====================== PROMO ======================
     function updatePromoDisplay() {
         const hasBundle = cart.some(item => item.fromBundle);
-        const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const settings = productsData.find(i => i.type === 'settings');
+         const cd = settings?.cart_drawer || {};
+        const countFreeForPromo = (cd.promo_count_free_items || 'No').toLowerCase() === 'yes';
+        const totalQuantity = countFreeForPromo
+            ? cart.reduce((sum, item) => sum + item.quantity, 0)
+            : cart.filter(i => !i.isFreePromo).reduce((sum, item) => sum + item.quantity, 0);
         const suggested = promos.find(p => p.items === totalQuantity);
         const suggestedDiv = document.getElementById('suggested-promo');
         const suggestedCodeEl = document.getElementById('suggested-code');
@@ -464,6 +649,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const finalTotal = subtotal + effectiveTax + effectiveShipping - discountAmount;
         document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
         document.getElementById('taxes').textContent = `$${effectiveTax.toFixed(2)}`;
+        const taxLabel = document.getElementById('tax-rate-label');
+        if (taxLabel) taxLabel.textContent = (TAX_RATE * 100).toFixed(TAX_RATE * 100 % 1 === 0 ? 0 : 1);
         document.getElementById('shipping').textContent = effectiveShipping === 0 ? 'FREE' : `$${effectiveShipping.toFixed(2)}`;
         document.getElementById('total').textContent = `$${Math.max(0, finalTotal).toFixed(2)}`;
         const promoLine = document.getElementById('promo-line');
@@ -559,7 +746,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const input = document.getElementById('promo-input').value.trim().toUpperCase();
         const promoMessage = document.getElementById('promo-message');
         const hasBundle = cart.some(item => item.fromBundle);
-        const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const settings = productsData.find(i => i.type === 'settings');
+        const cd = settings?.cart_drawer || {};
+        const countFreeForPromo = (cd.promo_count_free_items || 'No').toLowerCase() === 'yes';
+        const totalQuantity = countFreeForPromo
+            ? cart.reduce((sum, item) => sum + item.quantity, 0)
+            : cart.filter(i => !i.isFreePromo).reduce((sum, item) => sum + item.quantity, 0);
         if (hasBundle) { promoMessage.textContent = "Promo codes cannot be used with bundles."; promoMessage.style.color = 'red'; return; }
         if (!input) { promoMessage.textContent = "Please enter a code."; promoMessage.style.color = 'red'; return; }
         const promo = promos.find(p => p.code.toUpperCase() === input);

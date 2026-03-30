@@ -70,7 +70,7 @@
             <h3>Promo Code</h3>
             <!-- Code promo suggéré (affiché automatiquement selon nombre de produits) -->
             <div id="suggested-promo">
-                <p>Recommended code for your cart (<span id="item-count-display">0</span> items):</p>
+                <p><span>Recommended code for your cart (<span id="item-count-display">0</span> items):</span></p>
                 <strong id="suggested-code"></strong>
                 <button id="copy-suggested">
                     Copy
@@ -86,7 +86,10 @@
             <p id="promo-message"></p>
         </div>
             <p>Subtotal: <span id="subtotal">$0.00</span></p>
-            <p>Taxes (10%): <span id="taxes">$0.00</span></p>
+            <p>
+            <span>Taxes (<span id="tax-rate-label">0</span>%)</span>
+            <span id="taxes">$0.00</span>
+            </p>
             <p>Shipping: <span id="shipping">$0.00</span></p>
             <p class="total">Total: <span id="total">$0.00</span></p>
             <p id="promo-line">
@@ -111,15 +114,31 @@
             <input type="tel" id="phone" required>
         </div>
         <!-- COUNTRY SELECT -->
-        <label for="country">Country</label>
-        <select id="country" required>
-            <option value="">Select your country</option>
-        </select>
+       <label for="country">Country</label>
+        <div class="custom-select-wrapper" id="country-wrapper">
+            <div class="custom-select-trigger" id="country-trigger" tabindex="0">
+                <span id="country-display">Select your country</span>
+                <i class="fas fa-chevron-down custom-select-arrow"></i>
+            </div>
+            <div class="custom-select-dropdown" id="country-dropdown">
+                <input type="text" class="custom-select-search" id="country-search" placeholder="Search country..." autocomplete="off">
+                <ul class="custom-select-list" id="country-list"></ul>
+            </div>
+            <input type="hidden" id="country" required>
+        </div>
         <!-- CITY SELECT -->
         <label for="city">City</label>
-        <select id="city" required>
-            <option value="">Select your city</option>
-        </select>
+        <div class="custom-select-wrapper" id="city-wrapper">
+            <div class="custom-select-trigger" id="city-trigger" tabindex="0">
+                <span id="city-display">Select your city</span>
+                <i class="fas fa-chevron-down custom-select-arrow"></i>
+            </div>
+            <div class="custom-select-dropdown" id="city-dropdown">
+                <input type="text" class="custom-select-search" id="city-search" placeholder="Search city..." autocomplete="off">
+                <ul class="custom-select-list" id="city-list"></ul>
+            </div>
+            <input type="hidden" id="city" required>
+        </div>
         <!-- STATE MANUAL -->
         <label for="state">State / Department</label>
         <input type="text" id="state" required>

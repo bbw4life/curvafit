@@ -912,6 +912,7 @@
       "promo_initial_message": "Buy {buy} items, get {get} FREE!",
       "promo_progress_message": "Add {remaining} more, get {get} FREE!",
       "promo_complete_message": "🎁 Congrats! You get {get} FREE item!",
+      "promo_count_free_items": "Yes",
       "banner_slides": [
         {"image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb4.jpg?v=1768321817","text": "You are BEAUTIFUL just as you are!"},
         {"image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb_3.jpg?v=1768321816","text": "Your confidence is your superpower."},
