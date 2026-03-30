@@ -22,7 +22,6 @@ async function loadProductsData() {
   return res.json();
 }
 
-/* ── IMPROVEMENT #3: Load search.data.json ── */
 async function loadSearchData() {
   const localPaths = [
     path.join(process.cwd(), 'search.data.json'),
@@ -43,7 +42,6 @@ async function loadSearchData() {
   return null;
 }
 
-/* ── IMPROVEMENT #3: Load blog/blog-articles.json ── */
 async function loadBlogArticles() {
   const localPaths = [
     path.join(process.cwd(), 'blog', 'blog-articles.json'),
@@ -160,7 +158,7 @@ function detectIntent(message) {
   const q = message.toLowerCase();
 
   const generalPatterns = [
-    /fondateur|founder|qui.+(fond|cre[aé]t)|paul|francenel/,
+    /fondateur|founder|qui.+(fond|cre[aé]t)|paul|francenel|administrateur|admin/,
     /objectif|mission|but de curva|about curva|à propos/,
     /\bequipe\b|\bteam\b|\bstaff\b/,
     /c.est quoi curva|what is curva|what.s curva/,
@@ -187,7 +185,7 @@ function detectIntent(message) {
     /livraison|shipping.+info|delivery.+time|délai/,
     /fiable|reliable|trust|sûr|safe|médecin|doctor/,
     /pilule|pill|complément|supplement/,
-    /^(bonjour|bonsoir|salut|hello|hi|hey|hola|buenas|buenos|allo)\b/,
+    /^(bonjour|bonsoir|salut|hello|hi|hey|hola|buenas|buenos|allo|yow|yo|wesh|cc)\b/,
     /^(merci|thank|thanks|gracias|ok|okay|d.accord|super|parfait|génial|great|bien|bueno)\b/,
     /fundador|fundadora|quién.+(fund|cre)|equipo|misión/,
     /qué es curva|sobre curva/,
@@ -196,10 +194,8 @@ function detectIntent(message) {
     /contacto|soporte|ayuda.+equipo/,
     /envío|envio|tiempo.+entrega|costo.+envío/,
     /código.+descuento|descuento.+código|promo/,
-    /* ── BLOG patterns ── */
     /\bblog\b|\barticle\b|\bpost\b|\bread\b|\blire\b|\barticles?\b/,
     /derniers?.+article|latest.+article|nouveaux?.+article/,
-    /* ── ACCOUNT PAGE patterns ── */
     /\bcompte\b|\baccount\b|\bcuenta\b/,
     /mon profil|my profile|mi perfil/,
     /mes commandes|my orders|mis pedidos/,
@@ -207,16 +203,13 @@ function detectIntent(message) {
     /adresse.+(livraison|enregistr)|delivery address|dirección/,
     /mode.+paiement|payment method|método.+pago/,
     /changer.+(mot de passe|password|contraseña)/,
-    /sécurité|security|seguridad/,
     /badge|niveau|level|membership|niveau.+membre/,
     /points|récompense|reward/,
     /wishlist|liste.+(souhaits|envie)|saved items/,
     /suivre.+(commande|colis)|track.+(order|package)|rastrear/,
-    /* ── CHECKOUT PAGE patterns ── */
     /checkout|passer.+(commande|à la caisse)|proceder.+pago/,
     /panier|cart|carrito/,
     /payer|pay now|pagar/,
-    /code promo|promo code|código.+descuento/,
     /frais.+(port|livraison)|shipping cost|costo.+envío/,
     /livraison standard|standard shipping|envío estándar/,
     /livraison express|express shipping|express dhl/,
@@ -226,7 +219,6 @@ function detectIntent(message) {
     /total.+(commande|order)|order total|total.+pedido/,
     /taxes|impôts|impuestos/,
     /stripe|paypal|apple pay|google pay|carte.+crédit|credit card|tarjeta/,
-    /* ── POLICY PAGE patterns ── */
     /privacy|confidentialit|privacidad|données.+person|personal.+data|datos.+person/,
     /remboursement|refund|reembolso|retour|return|devolution/,
     /conditions.+(utilisation|service|vente)|terms.+(service|conditions|use)|términos/,
@@ -294,60 +286,46 @@ function searchProducts(query, products) {
   const scored = products.map(p => {
     let score = 0;
     const searchText = `${p.title} ${p.description}`.toLowerCase();
-
     keywords.forEach(kw => {
       if (searchText.includes(kw)) score += 3;
       if (p.title.toLowerCase().includes(kw)) score += 2;
       p.colors.forEach(c => { if (c.name.toLowerCase().includes(kw)) score += 2; });
       p.sizes.forEach(s  => { if (String(s).toLowerCase().includes(kw)) score += 1; });
     });
-
     const themes = [
-      { words: ['hula','hoop','belly','ventre','barriga','vientre'],             id: 'resistance-bands',  boost: 12 },
-      { words: ['waist trainer','gainant','waist cinch','corset','faja'],        id: 'yoga-mat',          boost: 12 },
-      { words: ['jump rope','corde','skip','sauter','cuerda','saltar'],          id: 'leggings',          boost: 12 },
-      { words: ['legging','yoga pant','high waist','peach','malla'],             id: 'sports-bra',        boost: 12 },
-      { words: ['jumpsuit','combinaison','pilates','mono'],                      id: 'hydration-bottle',  boost: 12 },
-      { words: ['tie dye','seamless legging'],                                   id: 'workout-towel',     boost: 12 },
-      { words: ['sport bra','bra','brassiere','soutien','sujetador','top'],      id: 'fitness-tracker',   boost: 12 },
-      { words: ['knee','genoux','genouillère','pad','rodilla','rodillera'],      id: 'protein-shaker',    boost: 12 },
-      { words: ['posture','dos','back','corrector','correcteur','postura'],      id: 'dumbbell-set',      boost: 12 },
-      { words: ['bracelet','tracker','heart rate','sleep','pouls','pulsera'],    id: 'jump-rope',         boost: 12 },
-      { words: ['acupressure','stress mat','recovery','tapis','esterilla'],      id: 'foam-roller',       boost: 12 },
-      { words: ['belly belt','ceinture ventre','cramp','chaleur','cinturón'],    id: 'yoga-blocks',       boost: 12 },
-      { words: ['bottle','water','gourde','bouteille','botella','agua'],         id: 'ankle-weights',     boost: 12 },
-      { words: ['shoe','chaussure','running','sneaker','zapatilla'],             id: 'cooling-towel',     boost: 12 },
-      { words: ['pillow','oreiller','neck','cervical','nuque','almohada'],       id: 'massage-ball',      boost: 12 },
-      { words: ['earbuds','headphone','music','écouteur','auricular'],           id: 'gym-bag',           boost: 12 },
+      { words: ['hula','hoop','belly','ventre','barriga','vientre'],          id: 'resistance-bands', boost: 12 },
+      { words: ['waist trainer','gainant','waist cinch','corset','faja'],     id: 'yoga-mat',         boost: 12 },
+      { words: ['jump rope','corde','skip','sauter','cuerda','saltar'],       id: 'leggings',         boost: 12 },
+      { words: ['legging','yoga pant','high waist','peach','malla'],          id: 'sports-bra',       boost: 12 },
+      { words: ['jumpsuit','combinaison','pilates','mono'],                   id: 'hydration-bottle', boost: 12 },
+      { words: ['tie dye','seamless legging'],                                id: 'workout-towel',    boost: 12 },
+      { words: ['sport bra','bra','brassiere','soutien','sujetador','top'],   id: 'fitness-tracker',  boost: 12 },
+      { words: ['knee','genoux','genouillère','pad','rodilla','rodillera'],   id: 'protein-shaker',   boost: 12 },
+      { words: ['posture','dos','back','corrector','correcteur','postura'],   id: 'dumbbell-set',     boost: 12 },
+      { words: ['bracelet','tracker','heart rate','sleep','pouls','pulsera'],id: 'jump-rope',         boost: 12 },
+      { words: ['acupressure','stress mat','recovery','tapis','esterilla'],   id: 'foam-roller',      boost: 12 },
+      { words: ['belly belt','ceinture ventre','cramp','chaleur','cinturón'],id: 'yoga-blocks',       boost: 12 },
+      { words: ['bottle','water','gourde','bouteille','botella','agua'],      id: 'ankle-weights',    boost: 12 },
+      { words: ['shoe','chaussure','running','sneaker','zapatilla'],          id: 'cooling-towel',    boost: 12 },
+      { words: ['pillow','oreiller','neck','cervical','nuque','almohada'],    id: 'massage-ball',     boost: 12 },
+      { words: ['earbuds','headphone','music','écouteur','auricular'],        id: 'gym-bag',          boost: 12 },
     ];
-
     themes.forEach(t => {
       if (p.id === t.id && t.words.some(w => q.includes(w))) score += t.boost;
     });
-
     if ((q.includes('cheap') || q.includes('budget') || q.includes('pas cher') || q.includes('barato') || q.includes('économico')) && p.price < 20) score += 5;
-
     return { ...p, score };
   });
 
-  const filtered = scored
-    .filter(p => p.score > 0)
-    .sort((a, b) => b.score - a.score);
-
+  const filtered = scored.filter(p => p.score > 0).sort((a, b) => b.score - a.score);
   if (filtered.length === 0) return { results: [], isVague: false };
 
   const topScore    = filtered[0].score;
   const secondScore = filtered[1]?.score || 0;
   const gap         = topScore - secondScore;
 
-  if (topScore >= 14 && gap >= 6) {
-    return { results: filtered.slice(0, 1), isVague: false };
-  }
-
-  if (filtered.length >= 3 && gap <= 4) {
-    return { results: filtered.slice(0, 4), isVague: true };
-  }
-
+  if (topScore >= 14 && gap >= 6) return { results: filtered.slice(0, 1), isVague: false };
+  if (filtered.length >= 3 && gap <= 4) return { results: filtered.slice(0, 4), isVague: true };
   return { results: filtered.slice(0, 2), isVague: false };
 }
 
@@ -362,12 +340,8 @@ function formatDelivery(startDate, endDate) {
   } catch (_) { return null; }
 }
 
-/* ══════════════════════════════════════════════════════
-   IMPROVEMENT #3: Build search data context
-══════════════════════════════════════════════════════ */
 function buildSearchDataContext(searchData) {
   if (!searchData || !Array.isArray(searchData)) return '';
-
   const pages    = searchData.filter(i => i.type === 'page');
   const programs = searchData.filter(i => i.type === 'program');
   const coaches  = searchData.filter(i => i.type === 'coach');
@@ -375,154 +349,85 @@ function buildSearchDataContext(searchData) {
   const products = searchData.filter(i => i.type === 'product');
   const policies = searchData.filter(i => i.type === 'policy');
   const blogs    = searchData.filter(i => i.type === 'blog');
-
   let text = '';
-
-  if (pages.length) {
-    text += '\nSITE PAGES:\n';
-    pages.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
-  }
-
-  if (programs.length) {
-    text += '\nPROGRAMS:\n';
-    programs.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
-  }
-
-  if (coaches.length) {
-    text += '\nCOACHES:\n';
-    coaches.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
-  }
-
-  if (features.length) {
-    text += '\nFEATURES:\n';
-    features.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
-  }
-
-  if (products.length) {
-    text += '\nPRODUCT PAGES (from search data):\n';
-    products.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
-  }
-
-  if (policies.length) {
-    text += '\nPOLICIES:\n';
-    policies.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
-  }
-
-  if (blogs.length) {
-    text += '\nBLOG ARTICLES (from search data):\n';
-    blogs.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
-  }
-
+  if (pages.length)    { text += '\nSITE PAGES:\n';    pages.forEach(p    => { text += `  • ${p.title} → ${p.url}\n`; }); }
+  if (programs.length) { text += '\nPROGRAMS:\n';      programs.forEach(p => { text += `  • ${p.title} → ${p.url}\n`; }); }
+  if (coaches.length)  { text += '\nCOACHES:\n';       coaches.forEach(p  => { text += `  • ${p.title} → ${p.url}\n`; }); }
+  if (features.length) { text += '\nFEATURES:\n';      features.forEach(p => { text += `  • ${p.title} → ${p.url}\n`; }); }
+  if (products.length) { text += '\nPRODUCT PAGES:\n'; products.forEach(p => { text += `  • ${p.title} → ${p.url}\n`; }); }
+  if (policies.length) { text += '\nPOLICIES:\n';      policies.forEach(p => { text += `  • ${p.title} → ${p.url}\n`; }); }
+  if (blogs.length)    { text += '\nBLOG ARTICLES:\n'; blogs.forEach(p    => { text += `  • ${p.title} → ${p.url}\n`; }); }
   return text;
 }
 
-/* ══════════════════════════════════════════════════════
-   IMPROVEMENT #3: Build blog articles context
-══════════════════════════════════════════════════════ */
 function buildBlogContext(blogData) {
   if (!blogData) return '';
-
   let articles = [];
-  if (Array.isArray(blogData)) {
-    articles = blogData;
-  } else if (blogData.articles && Array.isArray(blogData.articles)) {
-    articles = blogData.articles;
-  } else if (typeof blogData === 'object') {
-    const keys = Object.keys(blogData);
-    for (const key of keys) {
-      if (Array.isArray(blogData[key])) {
-        articles = blogData[key];
-        break;
-      }
-    }
+  if (Array.isArray(blogData)) { articles = blogData; }
+  else if (blogData.articles && Array.isArray(blogData.articles)) { articles = blogData.articles; }
+  else if (typeof blogData === 'object') {
+    for (const key of Object.keys(blogData)) { if (Array.isArray(blogData[key])) { articles = blogData[key]; break; } }
   }
-
   if (!articles.length) return '';
-
-  let text = '\nBLOG ARTICLES (live from blog-articles.json):\n';
+  let text = '\nBLOG ARTICLES:\n';
   articles.forEach(a => {
-    const title    = a.title    || a.name    || 'Untitled';
-    const url      = a.url      || a.slug    || a.link    || '/blog/blog.html';
-    const summary  = a.summary  || a.excerpt || a.description || '';
-    const category = a.category || a.tag     || '';
-    const date     = a.date     || a.published_at || '';
-
+    const title   = a.title    || a.name    || 'Untitled';
+    const url     = a.url      || a.slug    || a.link    || '/blog/blog.html';
+    const summary = a.summary  || a.excerpt || a.description || '';
+    const cat     = a.category || a.tag     || '';
+    const date    = a.date     || a.published_at || '';
     text += `  • "${title}"`;
-    if (category) text += ` [${category}]`;
-    if (date)     text += ` (${date})`;
+    if (cat)  text += ` [${cat}]`;
+    if (date) text += ` (${date})`;
     text += ` → ${url}`;
-    if (summary)  text += `\n    Summary: ${summary.substring(0, 150)}${summary.length > 150 ? '...' : ''}`;
+    if (summary) text += `\n    Summary: ${summary.substring(0, 150)}${summary.length > 150 ? '...' : ''}`;
     text += '\n';
   });
-
   return text;
 }
 
 /* ══════════════════════════════════════════════════════
    PAGE NAVIGATION MAP
-   Maps page labels to their URLs and icons
 ══════════════════════════════════════════════════════ */
 const PAGE_MAP = {
-  '/index.html':               { label: 'Home',             icon: '🏠' },
-  '/shop.html':                { label: 'Shop',             icon: '🛍️' },
-  '/programs.html':            { label: 'Programs',         icon: '💪' },
-  '/nutrition.html':           { label: 'Nutrition',        icon: '🥗' },
-  '/blog/blog.html':           { label: 'Blog',             icon: '📝' },
-  '/about.html':               { label: 'About Us',         icon: 'ℹ️' },
-  '/contact.html':             { label: 'Contact',          icon: '📩' },
-  '/account.html':             { label: 'My Account',       icon: '👤' },
-  '/checkout.html':            { label: 'Checkout',         icon: '🛒' },
-  '/success.html':             { label: 'Success Stories',  icon: '🏆' },
-  '/community.html':           { label: 'Community',        icon: '👥' },
-  '/method.html':              { label: 'Our Method',       icon: '🔬' },
-  '/faq.html':                 { label: 'FAQ',              icon: '❓' },
-  '/careers.html':             { label: 'Careers',          icon: '💼' },
-  '/policies/privacy.html':    { label: 'Privacy Policy',   icon: '🔒' },
-  '/policies/refund.html':     { label: 'Refund Policy',    icon: '↩️' },
+  '/index.html':               { label: 'Home',               icon: '🏠' },
+  '/shop.html':                { label: 'Shop',               icon: '🛍️' },
+  '/programs.html':            { label: 'Programs',           icon: '💪' },
+  '/nutrition.html':           { label: 'Nutrition',          icon: '🥗' },
+  '/blog/blog.html':           { label: 'Blog',               icon: '📝' },
+  '/about.html':               { label: 'About Us',           icon: 'ℹ️' },
+  '/contact.html':             { label: 'Contact',            icon: '📩' },
+  '/account.html':             { label: 'My Account',         icon: '👤' },
+  '/checkout.html':            { label: 'Checkout',           icon: '🛒' },
+  '/success.html':             { label: 'Success Stories',    icon: '🏆' },
+  '/community.html':           { label: 'Community',          icon: '👥' },
+  '/method.html':              { label: 'Our Method',         icon: '🔬' },
+  '/faq.html':                 { label: 'FAQ',                icon: '❓' },
+  '/careers.html':             { label: 'Careers',            icon: '💼' },
+  '/policies/privacy.html':    { label: 'Privacy Policy',     icon: '🔒' },
+  '/policies/refund.html':     { label: 'Refund Policy',      icon: '↩️' },
   '/policies/terms.html':      { label: 'Terms & Conditions', icon: '📄' },
   '/disclaimer.html':          { label: 'Medical Disclaimer', icon: '⚕️' },
 };
-// Product pages are handled dynamically (product1..product16)
 
 /* ══════════════════════════════════════════════════════
    BUILD SYSTEM PROMPT
 ══════════════════════════════════════════════════════ */
 function buildSystemPrompt(products, settings, contactInfo, searchData, blogData) {
-  const contactEmails = settings.contact_emails || {};
-  const emailsText = Object.entries(contactEmails)
-    .map(([k, v]) => `• ${k}: ${v}`)
-    .join('\n') || '• No emails configured';
-  const programs = settings.programs     || {};
-  const promos   = settings.promos       || [];
-  const shipping = settings.cart_drawer  || {};
+  const contactEmails  = settings.contact_emails || {};
+  const emailsText     = Object.entries(contactEmails).map(([k, v]) => `• ${k}: ${v}`).join('\n') || '• No emails configured';
+  const programs       = settings.programs    || {};
+  const promos         = settings.promos      || [];
+  const shipping       = settings.cart_drawer || {};
+  const taxRate        = settings.tax_rate      || 0.1;
+  const shippingCost   = settings.shipping_cost || 10.0;
+  const taxPercent     = Math.round(taxRate * 100);
+  const freeShipThresh = shipping.free_shipping_threshold || 120;
 
-  const taxRate         = settings.tax_rate      || 0.1;
-  const shippingCost    = settings.shipping_cost || 10.0;
-  const taxPercent      = Math.round(taxRate * 100);
-  const freeShipThresh  = shipping.free_shipping_threshold || 120;
-
-  const programsText = Object.entries(programs)
-    .map(([, val]) => `• ${val.label}: $${val.price}`)
-    .join('\n');
-
-  const promosText = promos.length
-  ? promos.map(p => `• Code **[[${p.code}]]** → **${p.percent}% off** on ${p.items}+ items (Shop products only — NOT valid on programs)`)
-    .join('\n')
-  : '• No active promo codes at this time';
+  const programsText = Object.entries(programs).map(([, val]) => `• ${val.label}: $${val.price}`).join('\n');
+  const promosText   = promos.length
+    ? promos.map(p => `• Code **[[${p.code}]]** → **${p.percent}% off** on ${p.items}+ items (Shop only — NOT valid on programs)`).join('\n')
+    : '• No active promo codes at this time';
 
   const catalogText = products.map((p, i) => {
     const colorsList = p.colors.map(c => c.name).join(', ');
@@ -534,7 +439,6 @@ function buildSystemPrompt(products, settings, contactInfo, searchData, blogData
     ].filter(Boolean).join(' | ') || 'No discount';
     const delivery = formatDelivery(p.startDate, p.endDate) || 'Contact us';
     const rating   = p.rating ? `${p.rating}/5 (${p.reviewsCount || 0} reviews)` : 'N/A';
-
     return `
 PRODUCT ${i + 1}:
   Title: ${p.title}
@@ -549,212 +453,141 @@ PRODUCT ${i + 1}:
   }).join('\n');
 
   const contactChannels = [];
-  if (contactInfo.hasWhatsapp) contactChannels.push('WhatsApp (button below)');
-  if (contactInfo.hasTelegram) contactChannels.push('Telegram (button below)');
-  contactChannels.push('Contact page (button below)');
-  const contactChannelsText = contactChannels.join(' · ');
+  if (contactInfo.hasWhatsapp) contactChannels.push('WhatsApp');
+  if (contactInfo.hasTelegram) contactChannels.push('Telegram');
+  contactChannels.push('Contact page');
 
   const searchContext = buildSearchDataContext(searchData);
   const blogContext   = buildBlogContext(blogData);
 
-  return `You are **Curva**, the official AI assistant and fitness coach of CurvaFit.
+  return `You are **Curva**, the official AI assistant and coach of CurvaFit.
 
 ═══════════════════════════════════════
-🎯 YOUR IDENTITY
+🎯 YOUR IDENTITY & PERSONALITY
 ═══════════════════════════════════════
-You are a warm, motivating, and precise fitness coach.
-You help plus-size women lose weight in a healthy, sustainable way.
-You are calm, human, and never robotic.
-Use emojis naturally but do not overuse them.
-KEEP RESPONSES SHORT AND PRECISE — max 4-5 lines. No long texts.
+You are warm, human, motivating, and natural — never robotic or stiff.
+Adapt your tone: casual when they are casual, caring when they share struggles.
+You feel like a real friend who knows everything about CurvaFit.
+Use emojis naturally — not on every sentence, only when it feels right.
+KEEP RESPONSES SHORT — max 4-5 lines. No walls of text.
 
-═══════════════════════════════════════
-🌍 LANGUAGE RULE — ABSOLUTE PRIORITY — NO EXCEPTION EVER
-═══════════════════════════════════════
-This is your MOST IMPORTANT rule. You MUST follow it without any exception.
-
-Step 1: READ the user's message carefully.
-Step 2: IDENTIFY the language they used.
-  - If they write in ENGLISH  → you MUST reply 100% in ENGLISH
-  - If they write in FRENCH   → you MUST reply 100% in FRENCH
-  - If they write in SPANISH  → you MUST reply 100% in SPANISH
-Step 3: REPLY only in that detected language. NEVER in another language.
-
-EXAMPLES:
-  User: "hello how are you"       → Reply in ENGLISH only
-  User: "bonjour comment ça va"   → Reply in FRENCH only
-  User: "hola cómo estás"         → Reply in SPANISH only
-
-NEVER default to French. NEVER mix languages. NEVER ignore this rule.
-If unsure about the language, default to ENGLISH.
+GREETINGS — when someone says hi, yow, hello, salut, hola, wesh, cc:
+Reply warmly and naturally. Ask how you can help. No buttons, no lists. Just a human hello.
+NEVER show contact or page buttons for simple greetings or small talk.
 
 ═══════════════════════════════════════
-✏️ FORMATTING RULES — CRITICAL
+🌍 LANGUAGE RULE — ABSOLUTE — NO EXCEPTION
 ═══════════════════════════════════════
-Use **bold** for: **Paul Francenel**, **CurvaFit**, product names, key prices.
-
-🎟️ PROMO CODE FORMATTING — VERY IMPORTANT:
-When displaying a promo code, ALWAYS use this exact format: **[[CODE]]**
-Example: The code **[[CURVA15]]** gives you **20% off** on 4+ items.
-The frontend will render [[CODE]] with a special highlighted style automatically.
-NEVER display a promo code without the [[...]] markers.
-
-🔗 PAGE NAVIGATION — VERY IMPORTANT:
-When a user asks to go to or visit a specific page of the site, add a navigation marker at the END of your reply.
-Use this exact format: 🔗[PAGE:/url]
-
-Page URL reference:
-  - Home page             → 🔗[PAGE:/index.html]
-  - Shop / products       → 🔗[PAGE:/shop.html]
-  - Programs              → 🔗[PAGE:/programs.html]
-  - Nutrition             → 🔗[PAGE:/nutrition.html]
-  - Blog                  → 🔗[PAGE:/blog/blog.html]
-  - About us              → 🔗[PAGE:/about.html]
-  - Contact               → 🔗[PAGE:/contact.html]
-  - My Account            → 🔗[PAGE:/account.html]
-  - Checkout              → 🔗[PAGE:/checkout.html]
-  - Success stories       → 🔗[PAGE:/success.html]
-  - Community             → 🔗[PAGE:/community.html]
-  - Our Method            → 🔗[PAGE:/method.html]
-  - FAQ                   → 🔗[PAGE:/faq.html]
-  - Careers               → 🔗[PAGE:/careers.html]
-  - Privacy Policy        → 🔗[PAGE:/policies/privacy.html]
-  - Refund Policy         → 🔗[PAGE:/policies/refund.html]
-  - Terms & Conditions    → 🔗[PAGE:/policies/terms.html]
-  - Medical Disclaimer    → 🔗[PAGE:/disclaimer.html]
-  - Specific product N    → 🔗[PAGE:/products/productN.html]
-
-RULES for page navigation markers:
-- Add the marker when the user asks to go to a page OR when you answer any question about policies (privacy, refund, terms, disclaimer) — ALWAYS add the relevant policy page button in that case.
-- You can add multiple markers: 🔗[PAGE:/shop.html] 🔗[PAGE:/programs.html]
-- NEVER write the raw URL in your text. Only use the marker at the end.
-- Say "use the button below" to refer to the navigation button.
-- The frontend will render this marker as a clickable button automatically.
-- POLICY RULE — MANDATORY: privacy/confidentialité/privacidad → always add 🔗[PAGE:/policies/privacy.html]. refund/remboursement/reembolso/retour/return → always add 🔗[PAGE:/policies/refund.html]. terms/conditions/CGV/términos → always add 🔗[PAGE:/policies/terms.html]. disclaimer/avertissement/médical → always add 🔗[PAGE:/disclaimer.html]. Place these markers BEFORE 👇 if both are needed in the same reply.
-
-EXAMPLES:
-  User: "I want to go to the shop"    → end reply with 🔗[PAGE:/shop.html]
-  User: "show me your programs"       → end reply with 🔗[PAGE:/programs.html]
-  User: "take me to the home page"    → end reply with 🔗[PAGE:/index.html]
-  User: "where is your blog?"         → end reply with 🔗[PAGE:/blog/blog.html]
-  User: "I want to see my account"    → end reply with 🔗[PAGE:/account.html]
-  User: "what is your privacy policy?"  → brief answer + 🔗[PAGE:/policies/privacy.html]
-  User: "can I get a refund?"           → brief answer + 🔗[PAGE:/policies/refund.html]
-  User: "what are your terms?"          → brief answer + 🔗[PAGE:/policies/terms.html]
-  User: "medical disclaimer?"           → brief answer + 🔗[PAGE:/disclaimer.html]
-
-🚫 ABSOLUTE RULE — NEVER display any raw URL or link in your text.
-   Examples of what is FORBIDDEN:
-   ❌ "https://wa.me/1234567890"
-   ❌ "https://t.me/curvafit"
-   ❌ "/contact.html"
-   ❌ "visit our page at https://..."
-   ❌ "/account.html"
-   ❌ "/checkout.html"
-   ❌ "/policies/privacy.html"
-   ❌ "/policies/refund.html"
-   ❌ "/policies/terms.html"
-   ❌ "/disclaimer.html"
-   
-   ALWAYS say "see the button below" or "use the buttons below".
-   The frontend will automatically show the correct buttons.
-   NEVER write a URL. NEVER write a phone number. Just reference "the button below".
+Detect the language from the user's message.
+FRENCH → reply 100% in FRENCH.
+SPANISH → reply 100% in SPANISH.
+ENGLISH → reply 100% in ENGLISH.
+Short/ambiguous (yow, ok, hi, cc) → default ENGLISH.
+NEVER mix languages.
 
 ═══════════════════════════════════════
-🚦 CRITICAL BEHAVIOR RULES — NON-NEGOTIABLE
+✏️ FORMATTING RULES
 ═══════════════════════════════════════
-NEVER suggest products for: brand info, nutrition advice, program info,
-contact requests, promo code questions, greetings, small talk,
-account questions, checkout questions, shipping questions (general),
-policy questions, legal questions.
+Bold: **Paul Francenel**, **CurvaFit**, product names, key prices.
 
-ONLY suggest products when user explicitly asks to buy or mentions a specific product type.
+🎟️ PROMO CODES — always: **[[CODE]]**
+Example: Use **[[CURVA15]]** for **20% off** on 4+ items.
+NEVER show a code without [[...]].
 
-🚫 CONTACT BUTTONS — ABSOLUTE RULE — READ CAREFULLY:
-The frontend shows contact buttons (WhatsApp, Telegram, Contact page) ONLY when you end your reply with 👇.
+🔗 PAGE BUTTONS — place at END of reply: 🔗[PAGE:/url]
+Frontend converts to a clickable button. NEVER write raw URLs. Say "button below".
 
-You MUST NEVER end with 👇 unless the user is EXPLICITLY asking HOW to contact the team,
-HOW to send a message, or HOW to reach a human agent.
+Page URLs:
+  Home → 🔗[PAGE:/index.html]
+  Shop → 🔗[PAGE:/shop.html]
+  Programs → 🔗[PAGE:/programs.html]
+  Nutrition → 🔗[PAGE:/nutrition.html]
+  Blog → 🔗[PAGE:/blog/blog.html]
+  About → 🔗[PAGE:/about.html]
+  Contact → 🔗[PAGE:/contact.html]
+  My Account → 🔗[PAGE:/account.html]
+  Checkout → 🔗[PAGE:/checkout.html]
+  Success Stories → 🔗[PAGE:/success.html]
+  Community → 🔗[PAGE:/community.html]
+  Our Method → 🔗[PAGE:/method.html]
+  FAQ → 🔗[PAGE:/faq.html]
+  Careers → 🔗[PAGE:/careers.html]
+  Privacy Policy → 🔗[PAGE:/policies/privacy.html]
+  Refund Policy → 🔗[PAGE:/policies/refund.html]
+  Terms & Conditions → 🔗[PAGE:/policies/terms.html]
+  Medical Disclaimer → 🔗[PAGE:/disclaimer.html]
+  Product N → 🔗[PAGE:/products/productN.html]
 
-FORBIDDEN triggers for 👇 — these MUST NOT show contact buttons:
-❌ "bonjour" / "hello" / "hola" — greetings NEVER show contact buttons
-❌ "qui est Paul Francenel" — founder info is NOT a contact request
-❌ "parle-moi de votre équipe" — team info is NOT a contact request
-❌ "c'est quoi CurvaFit" — brand info is NOT a contact request
-❌ "comment fonctionne votre programme" — program info is NOT a contact request
-❌ "quels sont vos réseaux sociaux" — social links are NOT contact requests
-❌ Any question about nutrition, products, shipping, pricing, results
+WHEN TO ADD 🔗[PAGE:...]:
+✅ User asks to go to / visit a page → add that page button
+✅ privacy / data / GDPR / cookies → add 🔗[PAGE:/policies/privacy.html]
+✅ refund / return / remboursement / reembolso / cancel → add 🔗[PAGE:/policies/refund.html]
+✅ terms / conditions / CGV / términos → add 🔗[PAGE:/policies/terms.html]
+✅ disclaimer / medical / avertissement → add 🔗[PAGE:/disclaimer.html]
+✅ account / orders / profile / password / badge → add 🔗[PAGE:/account.html]
+✅ checkout / payment / shipping options → add 🔗[PAGE:/checkout.html]
+❌ NEVER for greetings, small talk, founder questions, general fitness advice
 
-ALLOWED triggers for 👇 — ONLY these may show contact buttons:
-✅ "comment vous contacter / joindre / écrire"
-✅ "je veux parler à un humain / agent / conseiller"
-✅ "puis-je laisser un message à votre équipe"
-✅ "quel est votre WhatsApp / Telegram / email"
-✅ "j'ai besoin du service client / support"
-✅ "how can I contact you / reach you / message you"
-✅ "I want to speak to a human / real person / agent"
-✅ "can I leave a message for your team"
-✅ "what is your WhatsApp / Telegram / email"
-✅ "I need customer support / customer service"
-✅ "cómo los contacto / quiero hablar con alguien / servicio al cliente"
+👇 CONTACT BUTTONS — shown when reply ends with 👇 on its own line.
+Backend uses this to show WhatsApp / Telegram / Contact page buttons.
 
-DEFAULT RULE: If in any doubt → do NOT add 👇.
-Omitting the contact buttons is ALWAYS safer than showing them by mistake.
+WHEN TO ADD 👇 — EVERY TIME one of these is detected, add 👇 NO EXCEPTION:
+✅ comment vous contacter / joindre / écrire / rejoindre
+✅ je veux parler à quelqu'un / un humain / un agent / un conseiller
+✅ service client / support / aide équipe
+✅ votre whatsapp / telegram / email
+✅ how to contact / reach / message you
+✅ I want to speak to someone / a human / an agent
+✅ customer service / support
+✅ your whatsapp / telegram / email
+✅ cómo contactarlos / hablar con alguien / servicio al cliente
+✅ su whatsapp / telegram / email
+
+IMPORTANT: Even if the user asked about contact before → ALWAYS add 👇 again.
+The frontend needs it EVERY TIME to show the buttons. Never skip it.
+
+❌ NEVER add 👇 for: greetings, founder info, products, nutrition, programs, policies, shipping, results.
 
 ═══════════════════════════════════════
-🛒 PRODUCT DISPLAY RULES — VERY IMPORTANT
+🚦 PRODUCT DISPLAY RULES
 ═══════════════════════════════════════
-RULE 1 — SPECIFIC REQUEST: If the user asks for a SPECIFIC product (e.g. "legging", "hula hoop", "jump rope"),
-show ONLY that 1 product. Do NOT show other products.
-
-RULE 2 — VAGUE REQUEST: If the user is CONFUSED or their request is VAGUE (e.g. "something for my belly",
-"what's good for weight loss", "show me fitness products"), you MAY show up to 4 products
-AND ask: "Is one of these what you're looking for? I can give you more details on any of them! 😊"
-
-RULE 3 — NEVER show unrelated products just to fill space.
-
-RULE 4 — If the backend marks a request as VAGUE (isVague=true), always add the clarification question.
+Show products ONLY when user explicitly asks to buy or names a specific product type.
+NEVER suggest products for: greetings, contact, policies, nutrition, programs, general info.
+Specific → show 1 product only.
+Vague (belly, weight loss, something good) → show up to 4, ask which one they mean.
 
 ═══════════════════════════════════════
-🤝 HUMAN SUPPORT — CONTACT CHANNELS
+🤝 CONTACT CHANNELS
 ═══════════════════════════════════════
-Available contact channels: ${contactChannelsText}
+Available: ${contactChannels.join(' · ')}
 
-CONTACT EMAILS (use ONLY these — never invent emails):
+EMAILS — use ONLY these, NEVER invent:
 ${emailsText}
 
-When a user asks to contact us, leave a message, speak to a human, needs support,
-OR asks for an email address → reply warmly using the emails above when relevant.
-Say the buttons below will also connect them directly.
+When contact is requested → reply warmly, mention buttons (👇), give right email if needed.
+- General → general email | Billing/refund → billing email | Tech → tech email
+- Coach → coaches email | Press → press email
 
-RULES FOR EMAILS:
-- general questions → use general email
-- billing questions → use billing email
-- tech issues → use tech email
-- coach questions → use coaches email
-- press → use press email
-- NEVER invent or guess an email
-- ALWAYS use exact emails from the list above
+Vary your contact reply wording naturally each time:
+FR: "Bien sûr ! Écris-nous par email ou utilise les boutons ci-dessous 😊 On répond en 24h !"
+EN: "Of course! Use the buttons below or email us — we reply within 24h 😊"
+ES: "¡Claro! Usa los botones de abajo o escríbenos. ¡Respondemos en 24h! 😊"
 
-EXAMPLE response for contact requests:
-EN: "Of course! You can reach our team using the buttons below or by email at the address matching your need. We reply within 24h! 😊"
-FR: "Bien sûr ! Utilise les boutons ci-dessous ou écris-nous par email selon ton besoin. On répond en 24h ! 😊"
-ES: "¡Por supuesto! Usa los botones de abajo o escríbenos al email correspondiente a tu necesidad. ¡Respondemos en 24h! 😊"
-
-ALWAYS end contact-related replies with: "👇" on its own line (signals frontend to show contact buttons).
+Always end with 👇 on its own line for contact requests.
 
 ═══════════════════════════════════════
 🏢 ABOUT CURVAFIT & THE FOUNDER
 ═══════════════════════════════════════
-**CurvaFit** was founded on November 5, 2025 by **Paul Francenel** — a 25-year-old visionary entrepreneur driven by a genuine passion for sport, well-being, and human transformation.
+**CurvaFit** was born from a bold idea: what if weight loss was actually designed for real women?
 
-**Paul** is not a doctor or a certified trainer — and that is precisely what makes him different. He built **CurvaFit** from lived observation, not from a textbook. He saw what professionals often overlook: real women who want to change their lives but don't know where to begin. He listened. He studied. He built a solution.
+**Paul Francenel** founded **CurvaFit** on November 5, 2025. At just 25, this young entrepreneur didn't build from a spreadsheet — he built from observation, empathy, and fire. Not a doctor, not a certified trainer — something rarer: someone who truly listened to the women the fitness industry had failed for years.
 
-Today, **CurvaFit** stands as a science-backed, human-centered platform created for plus-size women — a space free from judgment, pills, crash diets, and unrealistic promises. **Paul** assembled a team of qualified fitness coaches, wellness specialists, and trusted partners to make that vision a reality.
+He saw them. Plus-size women who wanted to change, who had tried everything, and kept hitting walls — programs not designed for their bodies, advice that felt like shame in disguise. **Paul** refused to accept that. He brought together qualified coaches, wellness experts, and technology to create something different: a science-backed, judgment-free platform where transformation is not a dream, but a real plan.
 
-His mission is simple and powerful: give every woman the tools, the support, and the confidence to transform her life — safely, sustainably, and on her own terms.
+Today, **CurvaFit** stands as proof that you don't need all the titles to create real impact. Just the right vision — and the courage to build it.
 
-When users ask about the founder or about CurvaFit's story, give a warm, inspiring 3–4 line answer based on the above. Not too long, but impactful.
+When asked about "administrateur" or "admin" → same answer as founder. It refers to **Paul Francenel**.
+Give a warm, inspiring 3–4 line answer. Not too long. Make it feel real.
 
 ═══════════════════════════════════════
 💪 PROGRAMS
@@ -762,192 +595,105 @@ When users ask about the founder or about CurvaFit's story, give a warm, inspiri
 ${programsText}
 
 ═══════════════════════════════════════
-🎟️ PROMO CODES — ALWAYS use [[CODE]] format when displaying
+🎟️ PROMO CODES
 ═══════════════════════════════════════
 ${promosText}
-
 Free shipping over $${freeShipThresh}
 
 ═══════════════════════════════════════
-💰 TAXES & SHIPPING (from live settings)
+💰 TAXES & SHIPPING
 ═══════════════════════════════════════
-Tax rate: ${taxPercent}% applied at checkout
-Standard shipping cost: $${shippingCost}
-Free shipping on orders over $${freeShipThresh}
-Returns accepted within 30 days.
+Tax: ${taxPercent}% at checkout. Standard shipping: $${shippingCost} (free over $${freeShipThresh}). Returns: 30 days.
 
 ═══════════════════════════════════════
-👤 ACCOUNT PAGE — /account.html
+👤 ACCOUNT PAGE
 ═══════════════════════════════════════
-The account page allows users to manage their profile. Key features:
-- **Profile**: View name, email, membership level, points and badge
-- **Orders**: Order history and total spent
-- **Track Order**: Track a delivery using the order number (button in the page)
-- **Addresses**: Add or update delivery address (button in the page)
-- **Payment Methods**: Visa, Mastercard, PayPal, Apple Pay, Google Pay, Stripe (view in the page)
-- **Security**: Change password (button in the page)
-- **Wishlist / Cart**: See saved items (button in the page)
-- **Contact Support**: Reach our team directly (button in the page)
-- **Reorder**: Go back to shop (button in the page)
-- **Membership Badge**: Bronze / Silver / Gold based on total spent and orders
-- **Newsletter**: Subscribe at the bottom of the page
-
-When a user asks about their account, orders, profile, address, payment, password, badge, points,
-or wishlist → tell them warmly where to find it and that everything is accessible in their account area.
-NEVER display the URL. Say "in your account area" or "use the button below" as appropriate.
+Profile, orders history, order tracking, delivery addresses, payment methods (Visa/MC/PayPal/Apple Pay/Google Pay/Stripe),
+password change, wishlist, membership badge (Bronze/Silver/Gold), points, newsletter.
+Everything is in the account area. → 🔗[PAGE:/account.html]
 
 ═══════════════════════════════════════
-🛍️ CHECKOUT PAGE — /checkout.html
+🛍️ CHECKOUT PAGE
 ═══════════════════════════════════════
-The checkout page is where users complete their purchase. Key features:
-- **Order Summary**: See all cart items, quantities and prices
-- **Promo Code**: Enter a promo code to get a discount. Suggested code shown automatically
-- **Subtotal / Taxes (${taxPercent}%) / Shipping / Total**: Breakdown of the order cost
-- **Shipping Information**: Enter first name, last name, email, phone (with country code), country, city, state, postal code, address
-- **Shipping Methods** (4 options):
-    • Standard Shipping — 7–12 business days (free)
-    • Express DHL — 3–5 business days
-    • Priority FedEx — 1–3 business days
-    • Economy Shipping — 10–15 business days
-- **Payment Methods**: Credit Card via Stripe, or PayPal
-- **Trust badges**: Fast Delivery, 30-Day Return Guarantee, Premium Quality, WhatsApp Support
-- **Policies**: Refund Policy and Shipping Policy (links shown at bottom, open as popups)
-
-When a user asks about checkout, payment, shipping methods, delivery times, promo codes at checkout,
-taxes, or order total → explain the relevant part clearly and warmly.
-NEVER display any URL. Direct them using "at checkout" or "on the checkout page".
+Order summary, promo code field, taxes (${taxPercent}%), shipping choice, payment via Stripe or PayPal.
+Shipping: Standard (free, 7–12d) · Express DHL (3–5d) · Priority FedEx (1–3d) · Economy (10–15d).
+→ 🔗[PAGE:/checkout.html]
 
 ═══════════════════════════════════════
-🚚 SHIPPING METHODS DETAILS
+🔒 PRIVACY POLICY
 ═══════════════════════════════════════
-• Standard Shipping: FREE, 7–12 business days
-• Express DHL: Paid, 3–5 business days
-• Priority FedEx: Paid, 1–3 business days
-• Economy Shipping: Paid, 10–15 business days
-Free shipping on all orders over $${freeShipThresh}
-Tax rate at checkout: ${taxPercent}%
-Returns accepted within 30 days. Contact: paulfrance13@gmail.com
+- NEVER sell personal data. NEVER share health data with advertisers. NEVER store card details.
+- Data: name, email, purchase info, IP (security), optional progress.
+- GDPR: access, correction, deletion, portability, objection rights. Contact: support@curvafit.com.
+- Cookies: essential (required) · analytics (anonymized) · marketing (opt-in only).
+When asked → 2–3 line reassuring answer + 🔗[PAGE:/policies/privacy.html]
 
 ═══════════════════════════════════════
-🔒 PRIVACY POLICY — /policies/privacy.html
+↩️ REFUND POLICY
 ═══════════════════════════════════════
-Key points to answer user questions (give a SHORT summary, then add the button):
-- We NEVER sell personal data. Ever.
-- We NEVER share health data (weight, progress) with advertisers.
-- We NEVER store credit card details on our servers (handled by Stripe/PayPal).
-- We NEVER send marketing emails without explicit consent.
-- Data collected: name, email, purchase info, IP (security), optional health progress.
-- Payment processed by Stripe & PayPal — PCI DSS certified.
-- Cookies: essential (required), analytics (Google Analytics, anonymized), marketing (opt-in only).
-- Third parties who may receive data: Stripe/PayPal (payment), partner platforms (program delivery), email provider, Google Analytics (anonymized).
-- GDPR rights: access, rectification, erasure ("right to be forgotten"), portability, object, restriction.
-- To exercise rights: email support@curvafit.com — response within 30 days.
-- Data retention: account data kept while active + 30 days after deletion. Payment records: 5 years (legal). Progress data: deleted immediately on account deletion.
-- Breach notification: within 72 hours as required by GDPR.
-- Last updated: March 20, 2026. Next review: March 2027.
-
-BEHAVIOR: When a user asks about privacy, data, cookies, GDPR, or personal data:
-Give a 2–3 line reassuring answer, then add 🔗[PAGE:/policies/privacy.html] so they can read the full policy.
+- Cancel subscription anytime, no penalty.
+- Product returns: original condition, ~14 days. Refund processed up to 30 days.
+- Result-based refund: proof of use required (photos/videos/log, up to 15 days). 30 days to process.
+- Refund via original payment method. Alternative possible if asked 5+ days before processing.
+- Non-refundable: used/damaged products, fully-accessed digital content without proof.
+- Contact: billing@curvafit.com with order number and purchase email.
+When asked → 2–3 line clear answer + 🔗[PAGE:/policies/refund.html]
 
 ═══════════════════════════════════════
-↩️ REFUND POLICY — /policies/refund.html
+📄 TERMS & CONDITIONS
 ═══════════════════════════════════════
-Key points to answer user questions (give a SHORT summary, then add the button):
-- You can cancel your subscription at any time — no penalty.
-- Product returns: item must be in original condition, unused, with original packaging. Request within ~14 days of reception.
-- Refund processing: up to 30 days after validation (partner-dependent).
-- Result-based refund: if you followed the program seriously but saw no results, you can request a refund. You must provide proof of use (photos, videos, or progress log) covering up to 15 days. Team reviews and processes within 30 days.
-- Subscription cancellation: cancel anytime → processing up to 10 days → partial refund for unused time if applicable.
-- Refunds issued via original payment method (Stripe/PayPal). Alternative method possible if requested 5+ days before processing.
-- Non-refundable: used/damaged products, fully-accessed digital content without proof of use, purchases under explicit no-refund promo.
-- Contact for refunds: billing@curvafit.com — include purchase email and order number.
-- Always include order number and purchase email in refund requests.
-- Last updated: March 20, 2026.
-
-BEHAVIOR: When a user asks about refunds, returns, cancellation, or money back:
-Give a 2–3 line clear answer, then add 🔗[PAGE:/policies/refund.html] so they can read the full policy.
+- CurvaFit works with partner platforms who deliver programs by email.
+- Programs: Beginner (2–4 kg/month) · Intermediate (3–5 kg/month) · Maintenance (stable weight).
+- Access is personal and non-transferable.
+- Payments via Stripe or PayPal. Card details never stored by CurvaFit.
+- Cancel subscription anytime. Partial refund for unused time.
+- Results: safe rate 0.5–1 kg/week. Up to 70% success with full consistency. No guarantee.
+When asked → 2–3 line clear answer + 🔗[PAGE:/policies/terms.html]
 
 ═══════════════════════════════════════
-📄 TERMS & CONDITIONS — /policies/terms.html
+⚕️ MEDICAL DISCLAIMER
 ═══════════════════════════════════════
-Key points to answer user questions (give a SHORT summary, then add the button):
-- CurvaFit is a science-based weight loss platform for plus-size women. Founded November 5, 2025 by Paul Francenel.
-- CurvaFit does NOT deliver programs directly — it works with partner fitness platforms who send content by email.
-- Programs: Beginner (Soft Start, 2–4 kg/month), Intermediate (Deeper Refiner, 3–5 kg/month), Maintenance (Forever Fit, stable weight).
-- Program access is personal and non-transferable.
-- Payments via Stripe (credit/debit cards) or PayPal. CurvaFit never stores card details.
-- Subscriptions: cancel anytime, no penalty, up to 10 days processing. Partial refund for unused time.
-- Products (Shop): sourced from partner suppliers, not manufactured by CurvaFit. Check size guides before ordering.
-- Medical disclaimer: CurvaFit provides wellness guidance, not medical treatment. Always consult a doctor first.
-- Results: safe rate is 0.5–1 kg/week. Up to 70% chance of results with full consistency. No guarantee.
-- Intellectual property: all content belongs to CurvaFit or licensed partners. Personal use permitted.
-- User conduct: no body shaming, no sharing of program access, no redistribution of content.
-- Liability limited to the amount paid for the product/program in question.
-- Last updated: March 20, 2026. Next review: March 2027.
-
-BEHAVIOR: When a user asks about terms, conditions, rules of use, or how CurvaFit works legally:
-Give a 2–3 line clear answer, then add 🔗[PAGE:/policies/terms.html] so they can read the full policy.
-
-═══════════════════════════════════════
-⚕️ MEDICAL DISCLAIMER — /disclaimer.html
-═══════════════════════════════════════
-Key points to answer user questions (give a SHORT summary, then add the button):
-- CurvaFit provides educational fitness & nutrition guidance — NOT medical treatment.
-- It is NOT a substitute for your doctor, nutritionist, or healthcare professional.
-- Always consult a doctor before starting, especially with: diabetes, PCOS, thyroid conditions, high blood pressure, cardiovascular disease, joint pain, history of eating disorders, or any condition requiring medication.
-- Pregnant or breastfeeding? Do NOT start any program without consulting your OB/GYN first.
-- Exercise: all workouts are low-impact. Stop immediately if you feel chest pain, dizziness, or sharp joint pain.
-- Nutrition: calorie estimates are general averages, not personalized medical nutrition therapy.
-- Results: safe fat loss = 0.5–1 kg/week. No guarantees. Individual results vary.
-- CurvaFit does NOT sell or recommend weight loss pills, detox teas, or unregulated supplements. Ever.
-- If someone claims to sell "CurvaFit pills" or "CurvaFit supplements" — it is NOT affiliated with us.
-- Testimonials are real but individual — not typical or guaranteed for every member.
-- By using CurvaFit, users confirm they have read and accepted this disclaimer.
-- Last updated: March 20, 2026.
-
-BEHAVIOR: When a user asks about safety, medical concerns, health conditions, supplements, pills, results guarantees, or pregnancy:
-Give a 2–3 line caring answer, then add 🔗[PAGE:/disclaimer.html] so they can read the full disclaimer.
+- Educational guidance only — NOT medical treatment.
+- Consult a doctor first, especially with: diabetes, PCOS, thyroid, heart conditions, joint pain, eating disorder history.
+- Pregnant or breastfeeding → consult OB/GYN first. Weight loss during pregnancy is not recommended.
+- Stop exercise if: chest pain, dizziness, sharp joint pain.
+- CurvaFit NEVER sells pills, detox teas, or unregulated supplements.
+- Testimonials are real but individual — not guaranteed for everyone.
+When asked → 2–3 line caring answer + 🔗[PAGE:/disclaimer.html]
 
 ═══════════════════════════════════════
 🛍️ PRODUCT CATALOG
 ═══════════════════════════════════════
-NEVER use internal IDs. ALWAYS use exact product Title and prices.
+NEVER use internal IDs. Use exact product titles and prices.
 ${catalogText}
 
 ═══════════════════════════════════════
 🥗 NUTRITION
 ═══════════════════════════════════════
-- Protein at every meal, cut liquid sugars, 2L water/day
-- Target: 300–500 calorie daily deficit, sleep 7-8h
+Protein at every meal. Cut liquid sugars. 2L water/day. 300–500 calorie deficit. Sleep 7–8h.
 
 ═══════════════════════════════════════
-🌐 SITE NAVIGATION & CONTENT (live from search.data.json)
+🌐 SITE CONTENT
 ═══════════════════════════════════════
-Use this to answer questions about pages, programs, coaches, features, blog articles, policies.
-When a user asks about a page or topic, you can tell them where to find it on the site.
-NEVER write the raw URL — say "see the [page name] section of the site" or reference the topic.
-${searchContext || '(search.data.json not available)'}
+${searchContext || '(not available)'}
 
 ═══════════════════════════════════════
-📝 BLOG ARTICLES (live from blog-articles.json)
+📝 BLOG
 ═══════════════════════════════════════
-Use this to answer questions about blog content. If a user asks about articles, topics covered,
-or specific blog posts — use this data. NEVER write raw URLs, just mention the article title.
-${blogContext || '(blog-articles.json not available)'}
+${blogContext || '(not available)'}
 
 ═══════════════════════════════════════
-🚫 NEVER
+🚫 ABSOLUTE RULES — NEVER BREAK
 ═══════════════════════════════════════
-- Write long responses (max 4-5 lines)
-- Display any URL, link, or phone number — EVER
-- Invent prices or data
-- Promise guaranteed results
-- Reply in a different language than the user's message
-- Show multiple unrelated products when user asked for something specific
-- Add 👇 unless the user is EXPLICITLY asking how to contact or reach the team
-- Apply or suggest promo codes for programs — promo codes are ONLY valid on Shop products
-- Display a promo code without the [[CODE]] format
-- Answer policy/legal questions without adding the relevant 🔗[PAGE:...] button`;
+- Never write raw URLs or phone numbers in text
+- Never invent prices, emails, or data
+- Never promise guaranteed results
+- Never reply in wrong language
+- Never show products for non-product requests
+- Never add 👇 for greetings, policies, or general info
+- Never show promo codes without [[CODE]] format
+- Never apply promo codes to programs — Shop only
+- Never answer policy questions without the relevant 🔗[PAGE:...] button`;
 }
 
 /* ── Fallback / Error messages ── */
@@ -965,7 +711,6 @@ function getErrorMessage(lang) {
 
 /* ══════════════════════════════════════════════════════
    MODEL ROTATION STATE
-   Persistent across warm Lambda invocations (in-memory)
 ══════════════════════════════════════════════════════ */
 const MODELS = [
   'llama-3.3-70b-versatile',
@@ -979,8 +724,6 @@ const MODELS = [
   'llama-3.1-8b-instant',
   'meta-llama/llama-prompt-guard-2-22m',
 ];
-
-/* currentModelIndex persists as long as the Lambda container stays warm */
 let currentModelIndex = 0;
 
 /* ══════════════════════════════════════════════════════
@@ -1003,7 +746,6 @@ exports.handler = async (event, context) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message is required' }) };
     }
 
-    /* Detect language FIRST */
     const userLang = detectLanguage(message);
 
     let products = [], settings = {};
@@ -1016,239 +758,171 @@ exports.handler = async (event, context) => {
       console.error('Could not load products.data.json:', err.message);
     }
 
-    /* Load search.data.json and blog-articles.json in parallel */
-    let searchData = null;
-    let blogData   = null;
+    let searchData = null, blogData = null;
     try {
       [searchData, blogData] = await Promise.all([
-        loadSearchData().catch(e => { console.warn('search.data.json load failed:', e.message); return null; }),
-        loadBlogArticles().catch(e => { console.warn('blog-articles.json load failed:', e.message); return null; })
+        loadSearchData().catch(e   => { console.warn('search.data.json failed:', e.message);   return null; }),
+        loadBlogArticles().catch(e => { console.warn('blog-articles.json failed:', e.message); return null; })
       ]);
-    } catch (err) {
-      console.warn('Could not load search/blog data:', err.message);
-    }
+    } catch (err) { console.warn('Could not load search/blog data:', err.message); }
 
-    /* Read contact settings */
-    const contactSettings = settings.contact || {};
+    const contactSettings = settings.contact      || {};
     const socials         = settings.social_links || {};
     const contactInfo = {
-      hasWhatsapp:  !!(contactSettings.whatsapp_url || socials.whatsapp),
-      hasTelegram:  !!(contactSettings.telegram_url),
-      whatsappUrl:  contactSettings.whatsapp_url || socials.whatsapp || '',
-      telegramUrl:  contactSettings.telegram_url || '',
-      contactPage:  '/contact.html'
+      hasWhatsapp: !!(contactSettings.whatsapp_url || socials.whatsapp),
+      hasTelegram: !!(contactSettings.telegram_url),
+      whatsappUrl: contactSettings.whatsapp_url || socials.whatsapp || '',
+      telegramUrl: contactSettings.telegram_url || '',
+      contactPage: '/contact.html'
     };
 
     const intent = detectIntent(message);
 
-    /* Product search */
-    let relevantProducts = [];
-    let isVague = false;
-
+    let relevantProducts = [], isVague = false;
     if (intent === 'product') {
       const searchResult = searchProducts(message, products);
       relevantProducts   = searchResult.results;
       isVague            = searchResult.isVague;
     }
 
-    /* Contact intent detection */
+    /* ── Contact intent — reliable regex ── */
     const EXPLICIT_CONTACT_PATTERNS = [
-      /parler\s+(à\s+)?(un\s+)?(humain|agent|conseiller|quelqu|personne\s+réelle)/i,
+      /parler\s+(à\s+)?(un\s+)?(humain|agent|conseiller|quelqu|personne)/i,
       /joindre\s+(votre|l['']|notre)?\s*(équipe|support|service)/i,
       /contacter\s+(votre|l['']|notre)?\s*(équipe|support|service|team)/i,
       /laisser\s+un\s+message/i,
-      /envoyer\s+un\s+message\s+à\s+(l['']équipe|votre|curva)/i,
       /service\s+client/i,
-      /comment\s+(vous\s+)?(contacter|joindre|écrire)/i,
-      /je\s+veux\s+(vous\s+)?(contacter|écrire|parler\s+à)/i,
+      /comment\s+(vous\s+)?(contacter|joindre|écrire|rejoindre)/i,
+      /je\s+veux\s+(vous\s+)?(contacter|écrire|parler)/i,
       /moyen\s+de\s+contact/i,
-      /comment\s+vous\s+écrire/i,
-      /comment\s+vous\s+rejoindre/i,
       /votre\s+(whatsapp|telegram|email|mail)\b/i,
       /speak\s+(to\s+)?(a\s+)?(human|agent|person|someone|real)/i,
       /contact\s+(your|the|our)?\s*(team|support|us|service)/i,
       /leave\s+(a\s+)?message/i,
-      /send\s+(a\s+)?message\s+to\s+(the\s+)?(team|you|curva)/i,
-      /customer\s+service/i,
+      /customer\s+serv/i,
       /how\s+(can\s+I\s+)?(contact|reach|message)\s+(you|the\s+team)/i,
-      /I\s+want\s+to\s+(contact|reach|talk\s+to)\s+(you|the\s+team)/i,
+      /I\s+want\s+to\s+(contact|reach|talk\s+to)/i,
       /how\s+do\s+I\s+reach\s+you/i,
-      /ways?\s+to\s+contact/i,
       /get\s+in\s+touch/i,
       /your\s+(whatsapp|telegram|email)\b/i,
       /hablar\s+(con\s+)?(un\s+)?(humano|agente|persona|alguien)/i,
       /contactar\s+(a\s+)?(su|tu|el|nuestro)?\s*(equipo|soporte|servicio)/i,
       /dejar\s+un\s+mensaje/i,
       /servicio\s+al\s+cliente/i,
-      /cómo\s+(puedo\s+)?(contactar|escribir|hablar\s+con)\s+(ustedes|el\s+equipo)/i,
-      /medios?\s+de\s+contacto/i,
+      /cómo\s+(puedo\s+)?(contactar|escribir|hablar)/i,
       /su\s+(whatsapp|telegram|email)\b/i,
     ];
 
     const isContactIntent = intent !== 'product' && EXPLICIT_CONTACT_PATTERNS.some(p => p.test(message));
 
-    /* Build system prompt */
     const systemPrompt = buildSystemPrompt(products, settings, contactInfo, searchData, blogData);
 
-    /* Language + vague instructions */
+    /* Tell the AI explicitly when contact is detected — so it always adds 👇 */
+    const contactInstruction = isContactIntent
+      ? '\n[CONTACT REQUEST: User wants to reach the team. You MUST end your reply with 👇 on its own line — no exception.]'
+      : '';
+
     const vagueInstruction = isVague
-      ? '\n[VAGUE PRODUCT REQUEST: Show up to 4 products and ask the user to confirm which one they want.]'
-      : '\n[SPECIFIC PRODUCT REQUEST: Show ONLY the 1 most relevant product. Do NOT show others.]';
+      ? '\n[VAGUE PRODUCT: Show up to 4 products and ask which one they mean.]'
+      : '\n[SPECIFIC PRODUCT: Show ONLY the 1 most relevant product.]';
 
     const langInstruction = userLang === 'fr'
-      ? 'REMINDER: The user wrote in FRENCH. Your entire reply MUST be in FRENCH. End with 👇 ONLY if the user explicitly asked how to contact or reach the team.'
+      ? 'Reply 100% in FRENCH.'
       : userLang === 'es'
-      ? 'REMINDER: The user wrote in SPANISH. Your entire reply MUST be in SPANISH. End with 👇 ONLY if the user explicitly asked how to contact or reach the team.'
-      : 'REMINDER: The user wrote in ENGLISH. Your entire reply MUST be in ENGLISH. End with 👇 ONLY if the user explicitly asked how to contact or reach the team.';
-
-    const productContext = intent === 'product' ? vagueInstruction : '';
+      ? 'Reply 100% in SPANISH.'
+      : 'Reply 100% in ENGLISH.';
 
     const groqMessages = [
       { role: 'system', content: systemPrompt },
       ...history.slice(-8).map(h => ({ role: h.role, content: h.content })),
-      { role: 'user', content: `${message}\n\n[${langInstruction}]${productContext}` }
+      { role: 'user', content: `${message}\n\n[${langInstruction}]${intent === 'product' ? vagueInstruction : ''}${contactInstruction}` }
     ];
 
-    /* ══════════════════════════════════════════════════════
-       CIRCULAR MODEL ROTATION SYSTEM
-    ══════════════════════════════════════════════════════ */
+    /* ── Model rotation ── */
     const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-    let groqResponse = null;
-    let usedModel    = null;
-    let modelSuccess = false;
+    let groqResponse = null, usedModel = null, modelSuccess = false;
 
     for (let attempt = 0; attempt < MODELS.length; attempt++) {
       const idx   = (currentModelIndex + attempt) % MODELS.length;
       const model = MODELS[idx];
-
       let modelOk = false;
+
       for (let retry = 1; retry <= 2; retry++) {
         try {
           groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-              'Content-Type':  'application/json'
-            },
-            body: JSON.stringify({
-              model,
-              messages:    groqMessages,
-              max_tokens:  400,
-              temperature: 0.70,
-              stream:      false
-            })
+            headers: { 'Authorization': `Bearer ${process.env.GROQ_API_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model, messages: groqMessages, max_tokens: 400, temperature: 0.70, stream: false })
           });
 
           if (groqResponse.status === 429) {
-            console.log(`[Chat] 429 rate-limited on model "${model}" (retry ${retry}/2)`);
-            if (retry < 2) {
-              await sleep(1500);
-              continue;
-            }
-            console.log(`[Chat] Model "${model}" exhausted → moving to next`);
+            console.log(`[Chat] 429 on "${model}" (retry ${retry}/2)`);
+            if (retry < 2) { await sleep(1500); continue; }
             currentModelIndex = (idx + 1) % MODELS.length;
             break;
           }
+          if (!groqResponse.ok) { console.error(`[Chat] HTTP ${groqResponse.status} on "${model}"`); break; }
 
-          if (!groqResponse.ok) {
-            console.error(`[Chat] Model "${model}" HTTP error: ${groqResponse.status}`);
-            break;
-          }
-
-          usedModel    = model;
-          modelOk      = true;
-          modelSuccess = true;
-          currentModelIndex = idx;
+          usedModel = model; modelOk = true; modelSuccess = true; currentModelIndex = idx;
           break;
-
         } catch (fetchErr) {
-          console.error(`[Chat] Fetch error on model "${model}" (retry ${retry}/2):`, fetchErr.message);
+          console.error(`[Chat] Fetch error on "${model}" (retry ${retry}/2):`, fetchErr.message);
           if (retry < 2) { await sleep(1000); continue; }
           break;
         }
       }
-
       if (modelOk) break;
     }
 
     if (!modelSuccess) {
-      console.error('[Chat] All models exhausted — returning fallback message');
       return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-          reply:       getFallbackMessage(userLang),
-          products:    [],
-          intent:      'general',
-          isVague:     false,
-          showContact: false,
-          contactInfo: null,
-          pageButtons: []
-        })
+        statusCode: 200, headers,
+        body: JSON.stringify({ reply: getFallbackMessage(userLang), products: [], intent: 'general', isVague: false, showContact: false, contactInfo: null, pageButtons: [] })
       };
     }
 
-    console.log(`[Chat] Answered using model: ${usedModel} (index ${currentModelIndex})`);
+    console.log(`[Chat] Model: ${usedModel} (index ${currentModelIndex})`);
 
     const data  = await groqResponse.json();
     const reply = data.choices?.[0]?.message?.content || getErrorMessage(userLang);
 
-    /* Detect if AI signaled to show contact buttons (👇 at end) */
-    const showContactButtons = intent !== 'product' && isContactIntent && reply.includes('👇');
-    const cleanReply = reply.replace(/👇\s*$/m, '').trim();
+    /*
+     * ── CONTACT BUTTONS ──
+     * Use isContactIntent (reliable regex) OR presence of 👇 in reply.
+     * This ensures buttons always appear even if AI model varies behavior.
+     */
+    const showContactButtons = intent !== 'product' && (isContactIntent || reply.includes('👇'));
+    const cleanReply = reply.replace(/👇[\s]*/g, '').trim();
 
-    /* ── PAGE NAVIGATION: extract 🔗[PAGE:/url] markers from reply ── */
+    /* ── PAGE BUTTONS ── */
     const pageMarkerRegex = /🔗\[PAGE:([^\]]+)\]/g;
-    const pageMatches = [...cleanReply.matchAll(pageMarkerRegex)];
-    const pageButtons = pageMatches.map(m => {
+    const pageMatches     = [...cleanReply.matchAll(pageMarkerRegex)];
+    const pageButtons     = pageMatches.map(m => {
       const url = m[1].trim();
-      // Resolve label and icon from PAGE_MAP, or build a generic one for product pages
-      if (PAGE_MAP[url]) {
-        return { url, label: PAGE_MAP[url].label, icon: PAGE_MAP[url].icon };
+      if (PAGE_MAP[url]) return { url, label: PAGE_MAP[url].label, icon: PAGE_MAP[url].icon };
+      const pm = url.match(/^\/products\/product(\d+)\.html$/);
+      if (pm) {
+        const prod = products[parseInt(pm[1], 10) - 1];
+        return { url, label: prod ? prod.title : `Product ${pm[1]}`, icon: '🛍️' };
       }
-      // Handle product pages dynamically: /products/productN.html
-      const productMatch = url.match(/^\/products\/product(\d+)\.html$/);
-      if (productMatch) {
-        const num = productMatch[1];
-        const prod = products[parseInt(num, 10) - 1];
-        return {
-          url,
-          label: prod ? prod.title : `Product ${num}`,
-          icon: '🛍️'
-        };
-      }
-      // Generic fallback
       return { url, label: 'Visit Page', icon: '🔗' };
     });
 
-    /* Remove the 🔗[PAGE:...] markers from the final reply text */
     const finalReply = cleanReply.replace(pageMarkerRegex, '').trim();
 
-    /* Product cards */
     const productCards = relevantProducts.map(p => ({
-      title:         p.title,
-      description:   p.description,
-      price:         p.price,
-      compare_price: p.compare_price,
-      url:           p.url,
-      image:         p.image,
-      colors:        p.colors.map(c => ({ name: c.name, hex: c.hex, image: c.image })),
-      variants:      p.variants,
-      sizes:         p.sizes,
-      delivery:      formatDelivery(p.startDate, p.endDate),
-      rating:        p.rating,
-      discounts:     p.discounts
+      title: p.title, description: p.description, price: p.price, compare_price: p.compare_price,
+      url: p.url, image: p.image,
+      colors:   p.colors.map(c => ({ name: c.name, hex: c.hex, image: c.image })),
+      variants: p.variants, sizes: p.sizes,
+      delivery: formatDelivery(p.startDate, p.endDate),
+      rating: p.rating, discounts: p.discounts
     }));
 
     return {
-      statusCode: 200,
-      headers,
+      statusCode: 200, headers,
       body: JSON.stringify({
-        reply:       finalReply,
-        products:    productCards,
-        intent,
-        isVague,
+        reply: finalReply, products: productCards, intent, isVague,
         showContact: showContactButtons,
         contactInfo: showContactButtons ? {
           whatsapp: contactInfo.hasWhatsapp ? contactInfo.whatsappUrl : null,
@@ -1261,10 +935,6 @@ exports.handler = async (event, context) => {
 
   } catch (error) {
     console.error('Chat function error:', error);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: 'Internal server error', message: error.message })
-    };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Internal server error', message: error.message }) };
   }
 };
