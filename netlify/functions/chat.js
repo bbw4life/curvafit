@@ -377,51 +377,31 @@ function buildSearchDataContext(searchData) {
 
   if (pages.length) {
     text += '\nSITE PAGES:\n';
-    pages.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
+    pages.forEach(p => { text += `  • ${p.title} → ${p.url}\n`; });
   }
-
   if (programs.length) {
     text += '\nPROGRAMS:\n';
-    programs.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
+    programs.forEach(p => { text += `  • ${p.title} → ${p.url}\n`; });
   }
-
   if (coaches.length) {
     text += '\nCOACHES:\n';
-    coaches.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
+    coaches.forEach(p => { text += `  • ${p.title} → ${p.url}\n`; });
   }
-
   if (features.length) {
     text += '\nFEATURES:\n';
-    features.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
+    features.forEach(p => { text += `  • ${p.title} → ${p.url}\n`; });
   }
-
   if (products.length) {
     text += '\nPRODUCT PAGES (from search data):\n';
-    products.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
+    products.forEach(p => { text += `  • ${p.title} → ${p.url}\n`; });
   }
-
   if (policies.length) {
     text += '\nPOLICIES:\n';
-    policies.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
+    policies.forEach(p => { text += `  • ${p.title} → ${p.url}\n`; });
   }
-
   if (blogs.length) {
     text += '\nBLOG ARTICLES (from search data):\n';
-    blogs.forEach(p => {
-      text += `  • ${p.title} → ${p.url}\n`;
-    });
+    blogs.forEach(p => { text += `  • ${p.title} → ${p.url}\n`; });
   }
 
   return text;
@@ -441,10 +421,7 @@ function buildBlogContext(blogData) {
   } else if (typeof blogData === 'object') {
     const keys = Object.keys(blogData);
     for (const key of keys) {
-      if (Array.isArray(blogData[key])) {
-        articles = blogData[key];
-        break;
-      }
+      if (Array.isArray(blogData[key])) { articles = blogData[key]; break; }
     }
   }
 
@@ -471,7 +448,6 @@ function buildBlogContext(blogData) {
 
 /* ══════════════════════════════════════════════════════
    PAGE NAVIGATION MAP
-   Maps page labels to their URLs and icons
 ══════════════════════════════════════════════════════ */
 const PAGE_MAP = {
   '/index.html':                  { label: 'Home',                  icon: '🏠' },
@@ -493,7 +469,6 @@ const PAGE_MAP = {
   '/policies/terms.html':         { label: 'Terms & Conditions',    icon: '📋' },
   '/disclaimer.html':             { label: 'Medical Disclaimer',    icon: '⚕️' },
 };
-// Product pages are handled dynamically (product1..product16)
 
 /* ══════════════════════════════════════════════════════
    BUILD SYSTEM PROMPT
@@ -517,9 +492,9 @@ function buildSystemPrompt(products, settings, contactInfo, searchData, blogData
     .join('\n');
 
   const promosText = promos.length
-  ? promos.map(p => `• Code **[[${p.code}]]** → **${p.percent}% off** on ${p.items}+ items (Shop products only — NOT valid on programs)`)
-    .join('\n')
-  : '• No active promo codes at this time';
+    ? promos.map(p => `• Code **[[${p.code}]]** → **${p.percent}% off** on ${p.items}+ items (Shop products only — NOT valid on programs)`)
+      .join('\n')
+    : '• No active promo codes at this time';
 
   const catalogText = products.map((p, i) => {
     const colorsList = p.colors.map(c => c.name).join(', ');
@@ -1206,8 +1181,11 @@ function getErrorMessage(lang) {
 /* ══════════════════════════════════════════════════════
    MODEL ROTATION STATE
    Persistent across warm Lambda invocations (in-memory)
+   CHANGE 1: sleep 1500ms → 3000ms (both retries)
+   CHANGE 2: 10 new models added → total now 20
 ══════════════════════════════════════════════════════ */
 const MODELS = [
+  /* ── Original 10 — untouched ── */
   'llama-3.3-70b-versatile',
   'moonshotai/kimi-k2-instruct',
   'meta-llama/llama-4-scout-17b-16e-instruct',
@@ -1218,6 +1196,17 @@ const MODELS = [
   'openai/gpt-oss-safeguard-20b',
   'llama-3.1-8b-instant',
   'meta-llama/llama-prompt-guard-2-22m',
+  /* ── 10 New models added ── */
+  'meta-llama/llama-4-maverick-17b-128e-instruct',
+  'mistral-saba-24b',
+  'gemma2-9b-it',
+  'llama-3.1-70b-versatile',
+  'llama3-70b-8192',
+  'llama3-8b-8192',
+  'mixtral-8x7b-32768',
+  'deepseek-r1-distill-llama-70b',
+  'llama-3.2-90b-vision-preview',
+  'llama-3.2-11b-vision-preview',
 ];
 
 /* currentModelIndex persists as long as the Lambda container stays warm */
@@ -1383,7 +1372,7 @@ exports.handler = async (event, context) => {
           if (groqResponse.status === 429) {
             console.log(`[Chat] 429 rate-limited on model "${model}" (retry ${retry}/2)`);
             if (retry < 2) {
-              await sleep(1500);
+              await sleep(3000); /* CHANGE 1: was 1500ms → now 3000ms */
               continue;
             }
             console.log(`[Chat] Model "${model}" exhausted → moving to next`);
@@ -1404,7 +1393,7 @@ exports.handler = async (event, context) => {
 
         } catch (fetchErr) {
           console.error(`[Chat] Fetch error on model "${model}" (retry ${retry}/2):`, fetchErr.message);
-          if (retry < 2) { await sleep(1000); continue; }
+          if (retry < 2) { await sleep(3000); continue; } /* CHANGE 1: was 1000ms → now 3000ms */
           break;
         }
       }
@@ -1443,11 +1432,9 @@ exports.handler = async (event, context) => {
     const pageMatches = [...cleanReply.matchAll(pageMarkerRegex)];
     const pageButtons = pageMatches.map(m => {
       const url = m[1].trim();
-      // Resolve label and icon from PAGE_MAP, or build a generic one for product pages
       if (PAGE_MAP[url]) {
         return { url, label: PAGE_MAP[url].label, icon: PAGE_MAP[url].icon };
       }
-      // Handle product pages dynamically: /products/productN.html
       const productMatch = url.match(/^\/products\/product(\d+)\.html$/);
       if (productMatch) {
         const num = productMatch[1];
@@ -1458,7 +1445,6 @@ exports.handler = async (event, context) => {
           icon: '🛍️'
         };
       }
-      // Generic fallback
       return { url, label: 'Visit Page', icon: '🔗' };
     });
 
@@ -1495,7 +1481,7 @@ exports.handler = async (event, context) => {
           telegram: contactInfo.hasTelegram ? contactInfo.telegramUrl : null,
           page:     contactInfo.contactPage
         } : null,
-        pageButtons  /* ← NEW: array of { url, label, icon } */
+        pageButtons
       })
     };
 
