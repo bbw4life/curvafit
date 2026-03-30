@@ -625,11 +625,12 @@ Page URL reference:
   - Specific product N    → 🔗[PAGE:/products/productN.html]
 
 RULES for page navigation markers:
-- Add the marker ONLY when the user explicitly asks to go to, visit, or navigate to a page — OR when answering a policy/legal question (always add the relevant policy button so they can read the full page).
-- You can add multiple markers if the user asks for multiple pages: 🔗[PAGE:/shop.html] 🔗[PAGE:/programs.html]
+- Add the marker when the user asks to go to a page OR when you answer any question about policies (privacy, refund, terms, disclaimer) — ALWAYS add the relevant policy page button in that case.
+- You can add multiple markers: 🔗[PAGE:/shop.html] 🔗[PAGE:/programs.html]
 - NEVER write the raw URL in your text. Only use the marker at the end.
-- Say "use the button below" or "click the button below" to refer to the navigation button.
+- Say "use the button below" to refer to the navigation button.
 - The frontend will render this marker as a clickable button automatically.
+- POLICY RULE — MANDATORY: privacy/confidentialité/privacidad → always end with 🔗[PAGE:/policies/privacy.html]. refund/remboursement/reembolso/retour/return → always end with 🔗[PAGE:/policies/refund.html]. terms/conditions/CGV/términos → always end with 🔗[PAGE:/policies/terms.html]. disclaimer/avertissement/médical → always end with 🔗[PAGE:/disclaimer.html].
 
 EXAMPLES:
   User: "I want to go to the shop"    → end reply with 🔗[PAGE:/shop.html]
