@@ -625,9 +625,17 @@ loadCountries();
                 suggestedDiv.style.display = 'none';
             }
         }
+        const hasFreePromo = cart.some(item => item.isFreePromo);
         if (promoMessage) {
-            promoMessage.textContent = hasBundle ? "Promo codes are not available with bundle purchases." : '';
-            if (hasBundle) promoMessage.style.color = 'red';
+            if (hasBundle) {
+                promoMessage.textContent = "Promo codes are not available with bundle purchases.";
+                promoMessage.style.color = 'red';
+            } else if (hasFreePromo) {
+                promoMessage.textContent = "Promo codes are not available with free promotional items.";
+                promoMessage.style.color = 'red';
+            } else {
+                promoMessage.textContent = '';
+            }
         }
     }
 
@@ -650,7 +658,9 @@ loadCountries();
         document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
         document.getElementById('taxes').textContent = `$${effectiveTax.toFixed(2)}`;
         const taxLabel = document.getElementById('tax-rate-label');
-        if (taxLabel) taxLabel.textContent = (TAX_RATE * 100).toFixed(TAX_RATE * 100 % 1 === 0 ? 0 : 1);
+        if (taxLabel) taxLabel.textContent = (isFreeByThreshold || isFreeMethod)
+        ? 0
+        : (TAX_RATE * 100).toFixed(TAX_RATE * 100 % 1 === 0 ? 0 : 1);
         document.getElementById('shipping').textContent = effectiveShipping === 0 ? 'FREE' : `$${effectiveShipping.toFixed(2)}`;
         document.getElementById('total').textContent = `$${Math.max(0, finalTotal).toFixed(2)}`;
         const promoLine = document.getElementById('promo-line');
@@ -752,7 +762,9 @@ loadCountries();
         const totalQuantity = countFreeForPromo
             ? cart.reduce((sum, item) => sum + item.quantity, 0)
             : cart.filter(i => !i.isFreePromo).reduce((sum, item) => sum + item.quantity, 0);
+        const hasFreePromo = cart.some(item => item.isFreePromo);
         if (hasBundle) { promoMessage.textContent = "Promo codes cannot be used with bundles."; promoMessage.style.color = 'red'; return; }
+        if (hasFreePromo) { promoMessage.textContent = "Promo codes cannot be used with free promotional items."; promoMessage.style.color = 'red'; return; }
         if (!input) { promoMessage.textContent = "Please enter a code."; promoMessage.style.color = 'red'; return; }
         const promo = promos.find(p => p.code.toUpperCase() === input);
         if (promo && promo.items === totalQuantity) {

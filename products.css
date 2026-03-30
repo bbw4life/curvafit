@@ -2880,7 +2880,7 @@ body {
 }
 .popup.show { display: flex; }
 .popup-content {
-    background: white;
+    background: rgb(245, 245, 245);
     max-width: 300px;
     width: 90%;
     border-radius: 24px;

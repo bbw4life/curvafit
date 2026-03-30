@@ -2409,7 +2409,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .popup-content {
-    background: #fff;
+    background: #e4e3e3;
     padding: 48px 36px;
     border-radius: var(--radius-lg);
     text-align: center;
@@ -7754,25 +7754,28 @@ tbody tr:hover { background: var(--rose-ultra); }
 .popup { animation: popupFade 0.4s ease; }
 @keyframes popupFade { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
+
+
 .error-popup {
     position: fixed;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    background: #ffffff;
-    padding: 10px 10px;
+    background: #ffffff !important; 
+    padding: 3px 5px 3px;
     border-radius: 16px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
     z-index: 99999;
-    max-width: 300px;
+    max-width: 200px;
+    width: 80%;
+    object-fit: contain;
     text-align: center;
-    border: 2px solid #e74c3c;
+    border: 1.5px solid #e74c3c;
     display: none;
 }
 
+
 .error-popup.show { display: block; animation: popupAnim 0.3s ease; }
 
-.popup-content p { margin: 0 0 10px 0; font-size: 16.5px; font-weight: 600; color: #333; line-height: 1.4; }
-
+.popup-content p { margin: 0 0 0px 0; font-size: 16.5px; font-weight: 600; color: #333; line-height: 1.4; }
 .popup-btn { background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; }
 .popup-btn:hover { background: #c0392b; }
 
@@ -7780,6 +7783,7 @@ tbody tr:hover { background: var(--rose-ultra); }
     from { opacity: 0; transform: translate(-50%, -60%); }
     to   { opacity: 1; transform: translate(-50%, -50%); }
 }
+
 
 /* ================================================================
    PASSWORD EYE TOGGLE
