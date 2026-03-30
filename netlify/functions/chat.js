@@ -630,7 +630,7 @@ RULES for page navigation markers:
 - NEVER write the raw URL in your text. Only use the marker at the end.
 - Say "use the button below" to refer to the navigation button.
 - The frontend will render this marker as a clickable button automatically.
-- POLICY RULE — MANDATORY: privacy/confidentialité/privacidad → always end with 🔗[PAGE:/policies/privacy.html]. refund/remboursement/reembolso/retour/return → always end with 🔗[PAGE:/policies/refund.html]. terms/conditions/CGV/términos → always end with 🔗[PAGE:/policies/terms.html]. disclaimer/avertissement/médical → always end with 🔗[PAGE:/disclaimer.html].
+- POLICY RULE — MANDATORY: privacy/confidentialité/privacidad → always add 🔗[PAGE:/policies/privacy.html]. refund/remboursement/reembolso/retour/return → always add 🔗[PAGE:/policies/refund.html]. terms/conditions/CGV/términos → always add 🔗[PAGE:/policies/terms.html]. disclaimer/avertissement/médical → always add 🔗[PAGE:/disclaimer.html]. Place these markers BEFORE 👇 if both are needed in the same reply.
 
 EXAMPLES:
   User: "I want to go to the shop"    → end reply with 🔗[PAGE:/shop.html]
