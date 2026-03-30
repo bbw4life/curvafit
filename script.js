@@ -4370,9 +4370,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-
-
-
 /* ══════════════════════════════════════════════════════
    CURVAFIT — COOKIE CONSENT POPUP
    Inject this entire block into script.js
