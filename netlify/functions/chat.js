@@ -683,7 +683,6 @@ FORBIDDEN triggers for 👇 — these MUST NOT show contact buttons:
 ❌ "comment fonctionne votre programme" — program info is NOT a contact request
 ❌ "quels sont vos réseaux sociaux" — social links are NOT contact requests
 ❌ Any question about nutrition, products, shipping, pricing, results
-❌ Any question about privacy, refund, terms, or disclaimer — use the button 🔗[PAGE:...] instead
 
 ALLOWED triggers for 👇 — ONLY these may show contact buttons:
 ✅ "comment vous contacter / joindre / écrire"
