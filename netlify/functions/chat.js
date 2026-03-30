@@ -226,10 +226,19 @@ function detectIntent(message) {
     /total.+(commande|order)|order total|total.+pedido/,
     /taxes|impôts|impuestos/,
     /stripe|paypal|apple pay|google pay|carte.+crédit|credit card|tarjeta/,
-    /* ── POLICY patterns ── */
-    /politique|privacy|confidential|refund|remboursement|terms|conditions|disclaimer|política|privacidad|reembolso|términos/,
-    /retour|return|cancel|annul|garantie|warranty/,
-    /données|data|cookie|rgpd|gdpr/,
+    /* ── POLICY PAGE patterns ── */
+    /privacy|confidentialit|privacidad|données.+person|personal.+data|datos.+person/,
+    /remboursement|refund|reembolso|retour|return|devolution/,
+    /conditions.+(utilisation|service|vente)|terms.+(service|conditions|use)|términos/,
+    /disclaimer|avertissement|advertencia|médical.+disclaimer|medical.+disclaimer/,
+    /politique|policy|politica/,
+    /vos droits|your rights|sus derechos|gdpr|rgpd/,
+    /données.+(collecte|utilise)|data.+(collect|use)|datos.+(recopil)/,
+    /cookies|tracking|pistage/,
+    /sécurité.+données|data.+security|seguridad.+datos/,
+    /annulation.+abonnement|cancel.+subscription|cancelar.+suscripci/,
+    /preuve.+utilisation|proof.+use|prueba.+uso/,
+    /non.+remboursable|non.+refundable|no.+reembolsable/,
   ];
 
   for (const pattern of generalPatterns) {
@@ -468,25 +477,24 @@ function buildBlogContext(blogData) {
    Maps page labels to their URLs and icons
 ══════════════════════════════════════════════════════ */
 const PAGE_MAP = {
-  '/index.html':              { label: 'Home',               icon: '🏠' },
-  '/shop.html':               { label: 'Shop',               icon: '🛍️' },
-  '/programs.html':           { label: 'Programs',           icon: '💪' },
-  '/nutrition.html':          { label: 'Nutrition',          icon: '🥗' },
-  '/blog/blog.html':          { label: 'Blog',               icon: '📝' },
-  '/about.html':              { label: 'About Us',           icon: 'ℹ️' },
-  '/contact.html':            { label: 'Contact',            icon: '📩' },
-  '/account.html':            { label: 'My Account',         icon: '👤' },
-  '/checkout.html':           { label: 'Checkout',           icon: '🛒' },
-  '/success.html':            { label: 'Success Stories',    icon: '🏆' },
-  '/community.html':          { label: 'Community',          icon: '👥' },
-  '/method.html':             { label: 'Our Method',         icon: '🔬' },
-  '/faq.html':                { label: 'FAQ',                icon: '❓' },
-  '/careers.html':            { label: 'Careers',            icon: '💼' },
-  /* ── 4 policy pages added ── */
-  '/policies/privacy.html':   { label: 'Privacy Policy',     icon: '🔒' },
-  '/policies/refund.html':    { label: 'Refund Policy',      icon: '↩️' },
-  '/policies/terms.html':     { label: 'Terms & Conditions', icon: '📄' },
-  '/disclaimer.html':         { label: 'Medical Disclaimer', icon: '⚕️' },
+  '/index.html':               { label: 'Home',             icon: '🏠' },
+  '/shop.html':                { label: 'Shop',             icon: '🛍️' },
+  '/programs.html':            { label: 'Programs',         icon: '💪' },
+  '/nutrition.html':           { label: 'Nutrition',        icon: '🥗' },
+  '/blog/blog.html':           { label: 'Blog',             icon: '📝' },
+  '/about.html':               { label: 'About Us',         icon: 'ℹ️' },
+  '/contact.html':             { label: 'Contact',          icon: '📩' },
+  '/account.html':             { label: 'My Account',       icon: '👤' },
+  '/checkout.html':            { label: 'Checkout',         icon: '🛒' },
+  '/success.html':             { label: 'Success Stories',  icon: '🏆' },
+  '/community.html':           { label: 'Community',        icon: '👥' },
+  '/method.html':              { label: 'Our Method',       icon: '🔬' },
+  '/faq.html':                 { label: 'FAQ',              icon: '❓' },
+  '/careers.html':             { label: 'Careers',          icon: '💼' },
+  '/policies/privacy.html':    { label: 'Privacy Policy',   icon: '🔒' },
+  '/policies/refund.html':     { label: 'Refund Policy',    icon: '↩️' },
+  '/policies/terms.html':      { label: 'Terms & Conditions', icon: '📄' },
+  '/disclaimer.html':          { label: 'Medical Disclaimer', icon: '⚕️' },
 };
 // Product pages are handled dynamically (product1..product16)
 
@@ -596,44 +604,43 @@ When a user asks to go to or visit a specific page of the site, add a navigation
 Use this exact format: 🔗[PAGE:/url]
 
 Page URL reference:
-  - Home page              → 🔗[PAGE:/index.html]
-  - Shop / products        → 🔗[PAGE:/shop.html]
-  - Programs               → 🔗[PAGE:/programs.html]
-  - Nutrition              → 🔗[PAGE:/nutrition.html]
-  - Blog                   → 🔗[PAGE:/blog/blog.html]
-  - About us               → 🔗[PAGE:/about.html]
-  - Contact                → 🔗[PAGE:/contact.html]
-  - My Account             → 🔗[PAGE:/account.html]
-  - Checkout               → 🔗[PAGE:/checkout.html]
-  - Success stories        → 🔗[PAGE:/success.html]
-  - Community              → 🔗[PAGE:/community.html]
-  - Our Method             → 🔗[PAGE:/method.html]
-  - FAQ                    → 🔗[PAGE:/faq.html]
-  - Careers                → 🔗[PAGE:/careers.html]
-  - Privacy Policy         → 🔗[PAGE:/policies/privacy.html]
-  - Refund Policy          → 🔗[PAGE:/policies/refund.html]
-  - Terms & Conditions     → 🔗[PAGE:/policies/terms.html]
-  - Medical Disclaimer     → 🔗[PAGE:/disclaimer.html]
-  - Specific product N     → 🔗[PAGE:/products/productN.html]
+  - Home page             → 🔗[PAGE:/index.html]
+  - Shop / products       → 🔗[PAGE:/shop.html]
+  - Programs              → 🔗[PAGE:/programs.html]
+  - Nutrition             → 🔗[PAGE:/nutrition.html]
+  - Blog                  → 🔗[PAGE:/blog/blog.html]
+  - About us              → 🔗[PAGE:/about.html]
+  - Contact               → 🔗[PAGE:/contact.html]
+  - My Account            → 🔗[PAGE:/account.html]
+  - Checkout              → 🔗[PAGE:/checkout.html]
+  - Success stories       → 🔗[PAGE:/success.html]
+  - Community             → 🔗[PAGE:/community.html]
+  - Our Method            → 🔗[PAGE:/method.html]
+  - FAQ                   → 🔗[PAGE:/faq.html]
+  - Careers               → 🔗[PAGE:/careers.html]
+  - Privacy Policy        → 🔗[PAGE:/policies/privacy.html]
+  - Refund Policy         → 🔗[PAGE:/policies/refund.html]
+  - Terms & Conditions    → 🔗[PAGE:/policies/terms.html]
+  - Medical Disclaimer    → 🔗[PAGE:/disclaimer.html]
+  - Specific product N    → 🔗[PAGE:/products/productN.html]
 
 RULES for page navigation markers:
-- Add the marker ONLY when the user explicitly asks to go to, visit, or navigate to a page.
+- Add the marker ONLY when the user explicitly asks to go to, visit, or navigate to a page — OR when answering a policy/legal question (always add the relevant policy button so they can read the full page).
 - You can add multiple markers if the user asks for multiple pages: 🔗[PAGE:/shop.html] 🔗[PAGE:/programs.html]
 - NEVER write the raw URL in your text. Only use the marker at the end.
 - Say "use the button below" or "click the button below" to refer to the navigation button.
 - The frontend will render this marker as a clickable button automatically.
-- For policy questions: give a SHORT summary (2-3 lines), then add the page marker.
 
 EXAMPLES:
-  User: "I want to go to the shop"          → end reply with 🔗[PAGE:/shop.html]
-  User: "show me your programs"             → end reply with 🔗[PAGE:/programs.html]
-  User: "take me to the home page"          → end reply with 🔗[PAGE:/index.html]
-  User: "where is your blog?"              → end reply with 🔗[PAGE:/blog/blog.html]
-  User: "I want to see my account"          → end reply with 🔗[PAGE:/account.html]
-  User: "show me the privacy policy"        → short summary + 🔗[PAGE:/policies/privacy.html]
-  User: "can I get a refund?"              → short summary + 🔗[PAGE:/policies/refund.html]
-  User: "what are your terms?"             → short summary + 🔗[PAGE:/policies/terms.html]
-  User: "is this medically safe?"          → short answer + 🔗[PAGE:/disclaimer.html]
+  User: "I want to go to the shop"    → end reply with 🔗[PAGE:/shop.html]
+  User: "show me your programs"       → end reply with 🔗[PAGE:/programs.html]
+  User: "take me to the home page"    → end reply with 🔗[PAGE:/index.html]
+  User: "where is your blog?"         → end reply with 🔗[PAGE:/blog/blog.html]
+  User: "I want to see my account"    → end reply with 🔗[PAGE:/account.html]
+  User: "what is your privacy policy?"  → brief answer + 🔗[PAGE:/policies/privacy.html]
+  User: "can I get a refund?"           → brief answer + 🔗[PAGE:/policies/refund.html]
+  User: "what are your terms?"          → brief answer + 🔗[PAGE:/policies/terms.html]
+  User: "medical disclaimer?"           → brief answer + 🔗[PAGE:/disclaimer.html]
 
 🚫 ABSOLUTE RULE — NEVER display any raw URL or link in your text.
    Examples of what is FORBIDDEN:
@@ -644,6 +651,9 @@ EXAMPLES:
    ❌ "/account.html"
    ❌ "/checkout.html"
    ❌ "/policies/privacy.html"
+   ❌ "/policies/refund.html"
+   ❌ "/policies/terms.html"
+   ❌ "/disclaimer.html"
    
    ALWAYS say "see the button below" or "use the buttons below".
    The frontend will automatically show the correct buttons.
@@ -655,7 +665,7 @@ EXAMPLES:
 NEVER suggest products for: brand info, nutrition advice, program info,
 contact requests, promo code questions, greetings, small talk,
 account questions, checkout questions, shipping questions (general),
-policy questions.
+policy questions, legal questions.
 
 ONLY suggest products when user explicitly asks to buy or mentions a specific product type.
 
@@ -672,7 +682,8 @@ FORBIDDEN triggers for 👇 — these MUST NOT show contact buttons:
 ❌ "c'est quoi CurvaFit" — brand info is NOT a contact request
 ❌ "comment fonctionne votre programme" — program info is NOT a contact request
 ❌ "quels sont vos réseaux sociaux" — social links are NOT contact requests
-❌ Any question about nutrition, products, shipping, pricing, results, policies
+❌ Any question about nutrition, products, shipping, pricing, results
+❌ Any question about privacy, refund, terms, or disclaimer — use the button 🔗[PAGE:...] instead
 
 ALLOWED triggers for 👇 — ONLY these may show contact buttons:
 ✅ "comment vous contacter / joindre / écrire"
@@ -735,13 +746,15 @@ ALWAYS end contact-related replies with: "👇" on its own line (signals fronten
 ═══════════════════════════════════════
 🏢 ABOUT CURVAFIT & THE FOUNDER
 ═══════════════════════════════════════
-**Paul Francenel** is the visionary founder and driving force behind **CurvaFit**. Born in 2000, he launched the platform on November 5, 2025, at just 25 years old — making him one of the most inspiring young wellness entrepreneurs of his generation.
+**CurvaFit** was founded on November 5, 2025 by **Paul Francenel** — a 25-year-old visionary entrepreneur driven by a genuine passion for sport, well-being, and human transformation.
 
-Paul is not a doctor, not an athlete, not a fitness influencer. And that is exactly what makes him remarkable. He built **CurvaFit** from a deeply human place: the observation that plus-size women are too often ignored, judged, or sold false promises by the fitness industry. He saw the gap — and decided to fill it himself.
+**Paul** is not a doctor or a certified trainer — and that is precisely what makes him different. He built **CurvaFit** from lived observation, not from a textbook. He saw what professionals often overlook: real women who want to change their lives but don't know where to begin. He listened. He studied. He built a solution.
 
-Starting from zero, with nothing but determination and a genuine desire to create real change, Paul assembled a team of qualified fitness coaches, wellness specialists, and trusted partner platforms. Together they built a science-based, low-impact, fully remote weight loss experience designed specifically for plus-size women — without pills, without crash diets, without shame.
+Today, **CurvaFit** stands as a science-backed, human-centered platform created for plus-size women — a space free from judgment, pills, crash diets, and unrealistic promises. **Paul** assembled a team of qualified fitness coaches, wellness specialists, and trusted partners to make that vision a reality.
 
-**His philosophy:** You don't need to be perfect to start. You need to start to become better. Every woman, at every size, deserves a program that respects her body, her pace, and her power. In just months since launch, **CurvaFit** has grown into a thriving community of real women achieving real, lasting transformations — and Paul continues to lead it with the same fire: to change lives, one woman at a time.
+His mission is simple and powerful: give every woman the tools, the support, and the confidence to transform her life — safely, sustainably, and on her own terms.
+
+When users ask about the founder or about CurvaFit's story, give a warm, inspiring 3–4 line answer based on the above. Not too long, but impactful.
 
 ═══════════════════════════════════════
 💪 PROGRAMS
@@ -818,34 +831,82 @@ Returns accepted within 30 days. Contact: paulfrance13@gmail.com
 ═══════════════════════════════════════
 🔒 PRIVACY POLICY — /policies/privacy.html
 ═══════════════════════════════════════
-We never sell your data, never share health data with advertisers, never store card details.
-We collect only what's needed: name/email, payment via Stripe/PayPal only, anonymized analytics.
-GDPR rights: access, correction, deletion, portability — answered in 30 days.
-→ Give a 2-3 line summary when asked, then add: 🔗[PAGE:/policies/privacy.html]
+Key points to answer user questions (give a SHORT summary, then add the button):
+- We NEVER sell personal data. Ever.
+- We NEVER share health data (weight, progress) with advertisers.
+- We NEVER store credit card details on our servers (handled by Stripe/PayPal).
+- We NEVER send marketing emails without explicit consent.
+- Data collected: name, email, purchase info, IP (security), optional health progress.
+- Payment processed by Stripe & PayPal — PCI DSS certified.
+- Cookies: essential (required), analytics (Google Analytics, anonymized), marketing (opt-in only).
+- Third parties who may receive data: Stripe/PayPal (payment), partner platforms (program delivery), email provider, Google Analytics (anonymized).
+- GDPR rights: access, rectification, erasure ("right to be forgotten"), portability, object, restriction.
+- To exercise rights: email support@curvafit.com — response within 30 days.
+- Data retention: account data kept while active + 30 days after deletion. Payment records: 5 years (legal). Progress data: deleted immediately on account deletion.
+- Breach notification: within 72 hours as required by GDPR.
+- Last updated: March 20, 2026. Next review: March 2027.
+
+BEHAVIOR: When a user asks about privacy, data, cookies, GDPR, or personal data:
+Give a 2–3 line reassuring answer, then add 🔗[PAGE:/policies/privacy.html] so they can read the full policy.
 
 ═══════════════════════════════════════
 ↩️ REFUND POLICY — /policies/refund.html
 ═══════════════════════════════════════
-Products: return in original condition within 14 days → refund in up to 30 days.
-Programs: result-based refund if followed seriously + proof of use (photos/log up to 15 days) → email billing@curvafit.com.
-Subscriptions: cancel any time, no penalty, partial refund for unused time.
-→ Give a 2-3 line summary when asked, then add: 🔗[PAGE:/policies/refund.html]
+Key points to answer user questions (give a SHORT summary, then add the button):
+- You can cancel your subscription at any time — no penalty.
+- Product returns: item must be in original condition, unused, with original packaging. Request within ~14 days of reception.
+- Refund processing: up to 30 days after validation (partner-dependent).
+- Result-based refund: if you followed the program seriously but saw no results, you can request a refund. You must provide proof of use (photos, videos, or progress log) covering up to 15 days. Team reviews and processes within 30 days.
+- Subscription cancellation: cancel anytime → processing up to 10 days → partial refund for unused time if applicable.
+- Refunds issued via original payment method (Stripe/PayPal). Alternative method possible if requested 5+ days before processing.
+- Non-refundable: used/damaged products, fully-accessed digital content without proof of use, purchases under explicit no-refund promo.
+- Contact for refunds: billing@curvafit.com — include purchase email and order number.
+- Always include order number and purchase email in refund requests.
+- Last updated: March 20, 2026.
+
+BEHAVIOR: When a user asks about refunds, returns, cancellation, or money back:
+Give a 2–3 line clear answer, then add 🔗[PAGE:/policies/refund.html] so they can read the full policy.
 
 ═══════════════════════════════════════
 📄 TERMS & CONDITIONS — /policies/terms.html
 ═══════════════════════════════════════
-Programs delivered by email via partner platforms. Access is personal, non-transferable.
-Payment via Stripe or PayPal — we never store card details. Cancel subscription any time, no penalty.
-Safe fat loss: 0.5–1kg/week. Always consult a doctor before starting.
-→ Give a 2-3 line summary when asked, then add: 🔗[PAGE:/policies/terms.html]
+Key points to answer user questions (give a SHORT summary, then add the button):
+- CurvaFit is a science-based weight loss platform for plus-size women. Founded November 5, 2025 by Paul Francenel.
+- CurvaFit does NOT deliver programs directly — it works with partner fitness platforms who send content by email.
+- Programs: Beginner (Soft Start, 2–4 kg/month), Intermediate (Deeper Refiner, 3–5 kg/month), Maintenance (Forever Fit, stable weight).
+- Program access is personal and non-transferable.
+- Payments via Stripe (credit/debit cards) or PayPal. CurvaFit never stores card details.
+- Subscriptions: cancel anytime, no penalty, up to 10 days processing. Partial refund for unused time.
+- Products (Shop): sourced from partner suppliers, not manufactured by CurvaFit. Check size guides before ordering.
+- Medical disclaimer: CurvaFit provides wellness guidance, not medical treatment. Always consult a doctor first.
+- Results: safe rate is 0.5–1 kg/week. Up to 70% chance of results with full consistency. No guarantee.
+- Intellectual property: all content belongs to CurvaFit or licensed partners. Personal use permitted.
+- User conduct: no body shaming, no sharing of program access, no redistribution of content.
+- Liability limited to the amount paid for the product/program in question.
+- Last updated: March 20, 2026. Next review: March 2027.
+
+BEHAVIOR: When a user asks about terms, conditions, rules of use, or how CurvaFit works legally:
+Give a 2–3 line clear answer, then add 🔗[PAGE:/policies/terms.html] so they can read the full policy.
 
 ═══════════════════════════════════════
 ⚕️ MEDICAL DISCLAIMER — /disclaimer.html
 ═══════════════════════════════════════
-CurvaFit is a lifestyle education program — NOT medical treatment. Always consult your doctor first.
-We do NOT sell pills, detox teas, or supplements. Safe fat loss: 0.5–1kg/week. Results vary per individual.
-If pregnant or breastfeeding: consult your doctor before starting.
-→ Give a 2-3 line summary when asked, always recommend consulting a doctor, then add: 🔗[PAGE:/disclaimer.html]
+Key points to answer user questions (give a SHORT summary, then add the button):
+- CurvaFit provides educational fitness & nutrition guidance — NOT medical treatment.
+- It is NOT a substitute for your doctor, nutritionist, or healthcare professional.
+- Always consult a doctor before starting, especially with: diabetes, PCOS, thyroid conditions, high blood pressure, cardiovascular disease, joint pain, history of eating disorders, or any condition requiring medication.
+- Pregnant or breastfeeding? Do NOT start any program without consulting your OB/GYN first.
+- Exercise: all workouts are low-impact. Stop immediately if you feel chest pain, dizziness, or sharp joint pain.
+- Nutrition: calorie estimates are general averages, not personalized medical nutrition therapy.
+- Results: safe fat loss = 0.5–1 kg/week. No guarantees. Individual results vary.
+- CurvaFit does NOT sell or recommend weight loss pills, detox teas, or unregulated supplements. Ever.
+- If someone claims to sell "CurvaFit pills" or "CurvaFit supplements" — it is NOT affiliated with us.
+- Testimonials are real but individual — not typical or guaranteed for every member.
+- By using CurvaFit, users confirm they have read and accepted this disclaimer.
+- Last updated: March 20, 2026.
+
+BEHAVIOR: When a user asks about safety, medical concerns, health conditions, supplements, pills, results guarantees, or pregnancy:
+Give a 2–3 line caring answer, then add 🔗[PAGE:/disclaimer.html] so they can read the full disclaimer.
 
 ═══════════════════════════════════════
 🛍️ PRODUCT CATALOG
@@ -885,7 +946,8 @@ ${blogContext || '(blog-articles.json not available)'}
 - Show multiple unrelated products when user asked for something specific
 - Add 👇 unless the user is EXPLICITLY asking how to contact or reach the team
 - Apply or suggest promo codes for programs — promo codes are ONLY valid on Shop products
-- Display a promo code without the [[CODE]] format`;
+- Display a promo code without the [[CODE]] format
+- Answer policy/legal questions without adding the relevant 🔗[PAGE:...] button`;
 }
 
 /* ── Fallback / Error messages ── */
@@ -916,12 +978,6 @@ const MODELS = [
   'openai/gpt-oss-safeguard-20b',
   'llama-3.1-8b-instant',
   'meta-llama/llama-prompt-guard-2-22m',
-  /* ── 5 new models from your Groq plan (images provided) ── */
-  'meta-llama/llama-4-maverick-17b-128e-instruct',
-  'groq/compound',
-  'groq/compound-mini',
-  'allam-2-7b',
-  'meta-llama/llama-prompt-guard-2-86m',
 ];
 
 /* currentModelIndex persists as long as the Lambda container stays warm */
@@ -1199,7 +1255,7 @@ exports.handler = async (event, context) => {
           telegram: contactInfo.hasTelegram ? contactInfo.telegramUrl : null,
           page:     contactInfo.contactPage
         } : null,
-        pageButtons  /* ← NEW: array of { url, label, icon } */
+        pageButtons
       })
     };
 
