@@ -38,44 +38,30 @@ function sanitizeCart(cart, settings) {
   });
 }
 
-// ── Compute effective shipping & tax based on settings ───────────────
-function computeTotals(cart, settings) {
-  const cd = settings.cart_drawer || {};
-
-  const SHIPPING_COST = parseFloat(settings.shipping_cost) || 10.00;
-  const TAX_RATE = parseFloat(settings.tax_rate) || 0.10;
-  const freeShippingThreshold = parseFloat(cd.free_shipping_threshold) || 0;
-
-  const subtotal = cart.reduce((sum, item) => {
-    return sum + (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0);
-  }, 0);
-
-  const qualifiesForFreeShipping = freeShippingThreshold > 0 && subtotal >= freeShippingThreshold;
-
-  const effectiveShipping = qualifiesForFreeShipping ? 0 : SHIPPING_COST;
-  const effectiveTax = qualifiesForFreeShipping ? 0 : subtotal * TAX_RATE;
-
-  return {
-    subtotal,
-    shippingCost: effectiveShipping,
-    taxAmount: effectiveTax,
-  };
-}
-
 exports.handler = async (event) => {
   try {
     if (!event.body) return response(400, { success: false, error: "No data" });
 
-    const { cart: rawCart, shipping } = JSON.parse(event.body);
+    // ── Récupère exactement ce que checkout.js envoie ──
+    const { cart: rawCart, shipping, shipping_cost, tax } = JSON.parse(event.body);
 
     if (!Array.isArray(rawCart) || rawCart.length === 0) {
       return response(400, { success: false, error: "Cart empty" });
     }
 
-    // ── Load settings server-side ──
+    // ── Load settings server-side (pour sanitizeCart + fallback) ──
     const settings = await getSettings();
     const cart = sanitizeCart(rawCart, settings);
-    const { subtotal, shippingCost, taxAmount } = computeTotals(cart, settings);
+
+    // ── Utilise les valeurs envoyées par checkout.js
+    //    Fallback sur settings si absent (sécurité) ──
+    const shippingCost = shipping_cost !== undefined
+      ? parseFloat(shipping_cost)
+      : parseFloat(settings.shipping_cost) || 10.00;
+
+    const taxAmount = tax !== undefined
+      ? parseFloat(tax)
+      : 0;
 
     const PAYPAL_BASE = process.env.PAYPAL_ENV === "live"
       ? "https://api-m.paypal.com"
@@ -93,10 +79,12 @@ exports.handler = async (event) => {
     if (!tokenRes.ok) throw new Error("Failed to get PayPal token");
     const { access_token } = await tokenRes.json();
 
+    let subtotal = 0;
     const items = cart.map(item => {
       const price = parseFloat(item.price);
       const qty = parseInt(item.quantity);
       if (price < 0 || !qty || qty <= 0) throw new Error("Invalid item");
+      subtotal += price * qty;
       return {
         name: item.isFreePromo ? `🎁 FREE: ${item.title}` : item.title,
         unit_amount: { currency_code: "USD", value: price.toFixed(2) },
