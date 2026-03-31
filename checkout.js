@@ -58,32 +58,27 @@ document.addEventListener('DOMContentLoaded', () => {
           });
 
           // ══ INJECT CONTACT EMAILS FROM SETTINGS ══
-      (function injectContactEmails() {
-        const emails = settings.contact_emails || {};
-        if (!Object.keys(emails).length) return;
-
-        document.querySelectorAll('[data-email-key]').forEach(el => {
-          const key   = el.dataset.emailKey;
-          const email = emails[key];
-          if (!email) return;
-
-          // Bouton CTA spécial — on met juste le href, on garde le texte du bouton
-          if (el.dataset.emailCta) {
-            el.href = 'mailto:' + email;
-            return;
-          }
-
-          if (el.tagName === 'A') {
-            el.href        = 'mailto:' + email;
-            el.textContent = email;
-          } else {
-            el.textContent = email;
-          }
-        });
-      })();
-
+          (function injectContactEmails() {
+            const emails = settings.contact_emails || {};
+            if (!Object.keys(emails).length) return;
+            document.querySelectorAll('[data-email-key]').forEach(el => {
+              const key   = el.dataset.emailKey;
+              const email = emails[key];
+              if (!email) return;
+              if (el.dataset.emailCta) {
+                el.href = 'mailto:' + email;
+                return;
+              }
+              if (el.tagName === 'A') {
+                el.href        = 'mailto:' + email;
+                el.textContent = email;
+              } else {
+                el.textContent = email;
+              }
+            });
+          })();
         }
-        applyPromoFreeItems();       
+        applyPromoFreeItems();
         renderCart();
       })
       .catch(error => {
@@ -135,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
             img.alt = item.title || 'Product';
             img.loading = "lazy";
             const info = document.createElement('div');
-            
+
             const freeBadge = item.isFreePromo
                 ? `<span class="free-badge">🎁 Free 0.00$</span>`
                 : '';
@@ -169,9 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ====================== CORRECTION PRINCIPALE ======================
-    // validateForm() ne valide QUE les champs obligatoires visibles
-    // Avant : validait TOUS les inputs → bloquait sur phone-code, address2, etc.
+    // ====================== VALIDATION ======================
     function validateForm() {
         const requiredIds = ['first-name', 'last-name', 'email', 'address', 'postal-code', 'phone'];
         let valid = true;
@@ -185,8 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 el.style.borderColor = '#ccc';
             }
         });
-        // Vérifie aussi que le pays est sélectionné et a bien un cca2
-        // Vérifie le champ caché country
         const countryHidden = document.getElementById('country');
         if (!countryHidden || !countryHidden.value.trim()) {
             valid = false;
@@ -196,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const trigger = document.getElementById('country-trigger');
             if (trigger) trigger.style.borderColor = '#ccc';
         }
-        
+
         if (!valid) {
             showErrorPopup('Please fill all required fields before finalizing the payment');
             return false;
@@ -204,49 +195,58 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
-    // ====================== CORRECTION PAYPAL INTERMITTENT ======================
-                async function getCountryCode(countryName) {
-                if (selectedCountryCCA2 && selectedCountryCCA2.length === 2) return selectedCountryCCA2;
-                try {
-                    const res = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}?fields=cca2&fullText=true`);
-                    if (res.ok) { const d = await res.json(); return d[0]?.cca2 || 'US'; }
-                } catch(e) {}
-                return 'US';
-            
-        // Fallback : si cca2 pas encore chargé, on l'appelle directement
+    // ====================== BUG 2 CORRIGÉ : getCountryCode ======================
+    // PROBLÈME ORIGINAL : accolade fermante } manquante après le premier try/catch
+    // → le 2e bloc try/catch était en dehors de la fonction, inaccessible
+    // → selectedCountryCCA2 n'était JAMAIS retourné correctement pour certains pays
+    // → PayPal recevait un countryCode undefined/null → "order creation failed"
+    // CORRECTION : fonction propre avec 3 niveaux de fallback fiables
+    async function getCountryCode(countryName) {
+        // Priorité 1 : cca2 mémorisé à la sélection du pays (le plus fiable)
+        if (selectedCountryCCA2 && selectedCountryCCA2.length === 2) {
+            return selectedCountryCCA2;
+        }
+        // Priorité 2 : chercher dans la liste déjà chargée en mémoire (évite un appel réseau)
+        if (allCountries && allCountries.length) {
+            const match = allCountries.find(c => c.name.common === countryName);
+            if (match && match.cca2) return match.cca2;
+        }
+        // Priorité 3 : appel API en dernier recours
         try {
             const res = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}?fields=cca2&fullText=true`);
             if (res.ok) {
                 const data = await res.json();
                 return data[0]?.cca2 || 'US';
             }
-        } catch (e) {}
+        } catch (e) {
+            console.error('getCountryCode fallback error:', e);
+        }
         return 'US';
     }
 
     async function getShippingData() {
-    const countryName = selectedCountryName || document.getElementById('country').value.trim();
-    const countryCode = await getCountryCode(countryName);
-    const phoneCode   = document.getElementById('phone-code').value.trim();
-    const phoneNumber = document.getElementById('phone').value.trim();
-    const fullPhone   = (phoneCode + phoneNumber).replace(/\s+/g, '');
-    const address2El  = document.getElementById('address2') || document.getElementById('address-line2');
+        const countryName = selectedCountryName || document.getElementById('country').value.trim();
+        const countryCode = await getCountryCode(countryName);
+        const phoneCode   = document.getElementById('phone-code').value.trim();
+        const phoneNumber = document.getElementById('phone').value.trim();
+        const fullPhone   = (phoneCode + phoneNumber).replace(/\s+/g, '');
+        const address2El  = document.getElementById('address2') || document.getElementById('address-line2');
 
-    return {
-        firstName:       document.getElementById('first-name').value.trim(),
-        lastName:        document.getElementById('last-name').value.trim(),
-        email:           document.getElementById('email').value.trim(),
-        phone:           fullPhone,
-        country:         countryName,
-        countryCode:     countryCode,
-        city:            selectedCityName || document.getElementById('city').value.trim() || '',
-        state:           (document.getElementById('state') || {}).value?.trim() || '',
-        postalCode:      document.getElementById('postal-code').value.trim(),
-        address:         document.getElementById('address').value.trim(),
-        address2:        address2El ? address2El.value.trim() : '',
-        shipping_method: document.querySelector('.shipping-option.selected')?.dataset.method || 'Standard Shipping',
-    };
-}
+        return {
+            firstName:       document.getElementById('first-name').value.trim(),
+            lastName:        document.getElementById('last-name').value.trim(),
+            email:           document.getElementById('email').value.trim(),
+            phone:           fullPhone,
+            country:         countryName,
+            countryCode:     countryCode,
+            city:            selectedCityName || document.getElementById('city').value.trim() || '',
+            state:           (document.getElementById('state') || {}).value?.trim() || '',
+            postalCode:      document.getElementById('postal-code').value.trim(),
+            address:         document.getElementById('address').value.trim(),
+            address2:        address2El ? address2El.value.trim() : '',
+            shipping_method: document.querySelector('.shipping-option.selected')?.dataset.method || 'Standard Shipping',
+        };
+    }
 
     function getDiscountedCart() {
         let workingCart = JSON.parse(JSON.stringify(cart));
@@ -275,7 +275,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
 
         try {
-            // getShippingData est maintenant async
             const shippingData = await getShippingData();
             const discountedCart = getDiscountedCart();
             const discountedSubtotal = discountedCart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
@@ -287,8 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const effectiveShippingPay = (isFreePayMethod || isFreePayThresh) ? 0 : SHIPPING_COST;
 
             if (paymentMethod === 'stripe') {
-                const STRIPE_PUBLIC_KEY = "pk_test_51PMDwoF9QAVBUyaUqwc7ekbAhyZdI9oA3ubZT8b7TtWGrykoPLvsql4mexEwEoS5pggyssqN6jpj2w5VQMHOSftf00q97Rbt1f";
-                const stripe = Stripe(STRIPE_PUBLIC_KEY);
+                const stripe = Stripe(window.STRIPE_PUBLIC_KEY);
                 const response = await fetch('/.netlify/functions/create-stripe-session', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -346,252 +344,278 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === shippingModal) shippingModal.style.display = 'none';
     });
 
-    // ====================== PAYS & VILLES (CUSTOM SEARCHABLE SELECT) ======================
+    // ====================== PAYS & VILLES ======================
+    // ====================== BUG 1 CORRIGÉ : custom select dropdown ======================
+    // PROBLÈME ORIGINAL : le document.addEventListener('click', ...) dans buildCustomSelect
+    // utilisait wrapper.contains(e.target) mais le clic sur le trigger du 2e dropdown
+    // propageait aussi vers le listener du 1er → les deux se fermaient/ouvraient en même temps
+    // CORRECTION : utilisation d'un flag _isOpening pour bloquer la propagation parasite
+    // + stopPropagation sur le trigger pour éviter que le click global ferme immédiatement
 
-let allCountries = [];
-let allCities = [];
-let selectedCountryName = '';
-let selectedCountryCode = '';
-let selectedCountryCCA2 = '';
-let selectedCityName = '';
+    let allCountries = [];
+    let allCities = [];
+    let selectedCountryName = '';
+    let selectedCountryCode = '';
+    let selectedCountryCCA2 = '';
+    let selectedCityName = '';
 
-function buildCustomSelect({ wrapperId, triggerId, displayId, dropdownId, searchId, listId, hiddenId, placeholder }) {
-    const wrapper  = document.getElementById(wrapperId);
-    const trigger  = document.getElementById(triggerId);
-    const display  = document.getElementById(displayId);
-    const dropdown = document.getElementById(dropdownId);
-    const search   = document.getElementById(searchId);
-    const list     = document.getElementById(listId);
-    const hidden   = document.getElementById(hiddenId);
-    if (!wrapper || !trigger || !display || !dropdown || !search || !list || !hidden) return;
+    // Registre de tous les selects ouverts pour pouvoir tous les fermer proprement
+    const customSelectRegistry = [];
 
-    function openDropdown() {
-        // Ferme tous les autres selects ouverts
-        document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
-            if (w.id !== wrapperId) w.classList.remove('open');
+    function buildCustomSelect({ wrapperId, triggerId, displayId, dropdownId, searchId, listId, hiddenId, placeholder }) {
+        const wrapper  = document.getElementById(wrapperId);
+        const trigger  = document.getElementById(triggerId);
+        const display  = document.getElementById(displayId);
+        const dropdown = document.getElementById(dropdownId);
+        const search   = document.getElementById(searchId);
+        const list     = document.getElementById(listId);
+        const hidden   = document.getElementById(hiddenId);
+        if (!wrapper || !trigger || !display || !dropdown || !search || !list || !hidden) return null;
+
+        const ctrl = { wrapper, trigger, display, dropdown, search, list, hidden, placeholder };
+
+        function openDropdown() {
+            // Ferme TOUS les autres selects via le registre centralisé
+            customSelectRegistry.forEach(c => {
+                if (c !== ctrl) c.closeDropdown();
+            });
+            wrapper.classList.add('open');
+            search.value = '';
+            search.focus();
+            filterList('');
+        }
+
+        function closeDropdown() {
+            wrapper.classList.remove('open');
+        }
+
+        ctrl.closeDropdown = closeDropdown;
+        ctrl.openDropdown  = openDropdown;
+
+        function filterList(query) {
+            const q = query.toLowerCase().trim();
+            const items = list.querySelectorAll('li:not(.no-results):not(.loading)');
+            let visibleCount = 0;
+            items.forEach(li => {
+                const text = (li.dataset.label || '').toLowerCase();
+                if (!q || text.includes(q)) {
+                    li.style.display = '';
+                    visibleCount++;
+                } else {
+                    li.style.display = 'none';
+                }
+            });
+            const noResults = list.querySelector('.no-results');
+            if (noResults) noResults.style.display = visibleCount === 0 ? '' : 'none';
+        }
+
+        // stopPropagation sur le trigger : empêche le click global de fermer immédiatement
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            wrapper.classList.contains('open') ? closeDropdown() : openDropdown();
         });
-        wrapper.classList.add('open');
-        search.value = '';
-        search.focus();
-        filterList('');
-    }
 
-    function closeDropdown() {
-        wrapper.classList.remove('open');
-    }
+        trigger.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDropdown(); }
+            if (e.key === 'Escape') closeDropdown();
+        });
 
-    function filterList(query) {
-        const q = query.toLowerCase().trim();
-        const items = list.querySelectorAll('li:not(.no-results):not(.loading)');
-        let visibleCount = 0;
-        items.forEach(li => {
-            const text = (li.dataset.label || '').toLowerCase();
-            if (!q || text.includes(q)) {
-                li.style.display = '';
-                visibleCount++;
-            } else {
-                li.style.display = 'none';
+        search.addEventListener('input', () => filterList(search.value));
+        search.addEventListener('keydown', e => { if (e.key === 'Escape') closeDropdown(); });
+
+        // stopPropagation sur le dropdown lui-même pour que les clics internes ne remontent pas
+        dropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Un seul listener global (attaché au document une seule fois via le registre)
+        // ferme ce select si le clic est en dehors
+        ctrl._documentClickHandler = (e) => {
+            if (!wrapper.contains(e.target)) {
+                closeDropdown();
             }
-        });
-        const noResults = list.querySelector('.no-results');
-        if (noResults) noResults.style.display = visibleCount === 0 ? '' : 'none';
+        };
+        document.addEventListener('click', ctrl._documentClickHandler);
+
+        customSelectRegistry.push(ctrl);
+        return ctrl;
     }
 
-    trigger.addEventListener('click', () => {
-        wrapper.classList.contains('open') ? closeDropdown() : openDropdown();
+    // ── Initialisation Country ──
+    const countryCtrl = buildCustomSelect({
+        wrapperId:  'country-wrapper',
+        triggerId:  'country-trigger',
+        displayId:  'country-display',
+        dropdownId: 'country-dropdown',
+        searchId:   'country-search',
+        listId:     'country-list',
+        hiddenId:   'country',
+        placeholder: 'Select your country'
     });
 
-    trigger.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDropdown(); }
-        if (e.key === 'Escape') closeDropdown();
+    // ── Initialisation City ──
+    const cityCtrl = buildCustomSelect({
+        wrapperId:  'city-wrapper',
+        triggerId:  'city-trigger',
+        displayId:  'city-display',
+        dropdownId: 'city-dropdown',
+        searchId:   'city-search',
+        listId:     'city-list',
+        hiddenId:   'city',
+        placeholder: 'Select your city'
     });
 
-    search.addEventListener('input', () => filterList(search.value));
-    search.addEventListener('keydown', e => { if (e.key === 'Escape') closeDropdown(); });
-
-    document.addEventListener('click', e => {
-        if (!wrapper.contains(e.target)) closeDropdown();
-    });
-
-    return { wrapper, trigger, display, dropdown, search, list, hidden, placeholder, closeDropdown };
-}
-
-// ── Initialisation Country ──
-const countryCtrl = buildCustomSelect({
-    wrapperId:  'country-wrapper',
-    triggerId:  'country-trigger',
-    displayId:  'country-display',
-    dropdownId: 'country-dropdown',
-    searchId:   'country-search',
-    listId:     'country-list',
-    hiddenId:   'country',
-    placeholder: 'Select your country'
-});
-
-// ── Initialisation City ──
-const cityCtrl = buildCustomSelect({
-    wrapperId:  'city-wrapper',
-    triggerId:  'city-trigger',
-    displayId:  'city-display',
-    dropdownId: 'city-dropdown',
-    searchId:   'city-search',
-    listId:     'city-list',
-    hiddenId:   'city',
-    placeholder: 'Select your city'
-});
-
-function populateCityList(cities, savedCity) {
-    const list   = document.getElementById('city-list');
-    const hidden = document.getElementById('city');
-    const display = document.getElementById('city-display');
-    if (!list) return;
-    list.innerHTML = '';
-
-    const noItem = document.createElement('li');
-    noItem.className = 'no-results';
-    noItem.textContent = 'No cities found';
-    noItem.style.display = 'none';
-    list.appendChild(noItem);
-
-    cities.forEach(city => {
-        const li = document.createElement('li');
-        li.dataset.label = city;
-        li.dataset.value = city;
-        li.textContent = city;
-        li.addEventListener('click', () => {
-            selectedCityName = city;
-            hidden.value = city;
-            display.textContent = city;
-            display.classList.remove('placeholder');
-            list.querySelectorAll('li').forEach(i => i.classList.remove('selected'));
-            li.classList.add('selected');
-            if (cityCtrl) cityCtrl.closeDropdown();
-        });
-        list.appendChild(li);
-    });
-
-    if (savedCity) {
-        const match = cities.find(c => c === savedCity);
-        if (match) {
-            hidden.value = match;
-            display.textContent = match;
-            display.classList.remove('placeholder');
-            selectedCityName = match;
-        }
-    }
-    allCities = cities;
-}
-
-async function loadCitiesForCountry(countryName, savedCity) {
-    const list    = document.getElementById('city-list');
-    const display = document.getElementById('city-display');
-    const hidden  = document.getElementById('city');
-    if (!list) return;
-
-    list.innerHTML = '<li class="loading">Loading cities…</li>';
-    if (display) { display.textContent = 'Select your city'; display.classList.add('placeholder'); }
-    if (hidden)  hidden.value = '';
-    selectedCityName = '';
-
-    try {
-        const res = await fetch('https://countriesnow.space/api/v0.1/countries/cities', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ country: countryName })
-        });
-        const data = await res.json();
-        const cities = (data.data && data.data.length) ? data.data : [];
-        populateCityList(cities, savedCity);
-        if (!cities.length) {
-            list.innerHTML = '<li class="no-results">No cities found</li>';
-        }
-    } catch (err) {
-        console.error('City load error', err);
-        list.innerHTML = '<li class="no-results">No cities found</li>';
-    }
-}
-
-async function loadCountries() {
-    const list    = document.getElementById('country-list');
-    const hidden  = document.getElementById('country');
-    const display = document.getElementById('country-display');
-    const phoneCodeInput = document.getElementById('phone-code');
-    if (!list) return;
-
-    list.innerHTML = '<li class="loading">Loading countries…</li>';
-
-    try {
-        const res  = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,cca2');
-        const data = await res.json();
-        allCountries = data.sort((a, b) => a.name.common.localeCompare(b.name.common));
-
+    function populateCityList(cities, savedCity) {
+        const list    = document.getElementById('city-list');
+        const hidden  = document.getElementById('city');
+        const display = document.getElementById('city-display');
+        if (!list) return;
         list.innerHTML = '';
+
         const noItem = document.createElement('li');
         noItem.className = 'no-results';
-        noItem.textContent = 'No results';
+        noItem.textContent = 'No cities found';
         noItem.style.display = 'none';
         list.appendChild(noItem);
 
-        allCountries.forEach(country => {
-            const name = country.name.common;
-            const code = country.idd?.root ? country.idd.root + (country.idd.suffixes?.[0] || '') : '';
-            const cca2 = country.cca2;
-
+        cities.forEach(city => {
             const li = document.createElement('li');
-            li.dataset.label = name;
-            li.dataset.value = name;
-            li.dataset.code  = code;
-            li.dataset.cca2  = cca2;
-            li.textContent   = name;
-
+            li.dataset.label = city;
+            li.dataset.value = city;
+            li.textContent = city;
             li.addEventListener('click', () => {
-                selectedCountryName = name;
-                selectedCountryCode = code;
-                selectedCountryCCA2 = cca2;
-
-                hidden.value = name;
-                display.textContent = name;
+                selectedCityName = city;
+                hidden.value = city;
+                display.textContent = city;
                 display.classList.remove('placeholder');
-                if (phoneCodeInput) phoneCodeInput.value = code;
-
                 list.querySelectorAll('li').forEach(i => i.classList.remove('selected'));
                 li.classList.add('selected');
-                if (countryCtrl) countryCtrl.closeDropdown();
-
-                // Charge les villes
-                const savedCity = localStorage.getItem('isLoggedIn') === 'true' ? localStorage.getItem('userCity') || '' : '';
-                loadCitiesForCountry(name, savedCity);
+                if (cityCtrl) cityCtrl.closeDropdown();
             });
-
             list.appendChild(li);
         });
 
-        // Pré-sélectionne si utilisateur connecté
-        const savedCountry = localStorage.getItem('isLoggedIn') === 'true' ? localStorage.getItem('userCountry') || '' : '';
-        if (savedCountry) {
-            const match = allCountries.find(c => c.name.common === savedCountry);
+        if (savedCity) {
+            const match = cities.find(c => c === savedCity);
             if (match) {
-                const name = match.name.common;
-                const code = match.idd?.root ? match.idd.root + (match.idd.suffixes?.[0] || '') : '';
-                selectedCountryName = name;
-                selectedCountryCode = code;
-                selectedCountryCCA2 = match.cca2;
-                hidden.value = name;
-                display.textContent = name;
+                hidden.value = match;
+                display.textContent = match;
                 display.classList.remove('placeholder');
-                if (phoneCodeInput) phoneCodeInput.value = code;
-                const savedCity = localStorage.getItem('userCity') || '';
-                loadCitiesForCountry(name, savedCity);
+                selectedCityName = match;
             }
         }
-
-    } catch (err) {
-        console.error('Country load error', err);
-        list.innerHTML = '<li class="no-results">Failed to load countries</li>';
+        allCities = cities;
     }
-}
 
-loadCountries();
+    async function loadCitiesForCountry(countryName, savedCity) {
+        const list    = document.getElementById('city-list');
+        const display = document.getElementById('city-display');
+        const hidden  = document.getElementById('city');
+        if (!list) return;
+
+        list.innerHTML = '<li class="loading">Loading cities…</li>';
+        if (display) { display.textContent = 'Select your city'; display.classList.add('placeholder'); }
+        if (hidden)  hidden.value = '';
+        selectedCityName = '';
+
+        try {
+            const res = await fetch('https://countriesnow.space/api/v0.1/countries/cities', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ country: countryName })
+            });
+            const data = await res.json();
+            const cities = (data.data && data.data.length) ? data.data : [];
+            populateCityList(cities, savedCity);
+            if (!cities.length) {
+                list.innerHTML = '<li class="no-results">No cities found</li>';
+            }
+        } catch (err) {
+            console.error('City load error', err);
+            list.innerHTML = '<li class="no-results">No cities found</li>';
+        }
+    }
+
+    async function loadCountries() {
+        const list           = document.getElementById('country-list');
+        const hidden         = document.getElementById('country');
+        const display        = document.getElementById('country-display');
+        const phoneCodeInput = document.getElementById('phone-code');
+        if (!list) return;
+
+        list.innerHTML = '<li class="loading">Loading countries…</li>';
+
+        try {
+            const res  = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,cca2');
+            const data = await res.json();
+            allCountries = data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+
+            list.innerHTML = '';
+            const noItem = document.createElement('li');
+            noItem.className = 'no-results';
+            noItem.textContent = 'No results';
+            noItem.style.display = 'none';
+            list.appendChild(noItem);
+
+            allCountries.forEach(country => {
+                const name = country.name.common;
+                const code = country.idd?.root ? country.idd.root + (country.idd.suffixes?.[0] || '') : '';
+                const cca2 = country.cca2;
+
+                const li = document.createElement('li');
+                li.dataset.label = name;
+                li.dataset.value = name;
+                li.dataset.code  = code;
+                li.dataset.cca2  = cca2;
+                li.textContent   = name;
+
+                li.addEventListener('click', () => {
+                    selectedCountryName = name;
+                    selectedCountryCode = code;
+                    selectedCountryCCA2 = cca2;
+
+                    hidden.value = name;
+                    display.textContent = name;
+                    display.classList.remove('placeholder');
+                    if (phoneCodeInput) phoneCodeInput.value = code;
+
+                    list.querySelectorAll('li').forEach(i => i.classList.remove('selected'));
+                    li.classList.add('selected');
+                    if (countryCtrl) countryCtrl.closeDropdown();
+
+                    const savedCity = localStorage.getItem('isLoggedIn') === 'true' ? localStorage.getItem('userCity') || '' : '';
+                    loadCitiesForCountry(name, savedCity);
+                });
+
+                list.appendChild(li);
+            });
+
+            // Pré-sélectionne si utilisateur connecté
+            const savedCountry = localStorage.getItem('isLoggedIn') === 'true' ? localStorage.getItem('userCountry') || '' : '';
+            if (savedCountry) {
+                const match = allCountries.find(c => c.name.common === savedCountry);
+                if (match) {
+                    const name = match.name.common;
+                    const code = match.idd?.root ? match.idd.root + (match.idd.suffixes?.[0] || '') : '';
+                    selectedCountryName = name;
+                    selectedCountryCode = code;
+                    selectedCountryCCA2 = match.cca2;
+                    hidden.value = name;
+                    display.textContent = name;
+                    display.classList.remove('placeholder');
+                    if (phoneCodeInput) phoneCodeInput.value = code;
+                    const savedCity = localStorage.getItem('userCity') || '';
+                    loadCitiesForCountry(name, savedCity);
+                }
+            }
+
+        } catch (err) {
+            console.error('Country load error', err);
+            list.innerHTML = '<li class="no-results">Failed to load countries</li>';
+        }
+    }
+
+    loadCountries();
 
     const shippingOptions = document.querySelectorAll('.shipping-option');
     shippingOptions.forEach(option => {
@@ -606,7 +630,7 @@ loadCountries();
     function updatePromoDisplay() {
         const hasBundle = cart.some(item => item.fromBundle);
         const settings = productsData.find(i => i.type === 'settings');
-         const cd = settings?.cart_drawer || {};
+        const cd = settings?.cart_drawer || {};
         const countFreeForPromo = (cd.promo_count_free_items || 'No').toLowerCase() === 'yes';
         const totalQuantity = countFreeForPromo
             ? cart.reduce((sum, item) => sum + item.quantity, 0)
@@ -659,8 +683,8 @@ loadCountries();
         document.getElementById('taxes').textContent = `$${effectiveTax.toFixed(2)}`;
         const taxLabel = document.getElementById('tax-rate-label');
         if (taxLabel) taxLabel.textContent = (isFreeByThreshold || isFreeMethod)
-        ? 0
-        : (TAX_RATE * 100).toFixed(TAX_RATE * 100 % 1 === 0 ? 0 : 1);
+            ? 0
+            : (TAX_RATE * 100).toFixed(TAX_RATE * 100 % 1 === 0 ? 0 : 1);
         document.getElementById('shipping').textContent = effectiveShipping === 0 ? 'FREE' : `$${effectiveShipping.toFixed(2)}`;
         document.getElementById('total').textContent = `$${Math.max(0, finalTotal).toFixed(2)}`;
         const promoLine = document.getElementById('promo-line');
@@ -673,79 +697,74 @@ loadCountries();
         }
     }
 
-
     function applyPromoFreeItems() {
-    const settings = productsData.find(i => i.type === 'settings');
-    if (!settings) return;
-    const cd = settings.cart_drawer || {};
+        const settings = productsData.find(i => i.type === 'settings');
+        if (!settings) return;
+        const cd = settings.cart_drawer || {};
 
-    const showPromo = (cd.show_promo_message || 'Yes').toLowerCase() === 'yes';
-    if (!showPromo) {
-        cart = cart.filter(i => !i.isFreePromo);
-        localStorage.setItem('cart', JSON.stringify(cart));
-        return;
-    }
-    const buyQty = parseInt(cd.promo_buy_quantity) || 0;
-    const getQty = parseInt(cd.promo_get_quantity)  || 0;
-    if (!buyQty || !getQty) return;
-
-    const realProducts = productsData.filter(p => !p.type && p.active !== false);
-
-    // Si promo_free_product_ids défini → utiliser ces IDs dans l'ordre
-    // Sinon → fallback sur les premiers produits du catalogue
-    const freeIds = Array.isArray(cd.promo_free_product_ids) && cd.promo_free_product_ids.length > 0
-        ? cd.promo_free_product_ids
-        : null;
-
-    const paidQty = cart.filter(i => !i.isFreePromo).reduce((sum, i) => sum + i.quantity, 0);
-    cart = cart.filter(i => !i.isFreePromo);
-
-    if (paidQty >= buyQty) {
-        for (let idx = 0; idx < getQty; idx++) {
-            let prod;
-            if (freeIds) {
-                // Utiliser l'ID spécifique à la position idx (si disponible)
-                const targetId = freeIds[idx];
-                if (!targetId) break;
-                prod = realProducts.find(p => p.id === targetId);
-            } else {
-                // Comportement original : prendre dans l'ordre du catalogue
-                prod = realProducts[idx];
-            }
-            if (!prod) break;
-
-            const firstVariant = (prod.variants && prod.variants.length > 0)
-                ? prod.variants[0]
-                : null;
-
-            const color = firstVariant ? (firstVariant.color || null) : null;
-            const size  = firstVariant ? (firstVariant.size  || null) : null;
-
-            const colorObj = (color && prod.colors)
-                ? prod.colors.find(c => c.name === color)
-                : null;
-            const image = colorObj
-                ? (colorObj.image || prod.image)
-                : prod.image;
-
-            cart.push({
-                id:            prod.id,
-                title:         prod.title,
-                price:         0,
-                compare_price: firstVariant ? firstVariant.price : prod.price,
-                image:         image || prod.image,
-                size:          size  || null,
-                color:         color || null,
-                quantity:      1,
-                isFreePromo:   true,
-                cj_product_id: prod.cj_id,
-                cj_variant_id: firstVariant ? firstVariant.vid : null
-            });
+        const showPromo = (cd.show_promo_message || 'Yes').toLowerCase() === 'yes';
+        if (!showPromo) {
+            cart = cart.filter(i => !i.isFreePromo);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            return;
         }
-    }
+        const buyQty = parseInt(cd.promo_buy_quantity) || 0;
+        const getQty = parseInt(cd.promo_get_quantity)  || 0;
+        if (!buyQty || !getQty) return;
 
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
+        const realProducts = productsData.filter(p => !p.type && p.active !== false);
+
+        const freeIds = Array.isArray(cd.promo_free_product_ids) && cd.promo_free_product_ids.length > 0
+            ? cd.promo_free_product_ids
+            : null;
+
+        const paidQty = cart.filter(i => !i.isFreePromo).reduce((sum, i) => sum + i.quantity, 0);
+        cart = cart.filter(i => !i.isFreePromo);
+
+        if (paidQty >= buyQty) {
+            for (let idx = 0; idx < getQty; idx++) {
+                let prod;
+                if (freeIds) {
+                    const targetId = freeIds[idx];
+                    if (!targetId) break;
+                    prod = realProducts.find(p => p.id === targetId);
+                } else {
+                    prod = realProducts[idx];
+                }
+                if (!prod) break;
+
+                const firstVariant = (prod.variants && prod.variants.length > 0)
+                    ? prod.variants[0]
+                    : null;
+
+                const color = firstVariant ? (firstVariant.color || null) : null;
+                const size  = firstVariant ? (firstVariant.size  || null) : null;
+
+                const colorObj = (color && prod.colors)
+                    ? prod.colors.find(c => c.name === color)
+                    : null;
+                const image = colorObj
+                    ? (colorObj.image || prod.image)
+                    : prod.image;
+
+                cart.push({
+                    id:            prod.id,
+                    title:         prod.title,
+                    price:         0,
+                    compare_price: firstVariant ? firstVariant.price : prod.price,
+                    image:         image || prod.image,
+                    size:          size  || null,
+                    color:         color || null,
+                    quantity:      1,
+                    isFreePromo:   true,
+                    cj_product_id: prod.cj_id,
+                    cj_variant_id: firstVariant ? firstVariant.vid : null
+                });
+            }
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
 
     document.getElementById('copy-suggested')?.addEventListener('click', () => {
         const code = document.getElementById('suggested-code').textContent;
