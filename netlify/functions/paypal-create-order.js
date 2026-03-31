@@ -123,7 +123,8 @@ exports.handler = async (event) => {
       }],
       application_context: {
         return_url: `${process.env.BASE_URL}/thankyou.html`,
-        cancel_url: `${process.env.BASE_URL}/checkout.html`
+        cancel_url: `${process.env.BASE_URL}/checkout.html`,
+        shipping_preference: "SET_PROVIDED_ADDRESS" 
       }
     };
 
