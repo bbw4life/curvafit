@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const email = emails[key];
           if (!email) return;
 
+          // Bouton CTA spécial — on met juste le href, on garde le texte du bouton
           if (el.dataset.emailCta) {
             el.href = 'mailto:' + email;
             return;
@@ -82,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
       })();
 
         }
-        applyPromoFreeItems();
+        applyPromoFreeItems();       
         renderCart();
       })
       .catch(error => {
@@ -134,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
             img.alt = item.title || 'Product';
             img.loading = "lazy";
             const info = document.createElement('div');
-
+            
             const freeBadge = item.isFreePromo
                 ? `<span class="free-badge">🎁 Free 0.00$</span>`
                 : '';
@@ -168,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // ====================== VALIDATION FORM ======================
     function validateForm() {
         const requiredIds = ['first-name', 'last-name', 'email', 'address', 'postal-code', 'phone'];
         let valid = true;
@@ -190,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const trigger = document.getElementById('country-trigger');
             if (trigger) trigger.style.borderColor = '#ccc';
         }
-
+        
         if (!valid) {
             showErrorPopup('Please fill all required fields before finalizing the payment');
             return false;
@@ -198,33 +200,36 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
-    // ====================== FIX #2 — getCountryCode() ======================
-    // Avant : accolade fermante manquante après le premier bloc try/catch,
-    // ce qui court-circuitait le fallback API et renvoyait undefined sur certains pays,
-    // provoquant un rejet côté PayPal.
-    // Après : logique à 3 niveaux clairement fermée — selectedCountryCCA2 → cache
-    // allCountries → appel API restcountries en dernier recours.
-    async function getCountryCode(countryName) {
-        // Niveau 1 : code déjà résolu par le select custom
-        if (selectedCountryCCA2 && selectedCountryCCA2.length === 2) return selectedCountryCCA2;
+    // ====================== FIX 1 : getPhoneCode ======================
+    // Certains pays (USA, Canada, Russie...) ont plusieurs suffixes IDD.
+    // L'ancien code prenait toujours suffixes[0], donnant +1201, +1202...
+    // On ne concatène le suffixe QUE si le pays en a exactement un.
+    function getPhoneCode(idd) {
+        if (!idd?.root) return '';
+        if (idd.suffixes?.length !== 1) return idd.root;
+        return idd.root + idd.suffixes[0];
+    }
 
-        // Niveau 2 : cache local chargé lors de loadCountries()
-        if (allCountries.length) {
+    // ====================== FIX 2 : getCountryCode (accolade manquante corrigée) ======================
+    async function getCountryCode(countryName) {
+        // Priorité 1 : CCA2 déjà résolu lors de la sélection du pays
+        if (selectedCountryCCA2 && selectedCountryCCA2.length === 2) {
+            return selectedCountryCCA2;
+        }
+        // Priorité 2 : chercher dans la liste déjà en mémoire (sans appel réseau)
+        if (allCountries.length > 0) {
             const match = allCountries.find(c => c.name.common === countryName);
             if (match?.cca2) return match.cca2;
         }
-
-        // Niveau 3 : fallback API (dernier recours)
+        // Fallback : appel API
         try {
-            const res = await fetch(
-                `https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}?fields=cca2&fullText=true`
-            );
+            const res = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}?fields=cca2&fullText=true`);
             if (res.ok) {
-                const data = await res.json();
-                return data[0]?.cca2 || 'US';
+                const d = await res.json();
+                return d[0]?.cca2 || 'US';
             }
-        } catch (e) {
-            console.error('getCountryCode fallback error:', e);
+        } catch(e) {
+            console.warn('getCountryCode fallback failed:', e);
         }
         return 'US';
     }
@@ -350,10 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === shippingModal) shippingModal.style.display = 'none';
     });
 
-    // ====================== PAYS & VILLES ======================
-    // FIX #1 — Les listes sont construites UNE SEULE FOIS via loadCountries().
-    // On remplace les listeners individuels sur chaque <li> par une délégation
-    // d'événement sur le <ul> parent, ce qui élimine les conflits et le freeze.
+    // ====================== PAYS & VILLES (CUSTOM SEARCHABLE SELECT) ======================
 
     let allCountries = [];
     let allCities = [];
@@ -361,6 +363,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedCountryCode = '';
     let selectedCountryCCA2 = '';
     let selectedCityName = '';
+
+    // ====================== FIX 3 : flag pour éviter double chargement ======================
+    let countriesLoaded = false;
 
     function buildCustomSelect({ wrapperId, triggerId, displayId, dropdownId, searchId, listId, hiddenId, placeholder }) {
         const wrapper  = document.getElementById(wrapperId);
@@ -446,22 +451,13 @@ document.addEventListener('DOMContentLoaded', () => {
         placeholder: 'Select your city'
     });
 
-    // FIX #1 (suite) — populateCityList() utilise une délégation d'événement
-    // sur le <ul> city. L'ancien listener est retiré avant de reconstruire la liste,
-    // ce qui évite l'accumulation de handlers à chaque changement de pays.
     function populateCityList(cities, savedCity) {
         const list    = document.getElementById('city-list');
         const hidden  = document.getElementById('city');
         const display = document.getElementById('city-display');
         if (!list) return;
-
-        // Supprime le listener délégué précédent s'il existe
-        if (list._cityClickHandler) {
-            list.removeEventListener('click', list._cityClickHandler);
-            list._cityClickHandler = null;
-        }
-
         list.innerHTML = '';
+
         const noItem = document.createElement('li');
         noItem.className = 'no-results';
         noItem.textContent = 'No cities found';
@@ -473,23 +469,17 @@ document.addEventListener('DOMContentLoaded', () => {
             li.dataset.label = city;
             li.dataset.value = city;
             li.textContent = city;
+            li.addEventListener('click', () => {
+                selectedCityName = city;
+                hidden.value = city;
+                display.textContent = city;
+                display.classList.remove('placeholder');
+                list.querySelectorAll('li').forEach(i => i.classList.remove('selected'));
+                li.classList.add('selected');
+                if (cityCtrl) cityCtrl.closeDropdown();
+            });
             list.appendChild(li);
         });
-
-        // Un seul listener délégué sur le <ul>
-        list._cityClickHandler = (e) => {
-            const li = e.target.closest('li[data-value]');
-            if (!li) return;
-            const city = li.dataset.value;
-            selectedCityName = city;
-            hidden.value = city;
-            display.textContent = city;
-            display.classList.remove('placeholder');
-            list.querySelectorAll('li').forEach(i => i.classList.remove('selected'));
-            li.classList.add('selected');
-            if (cityCtrl) cityCtrl.closeDropdown();
-        };
-        list.addEventListener('click', list._cityClickHandler);
 
         if (savedCity) {
             const match = cities.find(c => c === savedCity);
@@ -498,8 +488,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 display.textContent = match;
                 display.classList.remove('placeholder');
                 selectedCityName = match;
-                const matchLi = list.querySelector(`li[data-value="${CSS.escape(match)}"]`);
-                if (matchLi) matchLi.classList.add('selected');
             }
         }
         allCities = cities;
@@ -510,12 +498,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const display = document.getElementById('city-display');
         const hidden  = document.getElementById('city');
         if (!list) return;
-
-        // Retire le listener délégué avant de vider la liste
-        if (list._cityClickHandler) {
-            list.removeEventListener('click', list._cityClickHandler);
-            list._cityClickHandler = null;
-        }
 
         list.innerHTML = '<li class="loading">Loading cities…</li>';
         if (display) { display.textContent = 'Select your city'; display.classList.add('placeholder'); }
@@ -540,10 +522,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // FIX #1 (suite) — loadCountries() construit le <ul> country UNE SEULE FOIS
-    // et attache un unique listener délégué sur le <ul>.
-    // Avant : chaque <li> avait son propre listener → conflits au moindre re-render.
     async function loadCountries() {
+        // FIX : on ne charge les pays qu'une seule fois
+        if (countriesLoaded) return;
+        countriesLoaded = true;
+
         const list           = document.getElementById('country-list');
         const hidden         = document.getElementById('country');
         const display        = document.getElementById('country-display');
@@ -566,7 +549,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             allCountries.forEach(country => {
                 const name = country.name.common;
-                const code = country.idd?.root ? country.idd.root + (country.idd.suffixes?.[0] || '') : '';
+                // FIX : utilisation de getPhoneCode() pour éviter +1201, +1202...
+                const code = getPhoneCode(country.idd);
                 const cca2 = country.cca2;
 
                 const li = document.createElement('li');
@@ -575,46 +559,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 li.dataset.code  = code;
                 li.dataset.cca2  = cca2;
                 li.textContent   = name;
+
+                li.addEventListener('click', () => {
+                    selectedCountryName = name;
+                    selectedCountryCode = code;
+                    selectedCountryCCA2 = cca2;
+
+                    hidden.value = name;
+                    display.textContent = name;
+                    display.classList.remove('placeholder');
+                    if (phoneCodeInput) phoneCodeInput.value = code;
+
+                    list.querySelectorAll('li').forEach(i => i.classList.remove('selected'));
+                    li.classList.add('selected');
+                    if (countryCtrl) countryCtrl.closeDropdown();
+
+                    const savedCity = localStorage.getItem('isLoggedIn') === 'true' ? localStorage.getItem('userCity') || '' : '';
+                    loadCitiesForCountry(name, savedCity);
+                });
+
                 list.appendChild(li);
             });
 
-            // Un seul listener délégué sur le <ul> country
-            list.addEventListener('click', (e) => {
-                const li = e.target.closest('li[data-value]');
-                if (!li) return;
-
-                const name = li.dataset.value;
-                const code = li.dataset.code;
-                const cca2 = li.dataset.cca2;
-
-                selectedCountryName = name;
-                selectedCountryCode = code;
-                selectedCountryCCA2 = cca2;
-
-                hidden.value = name;
-                display.textContent = name;
-                display.classList.remove('placeholder');
-                if (phoneCodeInput) phoneCodeInput.value = code;
-
-                list.querySelectorAll('li').forEach(i => i.classList.remove('selected'));
-                li.classList.add('selected');
-                if (countryCtrl) countryCtrl.closeDropdown();
-
-                const savedCity = localStorage.getItem('isLoggedIn') === 'true'
-                    ? localStorage.getItem('userCity') || ''
-                    : '';
-                loadCitiesForCountry(name, savedCity);
-            });
-
-            // Pré-sélectionne le pays si l'utilisateur est connecté
-            const savedCountry = localStorage.getItem('isLoggedIn') === 'true'
-                ? localStorage.getItem('userCountry') || ''
-                : '';
+            // Pré-sélectionne si utilisateur connecté
+            const savedCountry = localStorage.getItem('isLoggedIn') === 'true' ? localStorage.getItem('userCountry') || '' : '';
             if (savedCountry) {
                 const match = allCountries.find(c => c.name.common === savedCountry);
                 if (match) {
                     const name = match.name.common;
-                    const code = match.idd?.root ? match.idd.root + (match.idd.suffixes?.[0] || '') : '';
+                    const code = getPhoneCode(match.idd);
                     selectedCountryName = name;
                     selectedCountryCode = code;
                     selectedCountryCCA2 = match.cca2;
@@ -622,14 +595,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     display.textContent = name;
                     display.classList.remove('placeholder');
                     if (phoneCodeInput) phoneCodeInput.value = code;
-                    const matchLi = list.querySelector(`li[data-value="${CSS.escape(name)}"]`);
-                    if (matchLi) matchLi.classList.add('selected');
                     const savedCity = localStorage.getItem('userCity') || '';
                     loadCitiesForCountry(name, savedCity);
                 }
             }
 
         } catch (err) {
+            countriesLoaded = false; // permet retry si réseau fail
             console.error('Country load error', err);
             list.innerHTML = '<li class="no-results">Failed to load countries</li>';
         }
