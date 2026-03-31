@@ -38,45 +38,6 @@ function sanitizeCart(cart, settings) {
   });
 }
 
-// ── Parse phone safely — never throws, returns null if invalid ───────
-function parsePhone(rawPhone, countryCode, allCountriesCache) {
-  try {
-    if (!rawPhone || !countryCode) return null;
-
-    // Récupère le calling code depuis le cache si disponible
-    let callingCode = null;
-    if (allCountriesCache && allCountriesCache[countryCode]) {
-      callingCode = allCountriesCache[countryCode];
-    }
-
-    // Nettoyage du numéro brut
-    let digits = rawPhone.replace(/\D/g, '');
-    if (!digits || digits.length < 4) return null;
-
-    // Si on a le calling code, on retire le préfixe du numéro
-    if (callingCode) {
-      if (digits.startsWith(callingCode)) {
-        digits = digits.slice(callingCode.length);
-      }
-    }
-
-    // Validation finale : national_number doit faire 4-14 chiffres
-    if (!digits || digits.length < 4 || digits.length > 14) return null;
-    if (!callingCode || callingCode.length === 0) return null;
-
-    return {
-      phone_type: "MOBILE",
-      phone_number: {
-        country_code: callingCode,
-        national_number: digits
-      }
-    };
-  } catch (err) {
-    console.warn('[PAYPAL] parsePhone error:', err.message);
-    return null;
-  }
-}
-
 exports.handler = async (event) => {
   try {
     if (!event.body) return response(400, { success: false, error: "No data" });
@@ -121,7 +82,7 @@ exports.handler = async (event) => {
       if (price < 0 || !qty || qty <= 0) throw new Error("Invalid item");
       subtotal += price * qty;
       return {
-        name: item.isFreePromo ? `FREE: ${item.title}` : item.title,
+        name: item.isFreePromo ? `🎁 FREE: ${item.title}` : item.title,
         unit_amount: { currency_code: "USD", value: price.toFixed(2) },
         quantity: qty.toString(),
         sku: item.cj_variant_id || '',
@@ -133,7 +94,6 @@ exports.handler = async (event) => {
     const custom_id = cart.map(item => item.cj_variant_id || '').join('|');
 
     const fullName = `${shipping.firstName || ''} ${shipping.lastName || ''}`.trim();
-
     const orderBody = {
       intent: "CAPTURE",
       purchase_units: [{
@@ -143,99 +103,67 @@ exports.handler = async (event) => {
           value: finalTotal,
           breakdown: {
             item_total: { currency_code: "USD", value: subtotal.toFixed(2) },
-            shipping:   { currency_code: "USD", value: shippingCost.toFixed(2) },
-            tax_total:  { currency_code: "USD", value: taxAmount.toFixed(2) }
+            shipping: { currency_code: "USD", value: shippingCost.toFixed(2) },
+            tax_total: { currency_code: "USD", value: taxAmount.toFixed(2) }
           }
         },
         items: items,
         shipping: {
           name: { full_name: fullName },
           address: {
-            address_line_1: shipping.address    || '',
-            address_line_2: shipping.address2   || '',
-            admin_area_2:   shipping.city       || '',
-            admin_area_1:   shipping.state      || '',
-            postal_code:    shipping.postalCode || '',
-            country_code:   shipping.countryCode || 'US'
+            address_line_1: shipping.address || '',
+            address_line_2: '',
+            admin_area_2: shipping.city || "",
+            admin_area_1: shipping.state || "",
+            postal_code: shipping.postalCode || "",
+            country_code: shipping.countryCode || "US"
           }
         },
         custom_id: custom_id
       }],
       application_context: {
         return_url: `${process.env.BASE_URL}/thankyou.html`,
-        cancel_url:  `${process.env.BASE_URL}/checkout.html`
+        cancel_url: `${process.env.BASE_URL}/checkout.html`
       }
     };
 
-    // ── Payer : construit proprement, sans jamais casser si phone invalide ──
-    const payer = {};
-
-    if (shipping.email) {
-      payer.email_address = shipping.email;
-    }
+    let payer = {};
+    if (shipping.email) payer.email_address = shipping.email;
     if (shipping.firstName || shipping.lastName) {
-      payer.name = {
-        given_name: shipping.firstName || '',
-        surname:    shipping.lastName  || ''
-      };
+      payer.name = { given_name: shipping.firstName || '', surname: shipping.lastName || '' };
     }
-
-    // Phone : on résout le calling code UNIQUEMENT si countryCode est valide (2 lettres)
-    if (shipping.phone && shipping.countryCode && /^[A-Z]{2}$/.test(shipping.countryCode)) {
+    if (shipping.phone && shipping.countryCode) {
       try {
-        const countryRes = await fetch(
-          `https://restcountries.com/v3.1/alpha/${shipping.countryCode}?fields=idd`,
-          { timeout: 4000 }
-        );
-        if (countryRes.ok) {
-          const countryData = await countryRes.json();
-          const root     = (countryData.idd?.root || '').replace('+', '');
-          const suffixes = countryData.idd?.suffixes || [];
-
-          // Règle clé : suffixes multiples (USA, CA, RD...) → on ne prend PAS le suffixe
-          const callingCode = (suffixes.length === 1)
-            ? root + suffixes[0]
-            : root;
-
-          const cache = { [shipping.countryCode]: callingCode };
-          const phoneObj = parsePhone(shipping.phone, shipping.countryCode, cache);
-
-          // On n'attache le phone QUE s'il est valide
-          if (phoneObj) {
-            payer.phone = phoneObj;
-          }
-        }
-      } catch (err) {
-        // Silencieux : PayPal accepte un order sans champ phone
-        console.warn('[PAYPAL] Phone resolve skipped:', err.message);
-      }
+        const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.countryCode}?fields=idd`);
+        const countryData = await countryRes.json();
+        // FIX: suffixes multiples (USA, RD, Canada...) on ne prend pas le suffixe
+        const suffixes = countryData.idd?.suffixes || [];
+        const callingCode = suffixes.length === 1
+          ? countryData.idd.root.replace('+', '') + suffixes[0]
+          : countryData.idd.root.replace('+', '');
+        let nationalNumber = shipping.phone.replace(/^\+/, '').replace(/\D/g, '');
+        if (nationalNumber.startsWith(callingCode)) nationalNumber = nationalNumber.slice(callingCode.length);
+        payer.phone = { phone_type: "MOBILE", phone_number: { country_code: callingCode, national_number: nationalNumber } };
+      } catch (err) {}
     }
-
     orderBody.payer = payer;
 
     const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders`, {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${access_token}`,
-        "Content-Type": "application/json"
-      },
+      headers: { "Authorization": `Bearer ${access_token}`, "Content-Type": "application/json" },
       body: JSON.stringify(orderBody)
     });
 
     if (!orderRes.ok) {
       const errText = await orderRes.text();
-      console.error('[PAYPAL] Order creation error:', errText);
       throw new Error(errText || "PayPal order creation failed");
     }
-
     const orderData = await orderRes.json();
 
     return response(200, {
       success: true,
       orderID: orderData.id,
-      paypalDomain: PAYPAL_BASE.includes("sandbox")
-        ? "https://www.sandbox.paypal.com"
-        : "https://www.paypal.com"
+      paypalDomain: PAYPAL_BASE.includes("sandbox") ? "https://www.sandbox.paypal.com" : "https://www.paypal.com"
     });
 
   } catch (error) {
@@ -245,9 +173,5 @@ exports.handler = async (event) => {
 };
 
 function response(statusCode, body) {
-  return {
-    statusCode,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  };
+  return { statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
 }
