@@ -57,7 +57,7 @@ a { text-decoration:none; color:inherit; }
 ul, ol { list-style:none; }
 
 /* ── Container ── */
-.container { max-width:1180px; margin:0 auto; padding:0 28px; }
+.container { max-width:1500px; margin:0 auto; padding:0 28px; }
 
 /* ── Typography ── */
 h1,h2,h3,h4 { font-family:var(--font-display); font-weight:700; color:var(--charcoal); line-height:1.18; letter-spacing:-0.015em; }
@@ -403,7 +403,7 @@ section + section { margin-top: var(--section-gap) !important; }
    BEFORE / AFTER
 ───────────────────────────────────────────── */
 .before-after-section { padding:var(--section-pad) 0; background:var(--cream); }
-.flip-container { perspective:1200px; max-width:680px; margin:0 auto; }
+.flip-container { perspective:1500px; max-width:680px; margin:0 auto; }
 .flipper {
     transition:transform 0.70s cubic-bezier(0.4,0.2,0.2,1);
     transform-style:preserve-3d;
@@ -3190,7 +3190,7 @@ details p { padding:14px 22px 18px; border-top:1px solid var(--border); font-siz
    PRIVACY PAGE
 ───────────────────────────────────────────── */
 .privacy-page { background:#fef5f7; padding:10px 0; color:var(--slate); }
-.privacy-container { max-width:1180px; margin:0 auto; padding:0 28px; }
+.privacy-container { max-width:1500px; margin:0 auto; padding:0 10px; }
 .privacy-banner { background:linear-gradient(135deg, var(--rose), var(--plum)); padding:40px 28px; border-radius:var(--radius-md); margin-bottom:18px; box-shadow:var(--shadow-lift); text-align:center; color:#fff; }
 .privacy-banner h1 { font-size:clamp(1.9rem,3.5vw,2.6rem); margin-bottom:9px; color:#fff; }
 .privacy-subtitle { font-size:1.02rem; margin-bottom:13px; color:rgba(255,255,255,0.86); }
