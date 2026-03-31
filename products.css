@@ -46,8 +46,8 @@
     box-shadow: 0 4px 12px rgba(233, 30, 99, 0.20);
 }
 .thumbnail-item img {
-    width: 86px !important;
-    height: 86px !important;
+    width: 100% !important;
+    height: 100% !important;
     object-fit: cover;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
@@ -384,8 +384,8 @@ button.buy-now.cta:hover {
         flex: 0 0 auto;
     }
     .thumbnail-item img {
-        width: 70px !important;
-        height: 70px !important;
+        width: 80px !important;
+        height: 80px !important;
     }
     .main-image-slider {
         width: 100%;
@@ -2367,7 +2367,7 @@ details[open] .chevron {
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    margin-bottom: -15px !important;
+    margin-bottom: 0px !important;
 }
 .variant-preview img {
     width: 60px;
@@ -2802,17 +2802,21 @@ body {
 }
 .modal-close:hover { color: #ff69b4; }
  
-/* ── Product card (shop grid) ── */
 .product-grid-section .product-card img {
-    width: 100% !important;
-    height: auto !important;
-    aspect-ratio: 1 / 1;
-    object-fit: cover !important;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 3 / 3;
+    object-fit: cover;
+    object-position: top center;
     border-radius: 5px;
     display: block;
-    image-rendering: -webkit-optimize-contrast;
+    image-rendering: auto;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
     transition: transform 0.3s ease;
 }
+
 .product-card {
     overflow: hidden;
     border-radius: 14px;
@@ -2822,13 +2826,14 @@ body {
     border: 1px solid rgba(233, 30, 99, 0.10);
     box-shadow: 0 3px 10px rgba(103, 58, 183, 0.08);
 }
+
 .product-card:hover {
     box-shadow: 0 10px 28px rgba(233, 30, 99, 0.22);
     transform: translateY(-4px);
 }
 .product-grid-section button.add-to-cart.cta.button-3d {
-    width: 80% !important;
-    font-size: 20px !important;
+    width: 100% !important;
+    font-size: 18px !important;
 }
  
 /* ── FIX 6: Shop Marquee — animation vers la GAUCHE (direction normale) ── */

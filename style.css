@@ -5167,7 +5167,7 @@ tbody tr:hover { background: var(--rose-ultra); }
    PRODUCT GRID SECTIONS
 ================================================================ */
 .product-grid-section {
-    padding: 52px 0 15px;
+    padding: 20px 0 10px;
     background: var(--cream, #fdf8f5);
 }
 
@@ -5196,19 +5196,6 @@ tbody tr:hover { background: var(--rose-ultra); }
     transform: translateY(-9px);
     box-shadow: 0 16px 42px rgba(123,63,110,0.18);
     border-color: rgba(192,56,94,0.20);
-}
-
-.product-card img {
-    width: 100%;
-    height: 210px;
-    object-fit: cover;
-    border-radius: 12px;
-    margin-bottom: 14px;
-    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
-}
-
-.product-card:hover img {
-    transform: scale(1.04);
 }
 
 .product-card h3 {
@@ -5255,7 +5242,7 @@ tbody tr:hover { background: var(--rose-ultra); }
     font-size: 0.9rem;
     font-weight: 600;
     letter-spacing: 0.04em;
-    padding: 12px 20px;
+    padding: 10px 20px;
     background: linear-gradient(135deg, var(--rose, #c0385e), var(--plum, #7b3f6e));
     color: #fff;
     border: none;

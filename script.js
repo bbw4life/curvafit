@@ -1,21 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
- function upgradeShopifyImageUrl(url) {
+ function upgradeShopifyImageUrl(url, size) {
   if (!url || typeof url !== 'string') return url;
   if (!url.includes('cdn.shopify.com')) return url;
   if (url.startsWith('data:')) return url;
-  
-  // Retire les anciens params width
+
   url = url.replace(/[?&]width=\d+/g, '').replace(/\?&/, '?').replace(/\?$/, '');
-  
-  // Retire les suffixes basse résolution
+  url = url.replace(/[?&]quality=\d+/g, '').replace(/\?&/, '?').replace(/\?$/, '');
+
   url = url.replace(
     /_(pico|icon|thumb|small|compact|medium|large|grande|original|master|1024x1024|2048x2048|\d+x\d+|\d+x|x\d+)(\.(?:jpg|jpeg|png|webp|gif|avif))(\?|$)/gi,
     '$2$3'
   );
-  
-  // Force 1000px de large via paramètre CDN Shopify officiel
+
+  const w = size || 1000;
   const sep = url.includes('?') ? '&' : '?';
-  return url + sep + 'width=1000';
+  return url + sep + `width=${w}&quality=100`;
 }
 
 
@@ -457,9 +456,38 @@ function applyPromoFreeItems() {
 })();
 
 
-
-
       const settings = products.find(p => p.type === "settings") || {};
+
+
+      const btnLabels = settings.button_labels || {};
+      const L = {
+        addToCart:   btnLabels.add_to_cart    || 'Add to Cart',
+        buyNow:      btnLabels.buy_now        || 'Buy Now',
+        shopNow:     btnLabels.shop_now       || 'Shop Now',
+        checkout:    btnLabels.checkout       || 'Checkout',
+        addAll:      btnLabels.add_all_to_cart|| 'Add All to Cart',
+        viewProduct: btnLabels.view_product   || 'View Product →'
+      };
+
+      document.querySelectorAll('.add-to-cart').forEach(btn => {
+        if (!btn.closest('.bundle-save-container')) btn.innerHTML = `<i class="fi fi-rr-shopping-cart"></i> ${L.addToCart}`;
+      });
+      document.querySelectorAll('.buy-now').forEach(btn => {
+        btn.innerHTML = `<i class="fi fi-rr-bolt"></i> ${L.buyNow}`;
+      });
+      document.querySelectorAll('.flash-deal__cta, .ba-cta').forEach(btn => {
+        btn.textContent = `${L.shopNow} →`;
+      });
+      document.querySelectorAll('.checkout').forEach(btn => btn.textContent = L.checkout);
+      document.querySelectorAll('.add-all-to-cart').forEach(btn => btn.textContent = L.addAll);
+      document.querySelectorAll('.bundle-add-btn').forEach(btn => {
+        const type = btn.closest('.bundle-option')?.dataset.bundle;
+        if (type === 'single') btn.textContent = btnLabels.bundle_single || 'Add to Cart & Checkout';
+        else if (type === 'duo')  btn.textContent = btnLabels.bundle_duo  || 'Add 2 Items & Checkout';
+        else if (type === 'trio') btn.textContent = btnLabels.bundle_trio || 'Add 3 Items & Checkout';
+      });
+
+
       const enableMediaZoom = (settings.enable_media_zoom || "no").toLowerCase() === "yes";
 
       // PATCH 2 — Désactiver complètement le zoom si "no"
@@ -936,7 +964,7 @@ function applyPromoFreeItems() {
           card.querySelector('.compare-price').textContent = `$${product.compare_price.toFixed(2)}`;
           card.querySelector('p').textContent = product.description;
           const img = card.querySelector('img');
-          if (img) { img.src = upgradeShopifyImageUrl(product.image); img.alt = product.title; }
+          if (img) { img.src = upgradeShopifyImageUrl(product.image, 1000); img.alt = product.title; }
           // ── HOVER IMAGE SWAP ──
             if (product.image_hover) {
                 const imgHover = upgradeShopifyImageUrl(product.image_hover);
