@@ -140,7 +140,10 @@ exports.handler = async (event) => {
       try {
         const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${shipping.countryCode}?fields=idd`);
         const countryData = await countryRes.json();
-        let callingCode = countryData.idd.root.replace('+', '') + (countryData.idd.suffixes ? countryData.idd.suffixes[0] : '');
+        const suffixes = countryData.idd?.suffixes || [];
+        const callingCode = suffixes.length === 1
+          ? countryData.idd.root.replace('+', '') + suffixes[0]
+          : countryData.idd.root.replace('+', '');
         let nationalNumber = shipping.phone.replace(/^\+/, '').replace(/\D/g, '');
         if (nationalNumber.startsWith(callingCode)) nationalNumber = nationalNumber.slice(callingCode.length);
         payer.phone = { phone_type: "MOBILE", phone_number: { country_code: callingCode, national_number: nationalNumber } };
