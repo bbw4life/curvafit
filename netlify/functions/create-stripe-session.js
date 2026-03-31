@@ -19,31 +19,25 @@ async function getSettings() {
 // ── Compute effective shipping & tax based on settings ───────────────
 function computeTotals(cart, settings, shippingMethod) {
   const cd = settings.cart_drawer || {};
-
   const SHIPPING_COST = parseFloat(settings.shipping_cost) || 10.00;
   const TAX_RATE      = parseFloat(settings.tax_rate)      || 0.10;
-
   const freeShippingThreshold = parseFloat(cd.free_shipping_threshold) || 0;
 
-  // Cart subtotal (free promo items already have price 0)
   const subtotal = cart.reduce((sum, item) => {
     return sum + (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0);
   }, 0);
 
-  // FIX: Free if Standard or Economy method
+  // Gratuit si méthode Standard ou Economy
   const isFreeMethod = ['Standard Shipping', 'Economy Shipping'].includes(shippingMethod);
-  // Free shipping if subtotal >= threshold
+  // Gratuit si subtotal >= threshold
   const isFreeByThreshold = freeShippingThreshold > 0 && subtotal >= freeShippingThreshold;
 
   const isFree = isFreeMethod || isFreeByThreshold;
 
-  const effectiveShipping = isFree ? 0 : SHIPPING_COST;
-  const effectiveTax      = isFree ? 0 : subtotal * TAX_RATE;
-
   return {
     subtotal:     subtotal,
-    shippingCost: effectiveShipping,
-    taxAmount:    effectiveTax,
+    shippingCost: isFree ? 0 : SHIPPING_COST,
+    taxAmount:    isFree ? 0 : subtotal * TAX_RATE,
   };
 }
 
@@ -81,8 +75,6 @@ exports.handler = async (event) => {
     // ── Load settings server-side ──
     const settings = await getSettings();
     const cart     = sanitizeCart(rawCart, settings);
-
-    // FIX: pass shipping_method to computeTotals
     const shippingMethod = shipping?.shipping_method || 'Standard Shipping';
     const { subtotal, shippingCost, taxAmount } = computeTotals(cart, settings, shippingMethod);
 
@@ -92,6 +84,8 @@ exports.handler = async (event) => {
       const qty   = parseInt(item.quantity);
       if (price < 0 || !qty) throw new Error("Invalid item");
 
+      // Free promo items: Stripe requires unit_amount >= 0
+      // Use $0.01 minimum only if Stripe rejects 0 — here we pass 0 for free items
       return {
         price_data: {
           currency: 'usd',
@@ -99,7 +93,7 @@ exports.handler = async (event) => {
             name:   item.isFreePromo ? `🎁 FREE: ${item.title}` : item.title,
             images: item.image ? [item.image] : []
           },
-          unit_amount: Math.round(price * 100)
+          unit_amount: Math.round(price * 100) // 0 for free promo items
         },
         quantity: qty
       };
