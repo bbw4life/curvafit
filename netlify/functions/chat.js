@@ -171,14 +171,6 @@ function detectIntent(message) {
     /sommeil|sleep.*weight|dormir/,
     /stress|anxiet|depress|mental|moral|confiance|confidence/,
     /plateau.+(normal|pourquoi|why)|normal.+plateau/,
-    // ── MODIFICATION 3: starter intent patterns ──
-    /meilleur.+(début|commencer|démarrer|débutant)/,
-    /best.+(start|begin|starter|beginner)/,
-    /mejor.+(empezar|comenzar|principiante)/,
-    /par où commencer|where.*(do i|should i).*start/,
-    /por dónde empezar/,
-    /what.*(should i|to).*buy first|quoi acheter en premier|qué comprar primero/,
-    /pour (bien )?commencer|to (get |)started|para empezar/,
     /programme?|program|plan.+coach|coaching|coach/,
     /beginner|débutant|intermédiaire|intermediate|maintenance/,
     /comment.+(fonctionne|work|works)|how.+(work|program)/,
@@ -863,8 +855,8 @@ exports.handler = async (event, context) => {
 
     const intent = detectIntent(message);
 
-    // ── MODIFICATION 3: detect starter intent in handler ──
-    const isStarterIntent = /meilleur.+(début|commencer|démarrer|débutant)|best.+(start|begin|starter|beginner)|mejor.+(empezar|comenzar|principiante)|par où commencer|where.*(do i|should i).*start|por dónde empezar|what.*(should i|to).*buy first|quoi acheter en premier|qué comprar primero|pour (bien )?commencer|to (get |)started|para empezar/i.test(message);
+    // ── MODIFICATION 3: detect starter intent — only explicit beginner/start questions ──
+    const isStarterIntent = /\b(par où commencer|where (do i|should i) start|por dónde empezar|quoi acheter en premier|qué comprar primero|what (should i |to )?buy first|meilleur.{1,20}(début|démarrer|débutant)|best.{1,15}(start|begin|beginner|starter)|mejor.{1,15}(empezar|comenzar|principiante)|pour bien commencer|to get started)\b/i.test(message);
 
     let relevantProducts = [], isVague = false;
 
@@ -920,9 +912,10 @@ exports.handler = async (event, context) => {
       ? '\n[VAGUE PRODUCT: Show up to 4 products and ask which one they mean.]'
       : '\n[SPECIFIC PRODUCT: Show ONLY the 1 most relevant product.]';
 
-    // ── MODIFICATION 1: inject plans_available instruction ──
-    const plansInstruction = !plansAvailable
-      ? '\n[PLANS UNAVAILABLE: plans_available is "No". NEVER mention program prices or tiers. Reply with the unavailable message and add 🔗[PAGE:/programs.html].]'
+    // ── MODIFICATION 1: inject plans_available instruction ONLY when user explicitly asks about programs ──
+    const isProgramIntent = /programme|program|plan\b|coaching\b|coach\b|beginner|intermediate|maintenance|débutant|intermédiaire|s'inscrire|sign.?up|subscription|abonnement|tarif/i.test(message);
+    const plansInstruction = (!plansAvailable && isProgramIntent)
+      ? '\n[PLANS UNAVAILABLE: plans_available is "No". NEVER mention program prices or tiers. Reply with the unavailable message and add \uD83D\uDD17[PAGE:/programs.html].]'
       : '';
 
     // ── MODIFICATION 3: inject starter instruction ──
