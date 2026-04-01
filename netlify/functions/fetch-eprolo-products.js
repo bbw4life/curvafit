@@ -32,6 +32,7 @@ exports.handler = async (event) => {
       const responseText = await response.text();
       let data = {};
       try { data = JSON.parse(responseText); } catch {}
+      log(`[RAW RESPONSE] ${responseText.substring(0, 500)}`);
 
       if ((data.code === 0 || data.code === "0") && data.data && data.data.length > 0) {
         allProducts = allProducts.concat(data.data);

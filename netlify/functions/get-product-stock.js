@@ -1,7 +1,3 @@
-// netlify/functions/get-product-stock.js
-// Récupère le stock d'un produit EPROLO via son cj_id
-// Utilise product_list avec filtre, car product_detail n'est pas un endpoint valide
-
 const fetch  = require('node-fetch');
 const crypto = require('crypto');
 
