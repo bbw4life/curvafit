@@ -702,25 +702,26 @@ function applyPromoFreeItems() {
         // Lien "View Product"
         const viewBtn = section.querySelector('.fs-btn-primary');
         if (viewBtn) viewBtn.href = getProductUrl(spotlightId);
-        // Stock dynamique
         if (prod.cj_id) {
-          const fsStock = section.querySelector('.fs-stock');
-          if (fsStock) {
-            fsStock.innerHTML = '⏳ Checking stock...';
+        const fsStock = section.querySelector('.fs-stock');
+        if (fsStock) {
+          fsStock.innerHTML = '⏳ Checking stock...';
+          setTimeout(() => {
             fetch(`/.netlify/functions/get-product-stock?cj_id=${prod.cj_id}`)
-          .then(r => r.json())
-          .then(stockData => {
-            if (stockData.success && stockData.totalStock !== null) {
-              const s = stockData.totalStock;
-              const color = s <= 100 ? '🔴' : s <= 200 ? '🟡' : '🟢';
-              fsStock.innerHTML = `${color} Only <strong>${s} left</strong> in stock`;
-            } else {
-              fsStock.style.display = 'none';
-            }
-          })
-          .catch(() => { fsStock.style.display = 'none'; });
-          }
+              .then(r => r.json())
+              .then(stockData => {
+                if (stockData.success && stockData.totalStock !== null) {
+                  const s = stockData.totalStock;
+                  const color = s <= 100 ? '🔴' : s <= 200 ? '🟡' : '🟢';
+                  fsStock.innerHTML = `${color} Only <strong>${s} left</strong> in stock`;
+                } else {
+                  fsStock.style.display = 'none';
+                }
+              })
+              .catch(() => { fsStock.style.display = 'none'; });
+          }, 800);
         }
+      }
       })();
       // ══════════════════════════════════════════
       //  BUNDLE DEAL — dynamique depuis settings
@@ -1157,7 +1158,9 @@ function applyPromoFreeItems() {
         const prod = products.find(p => p.id === pid);
         // PATCH 3 — Stock bar
         if (prod && prod.cj_id) {
-            initStockBar(prod.cj_id);
+            if (prod && prod.cj_id) {
+              setTimeout(() => initStockBar(prod.cj_id), 400);
+          }
         }
 
         // ====================== RATING & REVIEWS COUNT ======================
