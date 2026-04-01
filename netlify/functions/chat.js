@@ -115,11 +115,6 @@ function buildProductIndex(rawData) {
    BADGE DETECTION — strict, reads badge texts from real data
 ══════════════════════════════════════════════════════ */
 
-/*
- * Build a map of all real badge texts from products.data.json.
- * Returns Map<badgeLower, badgeOriginal>
- * e.g. { 'best seller' => 'Best Seller', 'out stock' => 'Out stock' }
- */
 function buildBadgeMap(products) {
   const map = new Map();
   for (const p of products) {
@@ -129,16 +124,9 @@ function buildBadgeMap(products) {
   return map;
 }
 
-/*
- * Detect badge query strictly.
- * Only matches if the user message contains a real badge text verbatim (case-insensitive).
- * No fuzzy logic. No aliases. The LLM handles translation in its reply.
- * Returns matched badge lowercase or null.
- */
 function detectBadgeQuery(message, badgeMap) {
   if (!badgeMap.size) return null;
   const q = message.toLowerCase().trim();
-  // Longest badge first to avoid partial matches
   const sorted = [...badgeMap.keys()].sort((a, b) => b.length - a.length);
   for (const badgeLower of sorted) {
     if (q.includes(badgeLower)) return badgeLower;
@@ -302,7 +290,6 @@ function detectIntent(message) {
     /existe.+(couleur|taille)|come in.+(color|size)|viene.+(color|talla)/,
     /\$\d+|under \$|moins de \$|budget.+(produit|product)|menos de \$|presupuesto/,
     /combien.+(coûte|cost).+(ce|this|le|la)|cuánto.+(cuesta|vale)/,
-    // Badge / statut produit → intent product pour afficher la carte
     /best.?seller|meilleure?.+vente|más.+vendido|top.+vente/,
     /en promotion|in promotion|on sale|en promo/,
     /new.?arrival|nouvel?.+arriv|nueva?.+llegad/,
@@ -347,6 +334,14 @@ function isTopStarterRequest(message) {
     /pack.+(principiante|empezar|comenzar)/,
   ];
   return patterns.some(p => p.test(q));
+}
+
+/* ══════════════════════════════════════════════════════
+   GREETING DETECTION — suppress page buttons on pure greetings
+══════════════════════════════════════════════════════ */
+function isGreeting(message) {
+  const q = message.toLowerCase().trim();
+  return /^(bonjour|bonsoir|salut|hello|hi|hey|hola|buenas|buenos|allo|yow|yo|wesh|cc|good morning|good evening|good afternoon|buenos días|buenas noches|buenas tardes)[\s!.,]*$/.test(q);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -537,7 +532,6 @@ PRODUCT ${i + 1}:
   Page: ${p.url}`;
   }).join('\n');
 
-  // Real badge list from data — injected into prompt so LLM knows them
   const realBadgeList = [...badgeMap.values()].join(', ') || 'none';
 
   const topStarter      = settings.top_starter_products || {};
@@ -922,20 +916,17 @@ exports.handler = async (event, context) => {
       contactPage: '/contact.html'
     };
 
-    // Build badge map from real product data
     const badgeMap = buildBadgeMap(products);
 
     const intent            = detectIntent(message);
     const topStarterRequest = isTopStarterRequest(message);
 
-    // Badge detection — verbatim match only, no fuzzy
     const matchedBadge = !topStarterRequest ? detectBadgeQuery(message, badgeMap) : null;
     const isBadgeQuery = !!matchedBadge;
 
     let relevantProducts = [], isVague = false;
 
     if (isBadgeQuery) {
-      // STRICT: exact badge match only
       relevantProducts = products.filter(p => (p.badge || '').toLowerCase().trim() === matchedBadge);
       isVague = false;
     } else if (topStarterRequest) {
@@ -1059,9 +1050,10 @@ exports.handler = async (event, context) => {
     const showContactButtons = !topStarterRequest && !isBadgeQuery && intent !== 'product' && (isContactIntent || reply.includes('👇'));
     const cleanReply = reply.replace(/👇[\s]*/g, '').trim();
 
-    /* ── PAGE BUTTONS ── */
+    /* ── PAGE BUTTONS — suppressed for pure greetings ── */
+    const suppressPages   = isGreeting(message);
     const pageMarkerRegex = /🔗\[PAGE:([^\]]+)\]/g;
-    const pageMatches     = [...cleanReply.matchAll(pageMarkerRegex)];
+    const pageMatches     = suppressPages ? [] : [...cleanReply.matchAll(pageMarkerRegex)];
     const pageButtons     = pageMatches.map(m => {
       const url = m[1].trim();
       if (PAGE_MAP[url]) return { url, label: PAGE_MAP[url].label, icon: PAGE_MAP[url].icon };
