@@ -708,17 +708,17 @@ function applyPromoFreeItems() {
           if (fsStock) {
             fsStock.innerHTML = '⏳ Checking stock...';
             fetch(`/.netlify/functions/get-product-stock?cj_id=${prod.cj_id}`)
-              .then(r => r.json())
-              .then(data => {
-                if (data.success && data.totalStock !== null) {
-                  const s = data.totalStock;
-                  const color = s <= 100 ? '🔴' : s <= 200 ? '🟡' : '🟢';
-                  fsStock.innerHTML = `${color} Only <strong>${s} left</strong> in stock`;
-                } else {
-                  fsStock.style.display = 'none';
-                }
-              })
-              .catch(() => { fsStock.style.display = 'none'; });
+          .then(r => r.json())
+          .then(stockData => {
+            if (stockData.success && stockData.totalStock !== null) {
+              const s = stockData.totalStock;
+              const color = s <= 100 ? '🔴' : s <= 200 ? '🟡' : '🟢';
+              fsStock.innerHTML = `${color} Only <strong>${s} left</strong> in stock`;
+            } else {
+              fsStock.style.display = 'none';
+            }
+          })
+          .catch(() => { fsStock.style.display = 'none'; });
           }
         }
       })();
@@ -3869,9 +3869,6 @@ async function loadCommunityStories() {
 }
 
 loadCommunityStories();
-
-
-
 
 
 
