@@ -12050,7 +12050,7 @@ html.fonts-loaded [class*="fa-"] {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 10px 20px 40px; 
+  padding: 10px 5px 40px; 
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s ease;
