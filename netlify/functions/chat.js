@@ -112,138 +112,38 @@ function buildProductIndex(rawData) {
 }
 
 /* ══════════════════════════════════════════════════════
-   BADGE SYSTEM — strict, built dynamically from products.data.json
+   BADGE DETECTION — strict, reads badge texts from real data
 ══════════════════════════════════════════════════════ */
 
-/**
- * Known multilingual translations for common badge words.
- * Word-level only — maps what the user types (FR/ES/EN) to the canonical
- * badge text as stored in products.data.json (lowercase).
- * When you add a new badge, add its translations here.
+/*
+ * Build a map of all real badge texts from products.data.json.
+ * Returns Map<badgeLower, badgeOriginal>
+ * e.g. { 'best seller' => 'Best Seller', 'out stock' => 'Out stock' }
  */
-const BADGE_WORD_TRANSLATIONS = {
-  // EN
-  'best seller':    'best seller',
-  'bestseller':     'best seller',
-  'best-seller':    'best seller',
-  'in promotion':   'in promotion',
-  'promotion':      'in promotion',
-  'promo':          'in promotion',
-  'on sale':        'in promotion',
-  'sale':           'in promotion',
-  'new arrival':    'new arrival',
-  'new arrivals':   'new arrival',
-  'top sale':       'top sale',
-  'top sales':      'top sale',
-  'best deal':      'best deal',
-  'best deals':     'best deal',
-  'out stock':      'out stock',
-  'out of stock':   'out stock',
-  // FR
-  'meilleure vente':  'best seller',
-  'meilleur vente':   'best seller',
-  'top vente':        'best seller',
-  'en promotion':     'in promotion',
-  'en promo':         'in promotion',
-  'solde':            'in promotion',
-  'nouveau':          'new arrival',
-  'nouvelle':         'new arrival',
-  'nouvel':           'new arrival',
-  'nouvelle arrivée': 'new arrival',
-  'meilleure offre':  'best deal',
-  'meilleur deal':    'best deal',
-  'meilleur prix':    'best deal',
-  'rupture de stock': 'out stock',
-  'rupture stock':    'out stock',
-  'épuisé':           'out stock',
-  'stock épuisé':     'out stock',
-  // ES
-  'más vendido':      'best seller',
-  'mas vendido':      'best seller',
-  'en promoción':     'in promotion',
-  'en promocion':     'in promotion',
-  'oferta':           'in promotion',
-  'nueva llegada':    'new arrival',
-  'nuevas llegadas':  'new arrival',
-  'nuevo':            'new arrival',
-  'mejor oferta':     'best deal',
-  'mejor precio':     'best deal',
-  'agotado':          'out stock',
-  'sin stock':        'out stock',
-  'no disponible':    'out stock',
-};
-
-/**
- * Detect badge query strictly:
- * 1. Build real badge set from products.data.json (dynamic — always up to date)
- * 2. Try verbatim match against real badge texts first
- * 3. Try translation table → canonical → verify it exists in real data
- * Returns the exact badge lowercase text or null.
- */
-function detectBadgeQuery(message, products) {
-  const realBadgesLower = new Map(); // lowercase → lowercase
+function buildBadgeMap(products) {
+  const map = new Map();
   for (const p of products) {
     const b = (p.badge || '').trim();
-    if (b) realBadgesLower.set(b.toLowerCase(), b.toLowerCase());
+    if (b) map.set(b.toLowerCase(), b);
   }
-  if (!realBadgesLower.size) return null;
+  return map;
+}
 
+/*
+ * Detect badge query strictly.
+ * Only matches if the user message contains a real badge text verbatim (case-insensitive).
+ * No fuzzy logic. No aliases. The LLM handles translation in its reply.
+ * Returns matched badge lowercase or null.
+ */
+function detectBadgeQuery(message, badgeMap) {
+  if (!badgeMap.size) return null;
   const q = message.toLowerCase().trim();
-
-  // 1) Verbatim match — longest badge text first to avoid partial hits
-  const sortedBadges = [...realBadgesLower.keys()].sort((a, b) => b.length - a.length);
-  for (const badgeLower of sortedBadges) {
+  // Longest badge first to avoid partial matches
+  const sorted = [...badgeMap.keys()].sort((a, b) => b.length - a.length);
+  for (const badgeLower of sorted) {
     if (q.includes(badgeLower)) return badgeLower;
   }
-
-  // 2) Translation table — longest phrase first
-  const sortedPhrases = Object.keys(BADGE_WORD_TRANSLATIONS).sort((a, b) => b.length - a.length);
-  for (const phrase of sortedPhrases) {
-    if (q.includes(phrase)) {
-      const canonical = BADGE_WORD_TRANSLATIONS[phrase];
-      if (realBadgesLower.has(canonical)) return canonical;
-    }
-  }
-
   return null;
-}
-
-/**
- * Strict badge filter: ONLY products whose badge matches exactly (case-insensitive).
- */
-function getProductsByBadge(canonicalBadge, products) {
-  return products.filter(p => (p.badge || '').toLowerCase().trim() === canonicalBadge);
-}
-
-/**
- * Strict badge filter: returns ONLY products whose badge text matches
- * the canonical badge (case-insensitive, partial match allowed
- * e.g. "Best Seller" matches "best seller").
- */
-function getProductsByBadge(canonicalBadge, products) {
-  return products.filter(p => {
-    const b = (p.badge || '').toLowerCase().trim();
-    return b === canonicalBadge || b.includes(canonicalBadge) || canonicalBadge.includes(b);
-  });
-}
-
-/**
- * Build a badge catalog string for the system prompt.
- * Lists each unique badge and the products that carry it.
- * Fully data-driven — reads badge text from the product objects.
- */
-function buildBadgeCatalog(products) {
-  const byBadge = {};
-  for (const p of products) {
-    const b = (p.badge || '').trim();
-    if (!b) continue;
-    if (!byBadge[b]) byBadge[b] = [];
-    byBadge[b].push(`${p.title} (→ ${p.url})`);
-  }
-  if (!Object.keys(byBadge).length) return '(no badge data)';
-  return Object.entries(byBadge)
-    .map(([badge, titles]) => `  Badge "${badge}":\n${titles.map(t => `    • ${t}`).join('\n')}`)
-    .join('\n');
 }
 
 /* ══════════════════════════════════════════════════════
@@ -402,6 +302,12 @@ function detectIntent(message) {
     /existe.+(couleur|taille)|come in.+(color|size)|viene.+(color|talla)/,
     /\$\d+|under \$|moins de \$|budget.+(produit|product)|menos de \$|presupuesto/,
     /combien.+(coûte|cost).+(ce|this|le|la)|cuánto.+(cuesta|vale)/,
+    // Badge / statut produit → intent product pour afficher la carte
+    /best.?seller|meilleure?.+vente|más.+vendido|top.+vente/,
+    /en promotion|in promotion|on sale|en promo/,
+    /new.?arrival|nouvel?.+arriv|nueva?.+llegad/,
+    /top.+deal|meilleure?.+offre|mejor.+oferta/,
+    /out.?of.?stock|rupture.+stock|agotado/,
   ];
 
   for (const pattern of productPatterns) {
@@ -460,6 +366,13 @@ function searchProducts(query, products) {
       p.colors.forEach(c => { if (c.name.toLowerCase().includes(kw)) score += 2; });
       p.sizes.forEach(s  => { if (String(s).toLowerCase().includes(kw)) score += 1; });
     });
+
+    const badgeLower = (p.badge || '').toLowerCase();
+    if ((q.includes('best seller') || q.includes('meilleure vente') || q.includes('meilleur vente') || q.includes('top vente') || q.includes('más vendido')) && badgeLower.includes('best seller')) score += 15;
+    if ((q.includes('promotion') || q.includes('promo') || q.includes('on sale') || q.includes('en promo') || q.includes('in promotion')) && badgeLower.includes('promotion')) score += 15;
+    if ((q.includes('new arrival') || q.includes('new arriv') || q.includes('nouvel') || q.includes('nouveau') || q.includes('nueva llegada')) && badgeLower.includes('new')) score += 15;
+    if ((q.includes('top sale') || q.includes('top deal') || q.includes('meilleure offre') || q.includes('mejor oferta')) && (badgeLower.includes('top sale') || badgeLower.includes('best deal'))) score += 15;
+    if ((q.includes('out of stock') || q.includes('rupture') || q.includes('agotado')) && badgeLower.includes('out stock')) score += 15;
 
     const themes = [
       { words: ['hula','hoop','belly','ventre','barriga','vientre'],          id: 'resistance-bands', boost: 12 },
@@ -582,7 +495,7 @@ const PAGE_MAP = {
 /* ══════════════════════════════════════════════════════
    BUILD SYSTEM PROMPT
 ══════════════════════════════════════════════════════ */
-function buildSystemPrompt(products, settings, contactInfo, searchData, blogData) {
+function buildSystemPrompt(products, settings, contactInfo, searchData, blogData, badgeMap) {
   const contactEmails  = settings.contact_emails || {};
   const emailsText     = Object.entries(contactEmails).map(([k, v]) => `• ${k}: ${v}`).join('\n') || '• No emails configured';
   const programs       = settings.programs    || {};
@@ -610,10 +523,9 @@ function buildSystemPrompt(products, settings, contactInfo, searchData, blogData
     ].filter(Boolean).join(' | ') || 'No discount';
     const delivery  = formatDelivery(p.startDate, p.endDate) || 'Contact us';
     const rating    = p.rating ? `${p.rating}/5 (${p.reviewsCount || 0} reviews)` : 'N/A';
-    const badgeLine = p.badge ? `\n  Badge: "${p.badge}"` : '\n  Badge: (none)';
+    const badgeLine = p.badge ? `\n  Badge: ${p.badge}` : '';
     return `
 PRODUCT ${i + 1}:
-  ID: ${p.id}
   Title: ${p.title}
   Description: ${p.description}
   Price: $${p.price}${p.maxPrice !== p.price ? ` to $${p.maxPrice}` : ''} (was $${p.compare_price})
@@ -625,8 +537,8 @@ PRODUCT ${i + 1}:
   Page: ${p.url}`;
   }).join('\n');
 
-  // Build the badge catalog dynamically from real product data
-  const badgeCatalogText = buildBadgeCatalog(products);
+  // Real badge list from data — injected into prompt so LLM knows them
+  const realBadgeList = [...badgeMap.values()].join(', ') || 'none';
 
   const topStarter      = settings.top_starter_products || {};
   const topStarterIds   = topStarter.product_ids || [];
@@ -763,30 +675,23 @@ Specific → show 1 product only.
 Vague (belly, weight loss, something good) → show up to 4, ask which one they mean.
 
 ═══════════════════════════════════════
-🏷️ BADGE SYSTEM — STRICT DATA-DRIVEN RULES
+🏷️ BADGE RULE — CRITICAL
 ═══════════════════════════════════════
-CRITICAL: Badge data comes exclusively from the product catalog below.
-Each product has a "Badge" field showing its exact badge text (e.g. "Best Seller", "In Promotion").
-A product with Badge "(none)" has NO badge — NEVER assign it one.
+The real badge texts in our catalog are: ${realBadgeList}
+These are read directly from products.data.json. Do not invent others.
 
-[BADGE QUERIES — HOW TO HANDLE]
-When the user asks about a badge (in ANY language), you MUST:
-1. Read the pre-filtered product list injected by the backend (it's already badge-matched).
-2. Show ONLY those products — NEVER add products that don't have that badge.
-3. If the injected list is empty → reply honestly: no product currently has that badge.
+When the backend detects a badge query, it:
+1. Identifies which badge the user means
+2. Filters products strictly — ONLY products with that exact badge
+3. Injects those products into your context below
 
-The backend has already done the strict filtering for you. Trust the injected product cards.
-DO NOT use your own judgment to guess which products "might" match a badge.
-DO NOT show products with a different badge just because the score is high.
+Your job for badge queries:
+- Describe the injected products naturally in the user's language
+- Translate the badge name naturally (you already know how)
+- NEVER mention or show products not injected for this badge
+- If zero products injected → tell user honestly: no product has this badge currently
 
-[BADGE TRANSLATIONS — ALL LANGUAGES]
-The badge texts come directly from products.data.json (shown in the catalog below).
-Translate badge names naturally into the user's language — you know how to translate.
-NEVER change which products you show based on translation — only the backend filter matters.
-
-[BADGE CATALOG — READ ONLY, DO NOT MODIFY]
-This is the real badge data from the product catalog:
-${badgeCatalogText}
+Badge queries are DIFFERENT from top-starter queries. Never confuse them.
 
 ═══════════════════════════════════════
 🤝 CONTACT CHANNELS
@@ -893,9 +798,8 @@ When asked → 2–3 line caring answer + 🔗[PAGE:/disclaimer.html]
 ═══════════════════════════════════════
 🛍️ PRODUCT CATALOG
 ═══════════════════════════════════════
-NEVER use internal IDs in your reply. Use exact product titles and prices.
+NEVER use internal IDs. Use exact product titles and prices.
 Each product has a Badge field — use it to answer badge-related questions accurately.
-A product with Badge "(none)" has NO badge — never invent one.
 ${catalogText}
 
 ═══════════════════════════════════════
@@ -935,9 +839,7 @@ ${blogContext || '(not available)'}
 - Never apply promo codes to programs — Shop only
 - Never answer policy questions without the relevant 🔗[PAGE:...] button
 - Never give program prices when plans_available is No
-- NEVER show products that do not have the badge the user asked for
-- NEVER invent a badge for a product that has Badge "(none)"
-- NEVER confuse badge queries with top-starter queries`;
+- Never confuse badge queries (best seller, promo…) with top-starter queries (beginners, start journey)`;
 }
 
 /* ── Fallback / Error messages ── */
@@ -1020,18 +922,21 @@ exports.handler = async (event, context) => {
       contactPage: '/contact.html'
     };
 
-    // ── Detect badge query FIRST (100% dynamic from products.data.json) ──
-    const canonicalBadge   = detectBadgeQuery(message, products);
-    const isBadgeQuery     = !!canonicalBadge && !isTopStarterRequest(message);
+    // Build badge map from real product data
+    const badgeMap = buildBadgeMap(products);
 
-    const intent           = detectIntent(message);
+    const intent            = detectIntent(message);
     const topStarterRequest = isTopStarterRequest(message);
+
+    // Badge detection — verbatim match only, no fuzzy
+    const matchedBadge = !topStarterRequest ? detectBadgeQuery(message, badgeMap) : null;
+    const isBadgeQuery = !!matchedBadge;
 
     let relevantProducts = [], isVague = false;
 
     if (isBadgeQuery) {
-      // STRICT: only products with this exact badge
-      relevantProducts = getProductsByBadge(canonicalBadge, products);
+      // STRICT: exact badge match only
+      relevantProducts = products.filter(p => (p.badge || '').toLowerCase().trim() === matchedBadge);
       isVague = false;
     } else if (topStarterRequest) {
       const topStarterIds = (settings.top_starter_products || {}).product_ids || [];
@@ -1073,7 +978,7 @@ exports.handler = async (event, context) => {
 
     const isContactIntent = !topStarterRequest && !isBadgeQuery && intent !== 'product' && EXPLICIT_CONTACT_PATTERNS.some(p => p.test(message));
 
-    const systemPrompt = buildSystemPrompt(products, settings, contactInfo, searchData, blogData);
+    const systemPrompt = buildSystemPrompt(products, settings, contactInfo, searchData, blogData, badgeMap);
 
     const contactInstruction = isContactIntent
       ? '\n[CONTACT REQUEST: User wants to reach the team. You MUST end your reply with 👇 on its own line — no exception.]'
@@ -1087,9 +992,8 @@ exports.handler = async (event, context) => {
       ? '\n[TOP STARTER REQUEST: User asks which products to start their weight loss journey. Show ALL the top starter products from the TOP STARTER PRODUCTS section. Introduce them warmly. This is NOT a badge/best-seller question.]'
       : '';
 
-    // Badge instruction — injected only when it's a badge query
     const badgeInstruction = isBadgeQuery
-      ? `\n[BADGE QUERY DETECTED: The user asked about badge "${canonicalBadge}". The backend has ALREADY filtered and injected ONLY the products that carry this badge. You MUST show ONLY those product cards. If the injected product list is empty, tell the user honestly that no product currently has this badge. DO NOT add any other product. DO NOT hallucinate. Translate the badge name to the user's language using the badge translation table in your instructions.]`
+      ? `\n[BADGE QUERY: Backend detected badge "${matchedBadge}" and injected ONLY products with exactly this badge. Present ONLY those products. If none injected, say honestly no product has this badge right now. Translate the badge name naturally in the user's language.]`
       : '';
 
     const langInstruction = userLang === 'fr'
@@ -1147,7 +1051,7 @@ exports.handler = async (event, context) => {
       };
     }
 
-    console.log(`[Chat] Model: ${usedModel} (index ${currentModelIndex}) | Badge: ${canonicalBadge || 'none'} | TopStarter: ${topStarterRequest}`);
+    console.log(`[Chat] Model: ${usedModel} | Badge: ${matchedBadge || 'none'} | TopStarter: ${topStarterRequest}`);
 
     const data  = await groqResponse.json();
     const reply = data.choices?.[0]?.message?.content || getErrorMessage(userLang);
@@ -1171,7 +1075,6 @@ exports.handler = async (event, context) => {
 
     const finalReply = cleanReply.replace(pageMarkerRegex, '').trim();
 
-    // productCards — full data
     const productCards = relevantProducts.map(p => ({
       title:         p.title,
       description:   p.description,
