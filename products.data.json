@@ -969,7 +969,7 @@
       {"code": "CURVA40","items": 7,"percent": 40}
     ],
     "enable_media_zoom": "Yes",
-    "plans_available": "No",
+    "plans_available": "Yes",
     "flash_deal": {
       "hours": 8
     },
