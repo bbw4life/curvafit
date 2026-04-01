@@ -456,114 +456,7 @@ function applyPromoFreeItems() {
 })();
 
 
-// ── PLAN REQUEST POPUP ──
-(function initPlanPopup() {
-  const overlay   = document.getElementById('plan-popup-overlay');
-  const openBtn   = document.getElementById('open-plan-popup');
-  const closeBtn  = document.getElementById('plan-popup-close');
-  const submitBtn = document.getElementById('plan-submit-btn');
-  const errorEl   = document.getElementById('plan-popup-error');
-  const successEl = document.getElementById('plan-popup-success');
-
-  if (!overlay || !openBtn) return;
-
-  function openPopup() {
-    overlay.classList.add('active');
-    overlay.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closePopup() {
-    overlay.classList.remove('active');
-    overlay.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-  }
-
-  openBtn.addEventListener('click', openPopup);
-  closeBtn.addEventListener('click', closePopup);
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopup(); });
-
-  submitBtn.addEventListener('click', async () => {
-    const firstName = document.getElementById('plan-firstname').value.trim();
-    const lastName  = document.getElementById('plan-lastname').value.trim();
-    const email     = document.getElementById('plan-email').value.trim();
-    const phone     = document.getElementById('plan-phone').value.trim();
-    const program   = document.getElementById('plan-program').value;
-    const consent   = document.getElementById('plan-consent').checked;
-
-    errorEl.style.display   = 'none';
-    successEl.style.display = 'none';
-
-    if (!firstName || !lastName || !email || !program) {
-      errorEl.textContent = 'Please fill in all required fields.';
-      errorEl.style.display = 'block';
-      return;
-    }
-    if (!email.includes('@')) {
-      errorEl.textContent = 'Please enter a valid email address.';
-      errorEl.style.display = 'block';
-      return;
-    }
-    if (!consent) {
-      errorEl.textContent = 'Please check the consent box to continue.';
-      errorEl.style.display = 'block';
-      return;
-    }
-
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fi fi-rr-spinner"></i> Sending...';
-
-    try {
-      const res  = await fetch('/.netlify/functions/save-plan-request', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ firstName, lastName, email, phone, program, consent: 'Yes' })
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        successEl.style.display = 'flex';
-        document.getElementById('plan-firstname').value = '';
-        document.getElementById('plan-lastname').value  = '';
-        document.getElementById('plan-email').value     = '';
-        document.getElementById('plan-phone').value     = '';
-        document.getElementById('plan-program').value   = '';
-        document.getElementById('plan-consent').checked = false;
-        submitBtn.innerHTML = '<i class="fi fi-rr-check"></i> Request Sent!';
-        setTimeout(() => { closePopup(); submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Send My Request'; }, 3000);
-      } else {
-        errorEl.textContent = 'An error occurred: ' + (data.error || 'Unknown error');
-        errorEl.style.display = 'block';
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Send My Request';
-      }
-    } catch (err) {
-      errorEl.textContent = 'Network error. Please try again.';
-      errorEl.style.display = 'block';
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Send My Request';
-    }
-  });
-})();
-
-
       const settings = products.find(p => p.type === "settings") || {};
-      const plansAvailable = (settings.plans_available || 'no').toLowerCase() === 'yes';
-      const planTriggerWrap = document.querySelector('.plan-request-trigger-wrap');
-      if (planTriggerWrap) {
-        planTriggerWrap.style.display = plansAvailable ? '' : 'none';
-      }
-      // Free shipping threshold → risk-reversal section
-      const freeShippingThreshold = (settings.cart_drawer && settings.cart_drawer.free_shipping_threshold)
-        ? settings.cart_drawer.free_shipping_threshold
-        : 75;
-      document.querySelectorAll('.rr-pillar').forEach(pillar => {
-      const strong = pillar.querySelector('strong');
-      if (strong && strong.textContent.trim() === 'Free Shipping') {
-        const span = pillar.querySelector('span:last-child'); // ← cibler le dernier span
-        if (span) span.textContent = `On orders over $${freeShippingThreshold}`;
-      }
-    });
 
 
       const btnLabels = settings.button_labels || {};
@@ -656,17 +549,6 @@ function applyPromoFreeItems() {
         if (starsEl) starsEl.textContent = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
         if (countEl) countEl.textContent = `${rating.toFixed(1)} · ${reviewsCount.toLocaleString()} reviews`;
 
-        // Badge depuis le produit
-        const fsBadgeFloat = section.querySelector('.fs-badge-float');
-        if (fsBadgeFloat) {
-          if (prod.badge && prod.badge.text) {
-            fsBadgeFloat.textContent = prod.badge.text;
-            fsBadgeFloat.style.display = '';
-          } else {
-            fsBadgeFloat.style.display = 'none';
-          }
-        }
-
         // Image principale — première image media
         const mainImg = section.querySelector('.fs-main-img');
         const media = prod.media || [];
@@ -702,28 +584,7 @@ function applyPromoFreeItems() {
         // Lien "View Product"
         const viewBtn = section.querySelector('.fs-btn-primary');
         if (viewBtn) viewBtn.href = getProductUrl(spotlightId);
-
-        // Stock dynamique
-        if (prod.cj_id) {
-          const fsStock = section.querySelector('.fs-stock');
-          if (fsStock) {
-            fsStock.innerHTML = '⏳ Checking stock...';
-            fetch(`/.netlify/functions/get-product-stock?cj_id=${prod.cj_id}`)
-              .then(r => r.json())
-              .then(stockData => {
-                if (stockData.success && stockData.totalStock !== null) {
-                  const s = stockData.totalStock;
-                  const color = s <= 100 ? '🔴' : s <= 200 ? '🟡' : '🟢';
-                  fsStock.innerHTML = `${color} Only <strong>${s} left</strong> in stock`;
-                } else {
-                  fsStock.style.display = 'none';
-                }
-              })
-              .catch(() => { fsStock.style.display = 'none'; });
-          }
-        }
       })();
-
       // ══════════════════════════════════════════
       //  BUNDLE DEAL — dynamique depuis settings
       // ══════════════════════════════════════════
@@ -1204,17 +1065,6 @@ function applyPromoFreeItems() {
 
         if (prod && prod.media) {
           populateMainProductMedia(prod.media);
-          // ── INJECT PRODUCT BADGE FROM JSON ──
-          const badgeEl = document.querySelector('.product-badge');
-          if (badgeEl) {
-            if (prod.badge && prod.badge.text) {
-              const icon = prod.badge.icon ? `<i class="fi ${prod.badge.icon}"></i> ` : '';
-              badgeEl.innerHTML = `${icon}${prod.badge.text}`;
-              badgeEl.style.display = '';
-            } else {
-              badgeEl.style.display = 'none';
-            }
-          }
           const colorContainer = document.querySelector('.color-swatches');
           if (colorContainer && prod.colors && prod.colors.length) {
             colorContainer.innerHTML = '';
@@ -3871,6 +3721,9 @@ async function loadCommunityStories() {
 }
 
 loadCommunityStories();
+
+
+
 
 
 
