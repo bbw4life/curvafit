@@ -112,55 +112,107 @@ function buildProductIndex(rawData) {
 }
 
 /* ══════════════════════════════════════════════════════
-   BADGE SYSTEM — 100% dynamic, no manual aliases
+   BADGE SYSTEM — strict, built dynamically from products.data.json
 ══════════════════════════════════════════════════════ */
 
 /**
- * Extract all unique badge texts from the real product data.
- * Returns lowercase canonicals, e.g. ['best seller', 'in promotion', ...]
+ * Known multilingual translations for common badge words.
+ * Word-level only — maps what the user types (FR/ES/EN) to the canonical
+ * badge text as stored in products.data.json (lowercase).
+ * When you add a new badge, add its translations here.
  */
-function extractBadgesFromProducts(products) {
-  const seen = new Set();
-  for (const p of products) {
-    const b = (p.badge || '').trim();
-    if (b) seen.add(b.toLowerCase());
-  }
-  return [...seen];
-}
+const BADGE_WORD_TRANSLATIONS = {
+  // EN
+  'best seller':    'best seller',
+  'bestseller':     'best seller',
+  'best-seller':    'best seller',
+  'in promotion':   'in promotion',
+  'promotion':      'in promotion',
+  'promo':          'in promotion',
+  'on sale':        'in promotion',
+  'sale':           'in promotion',
+  'new arrival':    'new arrival',
+  'new arrivals':   'new arrival',
+  'top sale':       'top sale',
+  'top sales':      'top sale',
+  'best deal':      'best deal',
+  'best deals':     'best deal',
+  'out stock':      'out stock',
+  'out of stock':   'out stock',
+  // FR
+  'meilleure vente':  'best seller',
+  'meilleur vente':   'best seller',
+  'top vente':        'best seller',
+  'en promotion':     'in promotion',
+  'en promo':         'in promotion',
+  'solde':            'in promotion',
+  'nouveau':          'new arrival',
+  'nouvelle':         'new arrival',
+  'nouvel':           'new arrival',
+  'nouvelle arrivée': 'new arrival',
+  'meilleure offre':  'best deal',
+  'meilleur deal':    'best deal',
+  'meilleur prix':    'best deal',
+  'rupture de stock': 'out stock',
+  'rupture stock':    'out stock',
+  'épuisé':           'out stock',
+  'stock épuisé':     'out stock',
+  // ES
+  'más vendido':      'best seller',
+  'mas vendido':      'best seller',
+  'en promoción':     'in promotion',
+  'en promocion':     'in promotion',
+  'oferta':           'in promotion',
+  'nueva llegada':    'new arrival',
+  'nuevas llegadas':  'new arrival',
+  'nuevo':            'new arrival',
+  'mejor oferta':     'best deal',
+  'mejor precio':     'best deal',
+  'agotado':          'out stock',
+  'sin stock':        'out stock',
+  'no disponible':    'out stock',
+};
 
 /**
- * Ask the LLM (via a pre-call) to detect which badge the user is asking about,
- * choosing from the real badge list extracted from products.data.json.
- * Returns the matched canonical badge text (lowercase) or null.
- *
- * Since we can't do a second LLM call here without complicating the flow,
- * we use a simple fuzzy approach: tokenize the user message and check if any
- * token sequence is a subsequence of any real badge text, OR if the badge text
- * words appear in the user message — all case-insensitive.
- * This is language-agnostic: works for any language because we match badge words,
- * not pre-translated aliases.
+ * Detect badge query strictly:
+ * 1. Build real badge set from products.data.json (dynamic — always up to date)
+ * 2. Try verbatim match against real badge texts first
+ * 3. Try translation table → canonical → verify it exists in real data
+ * Returns the exact badge lowercase text or null.
  */
 function detectBadgeQuery(message, products) {
-  const realBadges = extractBadgesFromProducts(products);
-  if (!realBadges.length) return null;
+  const realBadgesLower = new Map(); // lowercase → lowercase
+  for (const p of products) {
+    const b = (p.badge || '').trim();
+    if (b) realBadgesLower.set(b.toLowerCase(), b.toLowerCase());
+  }
+  if (!realBadgesLower.size) return null;
 
-  const q = message.toLowerCase();
+  const q = message.toLowerCase().trim();
 
-  // Strategy 1: direct word overlap between badge tokens and message tokens
-  for (const badge of realBadges) {
-    const badgeTokens = badge.split(/\s+/).filter(t => t.length >= 3);
-    const matchCount  = badgeTokens.filter(t => q.includes(t)).length;
-    if (badgeTokens.length > 0 && matchCount >= Math.ceil(badgeTokens.length * 0.6)) {
-      return badge;
+  // 1) Verbatim match — longest badge text first to avoid partial hits
+  const sortedBadges = [...realBadgesLower.keys()].sort((a, b) => b.length - a.length);
+  for (const badgeLower of sortedBadges) {
+    if (q.includes(badgeLower)) return badgeLower;
+  }
+
+  // 2) Translation table — longest phrase first
+  const sortedPhrases = Object.keys(BADGE_WORD_TRANSLATIONS).sort((a, b) => b.length - a.length);
+  for (const phrase of sortedPhrases) {
+    if (q.includes(phrase)) {
+      const canonical = BADGE_WORD_TRANSLATIONS[phrase];
+      if (realBadgesLower.has(canonical)) return canonical;
     }
   }
 
-  // Strategy 2: the message contains the full badge text verbatim
-  for (const badge of realBadges) {
-    if (q.includes(badge)) return badge;
-  }
-
   return null;
+}
+
+/**
+ * Strict badge filter: ONLY products whose badge matches exactly (case-insensitive).
+ */
+function getProductsByBadge(canonicalBadge, products) {
+  return products.filter(p => (p.badge || '').toLowerCase().trim() === canonicalBadge);
 }
 
 /**
