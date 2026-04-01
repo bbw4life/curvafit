@@ -1065,6 +1065,17 @@ function applyPromoFreeItems() {
 
         if (prod && prod.media) {
           populateMainProductMedia(prod.media);
+          // ── INJECT PRODUCT BADGE FROM JSON ──
+          const badgeEl = document.querySelector('.product-badge');
+          if (badgeEl) {
+            if (prod.badge && prod.badge.text) {
+              const icon = prod.badge.icon ? `<i class="fi ${prod.badge.icon}"></i> ` : '';
+              badgeEl.innerHTML = `${icon}${prod.badge.text}`;
+              badgeEl.style.display = '';
+            } else {
+              badgeEl.style.display = 'none';
+            }
+          }
           const colorContainer = document.querySelector('.color-swatches');
           if (colorContainer && prod.colors && prod.colors.length) {
             colorContainer.innerHTML = '';

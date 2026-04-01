@@ -79,6 +79,8 @@ function buildProductIndex(rawData) {
       id:            item.id,
       productNumber: index + 1,
       title:         item.title,
+      // ── MODIFICATION 2: badge text from product JSON ──
+      badge:         item.badge ? item.badge.text : null,
       description:   item.description,
       price:         minPrice,
       maxPrice:      item.price,
@@ -169,6 +171,14 @@ function detectIntent(message) {
     /sommeil|sleep.*weight|dormir/,
     /stress|anxiet|depress|mental|moral|confiance|confidence/,
     /plateau.+(normal|pourquoi|why)|normal.+plateau/,
+    // ── MODIFICATION 3: starter intent patterns ──
+    /meilleur.+(début|commencer|démarrer|débutant)/,
+    /best.+(start|begin|starter|beginner)/,
+    /mejor.+(empezar|comenzar|principiante)/,
+    /par où commencer|where.*(do i|should i).*start/,
+    /por dónde empezar/,
+    /what.*(should i|to).*buy first|quoi acheter en premier|qué comprar primero/,
+    /pour (bien )?commencer|to (get |)started|para empezar/,
     /programme?|program|plan.+coach|coaching|coach/,
     /beginner|débutant|intermédiaire|intermediate|maintenance/,
     /comment.+(fonctionne|work|works)|how.+(work|program)/,
@@ -412,8 +422,11 @@ const PAGE_MAP = {
 
 /* ══════════════════════════════════════════════════════
    BUILD SYSTEM PROMPT
+   MODIFICATION 1: plansAvailable param
+   MODIFICATION 2: badge in catalogText
+   MODIFICATION 3: topStarterText section
 ══════════════════════════════════════════════════════ */
-function buildSystemPrompt(products, settings, contactInfo, searchData, blogData) {
+function buildSystemPrompt(products, settings, contactInfo, searchData, blogData, plansAvailable) {
   const contactEmails  = settings.contact_emails || {};
   const emailsText     = Object.entries(contactEmails).map(([k, v]) => `• ${k}: ${v}`).join('\n') || '• No emails configured';
   const programs       = settings.programs    || {};
@@ -424,11 +437,14 @@ function buildSystemPrompt(products, settings, contactInfo, searchData, blogData
   const taxPercent     = Math.round(taxRate * 100);
   const freeShipThresh = shipping.free_shipping_threshold || 120;
 
+  // ── MODIFICATION 1: programs text depends on plansAvailable ──
   const programsText = Object.entries(programs).map(([, val]) => `• ${val.label}: $${val.price}`).join('\n');
+
   const promosText   = promos.length
     ? promos.map(p => `• Code **[[${p.code}]]** → **${p.percent}% off** on ${p.items}+ items (Shop only — NOT valid on programs)`).join('\n')
     : '• No active promo codes at this time';
 
+  // ── MODIFICATION 2: badge included in catalog ──
   const catalogText = products.map((p, i) => {
     const colorsList = p.colors.map(c => c.name).join(', ');
     const sizesList  = p.sizes.length ? p.sizes.join(', ') : 'No size needed';
@@ -439,9 +455,11 @@ function buildSystemPrompt(products, settings, contactInfo, searchData, blogData
     ].filter(Boolean).join(' | ') || 'No discount';
     const delivery = formatDelivery(p.startDate, p.endDate) || 'Contact us';
     const rating   = p.rating ? `${p.rating}/5 (${p.reviewsCount || 0} reviews)` : 'N/A';
+    const badge    = p.badge  ? p.badge : 'None';
     return `
 PRODUCT ${i + 1}:
   Title: ${p.title}
+  Badge: ${badge}
   Description: ${p.description}
   Price: $${p.price}${p.maxPrice !== p.price ? ` to $${p.maxPrice}` : ''} (was $${p.compare_price})
   Rating: ${rating}
@@ -452,6 +470,17 @@ PRODUCT ${i + 1}:
   Page: ${p.url}`;
   }).join('\n');
 
+  // ── MODIFICATION 3: top starter products section ──
+  const topStarterConfig  = settings.top_starter_products || {};
+  const topStarterIds     = Array.isArray(topStarterConfig.product_ids) ? topStarterConfig.product_ids : [];
+  const topStarterLabel   = topStarterConfig.label || 'Best products to start your weight loss journey';
+  const topStarterCards   = products.filter(p => topStarterIds.includes(p.id));
+  const topStarterText    = topStarterCards.length
+    ? topStarterCards.map(p =>
+        `  • ${p.title} ($${p.price})${p.badge ? ` [${p.badge}]` : ''} → ${p.url}`
+      ).join('\n')
+    : '  • (none configured)';
+
   const contactChannels = [];
   if (contactInfo.hasWhatsapp) contactChannels.push('WhatsApp');
   if (contactInfo.hasTelegram) contactChannels.push('Telegram');
@@ -459,6 +488,22 @@ PRODUCT ${i + 1}:
 
   const searchContext = buildSearchDataContext(searchData);
   const blogContext   = buildBlogContext(blogData);
+
+  // ── MODIFICATION 1: programs section in system prompt ──
+  const programsSection = plansAvailable
+    ? `${programsText}`
+    : `⚠️ PROGRAMS CURRENTLY UNAVAILABLE — CRITICAL RULE:
+When any user asks about programs, prices, plans, coaching, subscription, or how to sign up:
+- NEVER show any price.
+- NEVER describe program tiers (Beginner / Intermediate / Maintenance).
+- Reply warmly that plans are temporarily paused while CurvaFit finalizes better partnerships.
+- Tell them to visit the Programs page, fill out the waiting form, and they will be the first notified when it's ready.
+- Always add 🔗[PAGE:/programs.html] at the end of your reply.
+- Vary your wording naturally each time.
+
+Example EN: "Our programs are taking a short pause while we finalize something even better for you! 🙏 Head to our Programs page using the button below — fill out the waiting form and you'll be the FIRST to know when we launch 🎉"
+Example FR: "Nos plans sont temporairement en pause, le temps de finaliser quelque chose d'encore mieux pour toi ! 🙏 Clique sur le bouton ci-dessous pour aller sur notre page Programmes et remplis le formulaire — tu seras la première informée dès que c'est prêt 🎉"
+Example ES: "Nuestros planes están en pausa mientras finalizamos algo aún mejor para ti ! 🙏 Visita nuestra página de Programas con el botón de abajo, llena el formulario de espera y serás la primera en enterarse 🎉"`;
 
   return `You are **Curva**, the official AI assistant and coach of CurvaFit.
 
@@ -526,6 +571,7 @@ WHEN TO ADD 🔗[PAGE:...]:
 ✅ disclaimer / medical / avertissement → add 🔗[PAGE:/disclaimer.html]
 ✅ account / orders / profile / password / badge → add 🔗[PAGE:/account.html]
 ✅ checkout / payment / shipping options → add 🔗[PAGE:/checkout.html]
+✅ programs unavailable → ALWAYS add 🔗[PAGE:/programs.html]
 ❌ NEVER for greetings, small talk, founder questions, general fitness advice
 
 👇 CONTACT BUTTONS — shown when reply ends with 👇 on its own line.
@@ -551,10 +597,41 @@ The frontend needs it EVERY TIME to show the buttons. Never skip it.
 ═══════════════════════════════════════
 🚦 PRODUCT DISPLAY RULES
 ═══════════════════════════════════════
+PRODUCT BADGES — each product has a badge label:
+• "Best Seller" → most popular, highest demand
+• "In Promotion" → currently discounted, great deal right now
+• "New arrival" → recently added to the catalog, fresh pick
+• "Top Sale" → top sales volume, customers love it
+• "Best deal" → best price/value ratio, very affordable
+• "Out stock" → currently out of stock
+Use badge info naturally when recommending.
+  Ex EN: "This one is our Best Seller 🔥" | "It's a New Arrival ✨" | "Great deal right now 🏷️"
+  Ex FR: "C'est notre Best Seller 🔥" | "C'est une nouveauté ✨" | "Super deal en ce moment 🏷️"
+  Ex ES: "Este es nuestro Best Seller 🔥" | "Es una novedad ✨" | "Gran oferta ahora 🏷️"
+NEVER recommend a product with badge "Out stock" as first choice — suggest an in-stock alternative instead.
+
 Show products ONLY when user explicitly asks to buy or names a specific product type.
 NEVER suggest products for: greetings, contact, policies, nutrition, programs, general info.
 Specific → show 1 product only.
 Vague (belly, weight loss, something good) → show up to 4, ask which one they mean.
+
+═══════════════════════════════════════
+🚀 TOP STARTER PRODUCTS
+═══════════════════════════════════════
+When a user asks:
+  "what should I start with?", "best products for beginners?", "what to buy first?",
+  "where do I start?", "pour bien commencer", "par où commencer", "meilleurs produits pour débuter",
+  "para empezar", "por dónde empezar", "qué comprar primero", "mejores para empezar"
+  or any similar starter / beginner intent:
+
+→ ALWAYS show EXACTLY these products (and only these), in this order:
+${topStarterText}
+
+Label for this selection: "${topStarterLabel}"
+Show ALL of them as product cards. Do NOT add other products unless the user asks specifically.
+Intro example EN: "Here are our top picks to kick off your journey 🚀"
+Intro example FR: "Voici nos meilleurs produits pour bien démarrer 🚀"
+Intro example ES: "Aquí están nuestros mejores productos para empezar 🚀"
 
 ═══════════════════════════════════════
 🤝 CONTACT CHANNELS
@@ -592,7 +669,7 @@ Give a warm, inspiring 3–4 line answer. Not too long. Make it feel real.
 ═══════════════════════════════════════
 💪 PROGRAMS
 ═══════════════════════════════════════
-${programsText}
+${programsSection}
 
 ═══════════════════════════════════════
 🎟️ PROMO CODES
@@ -693,7 +770,8 @@ ${blogContext || '(not available)'}
 - Never add 👇 for greetings, policies, or general info
 - Never show promo codes without [[CODE]] format
 - Never apply promo codes to programs — Shop only
-- Never answer policy questions without the relevant 🔗[PAGE:...] button`;
+- Never answer policy questions without the relevant 🔗[PAGE:...] button
+- Never show program prices or tiers when plans_available is No`;
 }
 
 /* ── Fallback / Error messages ── */
@@ -776,10 +854,25 @@ exports.handler = async (event, context) => {
       contactPage: '/contact.html'
     };
 
+    // ── MODIFICATION 1: read plans_available from settings ──
+    const plansAvailable = (settings.plans_available || 'Yes').toLowerCase() === 'yes';
+
+    // ── MODIFICATION 3: read top_starter_products from settings ──
+    const topStarterConfig = settings.top_starter_products || {};
+    const topStarterIds    = Array.isArray(topStarterConfig.product_ids) ? topStarterConfig.product_ids : [];
+
     const intent = detectIntent(message);
 
+    // ── MODIFICATION 3: detect starter intent in handler ──
+    const isStarterIntent = /meilleur.+(début|commencer|démarrer|débutant)|best.+(start|begin|starter|beginner)|mejor.+(empezar|comenzar|principiante)|par où commencer|where.*(do i|should i).*start|por dónde empezar|what.*(should i|to).*buy first|quoi acheter en premier|qué comprar primero|pour (bien )?commencer|to (get |)started|para empezar/i.test(message);
+
     let relevantProducts = [], isVague = false;
-    if (intent === 'product') {
+
+    if (isStarterIntent && topStarterIds.length > 0) {
+      // Show exactly the configured top starter products
+      relevantProducts = products.filter(p => topStarterIds.includes(p.id));
+      isVague = false;
+    } else if (intent === 'product') {
       const searchResult = searchProducts(message, products);
       relevantProducts   = searchResult.results;
       isVague            = searchResult.isVague;
@@ -815,7 +908,8 @@ exports.handler = async (event, context) => {
 
     const isContactIntent = intent !== 'product' && EXPLICIT_CONTACT_PATTERNS.some(p => p.test(message));
 
-    const systemPrompt = buildSystemPrompt(products, settings, contactInfo, searchData, blogData);
+    // ── Build system prompt with all 3 modifications ──
+    const systemPrompt = buildSystemPrompt(products, settings, contactInfo, searchData, blogData, plansAvailable);
 
     /* Tell the AI explicitly when contact is detected — so it always adds 👇 */
     const contactInstruction = isContactIntent
@@ -826,6 +920,16 @@ exports.handler = async (event, context) => {
       ? '\n[VAGUE PRODUCT: Show up to 4 products and ask which one they mean.]'
       : '\n[SPECIFIC PRODUCT: Show ONLY the 1 most relevant product.]';
 
+    // ── MODIFICATION 1: inject plans_available instruction ──
+    const plansInstruction = !plansAvailable
+      ? '\n[PLANS UNAVAILABLE: plans_available is "No". NEVER mention program prices or tiers. Reply with the unavailable message and add 🔗[PAGE:/programs.html].]'
+      : '';
+
+    // ── MODIFICATION 3: inject starter instruction ──
+    const starterInstruction = isStarterIntent && topStarterIds.length > 0
+      ? '\n[STARTER INTENT: Show EXACTLY the top_starter_products listed in the system prompt. No other products.]'
+      : '';
+
     const langInstruction = userLang === 'fr'
       ? 'Reply 100% in FRENCH.'
       : userLang === 'es'
@@ -835,7 +939,10 @@ exports.handler = async (event, context) => {
     const groqMessages = [
       { role: 'system', content: systemPrompt },
       ...history.slice(-8).map(h => ({ role: h.role, content: h.content })),
-      { role: 'user', content: `${message}\n\n[${langInstruction}]${intent === 'product' ? vagueInstruction : ''}${contactInstruction}` }
+      {
+        role: 'user',
+        content: `${message}\n\n[${langInstruction}]${intent === 'product' && !isStarterIntent ? vagueInstruction : ''}${contactInstruction}${plansInstruction}${starterInstruction}`
+      }
     ];
 
     /* ── Model rotation ── */
