@@ -1051,10 +1051,9 @@ exports.handler = async (event, context) => {
     const cleanReply = reply.replace(/👇[\s]*/g, '').trim();
 
     /* ── PAGE BUTTONS — suppressed for pure greetings ── */
-    const suppressPages   = isGreeting(message);
-    const pageMarkerRegex = /🔗\[PAGE:([^\]]+)\]/g;
-    const pageMatches     = suppressPages ? [] : [...cleanReply.matchAll(pageMarkerRegex)];
-    const pageButtons     = pageMatches.map(m => {
+    const suppressPages = isGreeting(message);
+    const pageMatches   = suppressPages ? [] : [...cleanReply.matchAll(/🔗\[PAGE:([^\]]+)\]/g)];
+    const pageButtons   = pageMatches.map(m => {
       const url = m[1].trim();
       if (PAGE_MAP[url]) return { url, label: PAGE_MAP[url].label, icon: PAGE_MAP[url].icon };
       const pm = url.match(/^\/products\/product(\d+)\.html$/);
@@ -1065,7 +1064,7 @@ exports.handler = async (event, context) => {
       return { url, label: 'Visit Page', icon: '🔗' };
     });
 
-    const finalReply = cleanReply.replace(pageMarkerRegex, '').trim();
+    const finalReply = cleanReply.replace(/🔗\[PAGE:([^\]]+)\]/g, '').trim();
 
     const productCards = relevantProducts.map(p => ({
       title:         p.title,
