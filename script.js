@@ -456,12 +456,6 @@ function applyPromoFreeItems() {
 })();
 
 
-
-
-
-
-
-
 // ── PLAN REQUEST POPUP ──
 (function initPlanPopup() {
   const overlay   = document.getElementById('plan-popup-overlay');
@@ -553,10 +547,12 @@ function applyPromoFreeItems() {
 })();
 
 
-
-
-
       const settings = products.find(p => p.type === "settings") || {};
+      const plansAvailable = (settings.plans_available || 'no').toLowerCase() === 'yes';
+      const planTriggerWrap = document.querySelector('.plan-request-trigger-wrap');
+      if (planTriggerWrap) {
+        planTriggerWrap.style.display = plansAvailable ? '' : 'none';
+      }
       // Free shipping threshold → risk-reversal section
       const freeShippingThreshold = (settings.cart_drawer && settings.cart_drawer.free_shipping_threshold)
         ? settings.cart_drawer.free_shipping_threshold

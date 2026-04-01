@@ -9141,7 +9141,7 @@ tbody tr:hover { background: var(--rose-ultra); }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 10px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
@@ -9360,12 +9360,12 @@ tbody tr:hover { background: var(--rose-ultra); }
 /* ── RESPONSIVE MOBILE ── */
 @media (max-width: 480px) {
   .plan-request-trigger-wrap {
-    padding: 0 16px;
+    padding: 0 10px;
     margin: -20px 0 48px;
   }
   .plan-form-row { grid-template-columns: 1fr; }
   .plan-popup-header { padding: 24px 20px 20px; }
-  .plan-popup-body { padding: 20px; }
+  .plan-popup-body { padding: 10px; }
 }
 
 
