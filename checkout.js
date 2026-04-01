@@ -83,7 +83,23 @@ document.addEventListener('DOMContentLoaded', () => {
       })();
 
         }
-        applyPromoFreeItems();       
+        applyPromoFreeItems(); 
+        // ══ COLLAPSIBLE ORDER SUMMARY ══
+        (function initCollapsibleOrderSummary() {
+        const setting = (settings?.collapsible_order_summary || 'No').trim().toLowerCase();
+        if (setting !== 'yes') return;
+
+        const section = document.querySelector('.order-summary');
+        const toggle  = document.getElementById('order-summary-toggle');
+        if (!section || !toggle) return;
+
+        section.classList.add('collapsible'); // fermé par défaut
+
+        toggle.addEventListener('click', () => {
+            const isOpen = section.classList.toggle('open');
+            toggle.setAttribute('aria-expanded', isOpen);
+        });
+        })();
         renderCart();
       })
       .catch(error => {
@@ -687,6 +703,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             if (promoLine) promoLine.style.display = 'none';
         }
+        // Mise à jour du preview dans le toggle collapsible
+        const togglePreview = document.getElementById('toggle-total-preview');
+        if (togglePreview) togglePreview.textContent = `$${Math.max(0, finalTotal).toFixed(2)}`;
     }
 
     function applyPromoFreeItems() {

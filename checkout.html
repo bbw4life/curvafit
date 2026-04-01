@@ -62,39 +62,45 @@
         </section>
 <main class="checkout-main">
     <!-- ORDER SUMMARY -->
-    <section class="order-summary">
-        <h2>Order Summary</h2>
-        <div class="cart-items"></div>
-        <div class="summary-totals">
-            <div class="promo-wrapper">
-            <h3>Promo Code</h3>
-            <!-- Code promo suggéré (affiché automatiquement selon nombre de produits) -->
-            <div id="suggested-promo">
-                <p><span>Recommended code for your cart (<span id="item-count-display">0</span> items):</span></p>
-                <strong id="suggested-code"></strong>
-                <button id="copy-suggested">
-                    Copy
-                </button>
+    <!-- ORDER SUMMARY -->
+<section class="order-summary">
+    <h2>Order Summary</h2>
+    <!-- Toggle button (injecté par JS si collapsible=Yes) -->
+    <button class="order-summary-toggle" id="order-summary-toggle" type="button" aria-expanded="false">
+        <span class="order-summary-toggle-left">Order Summary</span>
+        <span class="order-summary-toggle-right">
+            <span class="order-summary-total-preview" id="toggle-total-preview">$0.00</span>
+            <i class="fas fa-chevron-down order-summary-chevron"></i>
+        </span>
+    </button>
+        <!-- Corps enveloppé -->
+        <div class="order-summary-body">
+            <div class="cart-items"></div>
+            <div class="summary-totals">
+                <div class="promo-wrapper">
+                    <h3>Promo Code</h3>
+                    <div id="suggested-promo">
+                        <p><span>Recommended code for your cart (<span id="item-count-display">0</span> items):</span></p>
+                        <strong id="suggested-code"></strong>
+                        <button id="copy-suggested">Copy</button>
+                    </div>
+                    <div class="promo-input-group">
+                        <input type="text" id="promo-input" placeholder="Enter promo code">
+                        <button id="apply-promo">Apply</button>
+                    </div>
+                    <p id="promo-message"></p>
+                </div>
+                <p>Subtotal: <span id="subtotal">$0.00</span></p>
+                <p>
+                    <span>Taxes (<span id="tax-rate-label">0</span>%)</span>
+                    <span id="taxes">$0.00</span>
+                </p>
+                <p>Shipping: <span id="shipping">$0.00</span></p>
+                <p class="total">Total: <span id="total">$0.00</span></p>
+                <p id="promo-line">
+                    Discount: <span id="discount-amount">-$0.00</span>
+                </p>
             </div>
-            <!-- Champ pour entrer et appliquer un code -->
-            <div class="promo-input-group">
-                <input type="text" id="promo-input" placeholder="Enter promo code">
-                <button id="apply-promo">
-                    Apply
-                </button>
-            </div>
-            <p id="promo-message"></p>
-        </div>
-            <p>Subtotal: <span id="subtotal">$0.00</span></p>
-            <p>
-            <span>Taxes (<span id="tax-rate-label">0</span>%)</span>
-            <span id="taxes">$0.00</span>
-            </p>
-            <p>Shipping: <span id="shipping">$0.00</span></p>
-            <p class="total">Total: <span id="total">$0.00</span></p>
-            <p id="promo-line">
-                Discount: <span id="discount-amount">-$0.00</span>
-            </p>
         </div>
     </section>
     <!-- SHIPPING INFORMATION -->

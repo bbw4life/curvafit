@@ -33,8 +33,8 @@
             <nav class="main-nav">
                 <ul>
                     <li><a href="index.html"><i class="fi fi-rr-home"></i> Home</a></li>
-                    <li><a href="method.html"><i class="fi fi-rr-process"></i> Method</a></li>
-                    <li><a href="programs.html" class="active"><i class="fi fi-rr-dumbbell"></i> Programs</a></li>
+                    <li><a href="/method.html"><i class="fi fi-rr-settings"></i> Method</a></li>
+                    <li><a href="programs.html" class="active"><i class="fi fi-rr-gym"></i> Programs</a></li>
                     <li><a href="nutrition.html"><i class="fi fi-rr-apple-whole"></i> Nutrition</a></li>
                     <li><a href="shop.html"><i class="fi fi-rr-shopping-cart"></i> Shop</a></li>
                     <li><a href="success.html"><i class="fi fi-rr-trophy"></i> Success</a></li>
@@ -153,6 +153,91 @@
                 </div>
             </div>
         </section>
+
+            <!-- PLAN REQUEST BUTTON -->
+            <div class="plan-request-trigger-wrap">
+            <button id="open-plan-popup" class="plan-request-trigger-btn">
+            <span class="plan-btn-icon">
+            <i class="fi fi-rr-paper-plane"></i>
+            </span>
+            <span class="plan-btn-text">
+            <strong>Request a Personalized Plan</strong>
+            <small>A coach will contact you within 24 hours</small>
+            </span>
+            <span class="plan-btn-arrow"><i class="fi fi-rr-arrow-right"></i></span>
+        </button>
+        </div>
+
+        <!-- PLAN REQUEST POPUP -->
+        <div id="plan-popup-overlay" class="plan-popup-overlay" aria-hidden="true">
+        <div class="plan-popup-modal" role="dialog" aria-modal="true" aria-labelledby="plan-popup-title">
+            <button class="plan-popup-close" id="plan-popup-close" aria-label="Close">
+            <i class="fi fi-rr-cross"></i>
+            </button>
+
+            <div class="plan-popup-header">
+            <div class="plan-popup-badge">
+                <i class="fi fi-rr-star"></i> CurvaFit Coaching
+            </div>
+            <h2 id="plan-popup-title">Request a Personalized Plan</h2>
+            <p>Tell us about yourself — our coaches will build your custom program within 24 hours.</p>
+            </div>
+
+            <div class="plan-popup-body">
+            <div class="plan-form-row">
+                <div class="plan-form-group">
+                <label for="plan-firstname">First Name *</label>
+                <input type="text" id="plan-firstname" placeholder="Maria" autocomplete="given-name">
+                </div>
+                <div class="plan-form-group">
+                <label for="plan-lastname">Last Name *</label>
+                <input type="text" id="plan-lastname" placeholder="Doe" autocomplete="family-name">
+                </div>
+                <div class="plan-form-group">
+                <label for="plan-email">Email *</label>
+                <input type="email" id="plan-email" placeholder="maria@email.com" autocomplete="email">
+                </div>
+                <div class="plan-form-group">
+                <label for="plan-phone">Phone</label>
+                <input type="tel" id="plan-phone" placeholder="+1 000 000 0000" autocomplete="tel">
+                </div>
+                <div class="plan-form-group plan-form-group--full">
+                <label for="plan-program">Desired Program *</label>
+                <select id="plan-program">
+                    <option value="" disabled selected>Choose a program...</option>
+                    <option value="Beginner — Soft Start ($99)">Beginner — Soft Start</option>
+                    <option value="Intermediate — Deeper Refiner ($149)">Intermediate — Deeper Refiner</option>
+                    <option value="Maintenance — Forever Fit ($79)">Maintenance — Forever Fit</option>
+                    <option value="Not sure — help me choose">Not sure — help me choose</option>
+                </select>
+                </div>
+            </div>
+
+            <div class="plan-checkbox-wrap">
+                <input type="checkbox" id="plan-consent">
+                <label for="plan-consent">
+                <strong>I want a personalized plan at CurvaFit.</strong>
+                I agree to be contacted by a coach to discuss my goals and build the right program for me.
+                </label>
+            </div>
+
+            <div class="plan-popup-error" id="plan-popup-error" style="display:none;"></div>
+            <div class="plan-popup-success" id="plan-popup-success" style="display:none;">
+                <i class="fi fi-rr-check"></i>
+                <span>Your request has been sent! A coach will contact you within 24 hours.</span>
+            </div>
+
+            <button class="plan-submit-btn" id="plan-submit-btn">
+                <i class="fi fi-rr-paper-plane"></i>
+                Send My Request
+            </button>
+            <p class="plan-privacy-note">
+                <i class="fi fi-rr-shield-check"></i>
+                Your data is never shared. Coaches respond within 24 hours.
+            </p>
+            </div>
+        </div>
+        </div>
 
         <!-- PROGRAM TIERS -->
         <section id="program-tiers" class="program-tiers-section">

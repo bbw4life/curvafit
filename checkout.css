@@ -1493,3 +1493,104 @@ select:focus {
   margin: 0 1px;
 }
 
+
+/* ================================================================
+   COLLAPSIBLE ORDER SUMMARY
+================================================================ */
+.order-summary-toggle {
+  display: none;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 0;
+  text-align: left;
+}
+
+.order-summary.collapsible .order-summary-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+
+.order-summary-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  letter-spacing: -0.01em;
+}
+
+.order-summary-toggle-left::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 22px;
+  background: linear-gradient(to bottom, var(--rose), var(--plum));
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.order-summary-toggle-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.order-summary-total-preview {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.20rem;
+  font-weight: 700;
+  color: var(--rose);
+}
+
+.order-summary-chevron {
+  font-size: 0.80rem;
+  color: var(--mist);
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.order-summary.collapsible.open .order-summary-chevron {
+  transform: rotate(180deg);
+  color: var(--rose);
+}
+
+/* Titre h2 caché quand collapsible actif */
+.order-summary.collapsible > h2 {
+  display: none;
+}
+
+/* Corps collapsible */
+.order-summary-body {
+  overflow: hidden;
+  transition: max-height 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity    0.32s ease,
+              margin-top 0.32s ease;
+}
+
+.order-summary.collapsible .order-summary-body {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+}
+
+.order-summary.collapsible.open .order-summary-body {
+  max-height: 2000px;
+  opacity: 1;
+  margin-top: 20px;
+}
+
+/* Non-collapsible : le body est toujours visible */
+.order-summary:not(.collapsible) .order-summary-body {
+  max-height: none;
+  opacity: 1;
+  margin-top: 0;
+}
+
+

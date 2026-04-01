@@ -943,7 +943,7 @@ exports.handler = async (event, context) => {
     /* ── Read allowed_languages from settings — default all 10 if not set ── */
     const allowedLanguages = (settings.allowed_languages && settings.allowed_languages.length > 0)
       ? settings.allowed_languages
-      : ['en', 'fr', 'es', 'ar', 'zh', 'hi', 'pt', 'ru', 'de', 'ja'];
+      : ['en', 'fr', 'es', 'ar', 'zh', 'ht', 'hi', 'pt', 'ru', 'de', 'ja'];
 
     const userLang = detectLanguage(message, allowedLanguages);
 

@@ -971,6 +971,7 @@
     ],
     "enable_media_zoom": "Yes",
     "plans_available": "Yes",
+    "collapsible_order_summary": "No",
     "flash_deal": {
       "hours": 8
     },
