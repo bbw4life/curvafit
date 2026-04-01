@@ -135,44 +135,73 @@ function detectBadgeQuery(message, badgeMap) {
 }
 
 /* ══════════════════════════════════════════════════════
-   LANGUAGE DETECTION
+   LANGUAGE DETECTION — 10 languages + allowed_languages filter
 ══════════════════════════════════════════════════════ */
-function detectLanguage(message) {
+function detectLanguage(message, allowedLanguages) {
   const text = message.toLowerCase().trim();
+  const words = text.split(/\s+/).map(w => w.replace(/[^a-záàâçèêëéíîïóôùûüñú]/gi, ''));
 
-  const spanishPatterns = [
-    /\b(hola|buenas|buenos|qué|que|cómo|como|puedo|quiero|necesito|tienes|tengo|gracias|por favor|ayuda|precio|envío|envio|producto|comprar|descuento|talla|color|disponible|cuánto|cuanto|dónde|donde|cuando|cuándo|si|también|tambien|estoy|peso|adelgazar|bajar|perder)\b/,
-    /[áéíóúüñ¿¡]/
-  ];
-  const frenchPatterns = [
-    /\b(bonjour|bonsoir|salut|merci|s'il vous|svp|comment|qu'est|c'est|je|vous|nous|les|des|une|pour|avec|dans|sur|mais|très|aussi|peut|plus|produit|livraison|taille|couleur|disponible|combien|où|quand|prix|acheter|réduction|programme)\b/,
-    /[àâçèêëîïôùûü]/
-  ];
-  const englishPatterns = [
-    /\b(hello|hi|hey|what|how|can|could|would|should|where|when|why|which|who|the|and|for|with|this|that|have|your|you|me|my|want|need|does|do|is|are|was|were|help|price|shipping|color|size|available|discount|program|product|buy|order)\b/
-  ];
+  let scores = { en: 0, fr: 0, es: 0, ar: 0, zh: 0, hi: 0, pt: 0, ru: 0, de: 0, ja: 0 };
 
-  let frScore = 0, esScore = 0, enScore = 0;
-  frenchPatterns.forEach(p  => { if (p.test(text)) frScore += 3; });
-  spanishPatterns.forEach(p => { if (p.test(text)) esScore += 3; });
-  englishPatterns.forEach(p => { if (p.test(text)) enScore += 1; });
+  /* Arabic — script detection */
+  if (/[\u0600-\u06FF]/.test(text)) scores.ar += 10;
 
-  const frWords = ['je','tu','il','elle','nous','vous','ils','elles','le','la','les','un','une','des','du','et','est','sont','avec','dans','pour','sur','pas','plus','très','bien','aussi','mais','ou','donc','car','que','qui','quoi','comment','quand','où','pourquoi','quel','quelle','bonjour','merci','oui','non','avoir','être','faire','aller','pouvoir','vouloir','savoir'];
-  const esWords = ['yo','tú','él','ella','nosotros','vosotros','ellos','ellas','el','la','los','las','un','una','unos','unas','del','al','y','es','son','con','en','por','para','sobre','no','más','muy','bien','también','pero','o','porque','que','quien','como','cuando','donde','qué','cómo','cuándo','dónde','hola','gracias','sí','tener','ser','estar','hacer','ir','poder','querer','saber'];
-  const enWords = ['i','you','he','she','it','we','they','the','a','an','is','are','was','were','have','has','had','do','does','did','will','would','can','could','should','may','might','and','or','but','for','with','at','by','from','to','in','on','of','that','this','what','how','when','where','why','who','which'];
+  /* Chinese */
+  if (/[\u4E00-\u9FFF\u3400-\u4DBF]/.test(text)) scores.zh += 10;
 
-  const words = text.split(/\s+/);
-  words.forEach(w => {
-    const clean = w.replace(/[^a-záàâçèêëéíîïóôùûüñú]/gi, '');
-    if (frWords.includes(clean)) frScore += 2;
-    if (esWords.includes(clean)) esScore += 2;
-    if (enWords.includes(clean)) enScore += 1;
-  });
+  /* Hindi */
+  if (/[\u0900-\u097F]/.test(text)) scores.hi += 10;
 
-  if (frScore === 0 && esScore === 0 && enScore === 0) return 'en';
-  if (frScore >= esScore && frScore >= enScore) return 'fr';
-  if (esScore > frScore && esScore >= enScore) return 'es';
-  return 'en';
+  /* Russian */
+  if (/[\u0400-\u04FF]/.test(text)) scores.ru += 10;
+
+  /* Japanese */
+  if (/[\u3040-\u309F\u30A0-\u30FF]/.test(text)) scores.ja += 10;
+
+  /* French */
+  if (/\b(bonjour|bonsoir|salut|merci|comment|c'est|je|vous|nous|les|des|une|pour|avec|dans|sur|mais|très|aussi|peut|plus|produit|livraison|taille|couleur|disponible|combien|où|quand|prix|acheter|réduction|programme)\b/.test(text)) scores.fr += 3;
+  if (/[àâçèêëîïôùûü]/.test(text)) scores.fr += 3;
+  ['je','tu','il','elle','nous','vous','ils','elles','le','la','les','un','une','des','du','et','est','sont','avec','dans','pour','sur','pas','plus','très','bien','aussi','mais','ou','donc','car','que','qui','quoi','comment','quand','où','pourquoi','quel','quelle','bonjour','merci','oui','non'].forEach(w => { if (words.includes(w)) scores.fr += 2; });
+
+  /* Spanish */
+  if (/\b(hola|buenas|buenos|cómo|como|puedo|quiero|necesito|tienes|tengo|gracias|ayuda|precio|envío|producto|comprar|descuento|talla|disponible|cuánto|dónde|también|adelgazar|perder)\b/.test(text)) scores.es += 3;
+  if (/[áéíóúüñ¿¡]/.test(text)) scores.es += 3;
+  ['yo','él','ella','nosotros','ellos','ellas','los','las','del','al','con','por','para','sobre','más','muy','también','pero','porque','quien','cuando','donde','hola','gracias','sí','tener','ser','estar','hacer','poder','querer'].forEach(w => { if (words.includes(w)) scores.es += 2; });
+
+  /* Portuguese */
+  if (/\b(olá|oi|obrigado|obrigada|como|você|produto|preço|comprar|ajuda|envio|disponível|desconto|programa)\b/.test(text)) scores.pt += 3;
+  if (/[ãõâêôáéíóúàü]/.test(text)) scores.pt += 2;
+  ['você','nós','eles','elas','uma','por','para','com','mas','também','não','sim','obrigado','como','onde','quando','porque','produto','preço'].forEach(w => { if (words.includes(w)) scores.pt += 2; });
+
+  /* German */
+  if (/\b(hallo|guten|danke|bitte|wie|was|wo|wann|warum|ich|sie|wir|der|die|das|und|für|mit|auf|ist|sind|haben|kaufen|produkt|preis|versand|verfügbar|rabatt|programm)\b/.test(text)) scores.de += 3;
+  if (/[äöüß]/.test(text)) scores.de += 3;
+  ['ich','du','er','sie','es','wir','ihr','der','die','das','und','ist','sind','mit','auf','für','von','zu','an','ein','eine','nicht','auch','aber','oder','wie','was','wo','wann'].forEach(w => { if (words.includes(w)) scores.de += 2; });
+
+  /* English */
+  if (/\b(hello|hi|hey|what|how|can|could|would|should|where|when|why|which|who|the|and|for|with|this|that|have|your|you|want|need|does|do|is|are|was|were|help|price|shipping|color|size|available|discount|program|product|buy|order)\b/.test(text)) scores.en += 3;
+  ['i','you','he','she','it','we','they','the','a','an','is','are','was','were','have','has','had','do','does','did','will','would','can','could','should','may','might','and','or','but','for','with','at','by','from','to','in','on','of','that','this','what','how','when','where','why','who','which'].forEach(w => { if (words.includes(w)) scores.en += 1; });
+
+  /* Find best score */
+  let detected = 'en';
+  let best = 0;
+  for (const [lang, score] of Object.entries(scores)) {
+    if (score > best) { best = score; detected = lang; }
+  }
+  if (best === 0) detected = 'en';
+
+  /* Check against allowed list — fallback to 'en' if not allowed */
+  if (allowedLanguages && allowedLanguages.length > 0) {
+    if (!allowedLanguages.includes(detected)) return 'en';
+  }
+
+  return detected;
+}
+
+/* ── Language name helper for lang instruction ── */
+function getLangName(code) {
+  const names = { en: 'ENGLISH', fr: 'FRENCH', es: 'SPANISH', ar: 'ARABIC', zh: 'CHINESE', hi: 'HINDI', pt: 'PORTUGUESE', ru: 'RUSSIAN', de: 'GERMAN', ja: 'JAPANESE' };
+  return names[code] || 'ENGLISH';
 }
 
 /* ══════════════════════════════════════════════════════
@@ -590,12 +619,9 @@ NEVER show contact or page buttons for simple greetings or small talk.
 ═══════════════════════════════════════
 🌍 LANGUAGE RULE — ABSOLUTE — NO EXCEPTION
 ═══════════════════════════════════════
-Detect the language from the user's message.
-FRENCH → reply 100% in FRENCH.
-SPANISH → reply 100% in SPANISH.
-ENGLISH → reply 100% in ENGLISH.
-Short/ambiguous (yow, ok, hi, cc) → default ENGLISH.
-NEVER mix languages.
+The backend has already detected the user's language and tells you which one to use.
+You MUST reply in exactly that language — no mixing, no switching, no exception.
+NEVER mix languages in your response.
 
 ═══════════════════════════════════════
 ✏️ FORMATTING RULES
@@ -838,15 +864,33 @@ ${blogContext || '(not available)'}
 
 /* ── Fallback / Error messages ── */
 function getFallbackMessage(lang) {
-  if (lang === 'fr') return "Je suis très sollicitée en ce moment 😅 Réessayez dans quelques secondes !";
-  if (lang === 'es') return "Estoy muy ocupada en este momento 😅 ¡Inténtalo de nuevo en unos segundos!";
-  return "I'm a bit overloaded right now 😅 Please try again in a few seconds!";
+  const msgs = {
+    fr: "Je suis très sollicitée en ce moment 😅 Réessayez dans quelques secondes !",
+    es: "Estoy muy ocupada en este momento 😅 ¡Inténtalo de nuevo en unos segundos!",
+    de: "Ich bin gerade sehr beschäftigt 😅 Bitte versuche es in ein paar Sekunden erneut!",
+    pt: "Estou muito ocupada agora 😅 Tente novamente em alguns segundos!",
+    ar: "أنا مشغولة جداً الآن 😅 يرجى المحاولة مرة أخرى بعد ثوانٍ!",
+    zh: "我现在很忙 😅 请几秒后再试！",
+    hi: "मैं अभी बहुत व्यस्त हूँ 😅 कृपया कुछ सेकंड बाद पुनः प्रयास करें!",
+    ru: "Я сейчас очень занята 😅 Пожалуйста, повторите попытку через несколько секунд!",
+    ja: "ただいま混み合っています 😅 数秒後にもう一度お試しください！",
+  };
+  return msgs[lang] || "I'm a bit overloaded right now 😅 Please try again in a few seconds!";
 }
 
 function getErrorMessage(lang) {
-  if (lang === 'fr') return "Désolée, j'ai un petit problème technique. Réessayez dans un instant ! 🙏";
-  if (lang === 'es') return "Lo siento, tengo un pequeño problema técnico. ¡Inténtalo de nuevo! 🙏";
-  return "Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏";
+  const msgs = {
+    fr: "Désolée, j'ai un petit problème technique. Réessayez dans un instant ! 🙏",
+    es: "Lo siento, tengo un pequeño problema técnico. ¡Inténtalo de nuevo! 🙏",
+    de: "Entschuldigung, ich habe ein kleines technisches Problem. Bitte versuche es erneut! 🙏",
+    pt: "Desculpe, estou com um pequeno problema técnico. Tente novamente! 🙏",
+    ar: "عذراً، أواجه مشكلة تقنية بسيطة. يرجى المحاولة مرة أخرى! 🙏",
+    zh: "抱歉，我遇到了一个小技术问题。请再试一次！🙏",
+    hi: "क्षमा करें, मुझे एक छोटी तकनीकी समस्या है। कृपया पुनः प्रयास करें! 🙏",
+    ru: "Извините, у меня небольшая техническая проблема. Пожалуйста, попробуйте снова! 🙏",
+    ja: "申し訳ありません、少し技術的な問題が発生しています。もう一度お試しください！🙏",
+  };
+  return msgs[lang] || "Sorry, I'm having a little trouble right now. Please try again in a moment! 🙏";
 }
 
 /* ══════════════════════════════════════════════════════
@@ -886,8 +930,6 @@ exports.handler = async (event, context) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message is required' }) };
     }
 
-    const userLang = detectLanguage(message);
-
     let products = [], settings = {};
     try {
       const rawData = await loadProductsData();
@@ -897,6 +939,13 @@ exports.handler = async (event, context) => {
     } catch (err) {
       console.error('Could not load products.data.json:', err.message);
     }
+
+    /* ── Read allowed_languages from settings — default all 10 if not set ── */
+    const allowedLanguages = (settings.allowed_languages && settings.allowed_languages.length > 0)
+      ? settings.allowed_languages
+      : ['en', 'fr', 'es', 'ar', 'zh', 'hi', 'pt', 'ru', 'de', 'ja'];
+
+    const userLang = detectLanguage(message, allowedLanguages);
 
     let searchData = null, blogData = null;
     try {
@@ -987,11 +1036,9 @@ exports.handler = async (event, context) => {
       ? `\n[BADGE QUERY: Backend detected badge "${matchedBadge}" and injected ONLY products with exactly this badge. Present ONLY those products. If none injected, say honestly no product has this badge right now. Translate the badge name naturally in the user's language.]`
       : '';
 
-    const langInstruction = userLang === 'fr'
-      ? 'Reply 100% in FRENCH.'
-      : userLang === 'es'
-      ? 'Reply 100% in SPANISH.'
-      : 'Reply 100% in ENGLISH.';
+    const langName        = getLangName(userLang);
+    const otherLangs      = ['ENGLISH','FRENCH','SPANISH','ARABIC','CHINESE','HINDI','PORTUGUESE','RUSSIAN','GERMAN','JAPANESE'].filter(l => l !== langName).join(', ');
+    const langInstruction = `CRITICAL — ABSOLUTE RULE: You MUST reply 100% in ${langName}. NOT a single word in ${otherLangs}. The user wrote in ${langName} — respond ONLY in ${langName}, no exception, no matter what.`;
 
     const groqMessages = [
       { role: 'system', content: systemPrompt },
@@ -1042,7 +1089,7 @@ exports.handler = async (event, context) => {
       };
     }
 
-    console.log(`[Chat] Model: ${usedModel} | Badge: ${matchedBadge || 'none'} | TopStarter: ${topStarterRequest}`);
+    console.log(`[Chat] Model: ${usedModel} | Lang: ${userLang} | Badge: ${matchedBadge || 'none'} | TopStarter: ${topStarterRequest}`);
 
     const data  = await groqResponse.json();
     const reply = data.choices?.[0]?.message?.content || getErrorMessage(userLang);

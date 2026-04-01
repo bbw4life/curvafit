@@ -906,6 +906,7 @@
   },
   {
     "type": "settings",
+    "allowed_languages": ["en", "fr", "es", "ar", "zh", "ht", "hi", "pt", "ru", "de", "ja"],
     "tax_rate": 0.5,
     "shipping_cost": 40.0,
     "shipping_standard_delay": "20–12 business days",
