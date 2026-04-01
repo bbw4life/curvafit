@@ -102,8 +102,7 @@ function buildProductIndex(rawData) {
       endDate:      item.end_date   || '',
       rating:       item.rating        || null,
       reviewsCount: item.reviews_count || null,
-      // ── MODIFICATION 2: récupère le badge depuis le champ badge de chaque produit ──
-      badge:        item.badge ? item.badge.text || '' : '',
+      badge:        item.badge ? (item.badge.text || '') : '',
       url:          `/products/product${index + 1}.html`,
       cj_id:        item.cj_id
     };
@@ -233,15 +232,6 @@ function detectIntent(message) {
     /annulation.+abonnement|cancel.+subscription|cancelar.+suscripci/,
     /preuve.+utilisation|proof.+use|prueba.+uso/,
     /non.+remboursable|non.+refundable|no.+reembolsable/,
-    // ── MODIFICATION 3: détecter les demandes "top produits pour commencer" ──
-    /meilleur.+(produit|article).+(commencer|début|démarrer|start)/,
-    /best.+(product|item).+(start|begin|beginner)/,
-    /mejor.+(producto).+(empezar|comenzar|inicio)/,
-    /produit.+(pour commencer|pour débuter|pour démarrer)/,
-    /pour.+(commencer|débuter|démarrer).+(perdre|mincir|maigrir|weight)/,
-    /par où commencer|where to start|por dónde empezar/,
-    /que me recommandes.+commencer|what.*recommend.*start/,
-    /starter.+product|top.+starter|meilleur.+départ|top.+produit/,
   ];
 
   for (const pattern of generalPatterns) {
@@ -277,6 +267,12 @@ function detectIntent(message) {
     /existe.+(couleur|taille)|come in.+(color|size)|viene.+(color|talla)/,
     /\$\d+|under \$|moins de \$|budget.+(produit|product)|menos de \$|presupuesto/,
     /combien.+(coûte|cost).+(ce|this|le|la)|cuánto.+(cuesta|vale)/,
+    // Badge / statut produit → intent product pour afficher la carte
+    /best.?seller|meilleure?.+vente|más.+vendido|top.+vente/,
+    /en promotion|in promotion|on sale|en promo/,
+    /new.?arrival|nouvel?.+arriv|nueva?.+llegad/,
+    /top.+deal|meilleure?.+offre|mejor.+oferta/,
+    /out.?of.?stock|rupture.+stock|agotado/,
   ];
 
   for (const pattern of productPatterns) {
@@ -287,24 +283,36 @@ function detectIntent(message) {
 }
 
 /* ══════════════════════════════════════════════════════
-   MODIFICATION 3: détecter si c'est une demande "top starter products"
+   TOP STARTER REQUEST — patterns stricts, sans chevaucher badge
 ══════════════════════════════════════════════════════ */
 function isTopStarterRequest(message) {
   const q = message.toLowerCase();
   const patterns = [
-    /meilleur.+(produit|article).+(commencer|début|démarrer|start)/,
-    /best.+(product|item).+(start|begin|beginner)/,
-    /mejor.+(producto).+(empezar|comenzar|inicio)/,
-    /produit.+(pour commencer|pour débuter|pour démarrer)/,
-    /pour.+(commencer|débuter|démarrer).+(perdre|mincir|maigrir|weight)/,
-    /par où commencer|where to start|por dónde empezar/,
-    /que me recommandes.+commencer|what.*recommend.*start/,
-    /starter.+product|top.+starter|meilleur.+départ/,
-    /pour bien commencer|to get started|para empezar bien/,
-    /quels produits.+(commencer|début)|which products.+start/,
-    /produits.+(recommand).+(commencer|start|debut)/,
-    /je commence|i('m| am) starting|estoy empezando/,
-    /nouveau.+(ici|client)|new here|nueva.+(aquí|cliente)/,
+    // FR
+    /produits?.+(pour commencer|pour débuter|pour démarrer)/,
+    /pour.+(commencer|débuter|démarrer).+(ma transformation|mon parcours|ma perte|perdre|maigrir|mincir)/,
+    /par où commencer/,
+    /que me recommandes.+pour commencer/,
+    /quels? produits?.+commencer/,
+    /pour bien commencer/,
+    /je (suis |)nouveau.+(ici|cliente?)/,
+    /kit.+(départ|débutant|starter)/,
+    /pack.+(débutant|commencer|démarrer)/,
+    // EN
+    /products?.+to (get started|start my journey|begin my journey)/,
+    /where (do i |should i |can i |)(start|begin) (my journey|my transformation|losing weight)/,
+    /what.*recommend.*to start (my|the) journey/,
+    /best products?.+for (absolute )?beginners?/,
+    /starter.+products?/,
+    /i('m| am) new (here|to curvafit)/,
+    /to start my (journey|transformation|weight loss journey)/,
+    /get started (with|on) curvafit/,
+    // ES
+    /productos?.+(para empezar|para comenzar|para iniciar) (mi|el)/,
+    /por dónde empezar/,
+    /qué me recomiendas para empezar/,
+    /soy nueva.+(aquí|cliente)/,
+    /pack.+(principiante|empezar|comenzar)/,
   ];
   return patterns.some(p => p.test(q));
 }
@@ -326,6 +334,15 @@ function searchProducts(query, products) {
       p.colors.forEach(c => { if (c.name.toLowerCase().includes(kw)) score += 2; });
       p.sizes.forEach(s  => { if (String(s).toLowerCase().includes(kw)) score += 1; });
     });
+
+    // Boost badge — correspondance exacte entre ce que demande le client et le badge du produit
+    const badgeLower = (p.badge || '').toLowerCase();
+    if ((q.includes('best seller') || q.includes('meilleure vente') || q.includes('meilleur vente') || q.includes('top vente') || q.includes('más vendido')) && badgeLower.includes('best seller')) score += 15;
+    if ((q.includes('promotion') || q.includes('promo') || q.includes('on sale') || q.includes('en promo') || q.includes('in promotion')) && badgeLower.includes('promotion')) score += 15;
+    if ((q.includes('new arrival') || q.includes('new arriv') || q.includes('nouvel') || q.includes('nouveau') || q.includes('nueva llegada')) && badgeLower.includes('new')) score += 15;
+    if ((q.includes('top sale') || q.includes('top deal') || q.includes('meilleure offre') || q.includes('mejor oferta')) && (badgeLower.includes('top sale') || badgeLower.includes('best deal'))) score += 15;
+    if ((q.includes('out of stock') || q.includes('rupture') || q.includes('agotado')) && badgeLower.includes('out stock')) score += 15;
+
     const themes = [
       { words: ['hula','hoop','belly','ventre','barriga','vientre'],          id: 'resistance-bands', boost: 12 },
       { words: ['waist trainer','gainant','waist cinch','corset','faja'],     id: 'yoga-mat',         boost: 12 },
@@ -458,7 +475,6 @@ function buildSystemPrompt(products, settings, contactInfo, searchData, blogData
   const taxPercent     = Math.round(taxRate * 100);
   const freeShipThresh = shipping.free_shipping_threshold || 120;
 
-  // ── MODIFICATION 1: lire plans_available depuis settings ──
   const plansAvailable = (settings.plans_available || 'Yes').trim().toLowerCase() === 'yes';
 
   const programsText = Object.entries(programs).map(([, val]) => `• ${val.label}: $${val.price}`).join('\n');
@@ -466,7 +482,6 @@ function buildSystemPrompt(products, settings, contactInfo, searchData, blogData
     ? promos.map(p => `• Code **[[${p.code}]]** → **${p.percent}% off** on ${p.items}+ items (Shop only — NOT valid on programs)`).join('\n')
     : '• No active promo codes at this time';
 
-  // ── MODIFICATION 2: inclure le badge dans le catalogue ──
   const catalogText = products.map((p, i) => {
     const colorsList = p.colors.map(c => c.name).join(', ');
     const sizesList  = p.sizes.length ? p.sizes.join(', ') : 'No size needed';
@@ -475,16 +490,15 @@ function buildSystemPrompt(products, settings, contactInfo, searchData, blogData
       p.discounts.duo    ? `2 items: -${p.discounts.duo}%`   : '',
       p.discounts.trio   ? `3 items: -${p.discounts.trio}%`  : '',
     ].filter(Boolean).join(' | ') || 'No discount';
-    const delivery = formatDelivery(p.startDate, p.endDate) || 'Contact us';
-    const rating   = p.rating ? `${p.rating}/5 (${p.reviewsCount || 0} reviews)` : 'N/A';
-    const badgeText = p.badge ? `Badge: ${p.badge}` : '';
+    const delivery  = formatDelivery(p.startDate, p.endDate) || 'Contact us';
+    const rating    = p.rating ? `${p.rating}/5 (${p.reviewsCount || 0} reviews)` : 'N/A';
+    const badgeLine = p.badge ? `\n  Badge: ${p.badge}` : '';
     return `
 PRODUCT ${i + 1}:
   Title: ${p.title}
   Description: ${p.description}
   Price: $${p.price}${p.maxPrice !== p.price ? ` to $${p.maxPrice}` : ''} (was $${p.compare_price})
-  Rating: ${rating}
-  ${badgeText}
+  Rating: ${rating}${badgeLine}
   Colors: ${colorsList || 'N/A'}
   Sizes: ${sizesList}
   Discounts: ${discounts}
@@ -492,13 +506,12 @@ PRODUCT ${i + 1}:
   Page: ${p.url}`;
   }).join('\n');
 
-  // ── MODIFICATION 3: construire la liste des top starter products ──
   const topStarter      = settings.top_starter_products || {};
   const topStarterIds   = topStarter.product_ids || [];
   const topStarterLabel = topStarter.label || 'Best products to start your weight loss journey';
   const topStarterList  = topStarterIds.map(id => {
     const prod = products.find(p => p.id === id);
-    return prod ? `  • ${prod.title} (${prod.url})` : null;
+    return prod ? `  • ${prod.title} → ${prod.url}` : null;
   }).filter(Boolean).join('\n');
 
   const contactChannels = [];
@@ -509,7 +522,6 @@ PRODUCT ${i + 1}:
   const searchContext = buildSearchDataContext(searchData);
   const blogContext   = buildBlogContext(blogData);
 
-  // ── MODIFICATION 1: section programs avec plans_available ──
   const programsSection = plansAvailable
     ? `
 ═══════════════════════════════════════
@@ -521,14 +533,14 @@ ${programsText}
 ═══════════════════════════════════════
 💪 PROGRAMS — COMING SOON
 ═══════════════════════════════════════
-plans_available is currently set to NO.
+plans_available is currently NO.
 When a user asks about programs, plans, prices of programs, or how to sign up:
 DO NOT give any program prices or details.
-Instead, reply warmly in the user's language with this message (adapt naturally):
-- FR: "Nos plans sont en cours de finalisation ! Nous discutons actuellement avec nos partenaires pour vous offrir le meilleur service possible. Les prix de chaque plan seront disponibles très bientôt 🙏 En attendant, tu peux visiter notre page Programme et remplir le formulaire — tu seras parmi les premiers à être informé dès que c'est prêt !"
-- EN: "Our plans are almost ready! We're currently working with our partners to bring you the best experience. Pricing for each plan will be available very soon 🙏 In the meantime, head to our Programs page and fill in the form — you'll be among the first to know when it launches!"
-- ES: "¡Nuestros planes están casi listos! Estamos trabajando con nuestros socios para ofrecerte el mejor servicio. Los precios estarán disponibles muy pronto 🙏 Mientras tanto, visita nuestra página de Programas y completa el formulario — ¡serás de los primeros en enterarte!"
-Always add 🔗[PAGE:/programs.html] at the end when programs are asked.
+Instead reply warmly in the user's language:
+- FR: "Nos plans sont en cours de finalisation ! 🙏 Nous travaillons avec nos partenaires pour vous offrir le meilleur service. Les prix seront disponibles très bientôt — visite notre page Programme et remplis le formulaire, tu seras parmi les premiers informés !"
+- EN: "Our plans are almost ready! 🙏 We're finalizing things with our partners to bring you the best experience. Pricing will be available very soon — head to our Programs page and fill in the form, you'll be first to know!"
+- ES: "¡Nuestros planes están casi listos! 🙏 Estamos trabajando con nuestros socios para ofrecerte lo mejor. Los precios estarán disponibles muy pronto — visita nuestra página de Programas y completa el formulario, ¡serás de los primeros en saberlo!"
+Always add 🔗[PAGE:/programs.html] at the end.
 NEVER mention any program price when plans_available is No.
 `;
 
@@ -627,6 +639,22 @@ Show products ONLY when user explicitly asks to buy or names a specific product 
 NEVER suggest products for: greetings, contact, policies, nutrition, programs, general info.
 Specific → show 1 product only.
 Vague (belly, weight loss, something good) → show up to 4, ask which one they mean.
+
+═══════════════════════════════════════
+🏷️ BADGE RULE — CRITICAL
+═══════════════════════════════════════
+Each product in the catalog has a "Badge" field (ex: Best Seller, In Promotion, New arrival, Top Sale, Best deal, Out stock).
+Badge queries are DIFFERENT from top-starter queries. Never confuse them.
+
+When user asks about a product's badge/status in any language:
+  → "best seller" / "meilleure vente" / "top vente" / "más vendido"  → show product(s) with Badge containing "Best Seller"
+  → "in promotion" / "en promotion" / "en promo" / "on sale"         → show product(s) with Badge containing "Promotion"
+  → "new arrival" / "nouveau" / "nueva llegada"                      → show product(s) with Badge containing "New arrival"
+  → "top sale" / "top deal" / "meilleur deal"                        → show product(s) with Badge containing "Top Sale"
+  → "best deal" / "meilleure offre"                                  → show product(s) with Badge containing "Best deal"
+  → "out of stock" / "rupture de stock" / "agotado"                  → show product(s) with Badge containing "Out stock"
+
+Use the Badge field to answer. Never invent a badge.
 
 ═══════════════════════════════════════
 🤝 CONTACT CHANNELS
@@ -734,18 +762,17 @@ When asked → 2–3 line caring answer + 🔗[PAGE:/disclaimer.html]
 🛍️ PRODUCT CATALOG
 ═══════════════════════════════════════
 NEVER use internal IDs. Use exact product titles and prices.
-Each product has a Badge field — if a client asks about a product's status (ex: is it a best seller? is it new? is it on promotion?), use the Badge field to answer accurately.
+Each product has a Badge field — use it to answer badge-related questions accurately.
 ${catalogText}
 
 ═══════════════════════════════════════
 🏆 TOP STARTER PRODUCTS
 ═══════════════════════════════════════
 Label: "${topStarterLabel}"
-These are the products to show when a client asks which products to start with, what to buy to begin their weight loss journey, or what you recommend for a beginner.
-Show ALL of these products — exactly these, in order:
+These are ONLY for when the client explicitly asks which products to start with, what to buy to begin their journey, "par où commencer", "where do I start", "por dónde empezar", "I'm new here", etc.
+This is NOT a badge query. Do NOT use this for "best seller" or similar questions.
+Show ALL of these product cards — exactly in this order:
 ${topStarterList || '(none configured)'}
-Treat this request exactly like a product request: display all these product cards to the client.
-DO NOT show other products in this case — only the ones listed above.
 
 ═══════════════════════════════════════
 🥗 NUTRITION
@@ -774,7 +801,8 @@ ${blogContext || '(not available)'}
 - Never show promo codes without [[CODE]] format
 - Never apply promo codes to programs — Shop only
 - Never answer policy questions without the relevant 🔗[PAGE:...] button
-- Never give program prices when plans_available is No`;
+- Never give program prices when plans_available is No
+- Never confuse badge queries (best seller, promo…) with top-starter queries (beginners, start journey)`;
 }
 
 /* ── Fallback / Error messages ── */
@@ -859,12 +887,12 @@ exports.handler = async (event, context) => {
 
     const intent = detectIntent(message);
 
-    // ── MODIFICATION 3: détecter top starter request et récupérer ces produits ──
+    // Top starter — vérifié séparément, ne doit pas chevaucher les queries badge
     const topStarterRequest = isTopStarterRequest(message);
+
     let relevantProducts = [], isVague = false;
 
     if (topStarterRequest) {
-      // Afficher les top starter products depuis settings
       const topStarterIds = (settings.top_starter_products || {}).product_ids || [];
       relevantProducts = topStarterIds.map(id => products.find(p => p.id === id)).filter(Boolean);
       isVague = false;
@@ -874,7 +902,7 @@ exports.handler = async (event, context) => {
       isVague            = searchResult.isVague;
     }
 
-    /* ── Contact intent — reliable regex ── */
+    /* ── Contact intent ── */
     const EXPLICIT_CONTACT_PATTERNS = [
       /parler\s+(à\s+)?(un\s+)?(humain|agent|conseiller|quelqu|personne)/i,
       /joindre\s+(votre|l['']|notre)?\s*(équipe|support|service)/i,
@@ -902,11 +930,10 @@ exports.handler = async (event, context) => {
       /su\s+(whatsapp|telegram|email)\b/i,
     ];
 
-    const isContactIntent = intent !== 'product' && EXPLICIT_CONTACT_PATTERNS.some(p => p.test(message));
+    const isContactIntent = !topStarterRequest && intent !== 'product' && EXPLICIT_CONTACT_PATTERNS.some(p => p.test(message));
 
     const systemPrompt = buildSystemPrompt(products, settings, contactInfo, searchData, blogData);
 
-    /* Tell the AI explicitly when contact is detected — so it always adds 👇 */
     const contactInstruction = isContactIntent
       ? '\n[CONTACT REQUEST: User wants to reach the team. You MUST end your reply with 👇 on its own line — no exception.]'
       : '';
@@ -915,9 +942,8 @@ exports.handler = async (event, context) => {
       ? '\n[VAGUE PRODUCT: Show up to 4 products and ask which one they mean.]'
       : '\n[SPECIFIC PRODUCT: Show ONLY the 1 most relevant product.]';
 
-    // ── MODIFICATION 3: instruction spéciale pour top starter ──
     const topStarterInstruction = topStarterRequest
-      ? '\n[TOP STARTER REQUEST: User wants to know the best products to start their journey. Show ALL the top starter products listed in the TOP STARTER PRODUCTS section. Introduce them warmly.]'
+      ? '\n[TOP STARTER REQUEST: User asks which products to start their weight loss journey. Show ALL the top starter products from the TOP STARTER PRODUCTS section. Introduce them warmly. This is NOT a badge/best-seller question.]'
       : '';
 
     const langInstruction = userLang === 'fr'
@@ -980,12 +1006,7 @@ exports.handler = async (event, context) => {
     const data  = await groqResponse.json();
     const reply = data.choices?.[0]?.message?.content || getErrorMessage(userLang);
 
-    /*
-     * ── CONTACT BUTTONS ──
-     * Use isContactIntent (reliable regex) OR presence of 👇 in reply.
-     * This ensures buttons always appear even if AI model varies behavior.
-     */
-    const showContactButtons = intent !== 'product' && (isContactIntent || reply.includes('👇'));
+    const showContactButtons = !topStarterRequest && intent !== 'product' && (isContactIntent || reply.includes('👇'));
     const cleanReply = reply.replace(/👇[\s]*/g, '').trim();
 
     /* ── PAGE BUTTONS ── */
@@ -1004,19 +1025,31 @@ exports.handler = async (event, context) => {
 
     const finalReply = cleanReply.replace(pageMarkerRegex, '').trim();
 
+    // productCards complets — image, prix, compare_price, couleurs, variants, sizes, delivery, rating, discounts, badge
     const productCards = relevantProducts.map(p => ({
-      title: p.title, description: p.description, price: p.price, compare_price: p.compare_price,
-      url: p.url, image: p.image,
-      colors:   p.colors.map(c => ({ name: c.name, hex: c.hex, image: c.image })),
-      variants: p.variants, sizes: p.sizes,
-      delivery: formatDelivery(p.startDate, p.endDate),
-      rating: p.rating, discounts: p.discounts
+      title:         p.title,
+      description:   p.description,
+      price:         p.price,
+      compare_price: p.compare_price,
+      url:           p.url,
+      image:         p.image,
+      badge:         p.badge || '',
+      colors:        p.colors.map(c => ({ name: c.name, hex: c.hex, image: c.image })),
+      variants:      p.variants,
+      sizes:         p.sizes,
+      delivery:      formatDelivery(p.startDate, p.endDate),
+      rating:        p.rating,
+      reviewsCount:  p.reviewsCount,
+      discounts:     p.discounts
     }));
 
     return {
       statusCode: 200, headers,
       body: JSON.stringify({
-        reply: finalReply, products: productCards, intent, isVague,
+        reply:       finalReply,
+        products:    productCards,
+        intent:      topStarterRequest ? 'product' : intent,
+        isVague,
         showContact: showContactButtons,
         contactInfo: showContactButtons ? {
           whatsapp: contactInfo.hasWhatsapp ? contactInfo.whatsappUrl : null,
