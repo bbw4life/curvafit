@@ -1,5 +1,4 @@
 // fetch-eprolo-products.js — VERSION LISTE HARDCODÉE (cj_id)
-// ✅ node-fetch supprimé — fetch natif Node 18+ utilisé à la place
 const crypto = require('crypto');
 
 // ─────────────────────────────────────────────
