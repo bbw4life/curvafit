@@ -22,8 +22,10 @@ exports.handler = async (event) => {
     let hasMore = true;
 
     while (hasMore) {
-      const timestamp = Date.now();
-      const sign = crypto.createHash('md5').update(apiKey + timestamp + apiSecret).digest('hex');
+      const timestamp = Math.floor(Date.now() / 1000);
+      const sign = crypto.createHash('md5')
+        .update(apiKey + apiSecret + timestamp)
+        .digest('hex');
       const url = `https://openapi.eprolo.com/product_list.html?sign=${sign}&timestamp=${timestamp}&page=${page}&limit=${limit}&type=1`;
 
       log(`[EPROLO] Page ${page} → ${url}`);
