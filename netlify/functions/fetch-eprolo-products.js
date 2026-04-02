@@ -24,21 +24,23 @@ const MY_PRODUCT_IDS = [
   "31246437",  // gym-bag
 ];
 
+const SEP  = "═".repeat(80);
+const SEP2 = "─".repeat(80);
+
 exports.handler = async (event) => {
   const logs = [];
+  const log = (msg) => { console.log(msg); logs.push(msg); };
 
-  const log = (msg) => {
-    console.log(msg);
-    logs.push(msg);
-  };
-
-  log("[EPROLO PRODUCTS] 🚀 Récupération des produits depuis la liste hardcodée");
-  log(`📋 ${MY_PRODUCT_IDS.length} produit(s) à récupérer`);
+  log(SEP);
+  log("  EPROLO — RÉCUPÉRATION DES PRODUITS");
+  log(`  Liste : ${MY_PRODUCT_IDS.length} produits`);
+  log(SEP);
 
   try {
     const apiKey    = process.env.EPROLO_API_KEY;
     const apiSecret = process.env.EPROLO_API_SECRET;
 
+    // ── 1. FETCH DE CHAQUE PRODUIT ─────────────────────────────────────────
     const allProducts = [];
 
     for (const productId of MY_PRODUCT_IDS) {
@@ -49,87 +51,84 @@ exports.handler = async (event) => {
           .update(apiKey + timestamp + apiSecret)
           .digest('hex');
 
-        // ✅ Bon endpoint + bon paramètre "id="
         const url = `https://openapi.eprolo.com/getproduct.html?sign=${sign}&timestamp=${timestamp}&id=${productId}`;
-
-        log(`\n[EPROLO] Fetching product ID: ${productId} → ${url}`);
 
         const response     = await fetch(url, { method: "GET", headers: { "apiKey": apiKey } });
         const responseText = await response.text();
 
         let data = {};
         try { data = JSON.parse(responseText); } catch {}
-        log(`[RAW RESPONSE] ${responseText.substring(0, 500)}`);
 
         if ((data.code === 0 || data.code === "0") && data.data) {
           allProducts.push(data.data);
-          log(`✅ Produit ${productId} récupéré : ${data.data.title || '(sans titre)'}`);
+          log(`  ✅  ${productId}  →  OK`);
         } else {
-          log(`⚠️ Produit ${productId} non trouvé ou erreur : ${responseText.substring(0, 200)}`);
+          const errMsg = data.msg || 'réponse invalide';
+          log(`  ⚠️  ${productId}  →  ERREUR : ${errMsg}`);
         }
 
       } catch (err) {
-        log(`❌ Erreur pour le produit ${productId} : ${err.message}`);
+        log(`  ❌  ${productId}  →  EXCEPTION : ${err.message}`);
       }
     }
 
-    log(`\n🎉 TOTAL PRODUITS RÉCUPÉRÉS : ${allProducts.length} / ${MY_PRODUCT_IDS.length}\n`);
+    // ── 2. RÉCAPITULATIF ───────────────────────────────────────────────────
+    log(SEP);
+    log(`  TOTAL RÉCUPÉRÉS : ${allProducts.length} / ${MY_PRODUCT_IDS.length}`);
+    log(SEP);
 
+    // ── 3. DÉTAIL PRODUITS ─────────────────────────────────────────────────
     allProducts.forEach((product, index) => {
-      log("═".repeat(90));
-      log(`🔹 [${index + 1}] ${product.title}`);
-      log(`   Product ID : ${product.id}`);
-      log(`   Variants   : ${product.variantlist ? product.variantlist.length : 0}`);
-      log("─".repeat(90));
+      const varCount = product.variantlist ? product.variantlist.length : 0;
 
-      if (product.variantlist && product.variantlist.length > 0) {
+      log("");
+      log(SEP);
+      log(`  [${String(index + 1).padStart(2, '0')}]  ${product.title}`);
+      log(`        ID : ${product.id}    |    Variants : ${varCount}`);
+      log(SEP2);
 
-        // Debug structure — une seule fois sur le premier produit
-        if (index === 0) {
-          const keys = Object.keys(product.variantlist[0]);
-          log(`   [DEBUG KEYS] ${keys.join(' | ')}`);
-          log("─".repeat(90));
-        }
-
-        // Grouper les variants par couleur (option1)
-        const colorGroups = {};
-
-        product.variantlist.forEach((variant) => {
-          let color = (variant.option1 || variant.color || 'N/A')
-            .replace(/ one$/i, '')
-            .trim();
-          color = color.charAt(0).toUpperCase() + color.slice(1);
-
-          const size    = (variant.option2 || '').trim();
-          const option3 = (variant.option3 || '').trim();
-
-          if (!colorGroups[color]) colorGroups[color] = [];
-          colorGroups[color].push({
-            size,
-            option3,
-            id:     variant.id,
-            sku:    variant.sku                || 'N/A',
-            price:  variant.cost               || 'N/A',
-            weight: variant.weight             || 'N/A',
-            stock:  variant.inventory_quantity || 'N/A'
-          });
-        });
-
-        // Affichage groupé par couleur
-        Object.entries(colorGroups).forEach(([color, variants]) => {
-          log(`   🎨 ${color} (${variants.length} taille(s))`);
-          variants.forEach((v) => {
-            const sizeStr = v.size    ? `SIZE: ${v.size}`        : 'SIZE: —';
-            const opt3Str = v.option3 ? ` | OPT3: ${v.option3}` : '';
-            log(`      → ID: ${v.id} | ${sizeStr}${opt3Str} | SKU: ${v.sku} | PRIX: ${v.price} | POIDS: ${v.weight} | STOCK: ${v.stock}`);
-          });
-          log('');
-        });
+      if (varCount === 0) {
+        log("        Aucun variant.");
+        return;
       }
+
+      // Grouper les variants par couleur (option1)
+      const colorGroups = {};
+
+      product.variantlist.forEach((variant) => {
+        let color = (variant.option1 || 'N/A').replace(/ one$/i, '').trim();
+        color = color.charAt(0).toUpperCase() + color.slice(1);
+
+        const size    = (variant.option2 || '').trim();
+        const option3 = (variant.option3 || '').trim();
+
+        if (!colorGroups[color]) colorGroups[color] = [];
+        colorGroups[color].push({
+          size,
+          option3,
+          id:     variant.id,
+          sku:    variant.sku                || 'N/A',
+          price:  variant.cost               || 'N/A',
+          weight: variant.weight             || 'N/A',
+          stock:  variant.inventory_quantity || 'N/A'
+        });
+      });
+
+      // Affichage groupé par couleur
+      Object.entries(colorGroups).forEach(([color, variants]) => {
+        log(`        🎨  ${color}  (${variants.length} taille(s))`);
+        variants.forEach((v) => {
+          const sizeStr = v.size    ? `SIZE: ${v.size.padEnd(6)}` : `SIZE: ${'—'.padEnd(6)}`;
+          const opt3Str = v.option3 ? `  |  OPT3: ${v.option3}` : '';
+          log(`              ID: ${v.id}  |  ${sizeStr}  |  SKU: ${v.sku}  |  PRIX: $${v.price}  |  POIDS: ${v.weight}g  |  STOCK: ${v.stock}${opt3Str}`);
+        });
+        log("");
+      });
     });
 
-    log("═".repeat(90));
-    log("✅ FIN DU LOG");
+    log(SEP);
+    log("  ✅  FIN DU LOG");
+    log(SEP);
 
     return {
       statusCode: 200,
