@@ -49,7 +49,8 @@ exports.handler = async (event) => {
           .update(apiKey + timestamp + apiSecret)
           .digest('hex');
 
-        const url = `https://openapi.eprolo.com/product_detail.html?sign=${sign}&timestamp=${timestamp}&product_id=${productId}`;
+        // ✅ Bon endpoint + bon paramètre "id="
+        const url = `https://openapi.eprolo.com/getproduct.html?sign=${sign}&timestamp=${timestamp}&id=${productId}`;
 
         log(`\n[EPROLO] Fetching product ID: ${productId} → ${url}`);
 
