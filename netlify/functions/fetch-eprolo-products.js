@@ -1,6 +1,28 @@
-// fetch-eprolo-products.js — VERSION COMPLÈTE (couleur + taille + prix + stock)
+// fetch-eprolo-products.js — VERSION LISTE HARDCODÉE (cj_id)
 const fetch = require('node-fetch');
 const crypto = require('crypto');
+
+// ─────────────────────────────────────────────
+// 📦 TA LISTE DE PRODUITS (cj_id uniquement)
+// ─────────────────────────────────────────────
+const MY_PRODUCT_IDS = [
+  "31246341",  // resistance-bands
+  "31246339",  // yoga-mat
+  "31246387",  // leggings
+  "31246342",  // sports-bra
+  "31246386",  // hydration-bottle
+  "31246330",  // workout-towel
+  "31246232",  // fitness-tracker
+  "31246385",  // protein-shaker
+  "31246336",  // dumbbell-set
+  "31246377",  // jump-rope
+  "31246323",  // foam-roller
+  "31246335",  // yoga-blocks
+  "31246346",  // ankle-weights
+  "31246417",  // cooling-towel
+  "31246429",  // massage-ball
+  "31246437",  // gym-bag
+];
 
 exports.handler = async (event) => {
   const logs = [];
@@ -10,41 +32,47 @@ exports.handler = async (event) => {
     logs.push(msg);
   };
 
-  log("[EPROLO PRODUCTS] 🚀 Récupération de TOUS les produits");
+  log("[EPROLO PRODUCTS] 🚀 Récupération des produits depuis la liste hardcodée");
+  log(`📋 ${MY_PRODUCT_IDS.length} produit(s) à récupérer`);
 
   try {
-    const apiKey = process.env.EPROLO_API_KEY;
+    const apiKey    = process.env.EPROLO_API_KEY;
     const apiSecret = process.env.EPROLO_API_SECRET;
 
-    let allProducts = [];
-    let page = 1;
-    const limit = 100;
-    let hasMore = true;
+    const allProducts = [];
 
-    while (hasMore) {
-      const timestamp = Date.now();
-      const sign = crypto.createHash('md5').update(apiKey + timestamp + apiSecret).digest('hex');
-      const url = `https://openapi.eprolo.com/product_list.html?sign=${sign}&timestamp=${timestamp}&page=${page}&limit=${limit}`;
+    for (const productId of MY_PRODUCT_IDS) {
+      try {
+        const timestamp = Date.now();
+        const sign = crypto
+          .createHash('md5')
+          .update(apiKey + timestamp + apiSecret)
+          .digest('hex');
 
-      log(`[EPROLO] Page ${page} → ${url}`);
+        const url = `https://openapi.eprolo.com/product_detail.html?sign=${sign}&timestamp=${timestamp}&product_id=${productId}`;
 
-      const response = await fetch(url, { method: "GET", headers: { "apiKey": apiKey } });
-      const responseText = await response.text();
-      let data = {};
-      try { data = JSON.parse(responseText); } catch {}
-      log(`[RAW RESPONSE] ${responseText.substring(0, 500)}`);
+        log(`\n[EPROLO] Fetching product ID: ${productId} → ${url}`);
 
-      if ((data.code === 0 || data.code === "0") && data.data && data.data.length > 0) {
-        allProducts = allProducts.concat(data.data);
-        log(`✅ Page ${page} : +${data.data.length} produits (total : ${allProducts.length})`);
-        if (data.data.length < limit) hasMore = false;
-        else page++;
-      } else {
-        hasMore = false;
+        const response     = await fetch(url, { method: "GET", headers: { "apiKey": apiKey } });
+        const responseText = await response.text();
+
+        let data = {};
+        try { data = JSON.parse(responseText); } catch {}
+        log(`[RAW RESPONSE] ${responseText.substring(0, 500)}`);
+
+        if ((data.code === 0 || data.code === "0") && data.data) {
+          allProducts.push(data.data);
+          log(`✅ Produit ${productId} récupéré : ${data.data.title || '(sans titre)'}`);
+        } else {
+          log(`⚠️ Produit ${productId} non trouvé ou erreur : ${responseText.substring(0, 200)}`);
+        }
+
+      } catch (err) {
+        log(`❌ Erreur pour le produit ${productId} : ${err.message}`);
       }
     }
 
-    log(`\n🎉 TOTAL PRODUITS : ${allProducts.length}\n`);
+    log(`\n🎉 TOTAL PRODUITS RÉCUPÉRÉS : ${allProducts.length} / ${MY_PRODUCT_IDS.length}\n`);
 
     allProducts.forEach((product, index) => {
       log("═".repeat(90));
@@ -79,9 +107,9 @@ exports.handler = async (event) => {
             size,
             option3,
             id:     variant.id,
-            sku:    variant.sku               || 'N/A',
-            price:  variant.cost              || 'N/A',
-            weight: variant.weight            || 'N/A',
+            sku:    variant.sku                || 'N/A',
+            price:  variant.cost               || 'N/A',
+            weight: variant.weight             || 'N/A',
             stock:  variant.inventory_quantity || 'N/A'
           });
         });
@@ -90,8 +118,8 @@ exports.handler = async (event) => {
         Object.entries(colorGroups).forEach(([color, variants]) => {
           log(`   🎨 ${color} (${variants.length} taille(s))`);
           variants.forEach((v) => {
-            const sizeStr   = v.size    ? `SIZE: ${v.size}`        : 'SIZE: —';
-            const opt3Str   = v.option3 ? ` | OPT3: ${v.option3}` : '';
+            const sizeStr = v.size    ? `SIZE: ${v.size}`        : 'SIZE: —';
+            const opt3Str = v.option3 ? ` | OPT3: ${v.option3}` : '';
             log(`      → ID: ${v.id} | ${sizeStr}${opt3Str} | SKU: ${v.sku} | PRIX: ${v.price} | POIDS: ${v.weight} | STOCK: ${v.stock}`);
           });
           log('');
@@ -104,11 +132,14 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      },
       body: JSON.stringify({
         success: true,
-        total: allProducts.length,
-        logs: logs
+        total:   allProducts.length,
+        logs:    logs
       })
     };
 
