@@ -1149,6 +1149,32 @@ function applyPromoFreeItems() {
         }
       });
 
+
+      function populateMiniSlider(slider, media) {
+    if (!slider || !media) return;
+    slider.innerHTML = '';
+    media.forEach((src, i) => {
+      const img = document.createElement('img');
+      img.src = upgradeShopifyImageUrl(src);
+      img.className = `mini-media-image ${i === 0 ? 'active' : ''}`;
+      img.loading = 'lazy';
+      slider.appendChild(img);
+    });
+    const prev = document.createElement('div');
+    prev.className = 'mini-media-slider-prev';
+    const next = document.createElement('div');
+    next.className = 'mini-media-slider-next';
+    prev.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); slideMini(slider, 'prev'); });
+    next.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); slideMini(slider, 'next'); });
+    slider.appendChild(prev);
+    slider.appendChild(next);
+
+    // ── Auto-rotation ──
+    if (media.length > 1) {
+      setInterval(() => slideMini(slider, 'next'), 5000);
+    }
+  }
+
       // ====================== PAGE PRODUIT ======================
       const productSection = document.querySelector('.product-section');
       if (productSection) {
@@ -1627,6 +1653,86 @@ function applyPromoFreeItems() {
       window.getProductUrl = getProductUrl;
 
 
+// ══════════════════════════════════════════
+//  STORY CIRCLES — dynamique depuis settings
+// ══════════════════════════════════════════
+(function initStoryCircles() {
+  const section = document.getElementById('story-circles');
+  const track   = document.getElementById('storyCirclesTrack');
+  if (!section || !track) return;
+
+  const settings = products.find(p => p.type === 'settings') || {};
+  const sc       = settings.story_circles || {};
+  const ids      = sc.product_ids || [];
+
+  // Lecture du format multi-animation
+  const animations = sc.animations || { marquee: 'yes' };
+  const animType = Object.keys(animations).find(
+    k => (animations[k] || '').toLowerCase() === 'yes'
+  ) || 'marquee';
+
+  if (!ids.length) { section.style.display = 'none'; return; }
+
+  // Classe animation sur la section
+  section.classList.add('anim--' + animType);
+
+  // Filtre les produits dans l'ordre des ids
+  const realProducts = ids
+    .map(id => products.find(p => p.id === id))
+    .filter(Boolean);
+
+  if (!realProducts.length) { section.style.display = 'none'; return; }
+
+  // Crée un item cercle
+  function makeItem(prod) {
+    const url   = getProductUrl(prod.id);
+    const label = prod.title.split('—')[0].split('-')[0].trim();
+    const img   = upgradeShopifyImageUrl(prod.image, 300);
+    const a = document.createElement('a');
+    a.href      = url;
+    a.className = 'story-circle-item';
+    a.setAttribute('aria-label', prod.title);
+    a.innerHTML = `
+      <div class="story-circle-ring">
+        <img class="story-circle-img"
+             src="${img}"
+             alt="${prod.title}"
+             loading="lazy"
+             onerror="this.src='${prod.image}'">
+      </div>
+      <span class="story-circle-label">${label}</span>`;
+    return a;
+  }
+
+  if (animType === 'marquee') {
+    // Calcule combien de fois répéter pour dépasser largement la largeur de l'écran
+    const screenW = window.innerWidth;
+    const itemW   = 90 + 18; // width + gap
+    const totalW  = realProducts.length * itemW;
+    const repeats = Math.ceil((screenW * 3) / totalW) + 1;
+
+    const group1 = document.createElement('div');
+    const group2 = document.createElement('div');
+    group1.className = 'story-circles-marquee-inner';
+    group2.className = 'story-circles-marquee-inner';
+
+    for (let i = 0; i < repeats; i++) {
+      realProducts.forEach(prod => {
+        group1.appendChild(makeItem(prod));
+        group2.appendChild(makeItem(prod));
+      });
+    }
+
+    track.appendChild(group1);
+    track.appendChild(group2);
+
+  } else {
+    // Animations statiques : items directs dans le track
+    realProducts.forEach(prod => track.appendChild(makeItem(prod)));
+  }
+})();
+
+
     //  STICKY ATC — initialise après le fetch products.data.json
     (function initStickyATC() {
 
@@ -1711,24 +1817,25 @@ function applyPromoFreeItems() {
 
         // ── Tailles ──
         if (hasSizes) {
-            const defaultOpt = document.createElement('option');
-            defaultOpt.value = ""; 
-            defaultOpt.textContent = "Select Size";
-            defaultOpt.selected = true;
-            sizeSelect.appendChild(defaultOpt);
-            product.sizes.forEach(sz => {
-                const opt = document.createElement('option');
-                opt.value = sz;
-                opt.textContent = sz;
-                satcSizeEl.appendChild(opt);
-            });
-            satcSizeEl.addEventListener('change', () => {
-                satcSelectedSize = satcSizeEl.value || null;
-                updateSatcPrice();
-            });
-        } else {
-            satcSizeField.style.display = 'none';
-        }
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = "";
+        defaultOpt.textContent = "Select Size";
+        defaultOpt.selected = true;
+        defaultOpt.disabled = true;
+        satcSizeEl.appendChild(defaultOpt);  // ✅ bonne variable
+        product.sizes.forEach(sz => {
+            const opt = document.createElement('option');
+            opt.value = sz;
+            opt.textContent = sz;
+            satcSizeEl.appendChild(opt);
+        });
+        satcSizeEl.addEventListener('change', () => {
+            satcSelectedSize = satcSizeEl.value || null;
+            updateSatcPrice();
+        });
+    } else {
+        satcSizeField.style.display = 'none';
+    }
 
         // ── Quantité ──
         satcMinus.addEventListener('click', () => {

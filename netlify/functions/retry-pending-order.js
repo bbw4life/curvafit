@@ -98,18 +98,7 @@ exports.handler = async () => {
         });
         const createData = await createRes.json();
 
-        // 🔥 CHECK SHIPPING DISPONIBLE
-        let shippingNotAvailable = false;
-
-       if (!createData.success && createData.error) {
-          const err = createData.error.toLowerCase();
-
-          if (err.includes("shipping") && err.includes("available")) {
-            shippingNotAvailable = true;
-          }
-        }
-
-        if (createData.success || shippingNotAvailable) {
+        if (createData.success) {
           for (const { lineNumber } of group) {
             await sheets.spreadsheets.values.update({
               spreadsheetId,
@@ -117,17 +106,6 @@ exports.handler = async () => {
               valueInputOption: "RAW",
               resource: { values: [["successful"]] }
             });
-          }
-          // 🔥 AJOUT COLONNE S SI SHIPPING NON DISPONIBLE
-          if (shippingNotAvailable) {
-            for (const { lineNumber } of group) {
-              await sheets.spreadsheets.values.update({
-                spreadsheetId,
-                range: `${activeTab}!S${lineNumber}`,
-                valueInputOption: "RAW",
-                resource: { values: [["❌"]] }
-              });
-            }
           }
           successCount++;
           console.log(` ✅ SUCCÈS pour ${paymentId}`);

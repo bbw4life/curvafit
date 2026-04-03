@@ -995,6 +995,16 @@
     "featured_spotlight": {
       "product_id": "resistance-bands"
     },
+    "story_circles": {
+      "animations": {
+        "marquee": "yes",
+        "pulse":   "no",
+        "bounce":  "no",
+        "float":   "no",
+        "glow":    "no"
+      },
+      "product_ids": ["resistance-bands", "yoga-mat", "fitness-tracker", "protein-shaker", "dumbbell-set", "sports-bra", "leggings"]
+    },
     "bundle_deal": {
       "title": "The CurvaFit Starter Bundle",
       "subtitle": "Our 3 most-loved pieces — chosen by 8,000+ curvy women to start their transformation.",
