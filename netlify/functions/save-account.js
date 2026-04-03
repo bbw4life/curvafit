@@ -44,6 +44,13 @@ exports.handler = async (event) => {
       await sheets.spreadsheets.values.append({
         spreadsheetId, range: "Feuille 1!A:Z", valueInputOption: "RAW", insertDataOption: "INSERT_ROWS", resource: { values }
       });
+      // Trigger email de bienvenue (fire-and-forget, ne bloque pas la réponse)
+      fetch(`${process.env.URL}/.netlify/functions/send-email-auto`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trigger: 'welcome', email, firstName, lastName, newsletter }),
+      }).catch(e => console.warn('[Email] welcome trigger failed:', e.message));
+
       return { statusCode: 200, body: JSON.stringify({ success: true }) };
     }
 

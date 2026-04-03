@@ -47,6 +47,13 @@ exports.handler = async (event) => {
       resource:         { values }
     });
 
+    // Trigger email de confirmation programme
+    fetch(`${process.env.URL}/.netlify/functions/send-email-auto`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ trigger: 'plan_request', email, firstName, program }),
+    }).catch(e => console.warn('[Email] plan_request trigger failed:', e.message));
+
     return { statusCode: 200, body: JSON.stringify({ success: true }) };
 
   } catch (error) {
