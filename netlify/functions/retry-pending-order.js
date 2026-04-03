@@ -101,8 +101,10 @@ exports.handler = async () => {
         // 🔥 CHECK SHIPPING DISPONIBLE
         let shippingNotAvailable = false;
 
-        if (!createData.success && createData.error) {
-          if (createData.error.includes("No available shipping method")) {
+       if (!createData.success && createData.error) {
+          const err = createData.error.toLowerCase();
+
+          if (err.includes("shipping") && err.includes("available")) {
             shippingNotAvailable = true;
           }
         }
@@ -118,12 +120,14 @@ exports.handler = async () => {
           }
           // 🔥 AJOUT COLONNE S SI SHIPPING NON DISPONIBLE
           if (shippingNotAvailable) {
-            await sheets.spreadsheets.values.update({
-              spreadsheetId,
-              range: `${activeTab}!S${lineNumber}`,
-              valueInputOption: "RAW",
-              resource: { values: [["❌"]] }
-            });
+            for (const { lineNumber } of group) {
+              await sheets.spreadsheets.values.update({
+                spreadsheetId,
+                range: `${activeTab}!S${lineNumber}`,
+                valueInputOption: "RAW",
+                resource: { values: [["❌"]] }
+              });
+            }
           }
           successCount++;
           console.log(` ✅ SUCCÈS pour ${paymentId}`);
