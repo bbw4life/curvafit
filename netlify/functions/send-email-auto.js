@@ -11,7 +11,7 @@ const { google } = require('googleapis');
 const { Resend }  = require('resend');
 
 // ── CONFIG ──────────────────────────────────────────────────────────────────
-const SITE_URL    = process.env.SITE_URL    || 'https://curvafit.com';
+const SITE_URL    = process.env.SITE_URL    || 'https://curva-fit.netlify.app';
 const LOGO_URL    = 'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/curvafit_logo.png';
 const FROM_EMAIL  = 'CurvaFit <hello@paulcurvafit.com>';
 const GROQ_KEY    = process.env.GROQ_API_KEY;
