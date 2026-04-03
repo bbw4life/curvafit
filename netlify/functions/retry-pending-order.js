@@ -98,13 +98,31 @@ exports.handler = async () => {
         });
         const createData = await createRes.json();
 
-        if (createData.success) {
+        // 🔥 CHECK SHIPPING DISPONIBLE
+        let shippingNotAvailable = false;
+
+        if (!createData.success && createData.error) {
+          if (createData.error.includes("No available shipping method")) {
+            shippingNotAvailable = true;
+          }
+        }
+
+        if (createData.success || shippingNotAvailable) {
           for (const { lineNumber } of group) {
             await sheets.spreadsheets.values.update({
               spreadsheetId,
               range: `${activeTab}!O${lineNumber}`,
               valueInputOption: "RAW",
               resource: { values: [["successful"]] }
+            });
+          }
+          // 🔥 AJOUT COLONNE S SI SHIPPING NON DISPONIBLE
+          if (shippingNotAvailable) {
+            await sheets.spreadsheets.values.update({
+              spreadsheetId,
+              range: `${activeTab}!S${lineNumber}`,
+              valueInputOption: "RAW",
+              resource: { values: [["❌"]] }
             });
           }
           successCount++;

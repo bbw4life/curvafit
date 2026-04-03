@@ -1,16 +1,26 @@
 // netlify/functions/send-email-auto.js
 // ══════════════════════════════════════════════════════════════════════════════
 //  CurvaFit — Automated Email Marketing System
-//  Triggered by: save-account.js, save-review.js, save-pending-order.js
-//  Batch mode:   GET /send-email-auto (scheduled or manual)
+//  All products, promos, prices loaded DYNAMICALLY from products.data.json
 // ══════════════════════════════════════════════════════════════════════════════
 
 const { google } = require('googleapis');
 const { Resend }  = require('resend');
+const path        = require('path');
+const fs          = require('fs');
 
 // ── ENVIRONMENT ───────────────────────────────────────────────────────────────
 const SITE_URL   = process.env.SITE_URL || 'https://curvafit.com';
-const FROM_EMAIL = 'CurvaFit <hello@paulcurvafit.com>';
+const FROM_EMAIL = 'CurvaFit <hello@curvafit.com>';
+
+// ── EMAIL TYPE CONSTANTS ──────────────────────────────────────────────────────
+const T = {
+  WELCOME:       'welcome',
+  NEWSLETTER:    'newsletter',
+  REVIEW_THANKS: 'review_thanks',
+  CART_ABANDON:  'abandoned_cart',
+  PLAN_REQUEST:  'plan_request',
+};
 
 // ── GROQ MODELS ───────────────────────────────────────────────────────────────
 const EMAIL_MODELS = [
@@ -28,57 +38,67 @@ const EMAIL_MODELS = [
 let modelIdx = 0;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-// ── EMAIL TYPE CONSTANTS ──────────────────────────────────────────────────────
-const T = {
-  WELCOME:       'welcome',
-  NEWSLETTER:    'newsletter',
-  REVIEW_THANKS: 'review_thanks',
-  CART_ABANDON:  'abandoned_cart',
-  PLAN_REQUEST:  'plan_request',
-};
+// ════════════════════════════════════════════════════════════════════════════
+//  LOAD products.data.json DYNAMICALLY
+// ════════════════════════════════════════════════════════════════════════════
+async function loadProductsData() {
+  const localPaths = [
+    path.join(process.cwd(), 'products.data.json'),
+    path.join(process.cwd(), 'public', 'products.data.json'),
+    path.join(process.cwd(), 'dist', 'products.data.json'),
+    path.join(__dirname, '..', '..', 'products.data.json'),
+    path.join(__dirname, '..', '..', 'public', 'products.data.json'),
+  ];
+  for (const p of localPaths) {
+    try {
+      if (fs.existsSync(p)) {
+        console.log(`[Products] Loaded from disk: ${p}`);
+        return JSON.parse(fs.readFileSync(p, 'utf8'));
+      }
+    } catch (e) { /* continue */ }
+  }
+  // Fallback: fetch from live site
+  const res = await fetch(`${SITE_URL}/products.data.json`);
+  if (!res.ok) throw new Error(`Cannot load products.data.json: HTTP ${res.status}`);
+  console.log('[Products] Loaded from live site');
+  return res.json();
+}
 
-// ── FEATURED PRODUCTS ─────────────────────────────────────────────────────────
-const PRODUCTS = [
-  {
-    title:    'Smart Hula Hoop — Waist Burner',
-    price:    '$63.46',
-    oldPrice: '$148.99',
-    badge:    'Best Seller',
-    url:      `${SITE_URL}/products/product1.html`,
-    image:    'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_produit_first.webp?v=1774271069',
-  },
-  {
-    title:    'Plus Size Waist Trainer — S to 6XL',
-    price:    '$34.99',
-    oldPrice: '$54.99',
-    badge:    'In Promotion',
-    url:      `${SITE_URL}/products/product2.html`,
-    image:    'https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style_3.webp?v=1771457384',
-  },
-  {
-    title:    'Shock-Absorbing Sports Bra — S to 5XL',
-    price:    '$24.99',
-    oldPrice: '$44.99',
-    badge:    'Top Rated',
-    url:      `${SITE_URL}/products/product7.html`,
-    image:    'https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style.webp?v=1771457385',
-  },
-  {
-    title:    'High Waist Yoga Pants — Peach Lift',
-    price:    '$16.99',
-    oldPrice: '$28.99',
-    badge:    'Top Sale',
-    url:      `${SITE_URL}/products/product4.html`,
-    image:    'https://cdn.shopify.com/s/files/1/0643/8263/2041/files/band_1.webp?v=1771462321',
-  },
-];
+// ── Parse products & settings from raw JSON ───────────────────────────────────
+function parseProductsData(rawData) {
+  const settings = rawData.find(p => p.type === 'settings') || {};
+  const activeProducts = rawData.filter(p => p.type !== 'settings' && p.id && p.active !== false);
 
-const PROMOS = [
-  { code: 'CURVA15',    label: '20% off — 4 items or more' },
-  { code: 'FITNESS25',  label: '25% off — 5 items or more' },
-  { code: 'PAUL81',     label: '40% off — 10 items or more' },
-  { code: 'BUNDLEFREE', label: '30% off — 6 items or more' },
-];
+  // Build featured products list (top 4 active)
+  const featured = activeProducts.slice(0, 4).map((p, index) => {
+    const minPrice = p.variants && p.variants.length
+      ? Math.min(...p.variants.map(v => v.price).filter(Boolean))
+      : p.price;
+    return {
+      id:       p.id,
+      title:    p.title,
+      price:    `$${Number(minPrice).toFixed(2)}`,
+      oldPrice: `$${Number(p.compare_price).toFixed(2)}`,
+      badge:    p.badge ? (typeof p.badge === 'object' ? p.badge.text : p.badge) : 'Top Pick',
+      url:      `${SITE_URL}/products/product${index + 1}.html`,
+      image:    p.image,
+    };
+  });
+
+  // Promos — 100% from products.data.json settings.promos, no hardcoded fallback
+  const rawPromos = settings.promos || [];
+  if (rawPromos.length === 0) {
+    console.warn('[Products] No promos found in settings.promos — promo blocks will be skipped');
+  }
+  const promos = rawPromos.map(p => ({
+    code:  p.code,
+    label: `${p.percent}% off — ${p.items} items or more`,
+  }));
+
+  const freeShipThreshold = (settings.cart_drawer || {}).free_shipping_threshold || 120;
+
+  return { products: activeProducts, featured, promos, settings, freeShipThreshold };
+}
 
 // ════════════════════════════════════════════════════════════════════════════
 //  GROQ — AI COPY GENERATION
@@ -105,7 +125,6 @@ async function callGroq(userPrompt) {
   for (let attempt = 0; attempt < EMAIL_MODELS.length; attempt++) {
     const idx   = (modelIdx + attempt) % EMAIL_MODELS.length;
     const model = EMAIL_MODELS[idx];
-
     for (let retry = 1; retry <= 2; retry++) {
       try {
         const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -125,18 +144,15 @@ async function callGroq(userPrompt) {
             top_p:       0.92,
           }),
         });
-
         if (res.status === 429) {
           if (retry < 2) { await sleep(1800); continue; }
           modelIdx = (idx + 1) % EMAIL_MODELS.length;
           break;
         }
         if (!res.ok) { console.warn(`[Groq] HTTP ${res.status} on ${model}`); break; }
-
         const data    = await res.json();
         const content = data.choices?.[0]?.message?.content?.trim() || '';
         if (content.length < 30) break;
-
         modelIdx = idx;
         return content;
       } catch (e) {
@@ -146,10 +162,9 @@ async function callGroq(userPrompt) {
       }
     }
   }
-  return null; // will use fallback copy
+  return null;
 }
 
-// ── Copy generators ───────────────────────────────────────────────────────────
 async function generateWelcomeCopy(firstName) {
   return await callGroq(
     `EMAIL TYPE: Welcome — new CurvaFit customer just created their account.
@@ -162,52 +177,39 @@ Plain text only, no greeting, no sign-off.`
 }
 
 async function generateNewsletterCopy(firstName) {
-  const name = firstName || 'Beautiful';
   return await callGroq(
-    `EMAIL TYPE: Newsletter subscription confirmation.
-RECIPIENT: ${name}
-Write 1 paragraph (2-3 sentences):
-- Confirm subscription warmly
-- Mention: exclusive deals, wellness tips, new arrivals, real success stories
-- End with genuine excitement
+    `EMAIL TYPE: Newsletter subscription confirmation. RECIPIENT: ${firstName || 'Beautiful'}
+Write 1 paragraph (2-3 sentences): confirm warmly, mention exclusive deals/tips/new arrivals/stories. End with excitement.
 Plain text only, no greeting, no sign-off.`
   ) || `You're officially on the inside now — and that means something real. Every week you'll get exclusive deals before anyone else, practical wellness tips built for curvy women, and honest stories from women in our community who show up for themselves every day. Good things are heading your way.`;
 }
 
 async function generateReviewThanksCopy(firstName) {
-  const name = firstName || 'Beautiful';
   return await callGroq(
-    `EMAIL TYPE: Thank-you after a customer submitted a product review.
-RECIPIENT: ${name}
+    `EMAIL TYPE: Thank-you after a customer submitted a product review. RECIPIENT: ${firstName || 'Beautiful'}
 Write 2 short paragraphs (blank line between):
-- Para 1 (2 sentences): Thank her sincerely. Explain her review helps the next woman decide.
-- Para 2 (1-2 sentences): Mention an exclusive offer is waiting below. Warm, not salesy.
+- Para 1 (2 sentences): Thank sincerely. Explain her review helps the next woman decide.
+- Para 2 (1-2 sentences): Mention exclusive offer waiting below. Warm, not salesy.
 Plain text only, no greeting, no sign-off, no specific codes.`
   ) || `Your review matters more than you might realize — every honest word you wrote will help another woman decide whether CurvaFit is the right fit for her. Thank you for taking the time to share your real experience with our community.\n\nAs a small thank-you, we've put together something exclusive just for you — because women who give deserve to receive too.`;
 }
 
 async function generateCartCopy(firstName, cartQty) {
-  const name = firstName || 'Beautiful';
   return await callGroq(
-    `EMAIL TYPE: Abandoned cart recovery.
-RECIPIENT: ${name}
-ITEMS IN CART: ${cartQty}
+    `EMAIL TYPE: Abandoned cart recovery. RECIPIENT: ${firstName || 'Beautiful'} ITEMS: ${cartQty}
 Write 2 short paragraphs (blank line between):
-- Para 1 (2 sentences): Remind her warmly she left ${cartQty} item${cartQty > 1 ? 's' : ''} behind. Caring friend tone, NOT desperate.
-- Para 2 (1-2 sentences): Light urgency — stock moves fast, cart won't last forever. Mention a special offer below.
+- Para 1: Remind warmly she left ${cartQty} item${cartQty > 1 ? 's' : ''} behind. Caring friend tone.
+- Para 2: Light urgency — stock moves fast, special offer below.
 Plain text only, no greeting, no sign-off.`
   ) || `You left ${cartQty} item${cartQty > 1 ? 's' : ''} behind — and we completely understand, life gets busy sometimes. But we didn't want you to miss out on something you clearly already loved enough to add to your cart.\n\nStock on some of these moves fast, and your saved cart won't last forever. We've added something special below to make it easier to finish what you started.`;
 }
 
 async function generatePlanCopy(firstName, program) {
-  const name = firstName || 'Beautiful';
   return await callGroq(
-    `EMAIL TYPE: Confirmation of fitness program request.
-RECIPIENT: ${name}
-PROGRAM REQUESTED: ${program}
+    `EMAIL TYPE: Confirmation of fitness program request. RECIPIENT: ${firstName || 'Beautiful'} PROGRAM: ${program}
 Write 2 short paragraphs (blank line between):
-- Para 1 (2 sentences): Confirm you received her request for the ${program} program. Make her feel like she made a great decision.
-- Para 2 (2 sentences): Let her know the team will review it and be in touch soon. End with an encouraging line.
+- Para 1: Confirm request received for ${program}. Make her feel great about her decision.
+- Para 2: Team will review and be in touch soon. End with encouragement.
 Plain text only, no greeting, no sign-off.`
   ) || `We've received your request for the ${program} program and we're genuinely excited for you. This is exactly the kind of step that changes things — and we don't take that lightly.\n\nOur team will review your request and reach out to you very soon with everything you need to get started. You've got this.`;
 }
@@ -237,30 +239,34 @@ const GRAD = {
   teal:   'background:linear-gradient(145deg,#042f2e 0%,#0f766e 40%,#14b8a6 70%,#6366f1 100%)',
 };
 
-function cProductCard(p, code) {
-  const disc = Math.round((1 - parseFloat(p.price.replace('$','')) / parseFloat(p.oldPrice.replace('$',''))) * 100);
+// ── Product card — simple, clean: image + title + badge + price + CTA ─────────
+function cProductCard(product, promoCode) {
+  const priceNum    = parseFloat((product.price || '$0').replace('$', ''));
+  const oldPriceNum = parseFloat((product.oldPrice || '$0').replace('$', ''));
+  const disc        = oldPriceNum > 0 ? Math.round((1 - priceNum / oldPriceNum) * 100) : 0;
+
   return `
 <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
   style="margin-bottom:12px;border-radius:16px;overflow:hidden;background:#fff;border:1px solid #ede9fe;box-shadow:0 2px 12px rgba(109,40,217,0.07);">
   <tr>
     <td width="110" style="padding:0;vertical-align:top;">
-      <a href="${p.url}" target="_blank">
-        <img src="${p.image}" width="110" height="110"
+      <a href="${product.url}" target="_blank">
+        <img src="${product.image}" width="110" height="110"
              style="display:block;width:110px;height:110px;object-fit:cover;border-radius:16px 0 0 16px;"
-             alt="${p.title}">
+             alt="${product.title}">
       </a>
     </td>
-    <td style="padding:14px 16px;vertical-align:middle;">
-      <span style="display:inline-block;padding:2px 10px;border-radius:20px;background:linear-gradient(90deg,#7c3aed,#db2777);font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;color:#fff;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">${p.badge}</span>
-      <p style="margin:0 0 5px;font-family:'Cinzel',Georgia,serif;font-size:13px;font-weight:700;color:#1e1b4b;line-height:1.3;">${p.title}</p>
-      <p style="margin:0 0 10px;">
-        <span style="font-family:'DM Sans',Arial,sans-serif;font-size:16px;font-weight:800;color:#7c3aed;">${p.price}</span>
-        <span style="font-family:'DM Sans',Arial,sans-serif;font-size:12px;color:#9ca3af;text-decoration:line-through;margin-left:6px;">${p.oldPrice}</span>
-        <span style="font-family:'DM Sans',Arial,sans-serif;font-size:11px;font-weight:700;color:#db2777;margin-left:6px;">&#8722;${disc}%</span>
+    <td style="padding:16px 18px;vertical-align:middle;">
+      <span style="display:inline-block;padding:2px 10px;border-radius:20px;background:linear-gradient(90deg,#7c3aed,#db2777);font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;color:#fff;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">${product.badge}</span>
+      <p style="margin:0 0 8px;font-family:'Cinzel',Georgia,serif;font-size:13px;font-weight:700;color:#1e1b4b;line-height:1.3;">${product.title}</p>
+      <p style="margin:0 0 12px;">
+        <span style="font-family:'DM Sans',Arial,sans-serif;font-size:17px;font-weight:800;color:#7c3aed;">${product.price}</span>
+        <span style="font-family:'DM Sans',Arial,sans-serif;font-size:12px;color:#9ca3af;text-decoration:line-through;margin-left:8px;">${product.oldPrice}</span>
+        ${disc > 0 ? `<span style="font-family:'DM Sans',Arial,sans-serif;font-size:11px;font-weight:700;color:#db2777;margin-left:6px;">&#8722;${disc}%</span>` : ''}
       </p>
-      ${code ? `<p style="margin:0 0 10px;display:inline-block;padding:4px 10px;border-radius:8px;background:#fdf4ff;border:1.5px dashed #a855f7;font-family:'DM Sans',Arial,sans-serif;font-size:11px;color:#6b21a8;">Code: <strong>${code}</strong></p>` : ''}
-      <a href="${p.url}" target="_blank"
-         style="display:inline-block;padding:8px 20px;border-radius:20px;background:linear-gradient(135deg,#7c3aed,#db2777);font-family:'DM Sans',Arial,sans-serif;font-size:12px;font-weight:700;color:#fff;text-decoration:none;">
+      ${promoCode ? `<p style="margin:0 0 12px;display:inline-block;padding:4px 10px;border-radius:8px;background:#fdf4ff;border:1.5px dashed #a855f7;font-family:'DM Sans',Arial,sans-serif;font-size:11px;color:#6b21a8;">Code: <strong>${promoCode}</strong></p>` : ''}
+      <a href="${product.url}" target="_blank"
+         style="display:inline-block;padding:9px 22px;border-radius:20px;background:linear-gradient(135deg,#7c3aed,#db2777);font-family:'DM Sans',Arial,sans-serif;font-size:12px;font-weight:700;color:#fff;text-decoration:none;">
         Shop Now &rarr;
       </a>
     </td>
@@ -341,7 +347,6 @@ ${preheader}&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nb
   <tr><td align="center">
     <table class="ew" width="600" cellpadding="0" cellspacing="0" role="presentation"
            style="max-width:600px;width:100%;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(109,40,217,0.15);">
-      <!-- HEADER -->
       <tr>
         <td style="${gradStyle};">
           <div style="height:3px;background:linear-gradient(90deg,#f9a8d4,#c084fc,#818cf8,#f9a8d4,#c084fc);"></div>
@@ -365,27 +370,24 @@ ${preheader}&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nb
           </table>
         </td>
       </tr>
-      <!-- BODY -->
       <tr>
         <td class="ep" style="background:#fff;padding:40px 44px;">
           ${bodyHTML}
         </td>
       </tr>
-      <!-- SOCIAL -->
       <tr>
         <td style="background:#faf5ff;padding:24px 44px;text-align:center;border-top:1px solid #ede9fe;">
           <p style="margin:0 0 14px;font-family:'DM Sans',Arial,sans-serif;font-size:11px;color:#9ca3af;letter-spacing:0.08em;text-transform:uppercase;">Follow our community</p>
           <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto;">
             <tr>
-              <td style="padding:0 5px;"><a href="https://instagram.com/curvafit" target="_blank" style="display:inline-block;width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);text-align:center;line-height:38px;font-size:18px;text-decoration:none;">&#x1F4F7;</a></td>
-              <td style="padding:0 5px;"><a href="https://facebook.com/curvafit" target="_blank" style="display:inline-block;width:38px;height:38px;border-radius:10px;background:#1877f2;text-align:center;line-height:38px;font-size:18px;text-decoration:none;">&#x1F44D;</a></td>
-              <td style="padding:0 5px;"><a href="https://tiktok.com/@curvafit" target="_blank" style="display:inline-block;width:38px;height:38px;border-radius:10px;background:#010101;text-align:center;line-height:38px;font-size:18px;text-decoration:none;">&#x1F3B5;</a></td>
-              <td style="padding:0 5px;"><a href="https://wa.me/18292677434" target="_blank" style="display:inline-block;width:38px;height:38px;border-radius:10px;background:#25d366;text-align:center;line-height:38px;font-size:18px;text-decoration:none;">&#x1F4AC;</a></td>
+              <td style="padding:0 5px;"><a href="${(settings && settings.social_links && settings.social_links.instagram) || 'https://instagram.com/curvafit'}" target="_blank" style="display:inline-block;width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);text-align:center;line-height:38px;font-size:18px;text-decoration:none;">&#x1F4F7;</a></td>
+              <td style="padding:0 5px;"><a href="${(settings && settings.social_links && settings.social_links.facebook) || 'https://facebook.com/curvafit'}" target="_blank" style="display:inline-block;width:38px;height:38px;border-radius:10px;background:#1877f2;text-align:center;line-height:38px;font-size:18px;text-decoration:none;">&#x1F44D;</a></td>
+              <td style="padding:0 5px;"><a href="${(settings && settings.social_links && settings.social_links.tiktok) || 'https://tiktok.com/@curvafit'}" target="_blank" style="display:inline-block;width:38px;height:38px;border-radius:10px;background:#010101;text-align:center;line-height:38px;font-size:18px;text-decoration:none;">&#x1F3B5;</a></td>
+              <td style="padding:0 5px;"><a href="${(settings && settings.contact && settings.contact.whatsapp_url) || 'https://wa.me/18292677434'}" target="_blank" style="display:inline-block;width:38px;height:38px;border-radius:10px;background:#25d366;text-align:center;line-height:38px;font-size:18px;text-decoration:none;">&#x1F4AC;</a></td>
             </tr>
           </table>
         </td>
       </tr>
-      <!-- FOOTER -->
       <tr>
         <td style="background:#1e1b4b;padding:24px 44px;text-align:center;">
           <p style="margin:0 0 10px;font-family:'Cinzel',Georgia,serif;font-size:12px;color:rgba(255,255,255,0.45);letter-spacing:0.12em;">CURVAFIT</p>
@@ -409,13 +411,21 @@ ${preheader}&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nb
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-//  EMAIL COMPOSERS
+//  EMAIL COMPOSERS — all receive catalog = { featured, promos, settings }
 // ════════════════════════════════════════════════════════════════════════════
 
-async function composeWelcome(firstName) {
+async function composeWelcome(firstName, catalog) {
+  const { featured, promos, settings } = catalog;
   const name  = firstName || 'Beautiful';
   const copy  = await generateWelcomeCopy(name);
-  const promo = PROMOS[0];
+  const promo = promos[0];
+
+  const programs  = settings.programs || {};
+  const progNames = Object.values(programs).map(p => p.label || '').filter(Boolean);
+  const progLine  = progNames.length
+    ? `Coaching programs: ${progNames.join(' · ')}`
+    : 'Coaching programs from beginner to advanced';
+  const supportEmail = (settings.contact_emails || {}).general || 'support@curvafit.com';
 
   const bodyHTML = `
     <p style="margin:0 0 6px;font-family:'DM Sans',Arial,sans-serif;font-size:13px;font-weight:700;color:#a855f7;letter-spacing:0.06em;text-transform:uppercase;">Hey ${name} &#x1F44B;</p>
@@ -424,8 +434,8 @@ async function composeWelcome(firstName) {
     ${cPromoBlock(promo.code, promo.label, '&#x1F381; Your welcome gift — use it on your first order')}
     <p style="margin:0 0 16px;font-family:'Cinzel',Georgia,serif;font-size:15px;font-weight:700;color:#1e1b4b;">What's waiting for you:</p>
     ${cCheckList([
-      '16 premium fitness products designed for curvy women',
-      'Coaching programs from beginner to advanced',
+      `${featured.length}+ premium fitness products designed for curvy women`,
+      progLine,
       'A community of real women on their transformation journey',
       'Expert nutrition guidance built around your body',
     ])}
@@ -433,7 +443,7 @@ async function composeWelcome(firstName) {
     ${cDivider()}
     <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;color:#9ca3af;text-align:center;line-height:1.6;">
       Questions? We're always here.<br>
-      <a href="mailto:support@paulcurvafit.com" style="color:#7c3aed;text-decoration:none;font-weight:700;">support@paulcurvafit.com</a>
+      <a href="mailto:${supportEmail}" style="color:#7c3aed;text-decoration:none;font-weight:700;">${supportEmail}</a>
     </p>`;
 
   return {
@@ -450,7 +460,8 @@ async function composeWelcome(firstName) {
   };
 }
 
-async function composeNewsletter(firstName) {
+async function composeNewsletter(firstName, catalog) {
+  const { settings } = catalog;
   const name = firstName || 'Beautiful';
   const copy = await generateNewsletterCopy(name);
 
@@ -509,10 +520,12 @@ async function composeNewsletter(firstName) {
   };
 }
 
-async function composeReviewThanks(firstName) {
+async function composeReviewThanks(firstName, catalog) {
+  const { featured, promos } = catalog;
   const name  = firstName || 'Beautiful';
   const copy  = await generateReviewThanksCopy(name);
-  const promo = PROMOS[Math.floor(Math.random() * PROMOS.length)];
+  const promo = promos[Math.floor(Math.random() * promos.length)];
+  const productsToShow = featured.slice(0, 3);
 
   const bodyHTML = `
     <p style="margin:0 0 6px;font-family:'DM Sans',Arial,sans-serif;font-size:13px;font-weight:700;color:#a855f7;letter-spacing:0.06em;text-transform:uppercase;">Thank you, ${name} &#x1F31F;</p>
@@ -520,7 +533,7 @@ async function composeReviewThanks(firstName) {
     ${cDivider()}
     ${cPromoBlock(promo.code, promo.label, '&#x2728; Your exclusive thank-you offer')}
     <p style="margin:0 0 16px;font-family:'Cinzel',Georgia,serif;font-size:15px;font-weight:700;color:#1e1b4b;">Handpicked for you:</p>
-    ${PRODUCTS.slice(0,3).map(p => cProductCard(p, promo.code)).join('')}
+    ${productsToShow.map(p => cProductCard(p, promo.code)).join('')}
     ${cCTA(`Shop with ${promo.code} &rarr;`, `${SITE_URL}/shop.html`)}
     ${cDivider()}
     <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;color:#9ca3af;text-align:center;">
@@ -541,10 +554,12 @@ async function composeReviewThanks(firstName) {
   };
 }
 
-async function composeAbandonedCart(firstName, cartQty) {
+async function composeAbandonedCart(firstName, cartQty, catalog) {
+  const { featured, promos } = catalog;
   const name  = firstName || 'Beautiful';
   const copy  = await generateCartCopy(name, cartQty);
-  const promo = PROMOS[1];
+  const promo = promos[1] || promos[0];
+  const productsToShow = featured.slice(0, 2);
 
   const bodyHTML = `
     <p style="margin:0 0 6px;font-family:'DM Sans',Arial,sans-serif;font-size:13px;font-weight:700;color:#a855f7;letter-spacing:0.06em;text-transform:uppercase;">Hey ${name} &#x1F6D2;</p>
@@ -564,8 +579,7 @@ async function composeAbandonedCart(firstName, cartQty) {
     </table>
     ${cPromoBlock(promo.code, promo.label, '&#x26A1; Complete your order with this offer')}
     <p style="margin:0 0 16px;font-family:'Cinzel',Georgia,serif;font-size:15px;font-weight:700;color:#1e1b4b;">You might also love:</p>
-    ${cProductCard(PRODUCTS[0], promo.code)}
-    ${cProductCard(PRODUCTS[1], promo.code)}
+    ${productsToShow.map(p => cProductCard(p, promo.code)).join('')}
     ${cCTA('Complete My Order &rarr;', `${SITE_URL}/checkout.html`)}`;
 
   return {
@@ -582,10 +596,19 @@ async function composeAbandonedCart(firstName, cartQty) {
   };
 }
 
-async function composePlanRequest(firstName, program) {
-  const name = firstName || 'Beautiful';
-  const copy = await generatePlanCopy(name, program || 'fitness');
-  const promo = PROMOS[0];
+async function composePlanRequest(firstName, program, catalog) {
+  const { featured, promos, settings } = catalog;
+  const name  = firstName || 'Beautiful';
+  const copy  = await generatePlanCopy(name, program || 'fitness');
+  const promo = promos[0];
+  const productsToShow = featured.slice(0, 2);
+
+  // Try to get program price from settings
+  const programs  = settings.programs || {};
+  const progKey   = Object.keys(programs).find(k =>
+    (programs[k].label || '').toLowerCase().includes((program || '').toLowerCase().split(' ')[0])
+  );
+  const progPrice = progKey ? ` — $${programs[progKey].price}` : '';
 
   const bodyHTML = `
     <p style="margin:0 0 6px;font-family:'DM Sans',Arial,sans-serif;font-size:13px;font-weight:700;color:#a855f7;letter-spacing:0.06em;text-transform:uppercase;">Request received &#x2705;</p>
@@ -596,14 +619,14 @@ async function composePlanRequest(firstName, program) {
       <tr>
         <td style="padding:28px;text-align:center;">
           <p style="margin:0 0 6px;font-size:36px;">&#x1F3CB;&#xFE0F;</p>
-          <p style="margin:0 0 4px;font-family:'Cinzel',Georgia,serif;font-size:16px;font-weight:700;color:#14532d;">Program: ${program || 'Fitness Plan'}</p>
+          <p style="margin:0 0 4px;font-family:'Cinzel',Georgia,serif;font-size:16px;font-weight:700;color:#14532d;">${program || 'Fitness Plan'}${progPrice}</p>
           <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;color:#15803d;">Our team will be in touch within 24 hours.</p>
         </td>
       </tr>
     </table>
     ${cPromoBlock(promo.code, promo.label, '&#x1F381; A gift while you wait')}
     <p style="margin:0 0 16px;font-family:'Cinzel',Georgia,serif;font-size:15px;font-weight:700;color:#1e1b4b;">Get started with these:</p>
-    ${PRODUCTS.slice(0,2).map(p => cProductCard(p, promo.code)).join('')}
+    ${productsToShow.map(p => cProductCard(p, promo.code)).join('')}
     ${cCTA('Explore the Shop &rarr;', `${SITE_URL}/shop.html`)}`;
 
   return {
@@ -629,11 +652,9 @@ function getSheets() {
     client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
     private_key:  (process.env.GOOGLE_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
   };
-
   if (!credentials.client_email || !credentials.private_key) {
-    throw new Error('Missing Google credentials — check GOOGLE_SERVICE_ACCOUNT_EMAIL and GOOGLE_PRIVATE_KEY env vars');
+    throw new Error('Missing Google credentials: GOOGLE_SERVICE_ACCOUNT_EMAIL / GOOGLE_PRIVATE_KEY');
   }
-
   const auth = new google.auth.GoogleAuth({
     credentials,
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
@@ -642,7 +663,7 @@ function getSheets() {
 }
 
 async function readRange(sheets, spreadsheetId, range) {
-  if (!spreadsheetId) { console.warn(`[Sheets] Missing spreadsheet ID for range: ${range}`); return []; }
+  if (!spreadsheetId) { console.warn(`[Sheets] Missing spreadsheet ID for: ${range}`); return []; }
   try {
     const res = await sheets.spreadsheets.values.get({ spreadsheetId, range });
     return res.data.values || [];
@@ -666,13 +687,10 @@ async function appendRow(sheets, spreadsheetId, range, values) {
   }
 }
 
-// ── Sent-log helpers ──────────────────────────────────────────────────────────
-// Stored in EmailLog sheet of GOOGLE_SHEET_ID_ACCOUNTS
-const LOG_SHEET_ID = () => process.env.GOOGLE_SHEET_ID_ACCOUNTS;
-const LOG_RANGE    = 'EmailLog!A:C';
+const LOG_RANGE = 'EmailLog!A:C';
 
 async function loadSentLog(sheets) {
-  const rows = await readRange(sheets, LOG_SHEET_ID(), LOG_RANGE);
+  const rows = await readRange(sheets, process.env.GOOGLE_SHEET_ID_ACCOUNTS, LOG_RANGE);
   const set  = new Set();
   rows.forEach(r => { if (r[0] && r[1]) set.add(`${r[0].toLowerCase()}||${r[1]}`); });
   console.log(`[EmailLog] Loaded ${set.size} sent records`);
@@ -680,7 +698,7 @@ async function loadSentLog(sheets) {
 }
 
 async function markSent(sheets, email, type) {
-  await appendRow(sheets, LOG_SHEET_ID(), LOG_RANGE,
+  await appendRow(sheets, process.env.GOOGLE_SHEET_ID_ACCOUNTS, LOG_RANGE,
     [email.toLowerCase(), type, new Date().toISOString().slice(0, 10)]
   );
 }
@@ -689,20 +707,16 @@ function wasSent(log, email, type) {
   return log.has(`${email.toLowerCase()}||${type}`);
 }
 
-// ── Resend delivery ───────────────────────────────────────────────────────────
 async function deliver(to, subject, html) {
   if (!process.env.RESEND_API_KEY) {
-    console.error('[Resend] Missing RESEND_API_KEY');
+    console.error('[Resend] Missing RESEND_API_KEY env var');
     return false;
   }
   const resend = new Resend(process.env.RESEND_API_KEY);
   try {
     const { data, error } = await resend.emails.send({ from: FROM_EMAIL, to: [to], subject, html });
-    if (error) {
-      console.error(`[Resend] ✗ ${to}:`, JSON.stringify(error));
-      return false;
-    }
-    console.log(`[Resend] ✓ Sent to ${to} | ID: ${data?.id} | ${subject.slice(0, 50)}`);
+    if (error) { console.error(`[Resend] ✗ ${to}:`, JSON.stringify(error)); return false; }
+    console.log(`[Resend] ✓ Sent to ${to} | ID: ${data?.id}`);
     return true;
   } catch (e) {
     console.error(`[Resend] ✗ ${to}:`, e.message);
@@ -724,34 +738,35 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
 
   const results = { sent: [], skipped: [], errors: [] };
-
-  // ── Parse body ──────────────────────────────────────────────────────────
   let trigger = null, triggerData = {};
+
   if (event.body) {
-    try {
-      const b  = JSON.parse(event.body);
-      trigger  = b.trigger || null;
-      triggerData = b;
-    } catch (_) {}
+    try { const b = JSON.parse(event.body); trigger = b.trigger || null; triggerData = b; }
+    catch (_) {}
   }
 
   try {
+    // ── Load products.data.json dynamically — ONCE per invocation ────────
+    console.log('[Handler] Loading products.data.json dynamically...');
+    const rawData = await loadProductsData();
+    const catalog = parseProductsData(rawData);
+    console.log(`[Handler] ${catalog.featured.length} products · ${catalog.promos.length} promos loaded from live data`);
+
     const sheets  = getSheets();
     const sentLog = await loadSentLog(sheets);
 
     // ── Shared send helper ────────────────────────────────────────────────
     const trySend = async (email, type, composeFn, ...args) => {
       if (!email || !email.includes('@')) {
-        console.warn(`[trySend] Invalid email: "${email}"`);
-        return false;
+        console.warn(`[trySend] Invalid email: "${email}"`); return false;
       }
       if (wasSent(sentLog, email, type)) {
-        results.skipped.push({ email, type, reason: 'already sent' });
-        return false;
+        results.skipped.push({ email, type, reason: 'already sent' }); return false;
       }
       try {
         console.log(`[trySend] Composing ${type} for ${email}`);
-        const { subject, html } = await composeFn(...args);
+        // catalog is always the last arg — all composers accept it
+        const { subject, html } = await composeFn(...args, catalog);
         const ok = await deliver(email, subject, html);
         if (ok) {
           await markSent(sheets, email, type);
@@ -769,19 +784,11 @@ exports.handler = async (event) => {
     };
 
     // ════════════════════════════════════════════════════════════════════
-    //  SINGLE-TRIGGER MODE  (called from save-account, save-review, etc.)
+    //  SINGLE-TRIGGER MODE (called from save-account.js, save-review.js…)
     // ════════════════════════════════════════════════════════════════════
     if (trigger) {
       console.log(`[Handler] Trigger mode: ${trigger}`);
-
-      const {
-        email,
-        firstName = '',
-        lastName  = '',
-        newsletter = 'no',
-        cartQty   = 0,
-        program   = '',
-      } = triggerData;
+      const { email, firstName = '', lastName = '', newsletter = 'no', cartQty = 0, program = '' } = triggerData;
 
       if (!email || !email.includes('@')) {
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Valid email required' }) };
@@ -789,29 +796,24 @@ exports.handler = async (event) => {
 
       const name = firstName || lastName || 'Beautiful';
 
-      // Welcome email
       if (trigger === T.WELCOME) {
         await trySend(email, T.WELCOME, composeWelcome, name);
       }
 
-      // Newsletter — skip if welcome was just sent (avoids double email in one session)
       if (trigger === T.NEWSLETTER) {
-        const newsletterOpt = String(newsletter).toLowerCase().trim();
-        if (newsletterOpt === 'yes') {
+        if (String(newsletter).toLowerCase().trim() === 'yes') {
           if (!wasSent(sentLog, email, T.WELCOME)) {
             await trySend(email, T.NEWSLETTER, composeNewsletter, name);
           } else {
-            results.skipped.push({ email, type: T.NEWSLETTER, reason: 'Welcome just sent — will fire on next batch' });
+            results.skipped.push({ email, type: T.NEWSLETTER, reason: 'Welcome just sent — queued for next batch' });
           }
         }
       }
 
-      // Review thank-you
       if (trigger === T.REVIEW_THANKS) {
         await trySend(email, T.REVIEW_THANKS, composeReviewThanks, name);
       }
 
-      // Abandoned cart
       if (trigger === T.CART_ABANDON) {
         const qty = parseInt(cartQty) || 0;
         if (qty > 0) {
@@ -821,73 +823,58 @@ exports.handler = async (event) => {
         }
       }
 
-      // Plan request confirmation
       if (trigger === T.PLAN_REQUEST) {
         await trySend(email, T.PLAN_REQUEST, composePlanRequest, name, program);
       }
 
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ success: true, trigger, results }),
-      };
+      return { statusCode: 200, headers, body: JSON.stringify({ success: true, trigger, results }) };
     }
 
     // ════════════════════════════════════════════════════════════════════
-    //  BATCH SCAN MODE  (GET request — run manually or via Netlify scheduler)
+    //  BATCH SCAN MODE (GET request — run manually or via scheduler)
     // ════════════════════════════════════════════════════════════════════
     console.log('[Handler] Batch scan mode');
 
-    // ── 1. Accounts sheet (save-account.js → Feuille 1) ──────────────
-    const accountSheetId = process.env.GOOGLE_SHEET_ID_ACCOUNTS;
-    const accountRows    = await readRange(sheets, accountSheetId, 'Feuille 1!A:R');
-    console.log(`[Batch] Accounts rows: ${accountRows.length}`);
+    // ── Accounts (save-account.js → Feuille 1) ──────────────────────────
+    const accountRows = await readRange(sheets, process.env.GOOGLE_SHEET_ID_ACCOUNTS, 'Feuille 1!A:R');
+    console.log(`[Batch] Account rows: ${accountRows.length}`);
 
     for (const row of accountRows) {
       const lastName   = (row[0]  || '').trim();
       const firstName  = (row[1]  || '').trim();
       const email      = (row[2]  || '').trim();
-      const newsletter = (row[5]  || '').trim().toLowerCase();  // column F
-      const reviews    = parseInt(row[8]  || 0, 10);            // column I
-      const cartQty    = parseInt(row[14] || 0, 10);            // column O
+      const newsletter = (row[5]  || '').trim().toLowerCase();
+      const reviews    = parseInt(row[8]  || 0, 10);
+      const cartQty    = parseInt(row[14] || 0, 10);
 
       if (!email || !email.includes('@')) continue;
       const name = firstName || lastName || 'Beautiful';
 
-      // Welcome (highest priority)
       if (!wasSent(sentLog, email, T.WELCOME)) {
         await trySend(email, T.WELCOME, composeWelcome, name);
         await sleep(600); continue;
       }
-
-      // Newsletter (only if subscribed AND welcome already sent on a previous run)
       if (newsletter === 'yes' && !wasSent(sentLog, email, T.NEWSLETTER)) {
         await trySend(email, T.NEWSLETTER, composeNewsletter, name);
         await sleep(600); continue;
       }
-
-      // Review thank-you
       if (reviews > 0 && !wasSent(sentLog, email, T.REVIEW_THANKS)) {
         await trySend(email, T.REVIEW_THANKS, composeReviewThanks, name);
         await sleep(600); continue;
       }
-
-      // Abandoned cart
       if (cartQty > 0 && !wasSent(sentLog, email, T.CART_ABANDON)) {
         await trySend(email, T.CART_ABANDON, composeAbandonedCart, name, cartQty);
         await sleep(600); continue;
       }
-
       results.skipped.push({ email, reason: 'no action needed' });
     }
 
-    // ── 2. Newsletter-only footer subscribers (no name, email only) ───
+    // ── Newsletter-only footer subscribers ──────────────────────────────
     for (const row of accountRows) {
       const firstName  = (row[1] || '').trim();
       const lastName   = (row[0] || '').trim();
       const email      = (row[2] || '').trim();
       const newsletter = (row[5] || '').trim().toLowerCase();
-
       if (!firstName && !lastName && email && email.includes('@')
           && newsletter === 'yes'
           && !wasSent(sentLog, email, T.NEWSLETTER)) {
@@ -896,25 +883,19 @@ exports.handler = async (event) => {
       }
     }
 
-    // ── 3. Plan requests sheet (save-plan-request.js → MembersPending-Plan) ──
-    const planSheetId = process.env.PENDING_PLAN_PROGRAM_SHEET_ID;
-    const planRows    = await readRange(sheets, planSheetId, 'MembersPeding-Plan!A:H');
+    // ── Plan requests (save-plan-request.js → MembersPending-Plan) ──────
+    const planRows = await readRange(sheets, process.env.PENDING_PLAN_PROGRAM_SHEET_ID, 'MembersPeding-Plan!A:H');
     console.log(`[Batch] Plan request rows: ${planRows.length}`);
 
     for (const row of planRows) {
-      // Row layout: date, firstName, lastName, email, phone, program, consent, status
       const firstName = (row[1] || '').trim();
       const lastName  = (row[2] || '').trim();
       const email     = (row[3] || '').trim();
       const program   = (row[5] || '').trim();
       const status    = (row[7] || '').trim().toLowerCase();
 
-      if (!email || !email.includes('@')) continue;
-      // Only send if status is 'Pending' (just submitted)
-      if (status !== 'pending') continue;
-
+      if (!email || !email.includes('@') || status !== 'pending') continue;
       const name = firstName || lastName || 'Beautiful';
-
       if (!wasSent(sentLog, email, T.PLAN_REQUEST)) {
         await trySend(email, T.PLAN_REQUEST, composePlanRequest, name, program);
         await sleep(600);
