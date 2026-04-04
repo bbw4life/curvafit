@@ -5066,7 +5066,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 
 .shop-banner-section .banner-content h1 {
     font-family: 'Cormorant Garamond', Georgia, serif;
-    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 700;
     color: #fff;
     line-height: 1.12;
@@ -5167,15 +5167,129 @@ tbody tr:hover { background: var(--rose-ultra); }
    PRODUCT GRID SECTIONS
 ================================================================ */
 .product-grid-section {
-    padding: 20px 0 10px;
+    padding: 10px 0 10px;
     background: var(--cream, #fdf8f5);
 }
-
 .product-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 24px;
 }
+
+.grid-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.grid-title {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.grid-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.7;
+}
+
+.grid-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.grid-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.grid-badge--fire {
+    background: linear-gradient(135deg, #ff6b35, #f7c948);
+    color: #fff;
+}
+
+.grid-badge--star {
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    color: #fff;
+}
+
+.grid-badge--deal {
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    color: #fff;
+}
+
+.grid-badge--new {
+    background: linear-gradient(135deg, #10b981, #34d399);
+    color: #fff;
+}
+
+@media (max-width: 480px) {
+    .grid-header-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 16px 20px;
+    background: var(--bg, #fff);
+    position: sticky;
+    top: 60px;
+    z-index: 90;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+}
+
+.filter-btn {
+    padding: 8px 20px;
+    border-radius: 999px;
+    border: 2px solid #e0e0e0;
+    background: transparent;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: inherit;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background: var(--primary, #e91e63);
+    border-color: var(--primary, #e91e63);
+    color: #fff;
+}
+
+.product-grid-section {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.grid-hidden {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+}
+
+.grid-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 
 .product-card {
     display: block;

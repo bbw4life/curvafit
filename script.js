@@ -1653,6 +1653,97 @@ function applyPromoFreeItems() {
       window.getProductUrl = getProductUrl;
 
 
+
+ // ====================== FILTER BAR ======================
+(function initFilterBar() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    if (!filterBtns.length) return;
+
+    const gridMap = {
+        all:        ['product-grid-1','product-grid-2','product-grid-3','product-grid-4'],
+        slimming:   ['product-grid-1'],
+        apparel:    ['product-grid-2'],
+        wellness:   ['product-grid-3'],
+        essentials: ['product-grid-4']
+    };
+
+    const allGrids = ['product-grid-1','product-grid-2','product-grid-3','product-grid-4'];
+
+    function applyFilter(filter) {
+        const visibleGrids = gridMap[filter] || allGrids;
+
+        // 1 — Cacher instantanément les grilles non voulues (pas d'animation)
+        allGrids.forEach(gridId => {
+            const section = document.getElementById(gridId);
+            if (!section) return;
+
+            if (visibleGrids.includes(gridId)) {
+                section.style.display = '';
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(12px)';
+                // Fade in après micro-délai
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        section.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        section.style.opacity    = '1';
+                        section.style.transform  = 'translateY(0)';
+                    });
+                });
+            } else {
+                // Masquer immédiatement — pas de transition pour éviter le décalage
+                section.style.transition = 'none';
+                section.style.display    = 'none';
+                section.style.opacity    = '0';
+            }
+        });
+
+        // 2 — Scroll vers la grille cible APRÈS que le DOM est recalculé
+        if (filter !== 'all') {
+            const targetId = gridMap[filter][0];
+            const target   = document.getElementById(targetId);
+            if (target) {
+                // setTimeout 0 laisse le navigateur recalculer le layout d'abord
+                setTimeout(() => {
+                    const filterBar = document.getElementById('filter-bar');
+                    const filterBarH = filterBar ? filterBar.offsetHeight : 0;
+                    const stickyHeaderH = document.querySelector('.sticky-header')
+                        ? document.querySelector('.sticky-header').offsetHeight
+                        : 60;
+                    const offset = stickyHeaderH + filterBarH + 16;
+                    const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                    window.scrollTo({ top, behavior: 'smooth' });
+                }, 0);
+            }
+        } else {
+            // Filter "all" → scroll vers filter bar
+            setTimeout(() => {
+                const filterBar = document.getElementById('filter-bar');
+                if (filterBar) {
+                    const stickyHeaderH = document.querySelector('.sticky-header')
+                        ? document.querySelector('.sticky-header').offsetHeight
+                        : 60;
+                    const top = filterBar.getBoundingClientRect().top + window.pageYOffset - stickyHeaderH - 8;
+                    window.scrollTo({ top, behavior: 'smooth' });
+                }
+            }, 0);
+        }
+    }
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            applyFilter(btn.dataset.filter);
+        });
+    });
+
+    applyFilter('all');
+
+})();
+// ====================== END FILTER BAR ======================
+
+
+
 // ══════════════════════════════════════════
 //  STORY CIRCLES — dynamique depuis settings
 // ══════════════════════════════════════════
