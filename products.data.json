@@ -198,12 +198,12 @@
     "rating": 4.7,
     "reviews_count": 73,
     "badge": { "icon": "fi-rr-flame", "text": "Top Sale" },
-    "title": "Sculpt Leggings — Curves That Turn Heads",
+    "title": "Tie-Dye Flex Leggings — Bold & Unstoppable",
     "description": "High-waist seamless shaping leggings. Bare-skin feel fabric, perfect hold. Available in 10 colors from S to XL.",
     "price": 16.99,
     "compare_price": 28.99,
-    "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/leggings_1.png?v=1775267442",
-    "image_hover": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/leggings_2.png?v=1775267439",
+    "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/band_3.avif?v=1771462322",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
     "sizes": ["S","M","L","XL"],
     "colors": [
       {"name": "Army Green","hex": "#4B5320","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Sf557550825534dea9083e446ec6cbba4C.webp?v=1754486478","active": true},
@@ -292,8 +292,8 @@
     "description": "Long-sleeve zip yoga jumpsuit in stretchy breathable fabric. Perfect for yoga, pilates or simply feeling beautiful.",
     "price": 34.99,
     "compare_price": 54.99,
-    "image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_health_1.jpg?v=1771457668",
-    "image_hover": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
+    "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/zim_suit_1.png?v=1775311838",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/zim_suit.png?v=1775311825",
     "sizes": ["S","M","L","XL"],
     "colors": [
       {"name": "Dark Red","hex": "#8B0000","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_10_184ef0b5-0954-42a8-8428-0910a101a35b.webp?v=1754486478","variant_id": "9984750014","active": true},
@@ -338,7 +338,7 @@
     "promo": {"start_date": "2026-02-24","end_date": "2026-02-28","single_discount": 0,"duo_discount": 0,"trio_discount": 0}
   },
   {
-    "cj_id": "31246330",
+    "cj_id": "31350444",
     "sku_internal": "LG-001",
     "id": "workout-towel",
     "active": true,

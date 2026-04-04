@@ -10,7 +10,7 @@ const INTERNAL_TO_CJ = {
   'leggings':          '31246387',
   'sports-bra':        '31246342',
   'hydration-bottle':  '31246386',
-  'workout-towel':     '31246330',
+  'workout-towel':     '31350444',
   'fitness-tracker':   '31246232',
   'protein-shaker':    '31246385',
   'dumbbell-set':      '31246336',
