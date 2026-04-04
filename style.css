@@ -6235,10 +6235,14 @@ tbody tr:hover { background: var(--rose-ultra); }
     font-size: 0.7rem;
     display: none;
     font-weight: 600;
-    pointer-events: none !important;
 }
 
 .badge.active { display: block; }
+
+.cart-badge,
+.wishlist-badge {
+  pointer-events: none;
+}
 
 /* ================================================================
    OVERLAY
