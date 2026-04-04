@@ -6239,11 +6239,6 @@ tbody tr:hover { background: var(--rose-ultra); }
 
 .badge.active { display: block; }
 
-.cart-badge,
-.wishlist-badge {
-  pointer-events: none;
-}
-
 /* ================================================================
    OVERLAY
 ================================================================ */
