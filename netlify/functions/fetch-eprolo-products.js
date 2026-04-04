@@ -1,4 +1,4 @@
-// fetch-eprolo-products.js — VERSION LISTE HARDCODÉE (cj_id)
+// fetch-eprolo-products.js — VERSION PARALLÈLE
 const crypto = require('crypto');
 
 // ─────────────────────────────────────────────
@@ -39,37 +39,42 @@ exports.handler = async (event) => {
     const apiKey    = process.env.EPROLO_API_KEY;
     const apiSecret = process.env.EPROLO_API_SECRET;
 
-    // ── 1. FETCH DE CHAQUE PRODUIT ─────────────────────────────────────────
-    const allProducts = [];
+    // ── 1. FETCH DE TOUS LES PRODUITS EN PARALLÈLE ──────────────────────────
+    const results = await Promise.all(
+      MY_PRODUCT_IDS.map(async (productId) => {
+        try {
+          const timestamp = Date.now();
+          const sign = crypto
+            .createHash('md5')
+            .update(apiKey + timestamp + apiSecret)
+            .digest('hex');
 
-    for (const productId of MY_PRODUCT_IDS) {
-      try {
-        const timestamp = Date.now();
-        const sign = crypto
-          .createHash('md5')
-          .update(apiKey + timestamp + apiSecret)
-          .digest('hex');
+          const url = `https://openapi.eprolo.com/getproduct.html?sign=${sign}&timestamp=${timestamp}&id=${productId}`;
 
-        const url = `https://openapi.eprolo.com/getproduct.html?sign=${sign}&timestamp=${timestamp}&id=${productId}`;
+          const response     = await fetch(url, { method: "GET", headers: { "apiKey": apiKey } });
+          const responseText = await response.text();
 
-        const response     = await fetch(url, { method: "GET", headers: { "apiKey": apiKey } });
-        const responseText = await response.text();
+          let data = {};
+          try { data = JSON.parse(responseText); } catch {}
 
-        let data = {};
-        try { data = JSON.parse(responseText); } catch {}
+          if ((data.code === 0 || data.code === "0") && data.data) {
+            log(`  ✅  ${productId}  →  OK`);
+            return data.data;
+          } else {
+            const errMsg = data.msg || 'réponse invalide';
+            log(`  ⚠️  ${productId}  →  ERREUR : ${errMsg}`);
+            return null;
+          }
 
-        if ((data.code === 0 || data.code === "0") && data.data) {
-          allProducts.push(data.data);
-          log(`  ✅  ${productId}  →  OK`);
-        } else {
-          const errMsg = data.msg || 'réponse invalide';
-          log(`  ⚠️  ${productId}  →  ERREUR : ${errMsg}`);
+        } catch (err) {
+          log(`  ❌  ${productId}  →  EXCEPTION : ${err.message}`);
+          return null;
         }
+      })
+    );
 
-      } catch (err) {
-        log(`  ❌  ${productId}  →  EXCEPTION : ${err.message}`);
-      }
-    }
+    // Filtrer les résultats null (échecs)
+    const allProducts = results.filter(Boolean);
 
     // ── 2. RÉCAPITULATIF ───────────────────────────────────────────────────
     log(SEP);
