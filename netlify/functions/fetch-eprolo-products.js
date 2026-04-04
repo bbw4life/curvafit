@@ -10,7 +10,7 @@ const MY_PRODUCT_IDS = [
   "31246387",  // leggings
   "31246342",  // sports-bra
   "31246386",  // hydration-bottle
-  "31350444",  // workout-towel
+  "31350659",  // workout-towel
   "31246232",  // fitness-tracker
   "31246385",  // protein-shaker
   "31246336",  // dumbbell-set
