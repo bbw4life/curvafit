@@ -1080,18 +1080,20 @@ function applyPromoFreeItems() {
 
       // ====================== COMPARISON TABLE ======================
       const comparisonTable = document.querySelector('.comparison-table tbody');
-      if (comparisonTable) {
+    if (comparisonTable) {
         const rows = comparisonTable.querySelectorAll('tr');
         rows.forEach((row, index) => {
-          const product = products[index];
-          if (product) {
-            const titleCell = row.querySelector('td:nth-child(1)');
-            if (titleCell) titleCell.textContent = product.title;
-            const priceCell = row.querySelector('td:nth-child(2)');
-            if (priceCell) priceCell.textContent = `$${product.price.toFixed(2)}`;
-          }
+            const product = products[index];
+            if (product) {
+                const titleCell  = row.querySelector('td:nth-child(1)');
+                const priceCell  = row.querySelector('td:nth-child(2)');
+                const ratingCell = row.querySelector('td:nth-child(5)');
+                if (titleCell)  titleCell.textContent  = product.title;
+                if (priceCell)  priceCell.textContent  = `$${product.price.toFixed(2)}`;
+                if (ratingCell) ratingCell.textContent = product.rating ? `${product.rating}/5` : '—';
+            }
         });
-      }
+    }
 
       // ====================== PRODUCT CARDS ======================
       document.querySelectorAll('.product-card').forEach(card => {
@@ -1129,51 +1131,78 @@ function applyPromoFreeItems() {
         }
       });
 
+
       // Mini product slider
-      document.querySelectorAll('#mini-product-slider .product-item').forEach(item => {
-        const id = item.querySelector('.mini-wishlist-icon')?.dataset.id;
-        const product = products.find(p => p.id === id);
-        if (product) {
-          const currentPriceEl = item.querySelector('.current-price');
-          const comparePriceEl = item.querySelector('.compare-price');
-          const discountBadge = item.querySelector('.mini-discount-badge');
-          if (currentPriceEl) currentPriceEl.textContent = `$${product.price.toFixed(2)}`;
-          if (comparePriceEl) comparePriceEl.textContent = `$${product.compare_price.toFixed(2)}`;
-          if (discountBadge && product.compare_price > product.price) {
-            const discountPercent = Math.round(((product.compare_price - product.price) / product.compare_price) * 100);
-            discountBadge.textContent = `${discountPercent}% OFF`;
-            discountBadge.style.display = 'block';
-          } else if (discountBadge) {
-            discountBadge.style.display = 'none';
+        const miniSliderEl = document.getElementById('mini-product-slider');
+        if (miniSliderEl) {
+          const sliderTrack = miniSliderEl.querySelector('.product-slider');
+
+          document.querySelectorAll('#mini-product-slider .product-item').forEach(item => {
+            const id = item.querySelector('.mini-wishlist-icon')?.dataset.id;
+            const product = products.find(p => p.id === id);
+            if (product) {
+              const currentPriceEl = item.querySelector('.current-price');
+              const comparePriceEl = item.querySelector('.compare-price');
+              const discountBadge  = item.querySelector('.mini-discount-badge');
+              if (currentPriceEl) currentPriceEl.textContent = `$${product.price.toFixed(2)}`;
+              if (comparePriceEl) comparePriceEl.textContent = `$${product.compare_price.toFixed(2)}`;
+              if (discountBadge && product.compare_price > product.price) {
+                const discountPercent = Math.round(((product.compare_price - product.price) / product.compare_price) * 100);
+                discountBadge.textContent = `${discountPercent}% OFF`;
+                discountBadge.style.display = 'block';
+              } else if (discountBadge) {
+                discountBadge.style.display = 'none';
+              }
+            }
+          });
+
+          // ── Auto-slide des PRODUITS (toutes les 7 secondes) ──
+          if (sliderTrack) {
+            const items = sliderTrack.querySelectorAll('.product-item');
+            if (items.length > 1) {
+              let currentSlide = 0;
+              let isHovered    = false;
+
+              miniSliderEl.addEventListener('mouseenter', () => { isHovered = true;  });
+              miniSliderEl.addEventListener('mouseleave', () => { isHovered = false; });
+
+              setInterval(() => {
+                if (isHovered) return;
+                currentSlide = (currentSlide + 1) % items.length;
+                const itemWidth = items[0].offsetWidth + parseInt(getComputedStyle(sliderTrack).gap || 0);
+                sliderTrack.scrollTo({
+                  left:     currentSlide * itemWidth,
+                  behavior: 'smooth'
+                });
+              }, 7000);
+            }
           }
         }
-      });
 
+        function populateMiniSlider(slider, media) {
+          if (!slider || !media) return;
+          slider.innerHTML = '';
+          media.forEach((src, i) => {
+            const img = document.createElement('img');
+            img.src = upgradeShopifyImageUrl(src);
+            img.className = `mini-media-image ${i === 0 ? 'active' : ''}`;
+            img.loading = 'lazy';
+            slider.appendChild(img);
+          });
+          const prev = document.createElement('div');
+          prev.className = 'mini-media-slider-prev';
+          const next = document.createElement('div');
+          next.className = 'mini-media-slider-next';
+          prev.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); slideMini(slider, 'prev'); });
+          next.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); slideMini(slider, 'next'); });
+          slider.appendChild(prev);
+          slider.appendChild(next);
 
-      function populateMiniSlider(slider, media) {
-    if (!slider || !media) return;
-    slider.innerHTML = '';
-    media.forEach((src, i) => {
-      const img = document.createElement('img');
-      img.src = upgradeShopifyImageUrl(src);
-      img.className = `mini-media-image ${i === 0 ? 'active' : ''}`;
-      img.loading = 'lazy';
-      slider.appendChild(img);
-    });
-    const prev = document.createElement('div');
-    prev.className = 'mini-media-slider-prev';
-    const next = document.createElement('div');
-    next.className = 'mini-media-slider-next';
-    prev.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); slideMini(slider, 'prev'); });
-    next.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); slideMini(slider, 'next'); });
-    slider.appendChild(prev);
-    slider.appendChild(next);
-
-    // ── Auto-rotation ──
-    if (media.length > 1) {
-      setInterval(() => slideMini(slider, 'next'), 5000);
-    }
-  }
+          // ── Auto-rotation des IMAGES (toutes les 4 secondes) ──
+          if (media.length > 1) {
+            setInterval(() => slideMini(slider, 'next'), 4000);
+          }
+        }
 
       // ====================== PAGE PRODUIT ======================
       const productSection = document.querySelector('.product-section');
@@ -3022,7 +3051,7 @@ if (carousel) {
   // ====================== FRANCENEL BANNER ======================
   const francenelContainer = document.getElementById('francenel-milliadaire-banner');
   if (francenelContainer) {
-    const francVideoUrl    = 'https://cdn.shopify.com/videos/c/o/v/8747957409cc4beda31702abfcd4ed91.mp4';
+    const francVideoUrl    = 'https://cdn.shopify.com/videos/c/o/v/c9fa100b503a449e9a8f120d106f8737.mp4';
     const francVideo       = francenelContainer.querySelector('.francenel-milliadaire-banner-video');
     const francSoundBtn    = francenelContainer.querySelector('.francenel-milliadaire-video-sound-toggle');
     const francVideoWrapper= francenelContainer.querySelector('.francenel-milliadaire-banner-video-wrapper');
