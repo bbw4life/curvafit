@@ -2980,22 +2980,30 @@ if (carousel) {
   document.querySelectorAll('.buy-now').forEach(btn => { btn.addEventListener('click', (e) => { addToCart(e); checkout(); }); });
   document.querySelectorAll('.wishlist-toggle, .wishlist-icon-product, .mini-wishlist-icon').forEach(icon => { icon.addEventListener('click', toggleWishlist); });
 
-  const cartWrapper = document.querySelector('.icon-wrapper:has(.cart-icon)');
-  if (cartWrapper) cartWrapper.addEventListener('click', openCartDrawer);
-  const wishlistWrapper = document.querySelector('.icon-wrapper:has(.wishlist-icon)');
-  if (wishlistWrapper) wishlistWrapper.addEventListener('click', openWishlistModal);
+  
 
-  if (overlay) overlay.addEventListener('click', () => { closeCartDrawer(); closeWishlistModal(); });
-  const closeDrawerBtn = document.querySelector('.close-drawer');
-  if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeCartDrawer);
-  const closeModalBtn = document.querySelector('.close-modal');
-  if (closeModalBtn) closeModalBtn.addEventListener('click', closeWishlistModal);
-  const checkoutBtn = cartDrawer ? cartDrawer.querySelector('.cart-drawer__footer .checkout') : document.querySelector('.checkout');
-  if (checkoutBtn) checkoutBtn.addEventListener('click', checkout);
-  const addAllBtn = document.querySelector('.add-all-to-cart');
-  if (addAllBtn) addAllBtn.addEventListener('click', addAllToCart);
 
-  document.addEventListener('wishlist:change', () => { updateBadges(); updateWishlistIcons(); renderWishlist(); });
+document.querySelectorAll('.icon-wrapper').forEach(wrapper => {
+  if (wrapper.querySelector('.cart-icon')) {
+    wrapper.addEventListener('click', openCartDrawer);
+  }
+  if (wrapper.querySelector('.wishlist-icon')) {
+    wrapper.addEventListener('click', openWishlistModal);
+  }
+});
+
+if (overlay) overlay.addEventListener('click', () => { closeCartDrawer(); closeWishlistModal(); });
+const closeDrawerBtn = document.querySelector('.close-drawer');
+if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeCartDrawer);
+const closeModalBtn = document.querySelector('.close-modal');
+if (closeModalBtn) closeModalBtn.addEventListener('click', closeWishlistModal);
+const checkoutBtn = cartDrawer ? cartDrawer.querySelector('.cart-drawer__footer .checkout') : document.querySelector('.checkout');
+if (checkoutBtn) checkoutBtn.addEventListener('click', checkout);
+const addAllBtn = document.querySelector('.add-all-to-cart');
+if (addAllBtn) addAllBtn.addEventListener('click', addAllToCart);
+
+document.addEventListener('wishlist:change', () => { updateBadges(); updateWishlistIcons(); renderWishlist(); });
+
 
   // Reviews carousel in cart
   const reviewsCarouselCart = document.querySelector('.reviews-carousel');
