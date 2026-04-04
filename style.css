@@ -6235,6 +6235,7 @@ tbody tr:hover { background: var(--rose-ultra); }
     font-size: 0.7rem;
     display: none;
     font-weight: 600;
+    pointer-events: none !important;
 }
 
 .badge.active { display: block; }
@@ -6254,8 +6255,6 @@ tbody tr:hover { background: var(--rose-ultra); }
 }
 
 .overlay.active { display: block; opacity: 1; }
-
-
 
 /* ================================================================
    WISHLIST MODAL
