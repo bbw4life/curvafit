@@ -148,13 +148,15 @@
         </section>
 
         <!-- FILTER BAR — à placer juste avant product-grid-1 -->
-        <div class="filter-bar" id="filter-bar">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="slimming">Slimming</button>
-            <button class="filter-btn" data-filter="apparel">Apparel</button>
-            <button class="filter-btn" data-filter="wellness">Wellness</button>
-            <button class="filter-btn" data-filter="essentials">Essentials</button>
-        </div>
+        <div id="filter-bar-sentinel"></div>
+            <div class="filter-bar" id="filter-bar">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="slimming">Slimming</button>
+                <button class="filter-btn" data-filter="apparel">Apparel</button>
+                <button class="filter-btn" data-filter="wellness">Wellness</button>
+                <button class="filter-btn" data-filter="essentials">Essentials</button>
+            </div>
+            <div id="filter-bar-placeholder"></div>
 
         <!-- GRID 1: products 1-4 → resistance-bands, yoga-mat, leggings, sports-bra -->
         <section id="product-grid-1" class="product-grid-section" data-scroll-reveal>
@@ -894,6 +896,101 @@
             <details><summary>How can I track my order?</summary><p>Once your order ships, you'll receive a tracking number via email. You can monitor your delivery in real time and stay updated every step of the way.</p></details>
         </div>
     </section>
+
+    <!-- MY PERSONALIZED PRODUCT BUTTON -->
+        <section class="my-product-section" data-scroll-reveal>
+            <div class="container">
+                <button class="my-product-btn" id="openMyProductPopup">
+                    <span class="my-product-btn__icon">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                    </span>
+                    <span class="my-product-btn__text">
+                        <strong>My Personalized Product</strong>
+                        <small>Tell us what you need — we listen</small>
+                    </span>
+                    <span class="my-product-btn__arrow">→</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- MY PERSONALIZED PRODUCT POPUP -->
+        <div class="mpp-overlay" id="mppOverlay">
+            <div class="mpp-popup-wrap">
+                <div class="mpp-border-ring"></div>
+                <div class="mpp-popup" id="mppPopup">
+                    <button class="mpp-close" id="mppClose">✕</button>
+
+                    <div class="mpp-header">
+                        <div class="mpp-crown">👑</div>
+                        <h2>Your Voice Shapes Our Shop</h2>
+                        <p>You matter to us. Tell us your dream product and we'll work to make it happen — just for you.</p>
+                    </div>
+
+                    <form class="mpp-form" id="mppForm">
+                        <div class="mpp-section-label">About you</div>
+                        <div class="mpp-row">
+                            <div class="mpp-field">
+                                <label>First Name</label>
+                                <input type="text" name="firstname" placeholder="Maria" required>
+                            </div>
+                            <div class="mpp-field">
+                                <label>Last Name</label>
+                                <input type="text" name="lastname" placeholder="Johnson" required>
+                            </div>
+                        </div>
+                        <div class="mpp-row">
+                            <div class="mpp-field">
+                                <label>Email</label>
+                                <input type="email" name="email" placeholder="maria@example.com" required>
+                            </div>
+                            <div class="mpp-field">
+                                <label>Phone <span class="mpp-optional">(optional)</span></label>
+                                <input type="tel" name="phone" placeholder="+1 234 567 8900">
+                            </div>
+                        </div>
+
+                        <div class="mpp-section-label">Your dream product</div>
+                        <div class="mpp-field">
+                            <label>Product name / title</label>
+                            <input type="text" name="product_title" placeholder="e.g. Weighted hula hoop for plus size" required>
+                        </div>
+                        <div class="mpp-field">
+                            <label>Describe it — what does it do for you?</label>
+                            <textarea name="product_desc" rows="3" placeholder="I'd love a product that helps me tone my waist without strain, comfortable for everyday use..."></textarea>
+                        </div>
+
+                        <div class="mpp-section-label">Inspiration images <span class="mpp-optional">(optional — max 2)</span></div>
+                        <div class="mpp-upload-row">
+                            <label class="mpp-upload-box" id="uploadBox1">
+                                <input type="file" accept="image/*" id="imgInput1" hidden>
+                                <div class="mpp-upload-inner" id="uploadInner1">
+                                    <span class="mpp-upload-icon"><i class="fas fa-image"></i></span>
+                                    <span>Image 1</span>
+                                </div>
+                            </label>
+                            <label class="mpp-upload-box" id="uploadBox2">
+                                <input type="file" accept="image/*" id="imgInput2" hidden>
+                                <div class="mpp-upload-inner" id="uploadInner2">
+                                    <span class="mpp-upload-icon"><i class="fas fa-image"></i></span>
+                                    <span>Image 2</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="mpp-send-btn">
+                            <i class="fas fa-paper-plane"></i> Send My Idea
+                        </button>
+                    </form>
+
+                    <div class="mpp-success" id="mppSuccess" style="display:none;">
+                        <div class="mpp-success-icon">🎉</div>
+                        <h3>Thank you so much!</h3>
+                        <p>Your idea has been received. You're helping us build a shop that truly serves women like you. We'll be in touch!</p>
+                        <button class="mpp-close-success" id="mppCloseSuccess">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- ░░ RISK REVERSAL — GUARANTEE ░░ -->
         <section id="risk-reversal" class="risk-reversal-section" data-scroll-reveal>

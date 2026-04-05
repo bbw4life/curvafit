@@ -1683,7 +1683,7 @@ function applyPromoFreeItems() {
 
 
 
- // ====================== FILTER BAR ======================
+// ====================== FILTER BAR ======================
 (function initFilterBar() {
     const filterBtns = document.querySelectorAll('.filter-btn');
     if (!filterBtns.length) return;
@@ -1698,19 +1698,70 @@ function applyPromoFreeItems() {
 
     const allGrids = ['product-grid-1','product-grid-2','product-grid-3','product-grid-4'];
 
+    // ── Mobile sticky fix ───────────────────────────────────────────
+    function initMobileSticky() {
+    if (window.innerWidth > 768) return;
+
+    const filterBar   = document.getElementById('filter-bar');
+    const placeholder = document.getElementById('filter-bar-placeholder');
+    if (!filterBar || !placeholder) return;
+
+    const stickyHeader = document.querySelector('.sticky-header');
+    const headerH      = stickyHeader ? stickyHeader.offsetHeight : 80;
+    const barH         = filterBar.offsetHeight;
+
+    placeholder.style.height = barH + 'px';
+
+    let isFixed = false;
+
+    function onScroll() {
+        const barTop = filterBar.getBoundingClientRect().top;
+
+        if (!isFixed && barTop <= headerH) {
+            isFixed = true;
+            filterBar.classList.add('is-fixed');
+            placeholder.classList.add('visible');
+        } else if (isFixed && (placeholder.getBoundingClientRect().top > headerH + 2)) {
+            isFixed = false;
+            filterBar.classList.remove('is-fixed');
+            placeholder.classList.remove('visible');
+        }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            filterBar.classList.remove('is-fixed');
+            placeholder.classList.remove('visible');
+            isFixed = false;
+        } else {
+            placeholder.style.height = filterBar.offsetHeight + 'px';
+        }
+    });
+}
+
+    // ── Offset pour scroll ──────────────────────────────────────────
+    function getStickyOffset() {
+        const stickyHeader = document.querySelector('.sticky-header');
+        const filterBar    = document.getElementById('filter-bar');
+        const stickyH      = stickyHeader ? stickyHeader.offsetHeight : 80;
+        const filterH      = filterBar    ? filterBar.offsetHeight    : 44;
+        return stickyH + filterH + 12;
+    }
+
+    // ── Affichage des grilles ───────────────────────────────────────
     function applyFilter(filter) {
         const visibleGrids = gridMap[filter] || allGrids;
 
-        // 1 — Cacher instantanément les grilles non voulues (pas d'animation)
         allGrids.forEach(gridId => {
             const section = document.getElementById(gridId);
             if (!section) return;
 
             if (visibleGrids.includes(gridId)) {
-                section.style.display = '';
-                section.style.opacity = '0';
+                section.style.display   = '';
+                section.style.opacity   = '0';
                 section.style.transform = 'translateY(12px)';
-                // Fade in après micro-délai
                 requestAnimationFrame(() => {
                     requestAnimationFrame(() => {
                         section.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
@@ -1719,45 +1770,36 @@ function applyPromoFreeItems() {
                     });
                 });
             } else {
-                // Masquer immédiatement — pas de transition pour éviter le décalage
                 section.style.transition = 'none';
                 section.style.display    = 'none';
                 section.style.opacity    = '0';
             }
         });
 
-        // 2 — Scroll vers la grille cible APRÈS que le DOM est recalculé
         if (filter !== 'all') {
             const targetId = gridMap[filter][0];
             const target   = document.getElementById(targetId);
             if (target) {
-                // setTimeout 0 laisse le navigateur recalculer le layout d'abord
                 setTimeout(() => {
-                    const filterBar = document.getElementById('filter-bar');
-                    const filterBarH = filterBar ? filterBar.offsetHeight : 0;
-                    const stickyHeaderH = document.querySelector('.sticky-header')
-                        ? document.querySelector('.sticky-header').offsetHeight
-                        : 60;
-                    const offset = stickyHeaderH + filterBarH + 16;
-                    const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                    const offset = getStickyOffset();
+                    const top    = target.getBoundingClientRect().top + window.pageYOffset - offset;
                     window.scrollTo({ top, behavior: 'smooth' });
-                }, 0);
+                }, 20);
             }
         } else {
-            // Filter "all" → scroll vers filter bar
             setTimeout(() => {
-                const filterBar = document.getElementById('filter-bar');
+                const stickyHeader = document.querySelector('.sticky-header');
+                const stickyH      = stickyHeader ? stickyHeader.offsetHeight : 80;
+                const filterBar    = document.getElementById('filter-bar');
                 if (filterBar) {
-                    const stickyHeaderH = document.querySelector('.sticky-header')
-                        ? document.querySelector('.sticky-header').offsetHeight
-                        : 60;
-                    const top = filterBar.getBoundingClientRect().top + window.pageYOffset - stickyHeaderH - 8;
+                    const top = filterBar.getBoundingClientRect().top + window.pageYOffset - stickyH - 8;
                     window.scrollTo({ top, behavior: 'smooth' });
                 }
-            }, 0);
+            }, 20);
         }
     }
 
+    // ── Events ──────────────────────────────────────────────────────
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             filterBtns.forEach(b => b.classList.remove('active'));
@@ -1767,10 +1809,161 @@ function applyPromoFreeItems() {
     });
 
     applyFilter('all');
+    initMobileSticky();
 
 })();
 // ====================== END FILTER BAR ======================
 
+
+
+
+
+
+
+// ====================== MY PERSONALIZED PRODUCT POPUP ======================
+(function initMyProductPopup() {
+    const overlay      = document.getElementById('mppOverlay');
+    const openBtn      = document.getElementById('openMyProductPopup');
+    const closeBtn     = document.getElementById('mppClose');
+    const form         = document.getElementById('mppForm');
+    const successBox   = document.getElementById('mppSuccess');
+    const closeSucc    = document.getElementById('mppCloseSuccess');
+    const imgInput1    = document.getElementById('imgInput1');
+    const imgInput2    = document.getElementById('imgInput2');
+    const uploadBox1   = document.getElementById('uploadBox1');
+    const uploadBox2   = document.getElementById('uploadBox2');
+    const uploadInner1 = document.getElementById('uploadInner1');
+    const uploadInner2 = document.getElementById('uploadInner2');
+
+    if (!overlay || !openBtn) return;
+
+    function openPopup() {
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePopup() {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    openBtn.addEventListener('click', openPopup);
+    closeBtn.addEventListener('click', closePopup);
+    closeSucc && closeSucc.addEventListener('click', closePopup);
+
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closePopup();
+    });
+
+    // ── Compression identique au story-form de script.js ──
+    function compressImage(file, maxPx, quality) {
+        return new Promise(function(resolve) {
+            if (!file) { resolve(''); return; }
+
+            const url = URL.createObjectURL(file);
+            const img = new Image();
+
+            img.onload = function() {
+                let w = img.width;
+                let h = img.height;
+
+                // Resize si dépasse maxPx
+                if (w > h) {
+                    if (w > maxPx) { h = Math.round(h * maxPx / w); w = maxPx; }
+                } else {
+                    if (h > maxPx) { w = Math.round(w * maxPx / h); h = maxPx; }
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width  = w;
+                canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+
+                const compressed = canvas.toDataURL('image/jpeg', quality);
+                URL.revokeObjectURL(url);
+                resolve(compressed);
+            };
+
+            img.onerror = function() {
+                URL.revokeObjectURL(url);
+                resolve('');
+            };
+
+            img.src = url;
+        });
+    }
+
+    function handleImagePreview(input, box) {
+        input.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            // Prévisualisation immédiate (FileReader = rapide)
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let preview = box.querySelector('.mpp-upload-preview');
+                if (!preview) {
+                    preview = document.createElement('img');
+                    preview.className = 'mpp-upload-preview';
+                    box.appendChild(preview);
+                }
+                preview.src = e.target.result;
+                box.classList.add('has-image');
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    handleImagePreview(imgInput1, uploadBox1);
+    handleImagePreview(imgInput2, uploadBox2);
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const sendBtn = form.querySelector('.mpp-send-btn');
+        sendBtn.disabled = true;
+        sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+        // ── Compression avant envoi (MAX 800px, qualité 0.7) ──
+        const image1Base64 = await compressImage(
+            imgInput1.files[0] || null, 800, 0.7
+        );
+        const image2Base64 = await compressImage(
+            imgInput2.files[0] || null, 800, 0.7
+        );
+
+        const payload = {
+            firstname:     form.querySelector('[name="firstname"]').value,
+            lastname:      form.querySelector('[name="lastname"]').value,
+            email:         form.querySelector('[name="email"]').value,
+            phone:         form.querySelector('[name="phone"]').value,
+            product_title: form.querySelector('[name="product_title"]').value,
+            product_desc:  form.querySelector('[name="product_desc"]').value,
+            image1_base64: image1Base64,
+            image2_base64: image2Base64
+        };
+
+        try {
+            const res  = await fetch('/.netlify/functions/save-personalized-product', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.error || 'Unknown error');
+
+            form.style.display   = 'none';
+            successBox.style.display = 'block';
+
+        } catch (err) {
+            console.error(err);
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send My Idea';
+            alert('Something went wrong. Please try again.');
+        }
+    });
+})();
+// ====================== END MY PERSONALIZED PRODUCT POPUP ======================
 
 
 // ══════════════════════════════════════════

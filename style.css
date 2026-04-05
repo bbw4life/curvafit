@@ -5243,17 +5243,58 @@ tbody tr:hover { background: var(--rose-ultra); }
 }
 
 
+#filter-bar-sentinel {
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    visibility: hidden;
+}
+
+#filter-bar-placeholder {
+    display: none;
+    height: 0;
+}
+
 .filter-bar {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
     padding: 16px 20px;
     background: var(--bg, #fff);
     position: sticky;
-    top: 60px;
-    z-index: 90;
+    top: 90px;
+    z-index: 40;
     border-bottom: 1px solid rgba(0,0,0,0.07);
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.filter-bar::-webkit-scrollbar {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .filter-bar {
+        justify-content: flex-start;
+        padding: 10px 12px;
+    }
+
+    .filter-bar.is-fixed {
+        position: fixed;
+         top: 85px;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 40;
+    }
+
+    #filter-bar-placeholder.visible {
+        display: block;
+    }
 }
 
 .filter-btn {
@@ -5266,6 +5307,8 @@ tbody tr:hover { background: var(--rose-ultra); }
     cursor: pointer;
     transition: all 0.2s;
     color: inherit;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .filter-btn:hover,
@@ -12540,4 +12583,5 @@ html.fonts-loaded [class*="fa-"] {
   .cfck-btn--outline { order: 2; }
   .cfck-btn--primary { order: 1; }
 }
+
 
