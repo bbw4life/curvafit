@@ -1867,7 +1867,6 @@ function applyPromoFreeItems() {
                 let w = img.width;
                 let h = img.height;
 
-                // Resize si dépasse maxPx
                 if (w > h) {
                     if (w > maxPx) { h = Math.round(h * maxPx / w); w = maxPx; }
                 } else {
@@ -1898,7 +1897,6 @@ function applyPromoFreeItems() {
             const file = this.files[0];
             if (!file) return;
 
-            // Prévisualisation immédiate (FileReader = rapide)
             const reader = new FileReader();
             reader.onload = function(e) {
                 let preview = box.querySelector('.mpp-upload-preview');
@@ -1924,12 +1922,12 @@ function applyPromoFreeItems() {
         sendBtn.disabled = true;
         sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
-        // ── Compression avant envoi (MAX 800px, qualité 0.7) ──
+        // ── Compression MAX 200px, qualité 0.6 — identique au story-form ──
         const image1Base64 = await compressImage(
-            imgInput1.files[0] || null, 800, 0.7
+            imgInput1.files[0] || null, 200, 0.6
         );
         const image2Base64 = await compressImage(
-            imgInput2.files[0] || null, 800, 0.7
+            imgInput2.files[0] || null, 200, 0.6
         );
 
         const payload = {
@@ -1952,7 +1950,7 @@ function applyPromoFreeItems() {
             const data = await res.json();
             if (!data.success) throw new Error(data.error || 'Unknown error');
 
-            form.style.display   = 'none';
+            form.style.display       = 'none';
             successBox.style.display = 'block';
 
         } catch (err) {

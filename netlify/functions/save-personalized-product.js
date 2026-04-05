@@ -44,17 +44,17 @@ exports.handler = async (event) => {
     }
 
     const row = [[
-      formatDate(),           // A - Date
-      formatTime(),           // B - Time
-      firstname.trim(),       // C - First Name
-      lastname.trim(),        // D - Last Name
+      formatDate(),               // A - Date
+      formatTime(),               // B - Time
+      firstname.trim(),           // C - First Name
+      lastname.trim(),            // D - Last Name
       email.trim().toLowerCase(), // E - Email
-      phone.trim(),           // F - Phone
-      product_title.trim(),   // G - Product Title
-      product_desc.trim(),    // H - Product Description
-      image1_base64 ? "Yes" : "No", // I - Image 1 uploaded
-      image2_base64 ? "Yes" : "No", // J - Image 2 uploaded
-      "New"                   // K - Status
+      phone.trim(),               // F - Phone
+      product_title.trim(),       // G - Product Title
+      product_desc.trim(),        // H - Product Description
+      image1_base64 || "",        // I - Image 1 (base64)
+      image2_base64 || "",        // J - Image 2 (base64)
+      "New"                       // K - Status
     ]];
 
     await sheets.spreadsheets.values.append({
