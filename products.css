@@ -5422,13 +5422,13 @@ body::-webkit-scrollbar {
     background: #fff;
     border-radius: 20px;
     width: 100%;
-    max-height: 90vh;
+    max-height: 80vh;
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
     position: relative;
     z-index: 1;
-    padding: 36px 32px 32px;
+    padding: 30px 40px 25px;
     box-sizing: border-box;
     animation: mppIn 0.3s ease;
 }
@@ -5654,7 +5654,7 @@ body::-webkit-scrollbar {
 
 /* Responsive */
 @media (max-width: 540px) {
-    .mpp-popup { padding: 5px 0px 10px; }
+    .mpp-popup { padding: 5px 30px 10px; }
     .mpp-row { grid-template-columns: 1fr; }
     .mpp-header h2 { font-size: 1.2rem; }
     .my-product-btn { width: 100%; }

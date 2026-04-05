@@ -59,7 +59,7 @@ exports.handler = async (event) => {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: "Sheet1!A:K",
+      range: "CustoremersProductPersonalized!A:K",
       valueInputOption: "RAW",
       insertDataOption: "INSERT_ROWS",
       resource: { values: row }
