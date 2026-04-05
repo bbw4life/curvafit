@@ -36,7 +36,60 @@
     setTimeout(function() { el.classList.remove('bsearch-highlight'); }, 2400);
   }
 
+  function toCategorySlug(category) {
+    return category.toLowerCase()
+      .replace(/[&]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
   function init(articles) {
+
+    // ── INJECT TITLES FROM blog-articles.json ──
+    articles.forEach(function(article) {
+
+      // Featured article
+      if (article.id === 'featured') {
+        var featH2 = document.querySelector('#featured-article h2');
+        if (featH2) featH2.textContent = article.title;
+        var featP = document.querySelector('#featured-article .featured-card > p');
+        if (featP) featP.textContent = article.excerpt;
+      }
+
+      // Blog grid cards — matched by category slug
+      var card = document.querySelector('.blog-card[data-category="' + toCategorySlug(article.category) + '"]');
+      if (card) {
+        var cardH3 = card.querySelector('h3');
+        if (cardH3) cardH3.textContent = article.title;
+        var cardP = card.querySelector('p');
+        if (cardP) cardP.textContent = article.excerpt;
+      }
+
+      // Most popular items — matched by href
+      var popularItems = document.querySelectorAll('.popular-item');
+      popularItems.forEach(function(item) {
+        var link = item.querySelector('a');
+        if (link && link.getAttribute('href') === article.url) {
+          var h3 = item.querySelector('h3');
+          if (h3) h3.textContent = article.title;
+        }
+      });
+
+      // Editor's picks — matched by href
+      var pickCards = document.querySelectorAll('.pick-card');
+      pickCards.forEach(function(pickCard) {
+        var link = pickCard.querySelector('a');
+        if (link && link.getAttribute('href') === article.url) {
+          var h3 = pickCard.querySelector('h3');
+          if (h3) h3.textContent = article.title;
+          var p = pickCard.querySelector('p');
+          if (p) p.textContent = article.excerpt;
+        }
+      });
+    });
+    // ── END INJECT ──
+
     var input = document.getElementById('blog-search-input');
     if (!input) return;
 

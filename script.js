@@ -1815,11 +1815,6 @@ function applyPromoFreeItems() {
 // ====================== END FILTER BAR ======================
 
 
-
-
-
-
-
 // ====================== MY PERSONALIZED PRODUCT POPUP ======================
 (function initMyProductPopup() {
     const overlay      = document.getElementById('mppOverlay');
@@ -4545,10 +4540,12 @@ document.addEventListener('DOMContentLoaded', function () {
     ══════════════════════════════════════ */
     function formatMarkdown(text) {
       const internalIds = [
-        'resistance-bands','yoga-mat','leggings','sports-bra',
-        'hydration-bottle','workout-towel','fitness-tracker','protein-shaker',
-        'dumbbell-set','jump-rope','foam-roller','yoga-blocks',
-        'ankle-weights','cooling-towel','massage-ball','gym-bag'
+        'Pdg-Francenel-product1','Pdg-Francenel-product2','Pdg-Francenel-product3',
+        'Pdg-Francenel-product4','Pdg-Francenel-product5','Pdg-Francenel-product6',
+        'Pdg-Francenel-product7','Pdg-Francenel-product8','Pdg-Francenel-product9',
+        'Pdg-Francenel-product10','Pdg-Francenel-product11','Pdg-Francenel-product12',
+        'Pdg-Francenel-product13','Pdg-Francenel-product14','Pdg-Francenel-product15',
+        'Pdg-Francenel-product16'
       ];
       let out = text;
       internalIds.forEach(id => {

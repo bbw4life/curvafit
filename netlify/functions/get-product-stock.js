@@ -1,26 +1,22 @@
 const crypto = require('crypto');
 
-// ─────────────────────────────────────────────────────────────────
-//  MAPPING : id interne → cj_id EPROLO
-//  (extrait de products.data.json — mettre à jour si nouveaux produits)
-// ─────────────────────────────────────────────────────────────────
 const INTERNAL_TO_CJ = {
-  'resistance-bands':  '31246341',
-  'yoga-mat':          '31246339',
-  'leggings':          '31246387',
-  'sports-bra':        '31246342',
-  'hydration-bottle':  '31246386',
-  'workout-towel':     '31350659',
-  'fitness-tracker':   '31246232',
-  'protein-shaker':    '31246385',
-  'dumbbell-set':      '31246336',
-  'jump-rope':         '31246377',
-  'foam-roller':       '31246323',
-  'yoga-blocks':       '31246335',
-  'ankle-weights':     '31246346',
-  'cooling-towel':     '31246417',
-  'massage-ball':      '31246429',
-  'gym-bag':           '31246437',
+  'Pdg-Francenel-product1':  '31246341',
+  'Pdg-Francenel-product2':  '31246339',
+  'Pdg-Francenel-product3':  '31246387',
+  'Pdg-Francenel-product4':  '31246342',
+  'Pdg-Francenel-product5':  '31246386',
+  'Pdg-Francenel-product6':  '31350659',
+  'Pdg-Francenel-product7':  '31246232',
+  'Pdg-Francenel-product8':  '31246385',
+  'Pdg-Francenel-product9':  '31246336',
+  'Pdg-Francenel-product10': '31246377',
+  'Pdg-Francenel-product11': '31246323',
+  'Pdg-Francenel-product12': '31246335',
+  'Pdg-Francenel-product13': '31246346',
+  'Pdg-Francenel-product14': '31246417',
+  'Pdg-Francenel-product15': '31246429',
+  'Pdg-Francenel-product16': '31246437',
 };
 
 exports.handler = async (event) => {
@@ -34,7 +30,6 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers, body: '' };
   }
 
-  // ── Accepter ?cj_id=31246341  OU  ?cj_id=resistance-bands ──
   const { cj_id: rawParam } = event.queryStringParameters || {};
 
   if (!rawParam) {
@@ -45,7 +40,6 @@ exports.handler = async (event) => {
     };
   }
 
-  // Résoudre : si c'est un id interne → convertir en cj_id numérique
   const cj_id = INTERNAL_TO_CJ[rawParam] || rawParam;
 
   try {
@@ -60,7 +54,6 @@ exports.handler = async (event) => {
       };
     }
 
-    // ── Appel getproduct.html (même méthode que fetch-eprolo-products.js) ──
     const timestamp = Date.now();
     const sign = crypto
       .createHash('md5')
@@ -109,7 +102,6 @@ exports.handler = async (event) => {
       };
     }
 
-    // Produit non trouvé ou erreur EPROLO
     const errMsg = data.msg || 'Product not found';
     console.warn(`[get-product-stock] EPROLO error for cj_id=${cj_id}: ${errMsg}`);
     return {

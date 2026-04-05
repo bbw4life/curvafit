@@ -17,16 +17,41 @@
   const TYPE_ORDER = ['product', 'program', 'page', 'blog', 'feature', 'coach', 'policy'];
 
   function loadIndex() {
-    fetch('/search.data.json')
-      .then(r => r.json())
-      .then(data => {
-        searchIndex = data;
-        searchReady = true;
-        initSearch();
-      })
-      .catch(() => {
-        searchReady = false;
+    Promise.all([
+      fetch('/search.data.json').then(r => r.json()),
+      fetch('/products.data.json').then(r => r.json())
+    ])
+    .then(([searchData, productsData]) => {
+
+      // Récupérer les vrais produits (sans l'objet settings)
+      const realProducts = productsData.filter(p => !p.type);
+
+      // Pour chaque entrée de type "product" dans search.data.json
+      // on retrouve le produit correspondant via l'URL (ex: product1.html → index 0)
+      searchIndex = searchData.map(item => {
+        if (item.type !== 'product') return item;
+
+        // Extraire le numéro depuis l'URL (ex: /products/product3.html → 3)
+        const match = (item.url || '').match(/product(\d+)\.html/);
+        if (!match) return item;
+
+        const productIndex = parseInt(match[1]) - 1;
+        const prod = realProducts[productIndex];
+        if (!prod) return item;
+
+        // Remplacer le titre par celui de products.data.json
+        return {
+          ...item,
+          title: prod.title
+        };
       });
+
+      searchReady = true;
+      initSearch();
+    })
+    .catch(() => {
+      searchReady = false;
+    });
   }
 
   function score(item, query) {
@@ -80,24 +105,24 @@
   }
 
   function positionDropdown(input, dropdown) {
-  const rect = input.getBoundingClientRect();
-  const viewportWidth = window.innerWidth;
-  const dropWidth = Math.min(Math.max(rect.width, 340), 500);
+    const rect = input.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const dropWidth = Math.min(Math.max(rect.width, 340), 500);
 
-  let left = rect.left;
+    let left = rect.left;
 
-  if (left + dropWidth > viewportWidth - 8) {
-    left = viewportWidth - dropWidth - 8;
+    if (left + dropWidth > viewportWidth - 8) {
+      left = viewportWidth - dropWidth - 8;
+    }
+
+    if (left < 8) {
+      left = 8;
+    }
+
+    dropdown.style.top   = (rect.bottom + 6) + 'px';
+    dropdown.style.left  = left + 'px';
+    dropdown.style.width = dropWidth + 'px';
   }
-
-  if (left < 8) {
-    left = 8;
-  }
-
-  dropdown.style.top   = (rect.bottom + 6) + 'px';
-  dropdown.style.left  = left + 'px';
-  dropdown.style.width = dropWidth + 'px';
-}
 
   function renderDropdown(dropdown, results, query) {
     dropdown.innerHTML = '';
@@ -124,7 +149,14 @@
 
       const icon = document.createElement('span');
       icon.className = 'curva-search-icon';
-      icon.textContent = item.icon || '📄';
+      if (item.icon && item.icon.startsWith('fa')) {
+        const i = document.createElement('i');
+        i.className = item.icon;
+        i.style.color = '#e91e63';
+        icon.appendChild(i);
+      } else {
+        icon.textContent = item.icon || '📄';
+      }
 
       const text = document.createElement('span');
       text.className = 'curva-search-text';

@@ -399,23 +399,23 @@ function searchProducts(query, products) {
     if ((q.includes('out of stock') || q.includes('rupture') || q.includes('agotado')) && badgeLower.includes('out stock')) score += 15;
 
     const themes = [
-      { words: ['hula','hoop','belly','ventre','barriga','vientre'],          id: 'resistance-bands', boost: 12 },
-      { words: ['waist trainer','gainant','waist cinch','corset','faja'],     id: 'yoga-mat',         boost: 12 },
-      { words: ['jump rope','corde','skip','sauter','cuerda','saltar'],       id: 'leggings',         boost: 12 },
-      { words: ['legging','yoga pant','high waist','peach','malla'],          id: 'sports-bra',       boost: 12 },
-      { words: ['jumpsuit','combinaison','pilates','mono'],                   id: 'hydration-bottle', boost: 12 },
-      { words: ['tie dye','seamless legging'],                                id: 'workout-towel',    boost: 12 },
-      { words: ['sport bra','bra','brassiere','soutien','sujetador','top'],   id: 'fitness-tracker',  boost: 12 },
-      { words: ['knee','genoux','genouillère','pad','rodilla','rodillera'],   id: 'protein-shaker',   boost: 12 },
-      { words: ['posture','dos','back','corrector','correcteur','postura'],   id: 'dumbbell-set',     boost: 12 },
-      { words: ['bracelet','tracker','heart rate','sleep','pouls','pulsera'],id: 'jump-rope',         boost: 12 },
-      { words: ['acupressure','stress mat','recovery','tapis','esterilla'],   id: 'foam-roller',      boost: 12 },
-      { words: ['belly belt','ceinture ventre','cramp','chaleur','cinturón'],id: 'yoga-blocks',       boost: 12 },
-      { words: ['bottle','water','gourde','bouteille','botella','agua'],      id: 'ankle-weights',    boost: 12 },
-      { words: ['shoe','chaussure','running','sneaker','zapatilla'],          id: 'cooling-towel',    boost: 12 },
-      { words: ['pillow','oreiller','neck','cervical','nuque','almohada'],    id: 'massage-ball',     boost: 12 },
-      { words: ['earbuds','headphone','music','écouteur','auricular'],        id: 'gym-bag',          boost: 12 },
-    ];
+  { words: ['hula','hoop','belly','ventre','barriga','vientre'],          id: 'Pdg-Francenel-product1',  boost: 12 },
+  { words: ['waist trainer','gainant','waist cinch','corset','faja'],     id: 'Pdg-Francenel-product2',  boost: 12 },
+  { words: ['jump rope','corde','skip','sauter','cuerda','saltar'],       id: 'Pdg-Francenel-product3',  boost: 12 },
+  { words: ['legging','yoga pant','high waist','peach','malla'],          id: 'Pdg-Francenel-product4',  boost: 12 },
+  { words: ['jumpsuit','combinaison','pilates','mono'],                   id: 'Pdg-Francenel-product5',  boost: 12 },
+  { words: ['tie dye','seamless legging'],                                id: 'Pdg-Francenel-product6',  boost: 12 },
+  { words: ['sport bra','bra','brassiere','soutien','sujetador','top'],   id: 'Pdg-Francenel-product7',  boost: 12 },
+  { words: ['knee','genoux','genouillère','pad','rodilla','rodillera'],   id: 'Pdg-Francenel-product8',  boost: 12 },
+  { words: ['posture','dos','back','corrector','correcteur','postura'],   id: 'Pdg-Francenel-product9',  boost: 12 },
+  { words: ['bracelet','tracker','heart rate','sleep','pouls','pulsera'], id: 'Pdg-Francenel-product10', boost: 12 },
+  { words: ['acupressure','stress mat','recovery','tapis','esterilla'],   id: 'Pdg-Francenel-product11', boost: 12 },
+  { words: ['belly belt','ceinture ventre','cramp','chaleur','cinturón'], id: 'Pdg-Francenel-product12', boost: 12 },
+  { words: ['bottle','water','gourde','bouteille','botella','agua'],      id: 'Pdg-Francenel-product13', boost: 12 },
+  { words: ['shoe','chaussure','running','sneaker','zapatilla'],          id: 'Pdg-Francenel-product14', boost: 12 },
+  { words: ['pillow','oreiller','neck','cervical','nuque','almohada'],    id: 'Pdg-Francenel-product15', boost: 12 },
+  { words: ['earbuds','headphone','music','écouteur','auricular'],        id: 'Pdg-Francenel-product16', boost: 12 },
+];
     themes.forEach(t => {
       if (p.id === t.id && t.words.some(w => q.includes(w))) score += t.boost;
     });

@@ -2,7 +2,7 @@
   {
     "cj_id": "31246341",
     "sku_internal": "DS-001",
-    "id": "resistance-bands",
+    "id": "Pdg-Francenel-product1",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -79,7 +79,7 @@
   {
     "cj_id": "31246339",
     "sku_internal": "WT-001",
-    "id": "yoga-mat",
+    "id": "Pdg-Francenel-product2",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -139,7 +139,7 @@
   {
     "cj_id": "31246387",
     "sku_internal": "JR-001",
-    "id": "leggings",
+    "id": "Pdg-Francenel-product3",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -185,7 +185,7 @@
   {
     "cj_id": "31246342",
     "sku_internal": "PS-001",
-    "id": "sports-bra",
+    "id": "Pdg-Francenel-product4",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -275,7 +275,7 @@
   {
     "cj_id": "31246386",
     "sku_internal": "YB-001",
-    "id": "hydration-bottle",
+    "id": "Pdg-Francenel-product5",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -340,7 +340,7 @@
   {
     "cj_id": "31350659",
     "sku_internal": "LG-001",
-    "id": "workout-towel",
+    "id": "Pdg-Francenel-product6",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -398,7 +398,7 @@
   {
     "cj_id": "31246232",
     "sku_internal": "SB-001",
-    "id": "fitness-tracker",
+    "id": "Pdg-Francenel-product7",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -489,7 +489,7 @@
   {
     "cj_id": "31246385",
     "sku_internal": "FR-001",
-    "id": "protein-shaker",
+    "id": "Pdg-Francenel-product8",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -538,7 +538,7 @@
   {
     "cj_id": "31246336",
     "sku_internal": "AW-001",
-    "id": "dumbbell-set",
+    "id": "Pdg-Francenel-product9",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -586,7 +586,7 @@
   {
     "cj_id": "31246377",
     "sku_internal": "FT-001",
-    "id": "jump-rope",
+    "id": "Pdg-Francenel-product10",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -635,7 +635,7 @@
   {
     "cj_id": "31246323",
     "sku_internal": "YM-001",
-    "id": "foam-roller",
+    "id": "Pdg-Francenel-product11",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -680,7 +680,7 @@
   {
     "cj_id": "31246335",
     "sku_internal": "EPROLO-31216361",
-    "id": "yoga-blocks",
+    "id": "Pdg-Francenel-product12",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -723,7 +723,7 @@
   {
     "cj_id": "31246346",
     "sku_internal": "HB-001",
-    "id": "ankle-weights",
+    "id": "Pdg-Francenel-product13",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -770,7 +770,7 @@
   {
     "cj_id": "31246417",
     "sku_internal": "CT-001",
-    "id": "cooling-towel",
+    "id": "Pdg-Francenel-product14",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -814,7 +814,7 @@
   {
     "cj_id": "31246429",
     "sku_internal": "MB-001",
-    "id": "massage-ball",
+    "id": "Pdg-Francenel-product15",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -869,7 +869,7 @@
   {
     "cj_id": "31246437",
     "sku_internal": "GB-001",
-    "id": "gym-bag",
+    "id": "Pdg-Francenel-product16",
     "active": true,
     "stock_managed_by": "eprolo",
     "currency": "USD",
@@ -929,7 +929,7 @@
       "promo_buy_quantity": 5,
       "promo_get_quantity": 3,
       "show_promo_message": "Yes",
-      "promo_free_product_ids": ["gym-bag", "resistance-bands","yoga-mat"],
+      "promo_free_product_ids": ["Pdg-Francenel-product16", "Pdg-Francenel-product1", "Pdg-Francenel-product2"],
       "promo_initial_message": "Buy paul {buy} items, get {get} FREE!",
       "promo_progress_message": "Add {remaining} more, get {get} FREE!",
       "promo_complete_message": "🎁 Congrats! You get {get} FREE item!",
@@ -981,7 +981,7 @@
     },
     "top_starter_products": {
       "label": "Best products to start your weight loss journey",
-      "product_ids": ["resistance-bands", "yoga-mat", "fitness-tracker", "protein-shaker", "dumbbell-set"]
+      "product_ids": ["Pdg-Francenel-product1", "Pdg-Francenel-product2", "Pdg-Francenel-product7", "Pdg-Francenel-product8", "Pdg-Francenel-product9"]
     },
     "contact": {
       "whatsapp_url": "https://wa.me/18292677434",
@@ -997,7 +997,7 @@
       "newsletter":  "newsletter@curvafit.com"
     },
     "featured_spotlight": {
-      "product_id": "resistance-bands"
+      "product_id": "Pdg-Francenel-product1"
     },
     "story_circles": {
       "animations": {
@@ -1007,7 +1007,7 @@
         "float":   "no",
         "glow":    "no"
       },
-      "product_ids": ["resistance-bands", "yoga-mat", "fitness-tracker", "protein-shaker", "dumbbell-set", "sports-bra", "leggings"]
+      "product_ids": ["Pdg-Francenel-product1", "Pdg-Francenel-product2", "Pdg-Francenel-product7", "Pdg-Francenel-product8", "Pdg-Francenel-product9", "Pdg-Francenel-product4", "Pdg-Francenel-product3"]
     },
     "bundle_deal": {
       "title": "The CurvaFit Starter Bundle",
@@ -1015,9 +1015,9 @@
       "savings_label": "You Save:",
       "cta_label": "Get The Bundle",
       "products": [
-        {"id": "resistance-bands","subtitle": "Burns belly fat in 20 min/day"},
-        {"id": "yoga-mat","subtitle": "S to 6XL — compresses and shapes"},
-        {"id": "fitness-tracker","subtitle": "S to 5XL — all-day comfort"}
+        {"id": "Pdg-Francenel-product1","subtitle": "Burns belly fat in 20 min/day"},
+        {"id": "Pdg-Francenel-product2","subtitle": "S to 6XL — compresses and shapes"},
+        {"id": "Pdg-Francenel-product7","subtitle": "S to 5XL — all-day comfort"}
       ]
     }
   }

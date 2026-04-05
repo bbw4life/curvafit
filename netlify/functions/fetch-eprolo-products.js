@@ -1,26 +1,23 @@
 // fetch-eprolo-products.js — VERSION PARALLÈLE
 const crypto = require('crypto');
 
-// ─────────────────────────────────────────────
-// 📦 TA LISTE DE PRODUITS (cj_id uniquement)
-// ─────────────────────────────────────────────
 const MY_PRODUCT_IDS = [
-  "31246341",  // resistance-bands
-  "31246339",  // yoga-mat
-  "31246387",  // leggings
-  "31246342",  // sports-bra
-  "31246386",  // hydration-bottle
-  "31350659",  // workout-towel
-  "31246232",  // fitness-tracker
-  "31246385",  // protein-shaker
-  "31246336",  // dumbbell-set
-  "31246377",  // jump-rope
-  "31246323",  // foam-roller
-  "31246335",  // yoga-blocks
-  "31246346",  // ankle-weights
-  "31246417",  // cooling-towel
-  "31246429",  // massage-ball
-  "31246437",  // gym-bag
+  "31246341",  // Pdg-Francenel-product1
+  "31246339",  // Pdg-Francenel-product2
+  "31246387",  // Pdg-Francenel-product3
+  "31246342",  // Pdg-Francenel-product4
+  "31246386",  // Pdg-Francenel-product5
+  "31350659",  // Pdg-Francenel-product6
+  "31246232",  // Pdg-Francenel-product7
+  "31246385",  // Pdg-Francenel-product8
+  "31246336",  // Pdg-Francenel-product9
+  "31246377",  // Pdg-Francenel-product10
+  "31246323",  // Pdg-Francenel-product11
+  "31246335",  // Pdg-Francenel-product12
+  "31246346",  // Pdg-Francenel-product13
+  "31246417",  // Pdg-Francenel-product14
+  "31246429",  // Pdg-Francenel-product15
+  "31246437",  // Pdg-Francenel-product16
 ];
 
 const SEP  = "═".repeat(80);
@@ -39,7 +36,6 @@ exports.handler = async (event) => {
     const apiKey    = process.env.EPROLO_API_KEY;
     const apiSecret = process.env.EPROLO_API_SECRET;
 
-    // ── 1. FETCH DE TOUS LES PRODUITS EN PARALLÈLE ──────────────────────────
     const results = await Promise.all(
       MY_PRODUCT_IDS.map(async (productId) => {
         try {
@@ -73,15 +69,12 @@ exports.handler = async (event) => {
       })
     );
 
-    // Filtrer les résultats null (échecs)
     const allProducts = results.filter(Boolean);
 
-    // ── 2. RÉCAPITULATIF ───────────────────────────────────────────────────
     log(SEP);
     log(`  TOTAL RÉCUPÉRÉS : ${allProducts.length} / ${MY_PRODUCT_IDS.length}`);
     log(SEP);
 
-    // ── 3. DÉTAIL PRODUITS ─────────────────────────────────────────────────
     allProducts.forEach((product, index) => {
       const varCount = product.variantlist ? product.variantlist.length : 0;
 
@@ -96,7 +89,6 @@ exports.handler = async (event) => {
         return;
       }
 
-      // Grouper les variants par couleur (option1)
       const colorGroups = {};
 
       product.variantlist.forEach((variant) => {
@@ -118,7 +110,6 @@ exports.handler = async (event) => {
         });
       });
 
-      // Affichage groupé par couleur
       Object.entries(colorGroups).forEach(([color, variants]) => {
         log(`        🎨  ${color}  (${variants.length} taille(s))`);
         variants.forEach((v) => {
