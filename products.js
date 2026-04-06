@@ -752,3 +752,9 @@ updateSummary();
 
     bars.forEach(function(bar) { observer.observe(bar); });
 })();
+
+
+
+
+
+

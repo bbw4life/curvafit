@@ -1009,6 +1009,41 @@
       },
       "product_ids": ["Pdg-Francenel-product1", "Pdg-Francenel-product2", "Pdg-Francenel-product7", "Pdg-Francenel-product8", "Pdg-Francenel-product9", "Pdg-Francenel-product4", "Pdg-Francenel-product3"]
     },
+    "Pdg-Francenel-products": {
+      "product_ids": [
+        "Pdg-Francenel-product1",
+        "Pdg-Francenel-product2",
+        "Pdg-Francenel-product3",
+        "Pdg-Francenel-product4",
+        "Pdg-Francenel-product5",
+        "Pdg-Francenel-product6",
+        "Pdg-Francenel-product7",
+        "Pdg-Francenel-product8",
+        "Pdg-Francenel-product9",
+        "Pdg-Francenel-product10",
+        "Pdg-Francenel-product11",
+        "Pdg-Francenel-product12",
+        "Pdg-Francenel-product13",
+        "Pdg-Francenel-product14",
+        "Pdg-Francenel-product15",
+        "Pdg-Francenel-product16"
+      ],
+      "col_card_animations": {
+        "fadeSlideUp": "no",
+        "zoomFade": "no",
+        "flipIn": "yes",
+        "slideLeft": "no",
+        "slideRight": "no",
+        "rotateIn": "no",
+        "glowPop": "no"
+      },
+      "page_size": 12,
+      "max_price": 200,
+      "animation": "fadeSlideUp",
+      "hero_title": "Gear Built For Your Curves",
+      "hero_subtitle": "Every product designed with curvy women in mind — comfortable, effective, beautiful.",
+      "hero_eyebrow": "Our Full Collection"
+    },
     "bundle_deal": {
       "title": "The CurvaFit Starter Bundle",
       "subtitle": "Our 3 most-loved pieces — chosen by 8,000+ curvy women to start their transformation.",

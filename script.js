@@ -1106,6 +1106,22 @@ function applyPromoFreeItems() {
           card.querySelector('p').textContent = product.description;
           const img = card.querySelector('img');
           if (img) { img.src = upgradeShopifyImageUrl(product.image, 1000); img.alt = product.title; }
+          // ── BADGE depuis products.data.json — coin inférieur droit ──
+            let badgeEl = card.querySelector('.product-card-json-badge');
+            if (!badgeEl) {
+              badgeEl = document.createElement('span');
+              badgeEl.className = 'product-card-json-badge';
+              // Le wrapper de l'image doit être position:relative
+              const imgWrapper = img.parentElement;
+              imgWrapper.style.position = 'relative';
+              imgWrapper.appendChild(badgeEl);
+            }
+            if (product.badge && product.badge.text) {
+              badgeEl.textContent = product.badge.text;
+              badgeEl.style.display = 'block';
+            } else {
+              badgeEl.style.display = 'none';
+            }
           // ── HOVER IMAGE SWAP ──
             if (product.image_hover) {
                 const imgHover = upgradeShopifyImageUrl(product.image_hover);
@@ -1680,6 +1696,19 @@ function applyPromoFreeItems() {
 }, 300);
 
       window.getProductUrl = getProductUrl;
+
+// Ces lignes existaient déjà — NE PAS SUPPRIMER
+window.openCartDrawer = openCartDrawer;
+window.renderCart = renderCart;
+window.renderWishlist = renderWishlist;
+window.updateBadges = updateBadges;
+window.updateWishlistIcons = updateWishlistIcons;
+
+// Ces 4 lignes sont NOUVELLES — à ajouter
+window.__getCart = () => cart;
+window.__setCart = (c) => { cart = c; };
+window.__getWishlist = () => wishlist;
+window.__setWishlist = (w) => { wishlist = w; };
 
 
 
@@ -2591,11 +2620,11 @@ if (carousel) {
     const paymentIcons        = cartDrawer.querySelector('.payment-icons');
     const cartFooter          = cartDrawer.querySelector('.cart-drawer__footer');
 
-    const countdown   = cartDrawer.querySelector('.cart-drawer__countdown');
-    const progressBar = cartDrawer.querySelector('.cart-drawer__progress-container');
-    const promoMsg    = cartDrawer.querySelector('.cart-promo-message');
-    const banner      = cartDrawer.querySelector('.cart-drawer__paul-banner');
-    const promoCodes  = cartDrawer.querySelector('.cart-drawer__promo-slider-container');
+   const countdown   = document.querySelector('.cart-drawer__countdown');
+    const progressBar = document.querySelector('.cart-drawer__progress-container');
+    const promoMsg    = document.querySelector('.cart-promo-message');
+    const banner      = document.querySelector('.cart-drawer__paul-banner');
+    const promoCodes  = document.querySelector('.cart-drawer__promo-slider-container');
 
     if (cart.length === 0) {
       if (emptyCart)           emptyCart.style.display           = 'block';
@@ -2829,16 +2858,36 @@ if (carousel) {
     }).catch(() => {});
   }
 
+
   function openCartDrawer() {
     if (products && products.length > 0 && typeof applyPromoFreeItems === 'function') {
         applyPromoFreeItems();
         saveCart();
         updateBadges();
     }
+    
     renderCart();
     cartDrawer.classList.add('active');
     overlay.classList.add('active');
-    setTimeout(() => initCartDrawerExtras(), 100);
+
+    if (cart.length === 0) {
+        // Masquer les éléments dynamiques créés par initCartDrawerExtras
+        setTimeout(() => {
+            const countdown   = document.querySelector('.cart-drawer__countdown');
+            const progressBar = document.querySelector('.cart-drawer__progress-container');
+            const promoMsg    = document.querySelector('.cart-promo-message');
+            const banner      = document.querySelector('.cart-drawer__paul-banner');
+            const promoCodes  = document.querySelector('.cart-drawer__promo-slider-container');
+
+            if (countdown)   countdown.style.display   = 'none';
+            if (progressBar) progressBar.style.display = 'none';
+            if (promoMsg)    promoMsg.style.display     = 'none';
+            if (banner)      banner.style.display       = 'none';
+            if (promoCodes)  promoCodes.style.display   = 'none';
+        }, 150); // après initCartDrawerExtras (100ms)
+    } else {
+        setTimeout(() => initCartDrawerExtras(), 100);
+    }
 }
 
   // ================================================================
@@ -5205,3 +5254,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
 })();
+
+
+
+
+
