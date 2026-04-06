@@ -5283,11 +5283,6 @@ body {
 
 
 
-
-
-
-
-
 /* ===== HIDE SCROLLBAR GLOBALLY ===== */
 html, body {
     scrollbar-width: none;
@@ -5663,4 +5658,263 @@ body::-webkit-scrollbar {
 
 
 
+
+
+/* ================================================================
+   RECENTLY VIEWED
+================================================================ */
+.rv-section {
+  padding: 48px 20px 56px;
+  max-width: 1300px;
+  margin: 0 auto;
+  display: none; /* shown by JS when items exist */
+}
+
+.rv-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rv-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rv-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-primary, #e91e8c);
+  opacity: 0.85;
+}
+
+.rv-title {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 800;
+  color: var(--color-text, #1a1a2e);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.rv-clear-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 50px;
+  background: transparent;
+  color: #888;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.rv-clear-btn:hover {
+  border-color: #e91e8c;
+  color: #e91e8c;
+  background: rgba(233, 30, 140, 0.04);
+}
+
+/* ── Scrollable track ── */
+.rv-track-wrapper {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(233, 30, 140, 0.3) transparent;
+  padding-bottom: 8px;
+}
+.rv-track-wrapper::-webkit-scrollbar {
+  height: 4px;
+}
+.rv-track-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+.rv-track-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(233, 30, 140, 0.25);
+  border-radius: 4px;
+}
+
+.rv-track {
+  display: flex;
+  gap: 16px;
+  width: max-content;
+  padding: 4px 2px 12px;
+}
+
+/* ── Card ── */
+.rv-card {
+  width: 190px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  border: 1.5px solid transparent;
+  animation: rv-fadeIn 0.35s ease both;
+}
+.rv-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.13);
+  border-color: rgba(233,30,140,0.18);
+}
+
+@keyframes rv-fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Image ── */
+.rv-card__img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #f7f7f9;
+}
+.rv-card__img,
+.rv-card__img-hover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.35s ease;
+}
+.rv-card__img-hover {
+  opacity: 0;
+}
+.rv-card:hover .rv-card__img-hover {
+  opacity: 1;
+}
+.rv-card:hover .rv-card__img {
+  opacity: 0;
+}
+
+/* Badge */
+.rv-card__badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: linear-gradient(135deg, #e91e8c, #9c27b0);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 50px;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  text-transform: uppercase;
+}
+
+/* ── Body ── */
+.rv-card__body {
+  padding: 12px 13px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.rv-card__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Stars */
+.rv-card__stars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.rv-card__stars-icons {
+  display: flex;
+  gap: 1px;
+}
+.rv-card__star {
+  font-size: 11px;
+  color: #f59e0b;
+  line-height: 1;
+}
+.rv-card__star.empty {
+  color: #d1d5db;
+}
+.rv-card__rating-num {
+  font-size: 11px;
+  color: #888;
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+/* Price */
+.rv-card__prices {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.rv-card__price {
+  font-size: 15px;
+  font-weight: 800;
+  color: #e91e8c;
+}
+.rv-card__compare {
+  font-size: 12px;
+  color: #b0b0b0;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+.rv-card__discount {
+  font-size: 10px;
+  font-weight: 700;
+  background: #fff3f9;
+  color: #e91e8c;
+  border: 1px solid rgba(233,30,140,0.2);
+  border-radius: 50px;
+  padding: 2px 6px;
+}
+
+/* ── Empty state ── */
+.rv-empty {
+  text-align: center;
+  padding: 32px 20px;
+  color: #aaa;
+  font-size: 14px;
+  width: 100%;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .rv-card {
+    width: 155px;
+  }
+  .rv-section {
+    padding: 32px 16px 40px;
+  }
+  .rv-title {
+    font-size: 20px;
+  }
+}
 

@@ -2482,9 +2482,35 @@
   .col-card__title { font-size: 13px; }
   .col-card__price { font-size: 15px; }
   .col-rv-grid { grid-template-columns: repeat(2, 1fr); }
-  .col-cat-tabs { display: none; }
 }
 
+
+@media (max-width: 420px) {
+  .col-cat-tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    max-width: calc(100vw - 24px);
+    width: 100%;
+  }
+  .col-cat-tabs::-webkit-scrollbar { display: none; }
+  
+  .col-cat-tab {
+    font-size: 13px;
+    padding: 5px 10px;
+    flex-shrink: 0 !important;
+    white-space: nowrap;
+  }
+
+  /* Le parent doit aussi permettre le scroll */
+  .col-toolbar__left {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+}
 
 
 /* LIST VIEW — DESKTOP UNIQUEMENT */
