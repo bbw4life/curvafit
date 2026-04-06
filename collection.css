@@ -2452,9 +2452,9 @@
 
   /* ── FIX QUICK VIEW MOBILE : padding réduit, modal pleine largeur ── */
   .col-qv-overlay {
-    padding: 6px;
+    padding: 10px 6px; 
     align-items: flex-start;
-    padding-top: 56px;
+    padding-top: 40px;
   }
   .col-qv-modal {
     max-height: 88vh;

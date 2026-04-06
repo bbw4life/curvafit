@@ -956,6 +956,7 @@ function applyPromoFreeItems() {
         onResize();
       })();
 
+
       // ====================== SOCIAL LINKS ======================
       const socialLinks = settings.social_links || {};
       const socialMap = {
@@ -977,6 +978,25 @@ function applyPromoFreeItems() {
             a.rel = 'noopener noreferrer';
             break;
           }
+        }
+      });
+
+
+      // ====================== MOBILE NAV SOCIAL LINKS ======================
+      document.querySelectorAll('.mobile-nav-footer__social-btn').forEach(a => {
+        const social = a.dataset.social;
+        const urlMap = {
+          facebook:  socialLinks.facebook,
+          instagram: socialLinks.instagram,
+          tiktok:    socialLinks.tiktok,
+          youtube:   socialLinks.youtube,
+          pinterest: socialLinks.pinterest,
+          whatsapp:  socialLinks.whatsapp,
+          twitter:   socialLinks.twitter
+        };
+        const url = urlMap[social];
+        if (url) {
+          a.href = url;
         }
       });
 

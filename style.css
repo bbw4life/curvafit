@@ -625,7 +625,6 @@ a { text-decoration: none; color: inherit; }
 
 
 
-
 /* ─────────────────────────────────────────────
    HERO
 ───────────────────────────────────────────── */
@@ -12601,6 +12600,382 @@ html.fonts-loaded [class*="fa-"] {
   .cfck-btn--ghost { order: 3; }
   .cfck-btn--outline { order: 2; }
   .cfck-btn--primary { order: 1; }
+}
+
+
+
+/* ================================================================
+   MOBILE NAV FOOTER — couleurs charte + slide-in liens
+================================================================ */
+@media (max-width: 900px) {
+
+    .main-nav {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        max-height: calc(100dvh - 60px) !important;
+    }
+
+    /* ── Slide-in des items menu (li) ── */
+    .main-nav li {
+        border-bottom: 1px solid rgba(192, 56, 94, 0.08);
+        opacity: 0;
+        transform: translateX(-18px);
+        transition:
+            opacity   0.28s ease,
+            transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .main-nav.active li { opacity: 1; transform: translateX(0); }
+    .main-nav.active li:nth-child(1)  { transition-delay: 0.04s; }
+    .main-nav.active li:nth-child(2)  { transition-delay: 0.08s; }
+    .main-nav.active li:nth-child(3)  { transition-delay: 0.12s; }
+    .main-nav.active li:nth-child(4)  { transition-delay: 0.16s; }
+    .main-nav.active li:nth-child(5)  { transition-delay: 0.20s; }
+    .main-nav.active li:nth-child(6)  { transition-delay: 0.24s; }
+    .main-nav.active li:nth-child(7)  { transition-delay: 0.28s; }
+    .main-nav.active li:nth-child(8)  { transition-delay: 0.32s; }
+    .main-nav.active li:nth-child(9)  { transition-delay: 0.36s; }
+    .main-nav.active li:nth-child(10) { transition-delay: 0.40s; }
+
+    /* ── Slide-in des liens <a> (texte + icône) ── */
+    .main-nav li a {
+        opacity: 0;
+        transform: translateX(-22px);
+        transition:
+            opacity           0.30s ease,
+            transform         0.30s cubic-bezier(0.34, 1.56, 0.64, 1),
+            background        0.22s ease,
+            padding-left      0.22s ease,
+            border-left-color 0.22s ease;
+    }
+
+    .main-nav.active li:nth-child(1)  a { opacity: 1; transform: translateX(0); transition-delay: 0.06s; }
+    .main-nav.active li:nth-child(2)  a { opacity: 1; transform: translateX(0); transition-delay: 0.10s; }
+    .main-nav.active li:nth-child(3)  a { opacity: 1; transform: translateX(0); transition-delay: 0.14s; }
+    .main-nav.active li:nth-child(4)  a { opacity: 1; transform: translateX(0); transition-delay: 0.18s; }
+    .main-nav.active li:nth-child(5)  a { opacity: 1; transform: translateX(0); transition-delay: 0.22s; }
+    .main-nav.active li:nth-child(6)  a { opacity: 1; transform: translateX(0); transition-delay: 0.26s; }
+    .main-nav.active li:nth-child(7)  a { opacity: 1; transform: translateX(0); transition-delay: 0.30s; }
+    .main-nav.active li:nth-child(8)  a { opacity: 1; transform: translateX(0); transition-delay: 0.34s; }
+    .main-nav.active li:nth-child(9)  a { opacity: 1; transform: translateX(0); transition-delay: 0.38s; }
+    .main-nav.active li:nth-child(10) a { opacity: 1; transform: translateX(0); transition-delay: 0.42s; }
+
+    /* ================================================================
+       FOOTER
+    ================================================================ */
+    .mobile-nav-footer {
+        display: block;
+        /* Charcoal teinté plum — cohérent avec --charcoal #1e1a1c et --plum #7b3f6e */
+        background: rgba(30, 16, 24, 0.97);
+        border-top: 1px solid rgba(192, 56, 94, 0.22);
+        margin-top: 0;
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(14px);
+        transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .main-nav.active .mobile-nav-footer {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.44s;
+    }
+
+    /* ── Sweep lumineux diagonal au hover ── */
+    .mobile-nav-footer::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 60%; height: 100%;
+        background: linear-gradient(
+            105deg,
+            transparent 0%,
+            rgba(192, 56, 94, 0.05) 30%,
+            rgba(201, 150, 62, 0.09) 50%,
+            rgba(192, 56, 94, 0.05) 70%,
+            transparent 100%
+        );
+        transform: skewX(-15deg);
+        transition: left 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .mobile-nav-footer:hover::before { left: 150%; }
+
+    /* ── Filet lumineux border-top au hover ── */
+    .mobile-nav-footer::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(192, 56, 94, 0.55) 30%,
+            rgba(201, 150, 62, 0.45) 50%,
+            rgba(192, 56, 94, 0.55) 70%,
+            transparent 100%
+        );
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: 2;
+    }
+
+    .mobile-nav-footer:hover::after { opacity: 1; }
+
+    /* Tout le contenu passe au-dessus des pseudo-éléments */
+    .mobile-nav-footer > * { position: relative; z-index: 2; }
+
+    /* === BRAND === */
+    .mobile-nav-footer__brand {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 7px;
+        padding: 20px 20px 16px;
+        border-bottom: 1px solid rgba(192, 56, 94, 0.10);
+    }
+
+    .mobile-nav-footer__brand img {
+        height: 32px;
+        object-fit: contain;
+        filter: brightness(1.15) saturate(1.1);
+    }
+
+    .mobile-nav-footer__tagline {
+        font-size: 10.5px;
+        /* blanc teinté --rose-pale */
+        color: rgba(253, 232, 239, 0.35);
+        text-align: center;
+        line-height: 1.65;
+        font-style: italic;
+        margin: 0;
+        letter-spacing: 0.02em;
+    }
+
+    /* === STATS === */
+    .mobile-nav-footer__stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 7px;
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(192, 56, 94, 0.10);
+    }
+
+    .mobile-nav-footer__stat {
+        background: rgba(192, 56, 94, 0.06);
+        border: 1px solid rgba(192, 56, 94, 0.18);
+        border-radius: 9px;
+        padding: 10px 5px;
+        text-align: center;
+        transition: border-color 0.3s, background 0.3s;
+    }
+
+    .mobile-nav-footer__stat:hover {
+        background: rgba(192, 56, 94, 0.12);
+        border-color: rgba(192, 56, 94, 0.38);
+    }
+
+    .mobile-nav-footer__stat-value {
+        display: block;
+        /* dégradé exactement --rose #c0385e → --gold #c9963e */
+        background: linear-gradient(135deg, #c0385e, #c9963e);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+    }
+
+    .mobile-nav-footer__stat-label {
+        display: block;
+        color: rgba(253, 232, 239, 0.30);
+        font-size: 8.5px;
+        margin-top: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+
+    /* === TRUST BADGES === */
+    .mobile-nav-footer__trust {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(192, 56, 94, 0.10);
+    }
+
+    .mobile-nav-footer__trust-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        background: rgba(192, 56, 94, 0.04);
+        border: 1px solid rgba(192, 56, 94, 0.12);
+        border-radius: 9px;
+        padding: 9px 11px;
+        transition: border-color 0.25s, background 0.25s;
+    }
+
+    .mobile-nav-footer__trust-item:hover {
+        background: rgba(192, 56, 94, 0.09);
+        border-color: rgba(192, 56, 94, 0.28);
+    }
+
+    .mobile-nav-footer__trust-icon {
+        width: 26px;
+        height: 26px;
+        background: rgba(192, 56, 94, 0.14);
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        /* exactement --rose */
+        color: #c0385e;
+        font-size: 11px;
+    }
+
+    .mobile-nav-footer__trust-text strong {
+        display: block;
+        color: rgba(253, 248, 245, 0.82);
+        font-size: 10.5px;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    .mobile-nav-footer__trust-text span {
+        display: block;
+        color: rgba(253, 232, 239, 0.30);
+        font-size: 9px;
+        line-height: 1.3;
+    }
+
+    /* === SOCIALS === */
+    .mobile-nav-footer__socials-wrap {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(192, 56, 94, 0.10);
+    }
+
+    .mobile-nav-footer__section-label {
+        color: rgba(253, 232, 239, 0.22);
+        font-size: 8.5px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-align: center;
+        display: block;
+        margin-bottom: 11px;
+    }
+
+    .mobile-nav-footer__socials {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 7px;
+    }
+
+    .mobile-nav-footer__social-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 12px;
+        color: rgba(253, 232, 239, 0.50);
+        text-decoration: none;
+        background: rgba(192, 56, 94, 0.06) !important;
+        border: 1px solid rgba(192, 56, 94, 0.14) !important;
+        transition:
+            color        0.22s ease,
+            background   0.22s ease,
+            border-color 0.22s ease,
+            transform    0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .mobile-nav-footer__social-btn:hover {
+        color: #c0385e;
+        background: rgba(192, 56, 94, 0.14) !important;
+        border-color: rgba(192, 56, 94, 0.32) !important;
+        transform: translateY(-2px) scale(1.10);
+    }
+
+    /* Tous les boutons sociaux — style unifié */
+    .mobile-nav-footer__social-btn--fb,
+    .mobile-nav-footer__social-btn--ig,
+    .mobile-nav-footer__social-btn--tt,
+    .mobile-nav-footer__social-btn--yt,
+    .mobile-nav-footer__social-btn--pi,
+    .mobile-nav-footer__social-btn--wa,
+    .mobile-nav-footer__social-btn--tw {
+        background: rgba(192, 56, 94, 0.06) !important;
+        border: 1px solid rgba(192, 56, 94, 0.14) !important;
+    }
+
+    /* === PAYMENTS === */
+    .mobile-nav-footer__payments-wrap {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(192, 56, 94, 0.10);
+    }
+
+    .mobile-nav-footer__payments {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .mobile-nav-footer__payment-badge {
+        background: rgba(192, 56, 94, 0.05);
+        border: 1px solid rgba(192, 56, 94, 0.12);
+        border-radius: 5px;
+        padding: 4px 10px;
+        color: rgba(253, 232, 239, 0.45);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.4px;
+        transition: border-color 0.22s, color 0.22s;
+    }
+
+    .mobile-nav-footer__payment-badge:hover {
+        border-color: rgba(192, 56, 94, 0.28);
+        color: rgba(253, 248, 245, 0.80);
+    }
+
+    /* === LEGAL + COPYRIGHT === */
+    .mobile-nav-footer__legal {
+        padding: 12px 16px 4px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 7px 14px;
+    }
+
+    .mobile-nav-footer__legal a {
+        color: rgba(253, 232, 239, 0.24);
+        font-size: 9.5px;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .mobile-nav-footer__legal a:hover { color: #c0385e; }
+
+    .mobile-nav-footer__copyright {
+        text-align: center;
+        font-size: 9px;
+        color: rgba(253, 232, 239, 0.14);
+        padding: 9px 16px 16px;
+        margin: 0;
+    }
+
+    .mobile-nav-footer__copyright span { color: rgba(192, 56, 94, 0.60); }
+}
+
+@media (min-width: 901px) {
+    .mobile-nav-footer { display: none !important; }
 }
 
 
