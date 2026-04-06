@@ -108,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const query = this.value.trim().toLowerCase();
       let visibleCount = 0;
 
+      // Reset category filters
       filterButtons.forEach(function (btn) {
         btn.classList.toggle('active', btn.getAttribute('data-category') === 'all');
       });
@@ -132,6 +133,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
+    // Search button click
     const searchBtn = document.querySelector('.search-btn');
     if (searchBtn) {
       searchBtn.addEventListener('click', function () {
@@ -150,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function step(timestamp) {
       if (!startTime) startTime = timestamp;
       var progress = Math.min((timestamp - startTime) / duration, 1);
-      var eased = 1 - Math.pow(1 - progress, 3);
+      var eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
       var current = Math.floor(eased * target);
       el.textContent = current >= 1000
         ? (current / 1000).toFixed(current >= 10000 ? 0 : 1) + 'k'
@@ -190,6 +192,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var dots     = document.querySelectorAll('.pop-dot');
 
   if (carousel) {
+    var cardWidth = 0;
+
     function getCardWidth() {
       var firstItem = carousel.querySelector('.popular-item');
       if (!firstItem) return 280;
@@ -231,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
 
+    // Auto-scroll every 5 seconds
     var autoTimer = setInterval(function () {
       var maxScroll = carousel.scrollWidth - carousel.clientWidth;
       if (carousel.scrollLeft >= maxScroll - 5) {
@@ -241,6 +246,7 @@ document.addEventListener('DOMContentLoaded', function () {
       setTimeout(updateDots, 350);
     }, 5000);
 
+    // Pause on hover
     carousel.addEventListener('mouseenter', function () { clearInterval(autoTimer); });
     carousel.parentElement.addEventListener('mouseenter', function () { clearInterval(autoTimer); });
   }
@@ -265,6 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var title = card ? (card.querySelector('h3') || {}).textContent : '';
     var bookmarks = getBookmarks();
 
+    // Mark if already saved
     if (title && bookmarks.includes(title)) {
       btn.classList.add('saved');
       btn.querySelector('i').className = 'fi fi-sr-bookmark';
@@ -294,6 +301,109 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ════════════════════════════════════════
+  //  NEWSLETTER — Mid-page form
+  //  Uses same Netlify function as footer form
+  // ════════════════════════════════════════
+  var nlForm = document.querySelector('#blog-newsletter #newsletter-form');
+  var nlEmail = document.querySelector('#blog-newsletter #newsletter-email');
+
+  if (nlForm && nlEmail) {
+    nlForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var email = nlEmail.value.trim();
+      if (!email || !email.includes('@')) return;
+
+      var btn = nlForm.querySelector('.blog-nl-btn');
+      var originalHTML = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fi fi-rr-spinner"></i> Subscribing...';
+      }
+
+      try {
+        var res = await fetch('/.netlify/functions/save-account', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ action: 'newsletter-subscribe', email: email })
+        });
+        var data = await res.json();
+
+        if (data.success) {
+          // Show success popup (same as footer)
+          var popup = document.getElementById('newsletter-popup');
+          if (popup) {
+            popup.classList.add('show');
+            setTimeout(function () { popup.classList.remove('show'); }, 8000);
+            var closePopupBtn = document.getElementById('popup-close-btn');
+            if (closePopupBtn) closePopupBtn.onclick = function () { popup.classList.remove('show'); };
+          }
+          nlEmail.value = '';
+          if (btn) {
+            btn.innerHTML = '<i class="fi fi-rr-check"></i> Subscribed!';
+            setTimeout(function () {
+              btn.disabled = false;
+              btn.innerHTML = originalHTML;
+            }, 4000);
+          }
+        } else {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+          }
+        }
+      } catch (err) {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalHTML;
+        }
+        console.error('Newsletter error:', err);
+      }
+    });
+  }
+
+  // ════════════════════════════════════════
+  //  FOOTER NEWSLETTER (duplicate form handling)
+  // ════════════════════════════════════════
+  var footerNlForm  = document.getElementById('newsletter-form-footer');
+  var footerNlEmail = document.getElementById('newsletter-email-footer');
+
+  if (footerNlForm && footerNlEmail) {
+    footerNlForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var email = footerNlEmail.value.trim();
+      if (!email || !email.includes('@')) return;
+
+      var btn = footerNlForm.querySelector('button');
+      var originalText = btn ? btn.textContent : '';
+      if (btn) { btn.textContent = 'Saving...'; btn.disabled = true; }
+
+      try {
+        var res = await fetch('/.netlify/functions/save-account', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ action: 'newsletter-subscribe', email: email })
+        });
+        var data = await res.json();
+
+        if (data.success) {
+          var popup = document.getElementById('newsletter-popup');
+          if (popup) {
+            popup.classList.add('show');
+            setTimeout(function () { popup.classList.remove('show'); }, 8000);
+            var closeBtn = document.getElementById('popup-close-btn');
+            if (closeBtn) closeBtn.onclick = function () { popup.classList.remove('show'); };
+          }
+          footerNlEmail.value = '';
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (btn) { btn.textContent = originalText; btn.disabled = false; }
+      }
+    });
+  }
+
+  // ════════════════════════════════════════
   //  SHARE BUTTONS
   // ════════════════════════════════════════
   document.querySelectorAll('.share-btn').forEach(function (btn) {
@@ -319,45 +429,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
-
-  // ════════════════════════════════════════
-  //  NEWSLETTER — Mid-page form
-  // ════════════════════════════════════════
-  var nlForm  = document.querySelector('#blog-newsletter #blog-newsletter-form');
-var nlEmail = document.querySelector('#blog-newsletter #newsletter-email');
-
-if (nlForm && nlEmail) {
-  nlForm.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    e.stopImmediatePropagation(); 
-      var email = nlEmail.value.trim();
-      if (!email || !email.includes('@')) return;
-
-      var btn = nlForm.querySelector('.blog-nl-btn');
-      var originalHTML = btn ? btn.innerHTML : '';
-      if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fi fi-rr-spinner"></i> Subscribing...'; }
-
-      try {
-        var res = await fetch('/.netlify/functions/save-account', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'newsletter-subscribe', email: email })
-        });
-        var data = await res.json();
-        if (data.success) {
-          nlEmail.value = '';
-          if (btn) { btn.innerHTML = '<i class="fi fi-rr-check"></i> Subscribed!'; }
-          setTimeout(function () {
-            if (btn) { btn.disabled = false; btn.innerHTML = originalHTML; }
-          }, 4000);
-        } else {
-          if (btn) { btn.disabled = false; btn.innerHTML = originalHTML; }
-        }
-      } catch (err) {
-        if (btn) { btn.disabled = false; btn.innerHTML = originalHTML; }
-      }
-    });
-  }
 
 });
 
