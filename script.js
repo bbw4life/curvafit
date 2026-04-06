@@ -2719,11 +2719,11 @@ if (carousel) {
   if (playOverlay) playOverlay.addEventListener('click', () => { showErrorPopup('Video playback started'); });
 
   // ====================== NEWSLETTER ======================
-  const newsletterForm = document.getElementById('newsletter-form');
-  if (newsletterForm) {
-    newsletterForm.addEventListener('submit', async (e) => {
+ const newsletterForm = document.getElementById('newsletter-form');
+if (newsletterForm && !newsletterForm.classList.contains('blog-nl-form')) {
+  newsletterForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const emailInput = document.getElementById('newsletter-email');
+      const emailInput = newsletterForm.querySelector('input[type="email"]');
       const email = emailInput.value.trim();
       if (!email || !email.includes('@')) { showErrorPopup("Please enter a valid email"); return; }
       const submitBtn = newsletterForm.querySelector('button');

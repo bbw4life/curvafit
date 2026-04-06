@@ -3432,6 +3432,11 @@ section#hero.faq-hero,
   grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
   gap: 26px;
 }
+
+
+
+
+
 /* ================================================================
    CURVAFIT BLOG — blog.css
    Complete stylesheet for blog.html
@@ -5093,10 +5098,8 @@ section#hero.faq-hero,
 }
 
 /* ════════════════════════════════════════
-   RESPONSIVE
+   RESPONSIVE — Tablet
 ════════════════════════════════════════ */
-
-/* Tablet */
 @media (max-width: 1024px) {
   .featured-card {
     grid-template-columns: 1fr;
@@ -5112,15 +5115,18 @@ section#hero.faq-hero,
   .blog-nl-perks { align-items: flex-start; max-width: 420px; margin: 0 auto; }
 }
 
-/* Mobile */
+/* ════════════════════════════════════════
+   RESPONSIVE — Mobile
+════════════════════════════════════════ */
 @media (max-width: 768px) {
 
+  /* Hero */
   .blog-banner {
     min-height: 300px;
   }
 
   .blog-banner .hero-content {
-    padding: 52px 18px 20px;
+    padding: 52px 18px 10px;
   }
 
   .blog-banner h1 {
@@ -5136,6 +5142,7 @@ section#hero.faq-hero,
     font-size: 9px;
   }
 
+  /* Stats */
   .blog-stats-container {
     gap: 10px;
   }
@@ -5150,6 +5157,12 @@ section#hero.faq-hero,
   }
 
   .blog-stat-num { font-size: 1.4rem; }
+
+  /* Featured */
+  .featured-article-section {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
 
   .featured-body {
     padding: 18px 18px 16px;
@@ -5168,34 +5181,76 @@ section#hero.faq-hero,
     align-items: flex-start;
   }
 
+  /* Blog Grid */
+  .blog-grid-section {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
   .blog-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* Most Popular — corrigé */
+  .most-popular-section {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .popular-slider-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
   }
 
   .pop-arrow {
     display: none;
   }
 
-  .popular-item {
-    flex: 0 0 220px;
+  .popular-carousel {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    overflow-x: unset;
+    padding: 4px 0 8px;
+    flex: unset;
   }
 
+  .popular-item {
+    flex: unset;
+    width: 100%;
+  }
+
+  .popular-img-wrap {
+    height: 130px;
+  }
+
+  .popular-rank {
+    font-size: 22px;
+  }
+
+  /* Picks */
   .picks-grid {
     grid-template-columns: 1fr;
   }
 
+  /* Myth */
   .myth-grid {
     grid-template-columns: 1fr;
   }
 
+  /* Authors */
   .authors-grid {
     grid-template-columns: 1fr;
   }
 
+  /* Newsletter */
   .blog-nl-card {
     padding: 20px 16px;
   }
 
+  /* CTA */
   .blog-cta-section {
     padding: 28px 20px;
   }
@@ -5213,6 +5268,7 @@ section#hero.faq-hero,
     gap: 14px;
   }
 
+  /* Filters */
   .category-filters {
     gap: 6px;
   }
@@ -5225,15 +5281,25 @@ section#hero.faq-hero,
   .section-title {
     font-size: 1.5rem;
   }
+
+  .blog-grid-section .container,
+  .featured-article-section .container,
+  .most-popular-section .container,
+  .authors-section .container,
+  .editors-picks-section .container,
+  .myth-fact-section .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
+/* ════════════════════════════════════════
+   RESPONSIVE — Mobile petit (< 480px)
+════════════════════════════════════════ */
 @media (max-width: 480px) {
+
   .blog-stat-item {
     flex: 0 0 48%;
-  }
-
-  .popular-item {
-    flex: 0 0 200px;
   }
 
   .featured-meta-row {
@@ -5245,7 +5311,37 @@ section#hero.faq-hero,
     flex-direction: column;
     gap: 6px;
   }
+  .blog-grid-section .container,
+  .featured-article-section .container,
+  .most-popular-section .container,
+  .authors-section .container,
+  .editors-picks-section .container,
+  .myth-fact-section .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
+
+/* ════════════════════════════════════════
+   RESPONSIVE — Très petit (< 400px)
+════════════════════════════════════════ */
+@media (max-width: 400px) {
+
+  .popular-carousel {
+    grid-template-columns: 1fr;
+  }
+  .blog-grid-section .container,
+  .featured-article-section .container,
+  .most-popular-section .container,
+  .authors-section .container,
+  .editors-picks-section .container,
+  .myth-fact-section .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+
 
 /* ─────────────────────────────────────────────
    ABOUT PAGE
@@ -7755,9 +7851,27 @@ details p {
     .careers-banner {
         min-height: 420px;
     }
-    .popular-carousel {
-        flex-direction: column;
-    }
+    .popular-slider-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .popular-carousel {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    overflow-x: unset;
+    padding: 4px 0;
+  }
+
+  .popular-item {
+    flex: unset;
+    width: 100%;
+  }
+
+  .pop-arrow {
+    display: none;
+  }
     .category-filters {
         flex-direction: row;
     }
