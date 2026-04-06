@@ -582,7 +582,7 @@ function applyPromoFreeItems() {
       document.querySelectorAll('.buy-now').forEach(btn => {
         btn.innerHTML = `<i class="fi fi-rr-bolt"></i> ${L.buyNow}`;
       });
-      document.querySelectorAll('.flash-deal__cta, .ba-cta').forEach(btn => {
+      document.querySelectorAll('.flash-deal__cta, .ba-cta, .empty-cart .cta').forEach(btn => {
         btn.textContent = `${L.shopNow} →`;
       });
       document.querySelectorAll('.checkout').forEach(btn => btn.textContent = L.checkout);
@@ -1837,8 +1837,8 @@ window.__setWishlist = (w) => { wishlist = w; };
         });
     });
 
-    applyFilter('all');
-    initMobileSticky();
+    // applyFilter('all');
+     initMobileSticky();
 
 })();
 // ====================== END FILTER BAR ======================

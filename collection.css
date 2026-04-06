@@ -2380,6 +2380,22 @@
 
   .col-grid.grid-view { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 
+  /* ── FIX SIZE BUTTONS : scroll horizontal en mobile + grid view uniquement ── */
+  .col-grid.grid-view .col-card__sizes {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    gap: 2px;
+    padding-bottom: 2px;
+    white-space: nowrap;
+    text-overflow: unset;
+  }
+  .col-grid.grid-view .col-card__sizes::-webkit-scrollbar { display: none; }
+  .col-grid.grid-view .col-card__size-btn { flex-shrink: 0; }
+
   .col-grid.list-view .col-product-card { flex-direction: column; height: auto; }
   .col-grid.list-view .col-card__media { width: 100%; height: auto; aspect-ratio: 1/1; }
   .col-grid.list-view .col-card__actions { width: auto; flex-direction: row; padding: 0 12px 12px; }
@@ -2397,9 +2413,35 @@
   .col-rv-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .col-recently-viewed { padding: 20px 12px 12px; }
 
+  /* ── FIX FBT MOBILE : bouton et prix visibles ── */
   .col-fbt-section { padding: 20px 12px; }
-  .col-fbt-inner { gap: 10px; }
-  .col-fbt-card { width: 140px; }
+  .col-fbt-inner {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+  }
+  .col-fbt-card { 
+    width: calc(50% - 24px);
+    flex-shrink: 0;
+  }
+  .col-fbt-plus {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .col-fbt-cta {
+    display: flex !important;
+    width: 100%;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .col-fbt-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
 
   /* FIX #4 — sticky bar mobile */
   .col-sticky-bar__inner { padding: 12px 16px; gap: 8px; }
@@ -2408,16 +2450,31 @@
   .col-compare-modal { max-height: 95vh; }
   .col-compare-modal__body { padding: 16px; }
 
+  /* ── FIX QUICK VIEW MOBILE : padding réduit, modal pleine largeur ── */
+  .col-qv-overlay {
+    padding: 6px;
+    align-items: flex-start;
+    padding-top: 56px;
+  }
+  .col-qv-modal {
+    max-height: 88vh;
+    width: 100%;
+    border-radius: 14px;
+  }
   .col-qv-inner { grid-template-columns: 1fr; }
-  .col-qv-media { border-radius: var(--col-radius-lg) var(--col-radius-lg) 0 0; aspect-ratio: 4/3; }
-  .col-qv-info { padding: 20px 20px 20px; }
-  .col-qv-title { font-size: 18px; }
-  .col-qv-price { font-size: 22px; }
+  .col-qv-media {
+    border-radius: 14px 14px 0 0;
+    aspect-ratio: 4/3;
+  }
+  .col-qv-info {
+    padding: 14px 14px 16px;
+    gap: 8px;
+  }
+  .col-qv-title { font-size: 17px; }
+  .col-qv-price { font-size: 20px; }
 
   .col-exit-popup { padding: 36px 24px 28px; }
   .col-exit-title { font-size: 22px; }
-
-  .col-fbt-cta { display: none; }
 }
 
 @media (max-width: 420px) {
@@ -2426,4 +2483,152 @@
   .col-card__price { font-size: 15px; }
   .col-rv-grid { grid-template-columns: repeat(2, 1fr); }
   .col-cat-tabs { display: none; }
+}
+
+
+
+/* LIST VIEW — DESKTOP UNIQUEMENT */
+@media (min-width: 769px) {
+  .col-grid.list-view .col-product-card { 
+    flex-direction: row; 
+    height: 200px; 
+  }
+  .col-grid.list-view .col-card__media { 
+    width: 200px; 
+    flex-shrink: 0; 
+    aspect-ratio: unset; 
+    height: 100%; 
+  }
+  .col-grid.list-view .col-card__info { 
+    padding: 16px 20px; 
+    flex: 1; 
+  }
+  .col-grid.list-view .col-card__title { 
+    font-size: 18px; 
+    -webkit-line-clamp: 2; 
+  }
+  .col-grid.list-view .col-card__price { 
+    font-size: 22px; 
+  }
+  .col-grid.list-view .col-card__actions { 
+    padding: 0 20px 0 0; 
+    flex-direction: column; 
+    justify-content: center; 
+    width: 180px; 
+    flex-shrink: 0; 
+    gap: 8px;
+  }
+  .col-grid.list-view .col-card__btn {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+  .col-grid.list-view .col-card__quick-view { display: none; }
+  .col-grid.list-view .col-card__select { top: 8px; right: 8px; }
+}
+
+
+/* ================================================================
+   COLLECTION MARQUEE BOOST
+================================================================ */
+.col-marquee-section {
+  background: linear-gradient(135deg, #1a1714 0%, #2d2420 50%, #1a1714 100%);
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+  border-top: 2px solid var(--col-accent);
+  border-bottom: 2px solid var(--col-accent);
+  margin-top: -28px;
+}
+
+.col-marquee-section::before,
+.col-marquee-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 120px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.col-marquee-section::before {
+  left: 0;
+  background: linear-gradient(to right, #1a1714 0%, transparent 100%);
+}
+
+.col-marquee-section::after {
+  right: 0;
+  background: linear-gradient(to left, #1a1714 0%, transparent 100%);
+}
+
+.col-marquee-track {
+  display: flex;
+  align-items: center;
+  padding: 14px 0;
+}
+
+.col-marquee-inner {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  white-space: nowrap;
+  animation: colMarqueeScroll 28s linear infinite;
+  will-change: transform;
+}
+
+.col-marquee-inner:hover {
+  animation-play-state: paused;
+}
+
+@keyframes colMarqueeScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.col-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 32px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #fff;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.col-marquee-item i {
+  color: var(--col-accent-2);
+  font-size: 14px;
+}
+
+.col-marquee-item:hover {
+  color: var(--col-accent-2);
+}
+
+.col-marquee-sep {
+  color: var(--col-accent);
+  font-size: 12px;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .col-marquee-section::before,
+  .col-marquee-section::after {
+    width: 60px;
+  }
+  .col-marquee-section {
+  margin-top: -10px;
+}
+  .col-marquee-item {
+    font-size: 11px;
+    padding: 0 20px;
+  }
+  .col-marquee-inner {
+    animation-duration: 20s;
+  }
 }

@@ -357,6 +357,10 @@
         ? settings.flash_deal.hours : 4;
       initCountdown(flashHours);
 
+      const bp = (settings.promos || []).reduce((b,p) => p.percent > (b.percent||0) ? p : b, {});
+      if (bp.code)    document.querySelector('.col-flash-sub strong').textContent = bp.code;
+      if (bp.percent) document.querySelector('.col-flash-title').innerHTML = document.querySelector('.col-flash-title').innerHTML.replace('20', bp.percent);
+
       const freeShipThreshold = (settings.cart_drawer && settings.cart_drawer.free_shipping_threshold)
         ? settings.cart_drawer.free_shipping_threshold : 50;
       const spFreeShipEl = $('spFreeShipping');
