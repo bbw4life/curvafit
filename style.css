@@ -13432,7 +13432,7 @@ html.fonts-loaded [class*="fa-"] {
 
 
 @media (max-width: 768px) {
-    .container {
+    .container:not(.product-content .container):not(.product-section .container) {
         max-width: 100% !important;
         padding: 0 7px !important;
     }

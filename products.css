@@ -425,8 +425,8 @@ button.buy-now.cta:hover {
         max-width: 100vw !important;
         margin-left: -20px !important;
         margin-right: -20px !important;
-        margin-top: 5px !important;
         padding: 25px 0 10px !important;
+        margin-top: 5px !important;
         box-sizing: border-box !important;
         border-radius: 0 !important;
         box-shadow: inset 1px 0 0 #fef3c7, inset -1px 0 0 #fef3c7 !important;
@@ -2875,7 +2875,6 @@ body {
 .container {
     max-width: 1500px;
     margin: 0 auto;
-    padding: 0 20px;
 }
 .our-journey-section h2 {
     text-align: center;

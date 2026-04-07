@@ -563,53 +563,55 @@ function applyPromoFreeItems() {
 
 
       const settings = products.find(p => p.type === "settings") || {};
-      injectChatWidgetSettings(settings); 
-      function injectChatWidgetSettings(settings) {
-        const w     = settings.chat_widget      || {};
-        const chips = settings.chat_quick_chips || [];
+          // ── Chat widget inject ──
+          (function() {
+            const w     = settings.chat_widget      || {};
+            const chips = settings.chat_quick_chips || [];
 
-        const logo = document.getElementById('cf-agent-logo');
-          if (logo && w.agent_logo) {
-            logo.src = w.agent_logo;
-            logo.onerror = () => { logo.style.display = 'none'; };
-            logo.style.display = 'block';
-          }
-        const nameEl = document.getElementById('cf-agent-name');
-        if (nameEl) {
-          nameEl.innerHTML = (w.agent_name || 'Curva')
-            + (w.agent_badge ? ` <span class="cf-ai-badge">${w.agent_badge}</span>` : '');
-        }
+            const logo = document.getElementById('cf-agent-logo');
+            if (logo && w.agent_logo) {
+              logo.src = w.agent_logo;
+              logo.onerror = () => { logo.style.display = 'none'; };
+              logo.style.display = 'block';
+            }
 
-        const titleEl = document.getElementById('cf-agent-title');
-        if (titleEl) titleEl.textContent = w.agent_title || 'CurvaFit Fitness Expert';
+            const nameEl = document.getElementById('cf-agent-name');
+            if (nameEl) {
+              nameEl.innerHTML = (w.agent_name || 'Curva')
+                + (w.agent_badge ? ` <span class="cf-ai-badge">${w.agent_badge}</span>` : '');
+            }
 
-        const typingEl = document.getElementById('cf-typing-label');
-        if (typingEl) typingEl.textContent = w.typing_label || 'Curva is typing…';
+            const titleEl = document.getElementById('cf-agent-title');
+            if (titleEl) titleEl.textContent = w.agent_title || 'CurvaFit Fitness Expert';
 
-        const inputEl = document.getElementById('cf-input');
-        if (inputEl) inputEl.placeholder = w.input_placeholder || 'Ask me anything…';
+            const typingEl = document.getElementById('cf-typing-label');
+            if (typingEl) typingEl.textContent = w.typing_label || 'Curva is typing…';
 
-        const hintEl = document.getElementById('cf-powered-by');
-        if (hintEl) hintEl.textContent = w.powered_by || 'Powered by CurvaFit AI · Press Enter to send';
+            const inputEl = document.getElementById('cf-input');
+            if (inputEl) inputEl.placeholder = w.input_placeholder || 'Ask me anything…';
 
-        const chipsContainer = document.getElementById('cf-quick-chips');
-        if (chipsContainer && chips.length) {
-          chipsContainer.innerHTML = chips.map(chip => `
-            <button class="cf-chip" data-msg="${chip.msg.replace(/"/g, '&quot;')}">
-              <i class="${chip.icon}"></i> ${chip.label}
-            </button>
-          `).join('');
+            const hintEl = document.getElementById('cf-powered-by');
+            if (hintEl) hintEl.textContent = w.powered_by || 'Powered by CurvaFit AI · Press Enter to send';
 
-          chipsContainer.querySelectorAll('.cf-chip').forEach(btn => {
-            btn.addEventListener('click', () => {
-              const msg = btn.getAttribute('data-msg');
-              if (msg && typeof window.__cfSendMessage === 'function') {
-                window.__cfSendMessage(msg);
-              }
-            });
-          });
-        }
-      }
+            const chipsContainer = document.getElementById('cf-quick-chips');
+            if (chipsContainer && chips.length) {
+              chipsContainer.innerHTML = chips.map(chip => `
+                <button class="cf-chip" data-msg="${chip.msg.replace(/"/g, '&quot;')}">
+                  <i class="${chip.icon}"></i> ${chip.label}
+                </button>
+              `).join('');
+
+              chipsContainer.querySelectorAll('.cf-chip').forEach(btn => {
+                btn.addEventListener('click', () => {
+                  const msg = btn.getAttribute('data-msg');
+                  if (msg && typeof window.__cfSendMessage === 'function') {
+                    window.__cfSendMessage(msg);
+                  }
+                });
+              });
+            }
+          })();
+      
       const plansAvailable = (settings.plans_available || 'no').toLowerCase() === 'yes';
       const planTriggerWrap = document.querySelector('.plan-request-trigger-wrap');
       if (planTriggerWrap) {
@@ -5327,6 +5329,8 @@ document.addEventListener('DOMContentLoaded', function () {
         sendBtn.disabled = input.value.trim().length === 0;
       }
     }
+
+    window.__cfSendMessage = sendMessage;
 
     /* ── Input handlers ── */
     input.addEventListener('input', function () {
