@@ -1459,13 +1459,13 @@
         </div>
     </div>
     <div id="newsletter-popup" class="newsletter-success-popup">
-        <div class="popup-content">
-            <div class="popup-icon"><i class="fi fi-rr-party-horn"></i></div>
-            <h3>You're in!</h3>
-            <p>Check your inbox — your 10% discount is on its way.</p>
-            <button id="popup-close-btn">Close</button>
+            <div class="popup-content">
+                <div class="popup-icon"><i class="fi fi-rr-party-bell"></i></div>
+                <h3></h3>
+                <p></p>
+                <button id="popup-close-btn"></button>
+            </div>
         </div>
-    </div>
     <div class="copyright"><p>&copy; 2026 CurvaFit. All rights reserved.</p></div>
 </footer>
 
@@ -1597,46 +1597,49 @@
 </div>
 
 <div class="paul-indicator-wrapper">
-    <a href="#" class="paul-indicator" id="paulTrigger">
-        <i class="fi fi-rr-user"></i>
-        <span class="paul-tooltip">Earn 20% if you login/signup</span>
-    </a>
-</div>
-
-<div class="paul-popup-overlay" id="paulPopup">
-    <div class="paul-popup">
-        <span class="paul-close">×</span>
-        <h2 class="paul-offer-title">20% OFF TODAY ONLY!</h2>
-        <p class="paul-offer-subtitle">Log in or sign up now</p>
-        <div id="authContainer">
-            <div id="loginForm" class="auth-form">
-                <h3>Login</h3>
-                <input type="email" placeholder="Email" required>
-                <div class="password-input-wrapper" style="position:relative !important;">
-                    <input type="password" id="login-password" placeholder="Password" required>
-                    <span class="password-toggle" data-target="login-password"><i class="fi fi-sr-eye"></i></span>
+        <a href="#" class="paul-indicator" id="paulTrigger">
+            <i class="fi fi-rr-user"></i>
+            <span class="paul-tooltip"></span>
+        </a>
+    </div>
+    <div class="paul-popup-overlay" id="paulPopup">
+        <div class="paul-popup">
+            <span class="paul-close">×</span>
+            <h2 class="paul-offer-title"></h2>
+            <p class="paul-offer-subtitle"></p>
+            <div id="authContainer">
+                <div id="loginForm" class="auth-form">
+                    <h3></h3>
+                    <input type="email" placeholder="Email" required>
+                    <div class="password-input-wrapper" style="position:relative !important;">
+                        <input type="password" id="login-password" placeholder="Password" required>
+                        <span class="password-toggle" data-target="login-password">
+                            <i class="fi fi-sr-eye"></i>
+                        </span>
+                    </div>
+                    <label><input type="checkbox"></label>
+                    <button type="button" class="paul-btn paul-btn-login"></button>
+                    <p class="switch-link"><span id="goToSignup"></span></p>
                 </div>
-                <label><input type="checkbox"> Remember me</label>
-                <button type="button" class="paul-btn paul-btn-login">Log In</button>
-                <p class="switch-link">No account? <span id="goToSignup">Sign Up</span></p>
-            </div>
-            <div id="signupForm" class="auth-form" style="display:none;">
-                <h3>Sign Up</h3>
-                <input type="text" placeholder="Last Name" required>
-                <input type="text" placeholder="First Name" required>
-                <input type="email" placeholder="Email" required>
-                <input type="tel" placeholder="Phone (optional)">
-                <div class="password-input-wrapper" style="position:relative !important;">
-                    <input type="password" id="signup-password" placeholder="Password" required>
-                    <span class="password-toggle" data-target="signup-password"><i class="fi fi-sr-eye"></i></span>
+                <div id="signupForm" class="auth-form" style="display:none;">
+                    <h3></h3>
+                    <input type="text" placeholder="Last Name" required>
+                    <input type="text" placeholder="First Name" required>
+                    <input type="email" placeholder="Email" required>
+                    <input type="tel" placeholder="Phone (optional)">
+                    <div class="password-input-wrapper" style="position:relative !important;">
+                        <input type="password" id="signup-password" placeholder="Password" required>
+                        <span class="password-toggle" data-target="signup-password">
+                            <i class="fi fi-sr-eye"></i>
+                        </span>
+                    </div>
+                    <label><input type="checkbox"></label>
+                    <button type="button" class="paul-btn paul-btn-register"></button>
+                    <p class="switch-link"><span id="goToLogin"></span></p>
                 </div>
-                <label><input type="checkbox"> I want to subscribe to the newsletter</label>
-                <button type="button" class="paul-btn paul-btn-register">Create My Account</button>
-                <p class="switch-link">Already have an account? <span id="goToLogin">Login</span></p>
             </div>
         </div>
     </div>
-</div>
 
 <div id="custom-popup" class="popup hidden">
     <div class="popup-content">

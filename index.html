@@ -1222,15 +1222,14 @@
                 </form>
             </div>
         </div>
-        <div id="newsletter-popup" class="newsletter-success-popup">
+<div id="newsletter-popup" class="newsletter-success-popup">
             <div class="popup-content">
                 <div class="popup-icon"><i class="fi fi-rr-party-bell"></i></div>
-                <h3>Welcome to the CurvaFit Family!</h3>
-                <p>You'll receive weekly tips, real meal plans, and exclusive member offers.</p>
-                <button id="popup-close-btn">Close</button>
+                <h3></h3>
+                <p></p>
+                <button id="popup-close-btn"></button>
             </div>
-        </div>
-        <div class="copyright">
+        </div>        <div class="copyright">
             <p>&copy; 2026 CurvaFit. All rights reserved. | Results vary. Always consult a healthcare professional before starting any weight loss program.</p>
         </div>
     </footer>
@@ -1249,7 +1248,7 @@
             </svg>
         </button>
         <audio id="audio-element" loop>
-            <source src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/audio_glowing_1.mp3?v=1771468630" type="audio/mpeg">
+            <source src="" type="audio/mpeg">
         </audio>
     </div>
 
@@ -1263,18 +1262,17 @@
     <div class="paul-indicator-wrapper">
         <a href="#" class="paul-indicator" id="paulTrigger">
             <i class="fi fi-rr-user"></i>
-            <span class="paul-tooltip">Earn 20% if you login/signup</span>
+            <span class="paul-tooltip"></span>
         </a>
     </div>
-
     <div class="paul-popup-overlay" id="paulPopup">
         <div class="paul-popup">
             <span class="paul-close">×</span>
-            <h2 class="paul-offer-title">20% OFF TODAY ONLY!</h2>
-            <p class="paul-offer-subtitle">Log in or sign up now</p>
+            <h2 class="paul-offer-title"></h2>
+            <p class="paul-offer-subtitle"></p>
             <div id="authContainer">
                 <div id="loginForm" class="auth-form">
-                    <h3>Login</h3>
+                    <h3></h3>
                     <input type="email" placeholder="Email" required>
                     <div class="password-input-wrapper" style="position:relative !important;">
                         <input type="password" id="login-password" placeholder="Password" required>
@@ -1282,12 +1280,12 @@
                             <i class="fi fi-sr-eye"></i>
                         </span>
                     </div>
-                    <label><input type="checkbox"> Remember me</label>
-                    <button type="button" class="paul-btn paul-btn-login">Log In</button>
-                    <p class="switch-link">No account? <span id="goToSignup">Sign Up</span></p>
+                    <label><input type="checkbox"></label>
+                    <button type="button" class="paul-btn paul-btn-login"></button>
+                    <p class="switch-link"><span id="goToSignup"></span></p>
                 </div>
                 <div id="signupForm" class="auth-form" style="display:none;">
-                    <h3>Sign Up</h3>
+                    <h3></h3>
                     <input type="text" placeholder="Last Name" required>
                     <input type="text" placeholder="First Name" required>
                     <input type="email" placeholder="Email" required>
@@ -1298,9 +1296,9 @@
                             <i class="fi fi-sr-eye"></i>
                         </span>
                     </div>
-                    <label><input type="checkbox"> I want to subscribe to the newsletter</label>
-                    <button type="button" class="paul-btn paul-btn-register">Create My Account</button>
-                    <p class="switch-link">Already have an account? <span id="goToLogin">Login</span></p>
+                    <label><input type="checkbox"></label>
+                    <button type="button" class="paul-btn paul-btn-register"></button>
+                    <p class="switch-link"><span id="goToLogin"></span></p>
                 </div>
             </div>
         </div>
@@ -1334,7 +1332,6 @@
      CURVAFIT AI CHATBOT WIDGET
 ═══════════════════════════════════════════════════════════ -->
 
-<!-- Floating toggle button — HORS du widget -->
 <button id="cf-chat-toggle" aria-label="Open Curva Support Chat">
   <div class="cf-toggle-inner">
     <span class="cf-toggle-icon cf-icon-open">
@@ -1357,22 +1354,18 @@
 </button>
 
 <div id="cf-chat-widget">
-
-  <!-- Chat window -->
   <div id="cf-chat-window" class="cf-chat-window" aria-hidden="true">
 
-    <!-- Header -->
+    <!-- Header — injecté par JS -->
     <div class="cf-chat-header">
       <div class="cf-header-avatar">
-        <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/curvalogo.png?v=1771465065"
-             alt="Curva Support"
-             onerror="this.style.display='none'">
+        <img id="cf-agent-logo" src="" alt="Curva Support">
         <div class="cf-avatar-fallback">C</div>
         <span class="cf-online-dot"></span>
       </div>
       <div class="cf-header-info">
-        <h3>Curva <span class="cf-ai-badge">Support</span></h3>
-        <p>CurvaFit Fitness Expert</p>
+        <h3 id="cf-agent-name"></h3>
+        <p id="cf-agent-title"></p>
       </div>
       <button class="cf-header-close" id="cf-close-btn" aria-label="Close chat">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -1381,81 +1374,25 @@
       </button>
     </div>
 
-    <!-- Quick suggestion chips — 16 chips -->
-    <div class="cf-quick-chips" id="cf-quick-chips">
-      <!-- Row 1: Products -->
-      <button class="cf-chip" data-msg="What is your best product to burn belly fat at home?">
-        <i class="fi fi-sr-flame"></i> Belly fat
-      </button>
-      <button class="cf-chip" data-msg="Show me your sports bra options for plus size women">
-        <i class="fi fi-sr-shirt"></i> Sports bra
-      </button>
-      <button class="cf-chip" data-msg="I need leggings for yoga and home workouts">
-        <i class="fi fi-sr-meditation"></i> Leggings
-      </button>
-      <button class="cf-chip" data-msg="What are your most affordable products under $20?">
-        <i class="fi fi-sr-badge-dollar"></i> Under $20
-      </button>
-      <!-- Row 2: Fitness Goals -->
-      <button class="cf-chip" data-msg="I am a complete beginner, what do you recommend to start?">
-        <i class="fi fi-sr-seedling"></i> Beginner
-      </button>
-      <button class="cf-chip" data-msg="I want to lose belly fat fast at home without gym">
-        <i class="fi fi-sr-house-chimney"></i> Home workout
-      </button>
-      <button class="cf-chip" data-msg="What can help me recover after my workout and reduce soreness?">
-        <i class="fi fi-sr-spa"></i> Recovery
-      </button>
-      <button class="cf-chip" data-msg="I want to track my heart rate and sleep quality">
-        <i class="fi fi-sr-heart-rate"></i> Health tracking
-      </button>
-      <!-- Row 3: Programs & Nutrition -->
-      <button class="cf-chip" data-msg="Tell me about your fitness programs and their prices">
-        <i class="fi fi-sr-dumbbell"></i> Programs
-      </button>
-      <button class="cf-chip" data-msg="Give me a nutrition plan to lose weight as a plus size woman">
-        <i class="fi fi-sr-salad"></i> Nutrition plan
-      </button>
-      <button class="cf-chip" data-msg="What foods should I eat to lose weight without starving?">
-        <i class="fi fi-sr-drumstick"></i> Foods to eat
-      </button>
-      <button class="cf-chip" data-msg="How many calories should I eat per day to lose weight safely?">
-        <i class="fi fi-sr-calculator"></i> Calories
-      </button>
-      <!-- Row 4: Shopping & Support -->
-      <button class="cf-chip" data-msg="Do you have any active discount or promo codes today?">
-        <i class="fi fi-sr-ticket"></i> Promo codes
-      </button>
-      <button class="cf-chip" data-msg="What colors and sizes are available for your products?">
-        <i class="fi fi-sr-palette"></i> Colors & sizes
-      </button>
-      <button class="cf-chip" data-msg="How long does delivery take and what is the shipping cost?">
-        <i class="fi fi-sr-truck-side"></i> Delivery info
-      </button>
-      <button class="cf-chip" data-msg="I need to speak with a real person from your team">
-        <i class="fi fi-sr-headset"></i> Human support
-      </button>
-    </div>
+    <!-- Quick chips — injectés par JS -->
+    <div class="cf-quick-chips" id="cf-quick-chips"></div>
 
-    <!-- Messages area -->
-    <div class="cf-messages" id="cf-messages" role="log" aria-live="polite">
-      <!-- Welcome message injected by JS on first open -->
-    </div>
+    <!-- Messages -->
+    <div class="cf-messages" id="cf-messages" role="log" aria-live="polite"></div>
 
-    <!-- Typing indicator -->
+    <!-- Typing -->
     <div class="cf-typing" id="cf-typing" style="display:none">
       <div class="cf-typing-bubble">
         <span></span><span></span><span></span>
       </div>
-      <p>Curva is typing…</p>
+      <p id="cf-typing-label"></p>
     </div>
 
-    <!-- Input area -->
+    <!-- Input -->
     <div class="cf-input-area">
       <div class="cf-input-wrapper">
         <textarea
           id="cf-input"
-          placeholder="Ask me anything about our products or your fitness journey…"
           rows="1"
           maxlength="500"
           aria-label="Chat message"
@@ -1467,9 +1404,8 @@
           </svg>
         </button>
       </div>
-      <p class="cf-input-hint">Powered by CurvaFit AI · Press Enter to send</p>
+      <p class="cf-input-hint" id="cf-powered-by"></p>
     </div>
-
   </div>
 </div>
 <!-- END CURVAFIT AI CHATBOT WIDGET -->

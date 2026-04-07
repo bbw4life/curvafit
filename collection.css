@@ -2658,3 +2658,26 @@
     animation-duration: 20s;
   }
 }
+
+@media (max-width: 768px) {
+  .col-sort {
+    position: static;
+  }
+
+  .col-sort-menu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    width: calc(100vw - 48px);
+    max-width: 320px;
+    right: auto;
+    z-index: 9999;
+  }
+
+  .col-sort-menu.open {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: all;
+  }
+}

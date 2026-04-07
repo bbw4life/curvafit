@@ -2585,6 +2585,12 @@ a { text-decoration: none; color: inherit; }
     border: 1px solid rgba(255,255,255,0.18);
 }
 
+#audio-player {
+  position: fixed !important;
+  cursor: move;
+  z-index: 9999;
+}
+
 
 /* ─────────────────────────────────────────────
    WHY FAIL
@@ -13422,5 +13428,20 @@ html.fonts-loaded [class*="fa-"] {
 
 @media (min-width: 901px) {
     .mobile-nav-footer { display: none !important; }
+}
+
+
+@media (max-width: 768px) {
+    .container {
+        max-width: 100% !important;
+        padding: 0 7px !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1500px !important;
+        padding: 0 20px !important;
+    }
 }
 

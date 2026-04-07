@@ -416,6 +416,21 @@ function applyPromoFreeItems() {
       products = data;
       window.__allProducts = data;
 
+      // ── Inject audio src from settings ──
+    (function injectAudioSrc() {
+      const settings = products.find(p => p.type === 'settings') || {};
+      const ap = settings.audio_player || {};
+      if (ap.src && audio) {
+        const source = audio.querySelector('source');
+        if (source) {
+          source.src = ap.src;
+          audio.load();
+        }
+      }
+    })();
+
+
+
       // ══ SHOP HIGHLIGHT — index.html ══
 (function initShopHighlight() {
     const cards = document.querySelectorAll('.highlight-product-card[data-highlight-index]');
@@ -548,11 +563,109 @@ function applyPromoFreeItems() {
 
 
       const settings = products.find(p => p.type === "settings") || {};
+      injectChatWidgetSettings(settings); 
+      function injectChatWidgetSettings(settings) {
+        const w     = settings.chat_widget      || {};
+        const chips = settings.chat_quick_chips || [];
+
+        const logo = document.getElementById('cf-agent-logo');
+          if (logo && w.agent_logo) {
+            logo.src = w.agent_logo;
+            logo.onerror = () => { logo.style.display = 'none'; };
+            logo.style.display = 'block';
+          }
+        const nameEl = document.getElementById('cf-agent-name');
+        if (nameEl) {
+          nameEl.innerHTML = (w.agent_name || 'Curva')
+            + (w.agent_badge ? ` <span class="cf-ai-badge">${w.agent_badge}</span>` : '');
+        }
+
+        const titleEl = document.getElementById('cf-agent-title');
+        if (titleEl) titleEl.textContent = w.agent_title || 'CurvaFit Fitness Expert';
+
+        const typingEl = document.getElementById('cf-typing-label');
+        if (typingEl) typingEl.textContent = w.typing_label || 'Curva is typing…';
+
+        const inputEl = document.getElementById('cf-input');
+        if (inputEl) inputEl.placeholder = w.input_placeholder || 'Ask me anything…';
+
+        const hintEl = document.getElementById('cf-powered-by');
+        if (hintEl) hintEl.textContent = w.powered_by || 'Powered by CurvaFit AI · Press Enter to send';
+
+        const chipsContainer = document.getElementById('cf-quick-chips');
+        if (chipsContainer && chips.length) {
+          chipsContainer.innerHTML = chips.map(chip => `
+            <button class="cf-chip" data-msg="${chip.msg.replace(/"/g, '&quot;')}">
+              <i class="${chip.icon}"></i> ${chip.label}
+            </button>
+          `).join('');
+
+          chipsContainer.querySelectorAll('.cf-chip').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const msg = btn.getAttribute('data-msg');
+              if (msg && typeof window.__cfSendMessage === 'function') {
+                window.__cfSendMessage(msg);
+              }
+            });
+          });
+        }
+      }
       const plansAvailable = (settings.plans_available || 'no').toLowerCase() === 'yes';
       const planTriggerWrap = document.querySelector('.plan-request-trigger-wrap');
       if (planTriggerWrap) {
         planTriggerWrap.style.display = plansAvailable ? '' : 'none';
       }
+
+      // ══ AUTH POPUP — inject texts from settings ══
+        (function injectAuthPopupTexts() {
+          const ap = settings.auth_popup || {};
+          
+          const offerTitle = document.querySelector('.paul-offer-title');
+          const offerSub   = document.querySelector('.paul-offer-subtitle');
+          const tooltip    = document.querySelector('.paul-tooltip');
+
+          if (offerTitle && ap.offer_title)    offerTitle.textContent = ap.offer_title;
+          if (offerSub   && ap.offer_subtitle) offerSub.textContent   = ap.offer_subtitle;
+          if (tooltip    && ap.tooltip_text)   tooltip.textContent     = ap.tooltip_text;
+
+          // Login form
+          const loginForm = document.getElementById('loginForm');
+          if (loginForm) {
+            const h3 = loginForm.querySelector('h3');
+            const btn = loginForm.querySelector('.paul-btn-login');
+            const switchText = loginForm.querySelector('.switch-link');
+            const rememberLabel = loginForm.querySelector('label');
+
+            if (h3 && ap.login_title)             h3.textContent = ap.login_title;
+            if (btn && ap.login_btn)              btn.textContent = ap.login_btn;
+            if (rememberLabel && ap.signup_remember_label)
+              rememberLabel.childNodes[1].textContent = ' ' + ap.signup_remember_label;
+            if (switchText && ap.login_switch && ap.login_switch_link) {
+              switchText.childNodes[0].textContent = ap.login_switch + ' ';
+              const span = switchText.querySelector('#goToSignup');
+              if (span) span.textContent = ap.login_switch_link;
+            }
+          }
+
+          // Signup form
+          const signupForm = document.getElementById('signupForm');
+          if (signupForm) {
+            const h3 = signupForm.querySelector('h3');
+            const btn = signupForm.querySelector('.paul-btn-register');
+            const switchText = signupForm.querySelector('.switch-link');
+            const newsletterLabel = signupForm.querySelector('label');
+
+            if (h3 && ap.signup_title)   h3.textContent = ap.signup_title;
+            if (btn && ap.signup_btn)    btn.textContent = ap.signup_btn;
+            if (newsletterLabel && ap.signup_newsletter_label)
+              newsletterLabel.childNodes[1].textContent = ' ' + ap.signup_newsletter_label;
+            if (switchText && ap.signup_switch && ap.signup_switch_link) {
+              switchText.childNodes[0].textContent = ap.signup_switch + ' ';
+              const span = switchText.querySelector('#goToLogin');
+              if (span) span.textContent = ap.signup_switch_link;
+            }
+          }
+        })();
       // Free shipping threshold → risk-reversal section
       const freeShippingThreshold = (settings.cart_drawer && settings.cart_drawer.free_shipping_threshold)
         ? settings.cart_drawer.free_shipping_threshold
@@ -564,6 +677,23 @@ function applyPromoFreeItems() {
         if (span) span.textContent = `On orders over $${freeShippingThreshold}`;
       }
     });
+     
+    // ══ INJECT NEWSLETTER POPUP TEXTS FROM SETTINGS ══
+    (function injectNewsletterPopupTexts() {
+      const np = settings.newsletter_popup || {};
+
+      const iconEl    = document.getElementById('newsletter-popup-icon');
+      const titleEl   = document.getElementById('newsletter-popup-title');
+      const messageEl = document.getElementById('newsletter-popup-message');
+      const closeEl   = document.getElementById('popup-close-btn');
+
+      if (iconEl && np.icon) {
+        iconEl.className = `fi ${np.icon}`;
+      }
+      if (titleEl   && np.title)     titleEl.textContent   = np.title;
+      if (messageEl && np.message)   messageEl.textContent = np.message;
+      if (closeEl   && np.close_btn) closeEl.textContent   = np.close_btn;
+    })();
 
 
       const btnLabels = settings.button_labels || {};
@@ -2599,45 +2729,102 @@ if (carousel) {
     setInterval(moveCarousel, 3000);
 }
 
-  // ====================== AUDIO PLAYER ======================
-  const audioPlayer = document.getElementById('audio-player');
-  const audio = document.getElementById('audio-element');
-  const playIcon = document.getElementById('play-icon');
-  const pauseIcon = document.getElementById('pause-icon');
-  const playPauseBtn = document.getElementById('play-pause-btn');
-  if (playPauseBtn && audio) {
-    playPauseBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (audio.paused) { audio.play(); playIcon.style.display = 'none'; pauseIcon.style.display = 'block'; }
-      else { audio.pause(); playIcon.style.display = 'block'; pauseIcon.style.display = 'none'; }
-    });
-  }
-  if (audioPlayer) {
-    let isDraggingAudio = false, offsetAudioX, offsetAudioY;
-    const startDrag = (e) => {
-      isDraggingAudio = true;
-      const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-      const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-      offsetAudioX = clientX - audioPlayer.getBoundingClientRect().left;
-      offsetAudioY = clientY - audioPlayer.getBoundingClientRect().top;
-      audioPlayer.style.cursor = 'grabbing';
-    };
-    const moveDrag = (e) => {
-      if (!isDraggingAudio) return;
-      const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-      const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-      audioPlayer.style.left = `${clientX - offsetAudioX}px`;
-      audioPlayer.style.bottom = 'auto';
-      audioPlayer.style.top = `${clientY - offsetAudioY}px`;
-    };
-    const endDrag = () => { isDraggingAudio = false; audioPlayer.style.cursor = 'move'; };
-    audioPlayer.addEventListener('mousedown', startDrag);
-    document.addEventListener('mousemove', moveDrag);
-    document.addEventListener('mouseup', endDrag);
-    audioPlayer.addEventListener('touchstart', startDrag, { passive: false });
-    document.addEventListener('touchmove', moveDrag, { passive: false });
-    document.addEventListener('touchend', endDrag);
-  }
+      // ====================== AUDIO PLAYER ======================
+    const audioPlayer = document.getElementById('audio-player');
+    const audio = document.getElementById('audio-element');
+    const playIcon = document.getElementById('play-icon');
+    const pauseIcon = document.getElementById('pause-icon');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+
+    if (playPauseBtn && audio) {
+      playPauseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (audio.paused) {
+          audio.play();
+          playIcon.style.display = 'none';
+          pauseIcon.style.display = 'block';
+        } else {
+          audio.pause();
+          playIcon.style.display = 'block';
+          pauseIcon.style.display = 'none';
+        }
+      });
+    }
+
+    if (audioPlayer) {
+      // ── Drag FIXE (position:fixed, ne scroll pas avec la page) ──
+      let isDraggingAudio = false;
+      let startX, startY, origLeft, origTop, audioHasMoved;
+
+      // Forcer position fixed dès le départ
+      function initAudioFixed() {
+        const rect = audioPlayer.getBoundingClientRect();
+        audioPlayer.style.position = 'fixed';
+        audioPlayer.style.left = rect.left + 'px';
+        audioPlayer.style.top  = rect.top  + 'px';
+        audioPlayer.style.bottom = 'auto';
+        audioPlayer.style.right  = 'auto';
+      }
+
+      function applyAudioPos(left, top) {
+        const bW = audioPlayer.offsetWidth;
+        const bH = audioPlayer.offsetHeight;
+        const nl = Math.max(8, Math.min(window.innerWidth  - bW - 8, left));
+        const nt = Math.max(8, Math.min(window.innerHeight - bH - 8, top));
+        audioPlayer.style.position = 'fixed';
+        audioPlayer.style.left   = nl + 'px';
+        audioPlayer.style.top    = nt + 'px';
+        audioPlayer.style.bottom = 'auto';
+        audioPlayer.style.right  = 'auto';
+      }
+
+      function startAudioDrag(clientX, clientY) {
+        if (!isDraggingAudio) initAudioFixed();
+        isDraggingAudio = true;
+        audioHasMoved   = false;
+        startX = clientX;
+        startY = clientY;
+        origLeft = parseFloat(audioPlayer.style.left) || audioPlayer.getBoundingClientRect().left;
+        origTop  = parseFloat(audioPlayer.style.top)  || audioPlayer.getBoundingClientRect().top;
+        audioPlayer.style.cursor = 'grabbing';
+      }
+
+      function moveAudioDrag(clientX, clientY) {
+        if (!isDraggingAudio) return;
+        const dx = clientX - startX;
+        const dy = clientY - startY;
+        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) audioHasMoved = true;
+        if (!audioHasMoved) return;
+        applyAudioPos(origLeft + dx, origTop + dy);
+      }
+
+      function endAudioDrag() {
+        if (!isDraggingAudio) return;
+        isDraggingAudio = false;
+        audioPlayer.style.cursor = 'move';
+      }
+
+      // Mouse
+      audioPlayer.addEventListener('mousedown', (e) => {
+        startAudioDrag(e.clientX, e.clientY);
+        e.preventDefault();
+      });
+      document.addEventListener('mousemove', (e) => moveAudioDrag(e.clientX, e.clientY));
+      document.addEventListener('mouseup', endAudioDrag);
+
+      // Touch
+      audioPlayer.addEventListener('touchstart', (e) => {
+        startAudioDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
+
+      audioPlayer.addEventListener('touchmove', (e) => {
+        if (!isDraggingAudio) return;
+        e.preventDefault();
+        moveAudioDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: false });
+
+      audioPlayer.addEventListener('touchend', endAudioDrag);
+    }
 
   // ====================== PROGRESS TABS ======================
   const tabButtons = document.querySelectorAll('.tab-button');

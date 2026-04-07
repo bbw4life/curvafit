@@ -473,10 +473,10 @@
         </div>
         <div id="newsletter-popup" class="newsletter-success-popup">
             <div class="popup-content">
-                <div class="popup-icon"><i class="fa-solid fa-party-horn"></i></div>
-                <h3>Welcome to the CurvaFit Family!</h3>
-                <p>You'll receive weekly tips, real meal plans, and exclusive member offers.</p>
-                <button id="popup-close-btn">Close</button>
+                <div class="popup-icon"><i class="fi fi-rr-party-bell"></i></div>
+                <h3></h3>
+                <p></p>
+                <button id="popup-close-btn"></button>
             </div>
         </div>
         <div class="copyright">
@@ -487,19 +487,6 @@
     <script src="script.js"></script>
     <script src="/animations.js"></script>
     <script src="/search.js"></script>
-    <div id="audio-player" class="draggable-audio-player">
-        <button id="play-pause-btn">
-            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                <path d="M8 5v14l11-7z"/>
-            </svg>
-            <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display: none;">
-                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-            </svg>
-        </button>
-        <audio id="audio-element" loop>
-            <source src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/audio_glowing_1.mp3?v=1771468630" type="audio/mpeg">
-        </audio>
-    </div>
 
     <div id="error-popup" class="error-popup hidden">
         <div class="popup-content">
@@ -518,18 +505,17 @@
     <div class="paul-indicator-wrapper">
         <a href="#" class="paul-indicator" id="paulTrigger">
             <i class="fi fi-rr-user"></i>
-            <span class="paul-tooltip">Earn 20% if you login/signup</span>
+            <span class="paul-tooltip"></span>
         </a>
     </div>
-
     <div class="paul-popup-overlay" id="paulPopup">
         <div class="paul-popup">
             <span class="paul-close">×</span>
-            <h2 class="paul-offer-title">20% OFF TODAY ONLY!</h2>
-            <p class="paul-offer-subtitle">Log in or sign up now</p>
+            <h2 class="paul-offer-title"></h2>
+            <p class="paul-offer-subtitle"></p>
             <div id="authContainer">
                 <div id="loginForm" class="auth-form">
-                    <h3>Login</h3>
+                    <h3></h3>
                     <input type="email" placeholder="Email" required>
                     <div class="password-input-wrapper" style="position:relative !important;">
                         <input type="password" id="login-password" placeholder="Password" required>
@@ -537,12 +523,12 @@
                             <i class="fi fi-sr-eye"></i>
                         </span>
                     </div>
-                    <label><input type="checkbox"> Remember me</label>
-                    <button type="button" class="paul-btn paul-btn-login">Log In</button>
-                    <p class="switch-link">No account? <span id="goToSignup">Sign Up</span></p>
+                    <label><input type="checkbox"></label>
+                    <button type="button" class="paul-btn paul-btn-login"></button>
+                    <p class="switch-link"><span id="goToSignup"></span></p>
                 </div>
                 <div id="signupForm" class="auth-form" style="display:none;">
-                    <h3>Sign Up</h3>
+                    <h3></h3>
                     <input type="text" placeholder="Last Name" required>
                     <input type="text" placeholder="First Name" required>
                     <input type="email" placeholder="Email" required>
@@ -553,9 +539,9 @@
                             <i class="fi fi-sr-eye"></i>
                         </span>
                     </div>
-                    <label><input type="checkbox"> I want to subscribe to the newsletter</label>
-                    <button type="button" class="paul-btn paul-btn-register">Create My Account</button>
-                    <p class="switch-link">Already have an account? <span id="goToLogin">Login</span></p>
+                    <label><input type="checkbox"></label>
+                    <button type="button" class="paul-btn paul-btn-register"></button>
+                    <p class="switch-link"><span id="goToLogin"></span></p>
                 </div>
             </div>
         </div>
