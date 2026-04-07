@@ -163,6 +163,21 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>`;
         }).join('');
       }
+        // ── STATS BAR ──────────────────────────────────────────────
+      var statsContainer = document.getElementById('blog-stats-container');
+      if (statsContainer && data.stats) {
+        statsContainer.innerHTML = data.stats.map(function (stat, i) {
+          return `
+            ${i > 0 ? '<div class="blog-stat-divider"></div>' : ''}
+            <div class="blog-stat-item">
+              <span class="blog-stat-icon"><i class="${stat.icon}"></i></span>
+              <div>
+                <strong class="blog-stat-num" data-target="${stat.target}">0</strong>${stat.suffix ? `<span class="blog-stat-suffix">${stat.suffix}</span>` : ''}
+                <span class="blog-stat-label">${stat.label}</span>
+              </div>
+            </div>`;
+        }).join('');
+      }
 
       // Après injection, on initialise toutes les fonctions qui dépendent du DOM
       initBlog();
@@ -171,7 +186,6 @@ document.addEventListener('DOMContentLoaded', function () {
     .catch(function (err) {
       console.error('Erreur chargement blog-articles.json :', err);
     });
-
 
   // ════════════════════════════════════════
   //  INIT — appelé après injection JSON

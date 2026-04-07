@@ -1,4 +1,31 @@
 {
+  "stats": [
+    {
+      "icon": "fa-solid fa-book-open",
+      "target": 9400,
+      "suffix": "+",
+      "label": "Articles Read This Month"
+    },
+    {
+      "icon": "fa-solid fa-users",
+      "target": 47000,
+      "suffix": "+",
+      "label": "Active Readers"
+    },
+    {
+      "icon": "fa-solid fa-globe",
+      "target": 54,
+      "suffix": "",
+      "label": "Countries Represented"
+    },
+    {
+      "icon": "fa-solid fa-star",
+      "target": 98,
+      "suffix": "%",
+      "label": "Reader Satisfaction"
+    }
+  ],
+
   "featured": {
     "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/article_1.png?v=1775497369",
     "imageAlt": "Curvy woman building healthy habits through journaling and gentle exercise",
