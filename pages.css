@@ -5366,6 +5366,229 @@ section#hero.faq-hero,
 
 
 
+
+/* ════════════════════════════════════════
+   BLOG SEARCH — Dropdown suggestions
+════════════════════════════════════════ */
+
+/* Conteneur dropdown */
+.bsearch-drop {
+  position: absolute;
+  z-index: 99999;
+  background: #fff;
+  border: 1.5px solid var(--blog-border);
+  border-radius: var(--blog-radius-md);
+  box-shadow: 0 16px 48px rgba(107,52,96,0.18);
+  overflow: hidden;
+  max-height: 420px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(184,48,88,0.25) transparent;
+
+  /* Caché par défaut */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.20s ease, transform 0.20s ease;
+}
+
+.bsearch-drop.open {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+.bsearch-drop::-webkit-scrollbar {
+  width: 4px;
+}
+.bsearch-drop::-webkit-scrollbar-thumb {
+  background: rgba(184,48,88,0.25);
+  border-radius: 4px;
+}
+
+/* Message "aucun résultat" */
+.bsearch-empty {
+  padding: 18px 20px;
+  font-size: 0.88rem;
+  color: var(--blog-mist);
+  text-align: center;
+}
+
+.bsearch-empty strong {
+  color: var(--blog-rose);
+}
+
+/* Ligne de résultat */
+.bsearch-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(107,52,96,0.07);
+  transition: background 0.18s ease;
+}
+
+.bsearch-item:last-child {
+  border-bottom: none;
+}
+
+.bsearch-item:hover,
+.bsearch-item.bsearch-active {
+  background: var(--blog-rose-pale);
+}
+
+/* Infos gauche */
+.bsearch-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Catégorie */
+.bsearch-cat {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blog-rose);
+}
+
+/* Titre avec highlight */
+.bsearch-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--blog-slate);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bsearch-title mark {
+  background: rgba(184,48,88,0.15);
+  color: var(--blog-rose);
+  border-radius: 3px;
+  padding: 0 2px;
+  font-weight: 800;
+}
+
+/* Métadonnées (auteur, vues, date) */
+.bsearch-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 3px;
+}
+
+.bsearch-meta-author,
+.bsearch-meta-views,
+.bsearch-meta-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.74rem;
+  color: var(--blog-mist);
+  font-weight: 500;
+}
+
+.bsearch-meta i {
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+/* Boutons droite */
+.bsearch-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.bsearch-btn-show,
+.bsearch-btn-read {
+  padding: 4px 10px;
+  border-radius: 60px;
+  border: 1.5px solid;
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.bsearch-btn-show {
+  background: transparent;
+  border-color: rgba(107,52,96,0.20);
+  color: var(--blog-mist);
+}
+
+.bsearch-btn-show:hover {
+  background: var(--blog-rose-pale);
+  border-color: var(--blog-rose);
+  color: var(--blog-rose);
+}
+
+.bsearch-btn-read {
+  background: var(--blog-rose);
+  border-color: var(--blog-rose);
+  color: #fff;
+}
+
+.bsearch-btn-read:hover {
+  background: var(--blog-plum);
+  border-color: var(--blog-plum);
+}
+
+/* Highlight temporaire sur l'article ciblé */
+.bsearch-highlight {
+  animation: bsearch-pulse 2.4s ease;
+}
+
+@keyframes bsearch-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(184,48,88,0.40); }
+  30%  { box-shadow: 0 0 0 12px rgba(184,48,88,0.12); }
+  100% { box-shadow: 0 0 0 0 rgba(184,48,88,0); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .bsearch-drop {
+    max-height: 370px !important;
+    width: 90% !important;
+  }
+
+  .bsearch-item {
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .bsearch-actions {
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .bsearch-btn-show,
+  .bsearch-btn-read {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .bsearch-title {
+    white-space: normal;
+  }
+}
+
+
+
 /* ─────────────────────────────────────────────
    ABOUT PAGE
 ───────────────────────────────────────────── */
