@@ -7236,6 +7236,10 @@ details p {
 }
 
 
+
+
+
+
 /* ─────────────────────────────────────────────
    PRIVACY PAGE
 ───────────────────────────────────────────── */
@@ -7327,6 +7331,17 @@ details p {
     flex: 1 1 44%;
 }
 
+@media (max-width: 768px) {
+    .toc-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    .toc-list li {
+        flex: unset;
+    }
+}
+
 .toc-list a {
     color: var(--rose);
     text-decoration: none;
@@ -7373,6 +7388,7 @@ details p {
     margin: 18px 0 9px;
 }
 
+/* ── TABLE DESKTOP ── */
 .privacy-table {
     width: 100%;
     margin: 18px 0;
@@ -7404,6 +7420,72 @@ details p {
     background: var(--rose-ultra);
 }
 
+/* ── TABLE MOBILE FIX ── */
+@media (max-width: 768px) {
+
+    /* Wrapper pour permettre le scroll horizontal propre */
+    .privacy-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: var(--radius-sm);
+        margin: 18px 0;
+    }
+
+    /* Le tableau sort du padding de l'article pour occuper toute la largeur */
+    .privacy-article .privacy-table {
+        display: block;
+        width: calc(100% + 24px);
+        margin-left: -12px;
+        margin-right: -12px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        margin-top: 18px;
+        margin-bottom: 18px;
+        border-radius: 0;
+    }
+
+    .privacy-article .privacy-table thead,
+    .privacy-article .privacy-table tbody,
+    .privacy-article .privacy-table tr {
+        display: table-row-group;
+    }
+
+    .privacy-article .privacy-table thead {
+        display: table-header-group;
+    }
+
+    .privacy-article .privacy-table tr {
+        display: table-row;
+    }
+
+    .privacy-article .privacy-table th,
+    .privacy-article .privacy-table td {
+        display: table-cell;
+        white-space: normal;
+        min-width: 110px;
+        max-width: 200px;
+        word-break: break-word;
+        font-size: 0.80rem;
+        padding: 9px 16px;
+        vertical-align: top;
+    }
+
+    /* Colonne "Required?" plus étroite */
+    .privacy-article .privacy-table th:last-child,
+    .privacy-article .privacy-table td:last-child {
+        min-width: 80px;
+        max-width: 100px;
+    }
+
+    /* Article padding réduit sur mobile */
+    .privacy-article {
+        padding: 18px 12px;
+    }
+}
+
+/* ── CONTACT INFO ── */
 .contact-info {
     background: #f0e8f4;
     padding: 16px 18px;
@@ -7435,7 +7517,7 @@ details p {
 }
 
 /* ─────────────────────────────────────────────
-   PRIVACY PAGE — ADDITIONS (ajouter après le CSS existant)
+   PRIVACY PAGE — ADDITIONS
 ───────────────────────────────────────────── */
 
 /* ── "What We NEVER Do" block ── */
@@ -7584,6 +7666,8 @@ details p {
     transform: translateX(4px);
 }
 .privacy-article ul li strong { color: var(--charcoal); }
+
+
 
 /* ─────────────────────────────────────────────
    CONTACT SUCCESS POPUP

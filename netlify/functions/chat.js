@@ -261,6 +261,7 @@ function detectIntent(message) {
     /wishlist|liste.+(souhaits|envie)|saved items/,
     /suivre.+(commande|colis)|track.+(order|package)|rastrear/,
     /checkout|passer.+(commande|à la caisse)|proceder.+pago/,
+    /collection|catalogue|catalog|tous les produits|all products|todos los productos/,
     /panier|cart|carrito/,
     /payer|pay now|pagar/,
     /frais.+(port|livraison)|shipping cost|costo.+envío/,
@@ -498,6 +499,7 @@ function buildBlogContext(blogData) {
 const PAGE_MAP = {
   '/index.html':               { label: 'Home',               icon: '🏠' },
   '/shop.html':                { label: 'Shop',               icon: '🛍️' },
+  '/collection.html':          { label: 'Collection',         icon: '🛒' },
   '/programs.html':            { label: 'Programs',           icon: '💪' },
   '/nutrition.html':           { label: 'Nutrition',          icon: '🥗' },
   '/blog/blog.html':           { label: 'Blog',               icon: '📝' },
@@ -575,6 +577,12 @@ PRODUCT ${i + 1}:
   if (contactInfo.hasWhatsapp) contactChannels.push('WhatsApp');
   if (contactInfo.hasTelegram) contactChannels.push('Telegram');
   contactChannels.push('Contact page');
+
+  const colSettings  = settings['Pdg-Francenel-products'] || {};
+const colHeroTitle = colSettings.hero_title    || 'Our Collection';
+const colHeroSub   = colSettings.hero_subtitle || '';
+const colEyebrow   = colSettings.hero_eyebrow  || '';
+const colPageSize  = colSettings.page_size      || 12;
 
   const searchContext = buildSearchDataContext(searchData);
   const blogContext   = buildBlogContext(blogData);
@@ -835,6 +843,17 @@ ${topStarterList || '(none configured)'}
 🥗 NUTRITION
 ═══════════════════════════════════════
 Protein at every meal. Cut liquid sugars. 2L water/day. 300–500 calorie deficit. Sleep 7–8h.
+
+
+═══════════════════════════════════════
+🛒 COLLECTION PAGE — /collection.html
+═══════════════════════════════════════
+Title: "${colHeroTitle}"
+Subtitle: "${colHeroSub}"
+Label: "${colEyebrow}"
+Shows ${colPageSize} products per page with filters (price, color, size, rating, discount).
+Features: sort, quick view, compare, wishlist, recently viewed, flash deals.
+When user asks to browse all products, see the full catalog, or visit the shop/collection → add 🔗[PAGE:/collection.html]
 
 ═══════════════════════════════════════
 🌐 SITE CONTENT
