@@ -404,31 +404,47 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ════════════════════════════════════════
-  //  SHARE BUTTONS
-  // ════════════════════════════════════════
-  document.querySelectorAll('.share-btn').forEach(function (btn) {
+//  SHARE BUTTONS (featured + cards)
+// ════════════════════════════════════════
+document.querySelectorAll('.share-btn').forEach(function (btn) {
     btn.addEventListener('click', function (e) {
-      e.preventDefault();
-      var url   = encodeURIComponent(window.location.href);
-      var title = encodeURIComponent(document.title);
-      var icon  = btn.querySelector('i');
-      var shareUrl = '#';
+        e.preventDefault();
 
-      if (icon) {
-        if (icon.classList.contains('fa-facebook-f')) {
-          shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
-        } else if (icon.classList.contains('fa-pinterest-p')) {
-          shareUrl = 'https://pinterest.com/pin/create/button/?url=' + url + '&description=' + title;
-        } else if (icon.classList.contains('fa-whatsapp')) {
-          shareUrl = 'https://api.whatsapp.com/send?text=' + title + ' ' + url;
+        // Pour les cards, utilise l'URL de l'article (href du card-read-more)
+        var card = btn.closest('.blog-card');
+        var rawUrl = card
+            ? (card.querySelector('.card-read-more') || {}).href || window.location.href
+            : window.location.href;
+
+        var url   = encodeURIComponent(rawUrl);
+        var title = encodeURIComponent(
+            card
+                ? (card.querySelector('h3') || {}).textContent || document.title
+                : document.title
+        );
+
+        var icon = btn.querySelector('i');
+        var shareUrl = '#';
+
+        if (icon) {
+            if (icon.classList.contains('fa-facebook-f')) {
+                shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+            } else if (icon.classList.contains('fa-x-twitter')) {
+                shareUrl = 'https://twitter.com/intent/tweet?url=' + url + '&text=' + title;
+            } else if (icon.classList.contains('fa-pinterest-p')) {
+                shareUrl = 'https://pinterest.com/pin/create/button/?url=' + url + '&description=' + title;
+            } else if (icon.classList.contains('fa-linkedin-in')) {
+                shareUrl = 'https://www.linkedin.com/sharing/share-offsite/?url=' + url;
+            } else if (icon.classList.contains('fa-whatsapp')) {
+                shareUrl = 'https://api.whatsapp.com/send?text=' + title + ' ' + url;
+            }
         }
-      }
 
-      if (shareUrl !== '#') {
-        window.open(shareUrl, '_blank', 'noopener,width=600,height=400');
-      }
+        if (shareUrl !== '#') {
+            window.open(shareUrl, '_blank', 'noopener,width=600,height=400');
+        }
     });
-  });
+});
 
 });
 

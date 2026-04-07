@@ -5341,6 +5341,29 @@ section#hero.faq-hero,
   }
 }
 
+/* ── Card Share Row ── */
+.card-share-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--blog-border);
+    flex-wrap: wrap;
+}
+
+.card-share-label {
+    font-size: 0.74rem;
+    color: var(--blog-mist);
+    font-weight: 600;
+    margin-right: 2px;
+}
+
+.card-share-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+}
+
 
 
 /* ─────────────────────────────────────────────
