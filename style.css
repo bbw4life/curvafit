@@ -565,11 +565,13 @@ a { text-decoration: none; color: inherit; }
             transform  0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
+    @media (max-width: 900px) {
     .main-nav.active {
         display: block;
-        max-height: 600px;
+        max-height: 90vh !important;
         opacity: 1;
         transform: translateY(0);
+    }
     }
 
     .main-nav ul { flex-direction: column; gap: 0; }
@@ -594,6 +596,7 @@ a { text-decoration: none; color: inherit; }
     .main-nav.active li:nth-child(8)  { opacity: 1; transform: translateX(0); transition-delay: 0.32s; }
     .main-nav.active li:nth-child(9)  { opacity: 1; transform: translateX(0); transition-delay: 0.36s; }
     .main-nav.active li:nth-child(10) { opacity: 1; transform: translateX(0); transition-delay: 0.40s; }
+    .main-nav.active li:nth-child(11) { opacity: 1; transform: translateX(0); transition-delay: 0.44s; }
 
     .main-nav a {
         padding: 15px 24px;
@@ -13089,6 +13092,7 @@ html.fonts-loaded [class*="fa-"] {
     .main-nav.active li:nth-child(8)  { transition-delay: 0.32s; }
     .main-nav.active li:nth-child(9)  { transition-delay: 0.36s; }
     .main-nav.active li:nth-child(10) { transition-delay: 0.40s; }
+    .main-nav.active li:nth-child(11) { transition-delay: 0.44s; }
 
     /* ── Slide-in des liens <a> (texte + icône) ── */
     .main-nav li a {
@@ -13112,6 +13116,7 @@ html.fonts-loaded [class*="fa-"] {
     .main-nav.active li:nth-child(8)  a { opacity: 1; transform: translateX(0); transition-delay: 0.34s; }
     .main-nav.active li:nth-child(9)  a { opacity: 1; transform: translateX(0); transition-delay: 0.38s; }
     .main-nav.active li:nth-child(10) a { opacity: 1; transform: translateX(0); transition-delay: 0.42s; }
+    .main-nav.active li:nth-child(11) a { opacity: 1; transform: translateX(0); transition-delay: 0.46s; }
 
     /* ================================================================
        FOOTER
