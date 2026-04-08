@@ -57,22 +57,22 @@
       {"vid": "710072503","color": "Pink","size": "18 sections","price": 63.46,"active": true}
     ],
     "media": [
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_tr.webp?v=1774271070",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_4.webp?v=1774272457",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_seconde.webp?v=1774271070",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/imagw_hula_6.png?v=1775255051",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_5.png?v=1775614664",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_8.png?v=1775614664",
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_7.jpg?v=1774272457",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_produit_first.webp?v=1774271069",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_5.webp?v=1774272457",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_3.jpg?v=1774272457",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_hula_4.jpg?v=1775255049",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_8.jpg?v=1774273600",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_1.png?v=1775614664",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_2.png?v=1775614663",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_4.png?v=1775614663",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_8.png?v=1775614664",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_6.png?v=1775614664",
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_12.webp?v=1774274436",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_hula_2.jpg?v=1775255042",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_3.png?v=1775614659",
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_10.webp?v=1774273600",
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/image_hula_3.jpg?v=1775255048",
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hoop_14.jpg?v=1774226054",
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_2.jpg?v=1774272457",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/media_13.webp?v=1774274436"
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_10.png?v=1775614664"
     ],
     "promo": {"start_date": "2026-02-24","end_date": "2026-02-28","single_discount": 0,"duo_discount": 0,"trio_discount": 0}
   },
@@ -1023,7 +1023,8 @@
       {"code": "CURVA15","items": 4,"percent": 20},
       {"code": "FITNESS25","items": 5,"percent": 25},
       {"code": "BUNDLEFREE","items": 6,"percent": 30},
-      {"code": "CURVA40","items": 7,"percent": 40}
+      {"code": "CURVA40","items": 7,"percent": 40},
+      {"code": "paul26","items": 2,"percent": 10}
     ],
     "enable_media_zoom": "yes",
     "plans_available": "Yes",
