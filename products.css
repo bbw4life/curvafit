@@ -2647,6 +2647,10 @@ body {
 #sanaica-banner-paul .sanaica-banner-paul-indicators,
 .sanaica-video-sound-toggle { pointer-events: auto; }
  
+.sanaica-banner-paul-image[src]:not([src=""]) {
+  display: block !important;
+}
+
 /* ── Scrolling Text ── */
 .scrolling-text-group-section {
     width: 100%;
