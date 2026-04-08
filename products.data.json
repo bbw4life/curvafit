@@ -993,6 +993,19 @@
       { "icon": "fi fi-sr-truck-side",   "label": "Delivery info",   "msg": "How long does delivery take and what is the shipping cost?" },
       { "icon": "fi fi-sr-headset",      "label": "Human support",   "msg": "I need to speak with a real person from your team" }
     ],
+    "site_stats": {
+      "members": 10000,
+      "satisfaction_rate": 98,
+      "countries": 54,
+      "average_rating": 4.8,
+      "transformations": 5000,
+      "founding_year": 2025,
+      "avg_starting_weight": 94,
+      "avg_fat_loss": 9,
+      "retention_rate": 78,
+      "avg_waist_reduction": 5,
+      "social_support_boost": 65
+    },
     "chat_widget": {
       "agent_name": "Curva",
       "agent_title": "CurvaFit Fitness Expert",

@@ -52,18 +52,18 @@
                 </div>
                 <div class="mobile-nav-footer__stats">
                     <div class="mobile-nav-footer__stat">
-                        <span class="mobile-nav-footer__stat-value">10K+</span>
+                        <span class="mobile-nav-footer__stat-value" data-stat-text data-stat-key="members"></span>
                         <span class="mobile-nav-footer__stat-label">Happy clients</span>
                     </div>
                     <div class="mobile-nav-footer__stat">
-                        <span class="mobile-nav-footer__stat-value">98%</span>
+                        <span class="mobile-nav-footer__stat-value" data-stat-text data-stat-key="satisfaction_rate"></span>
                         <span class="mobile-nav-footer__stat-label">Satisfaction</span>
                     </div>
                     <div class="mobile-nav-footer__stat">
-                        <span class="mobile-nav-footer__stat-value">54</span>
+                        <span class="mobile-nav-footer__stat-value" data-stat-text data-stat-key="countries"></span>
                         <span class="mobile-nav-footer__stat-label">Countries</span>
                     </div>
-                </div>
+                    </div>
                 <div class="mobile-nav-footer__trust">
                     <div class="mobile-nav-footer__trust-item">
                         <div class="mobile-nav-footer__trust-icon"><i class="fi fi-rr-shield-check"></i></div>
@@ -139,11 +139,11 @@
                             <div class="cr-img-overlay"></div>
                         </div>
                         <div class="cr-float-badge cr-float-badge--a">
-                            <span class="cfb-num">10,000+</span>
+                            <span class="cfb-num" data-stat-text data-stat-key="members"></span>+
                             <span class="cfb-label">Women helped</span>
                         </div>
                         <div class="cr-float-badge cr-float-badge--b">
-                            <span class="cfb-num">50</span>
+                            <span class="cfb-num" data-stat-text data-stat-key="countries"></span>
                             <span class="cfb-label">Countries</span>
                         </div>
                         <div class="cr-float-badge cr-float-badge--c">
@@ -339,17 +339,17 @@
                 <div class="cr-today-grid">
                     <div class="cr-today-text" data-scroll-reveal>
                         <span class="section-label">Today</span>
-                        <h2>From One Neighborhood<br>to 50 Countries.</h2>
-                        <p>The neighborhood became a platform. The platform became a community of 10,000+ women across 50 countries. The language changed. The distances grew.</p>
+                        <h2>From One Neighborhood<br>to <span data-stat-text data-stat-key="countries"></span> Countries.</h2>
+                        <p>The neighborhood became a platform. The platform became a community of <span data-stat-text data-stat-key="members"></span>+ women across <span data-stat-text data-stat-key="countries"></span> countries. The language changed. The distances grew.</p>
                         <p>But the conversation is the same — honest, patient, built on one belief: every plus-size woman deserves real information and real support, without judgment, without shortcuts.</p>
                     </div>
                     <div class="cr-today-stats" data-scroll-reveal>
                         <div class="cr-stat-card">
-                            <span class="cr-stat-num">10,000+</span>
+                            <span class="cr-stat-num" data-stat-text data-stat-key="members"></span>+
                             <span class="cr-stat-label">Women in the community</span>
                         </div>
                         <div class="cr-stat-card">
-                            <span class="cr-stat-num">50</span>
+                            <span class="cr-stat-num" data-stat-text data-stat-key="countries"></span>
                             <span class="cr-stat-label">Countries</span>
                         </div>
                         <div class="cr-stat-card cr-stat-card--accent">
@@ -419,19 +419,19 @@
             </div>
         </section>
 
-        <!-- ══ 10. FINAL CTA ══ -->
-        <section id="final-cta" class="final-cta-section">
-            <div class="final-cta-bg"></div>
-            <div class="container">
-                <div class="final-cta-content">
-                    <span class="section-label section-label--light">The Mission Continues</span>
-                    <h2>The Neighborhood Never Left.<br>It Just Grew.</h2>
-                    <p>10,000+ women. 50 countries. The same honesty we had on day one.</p>
-                    <a href="programs.html" class="primary-cta button-3d large">Start Your Journey →</a>
-                    <p class="reassurance"><i class="fa-solid fa-bolt"></i> No pills. No crash diets. No false promises. Just real work — and real results.</p>
-                </div>
-            </div>
-        </section>
+       <!-- ══ 10. FINAL CTA ══ -->
+<section id="final-cta" class="final-cta-section">
+    <div class="final-cta-bg"></div>
+    <div class="container">
+        <div class="final-cta-content">
+            <span class="section-label section-label--light">The Mission Continues</span>
+            <h2>The Neighborhood Never Left.<br>It Just Grew.</h2>
+            <p><span data-stat-text data-stat-key="members"></span>+ women. <span data-stat-text data-stat-key="countries"></span> countries. The same honesty we had on day one.</p>
+            <a href="programs.html" class="primary-cta button-3d large">Start Your Journey →</a>
+            <p class="reassurance"><i class="fa-solid fa-bolt"></i> No pills. No crash diets. No false promises. Just real work — and real results.</p>
+        </div>
+    </div>
+</section>
 
     </main>
 

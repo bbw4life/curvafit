@@ -430,6 +430,38 @@ function applyPromoFreeItems() {
     })();
 
 
+ // ====================== INJECT SITE STATS ======================
+(function injectSiteStats() {
+  const settings = products.find(p => p.type === 'settings') || {};
+  const s = settings.site_stats || {};
+  if (!Object.keys(s).length) return;
+
+  function setCounter(selector) {
+    document.querySelectorAll(selector).forEach(el => {
+      const key = el.dataset.statKey;
+      if (key && s[key] !== undefined) {
+        el.setAttribute('data-target', s[key]);
+        el.textContent = '0';
+      }
+    });
+  }
+
+  function setText(selector) {
+    document.querySelectorAll(selector).forEach(el => {
+      const key = el.dataset.statKey;
+      if (key && s[key] !== undefined) {
+        const suffix = key === 'satisfaction_rate' ? '%' : '';
+        el.textContent = s[key] + suffix;
+      }
+    });
+  }
+
+  setCounter('[data-stat-counter]');
+  setText('[data-stat-text]');
+})();
+// ====================== END INJECT SITE STATS ======================
+
+
 
       // ══ SHOP HIGHLIGHT — index.html ══
 (function initShopHighlight() {

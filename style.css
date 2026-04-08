@@ -13187,7 +13187,7 @@ html.fonts-loaded [class*="fa-"] {
         flex-direction: column;
         align-items: center;
         gap: 7px;
-        padding: 20px 20px 16px;
+        padding: 10px 10px 10px;
         border-bottom: 1px solid rgba(192, 56, 94, 0.12);
     }
 
@@ -13419,7 +13419,7 @@ html.fonts-loaded [class*="fa-"] {
         text-align: center;
         font-size: 12px;
         color: rgba(142, 126, 133, 0.70); /* --mist atténué */
-        padding: 9px 16px 16px;
+        padding: 9px 10px 40px !important;
         margin: 0;
     }
 
