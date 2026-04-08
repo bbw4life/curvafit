@@ -599,29 +599,29 @@ function applyPromoFreeItems() {
 
 
       // ══ SANAICA BANNER ══
-(function initSanaicaBanner() {
-  const banner = document.getElementById('sanaica-banner-paul');
-  if (!banner) return;
+      (function initSanaicaBanner() {
+        const banner = document.getElementById('sanaica-banner-paul');
+        if (!banner) return;
 
-  const sb = settings.sanaica_banner || {};
+        const sb = settings.sanaica_banner || {};
 
-  if ((sb.show || 'Yes').toLowerCase() !== 'yes') {
-    banner.style.display = 'none';
-    return;
-  }
+        if ((sb.show || 'Yes').toLowerCase() !== 'yes') {
+          banner.style.display = 'none';
+          return;
+        }
 
-  if (sb.video_url) {
-    const video        = banner.querySelector('.sanaica-banner-paul-video');
-    const videoWrapper = banner.querySelector('.sanaica-banner-paul-video-wrapper');
-    if (video)        video.src = sb.video_url;
-    if (videoWrapper) videoWrapper.style.display = 'block';
-  }
+        if (sb.video_url) {
+          const video        = banner.querySelector('.sanaica-banner-paul-video');
+          const videoWrapper = banner.querySelector('.sanaica-banner-paul-video-wrapper');
+          if (video)        video.src = sb.video_url;
+          if (videoWrapper) videoWrapper.style.display = 'block';
+        }
 
-  banner.querySelectorAll('.sanaica-banner-paul-image').forEach((img, i) => {
-    const slide = sb.slides && sb.slides[i];
-    if (slide) { img.src = slide.image; img.alt = slide.alt; }
-  });
-})();
+        banner.querySelectorAll('.sanaica-banner-paul-image').forEach((img, i) => {
+          const slide = sb.slides && sb.slides[i];
+          if (slide) { img.src = slide.image; img.alt = slide.alt; }
+        });
+      })();
 
       // ══ INJECT AUTH POPUP TEXTS FROM SETTINGS ══
         (function injectAuthPopupTexts() {
