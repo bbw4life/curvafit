@@ -1260,49 +1260,50 @@
     </div>
 
     <div class="paul-indicator-wrapper">
-        <a href="#" class="paul-indicator" id="paulTrigger">
-            <i class="fi fi-rr-user"></i>
-            <span class="paul-tooltip"></span>
-        </a>
-    </div>
-    <div class="paul-popup-overlay" id="paulPopup">
-        <div class="paul-popup">
-            <span class="paul-close">×</span>
-            <h2 class="paul-offer-title"></h2>
-            <p class="paul-offer-subtitle"></p>
-            <div id="authContainer">
-                <div id="loginForm" class="auth-form">
-                    <h3></h3>
-                    <input type="email" placeholder="Email" required>
-                    <div class="password-input-wrapper" style="position:relative !important;">
-                        <input type="password" id="login-password" placeholder="Password" required>
-                        <span class="password-toggle" data-target="login-password">
-                            <i class="fi fi-sr-eye"></i>
-                        </span>
-                    </div>
-                    <label><input type="checkbox"></label>
-                    <button type="button" class="paul-btn paul-btn-login"></button>
-                    <p class="switch-link"><span id="goToSignup"></span></p>
+    <a href="#" class="paul-indicator" id="paulTrigger">
+        <i class="fi fi-rr-user"></i>
+        <span class="paul-tooltip" id="paul-tooltip-text"></span>
+    </a>
+</div>
+
+<div class="paul-popup-overlay" id="paulPopup">
+    <div class="paul-popup">
+        <span class="paul-close">×</span>
+        <h2 class="paul-offer-title" id="paul-offer-title"></h2>
+        <p class="paul-offer-subtitle" id="paul-offer-subtitle"></p>
+        <div id="authContainer">
+            <div id="loginForm" class="auth-form">
+                <h3 id="paul-login-title"></h3>
+                <input type="email" placeholder="Email" required>
+                <div class="password-input-wrapper" style="position:relative !important;">
+                    <input type="password" id="login-password" placeholder="Password" required>
+                    <span class="password-toggle" data-target="login-password">
+                        <i class="fi fi-sr-eye"></i>
+                    </span>
                 </div>
-                <div id="signupForm" class="auth-form" style="display:none;">
-                    <h3></h3>
-                    <input type="text" placeholder="Last Name" required>
-                    <input type="text" placeholder="First Name" required>
-                    <input type="email" placeholder="Email" required>
-                    <input type="tel" placeholder="Phone (optional)">
-                    <div class="password-input-wrapper" style="position:relative !important;">
-                        <input type="password" id="signup-password" placeholder="Password" required>
-                        <span class="password-toggle" data-target="signup-password">
-                            <i class="fi fi-sr-eye"></i>
-                        </span>
-                    </div>
-                    <label><input type="checkbox"></label>
-                    <button type="button" class="paul-btn paul-btn-register"></button>
-                    <p class="switch-link"><span id="goToLogin"></span></p>
+                <label><input type="checkbox"> <span id="paul-remember-label"></span></label>
+                <button type="button" class="paul-btn paul-btn-login" id="paul-login-btn"></button>
+                <p class="switch-link"><span id="paul-login-switch"></span> <span id="goToSignup" style="cursor:pointer;"></span></p>
+            </div>
+            <div id="signupForm" class="auth-form" style="display:none;">
+                <h3 id="paul-signup-title"></h3>
+                <input type="text" placeholder="Last Name" required>
+                <input type="text" placeholder="First Name" required>
+                <input type="email" placeholder="Email" required>
+                <input type="tel" placeholder="Phone (optional)">
+                <div class="password-input-wrapper" style="position:relative !important;">
+                    <input type="password" id="signup-password" placeholder="Password" required>
+                    <span class="password-toggle" data-target="signup-password">
+                        <i class="fi fi-sr-eye"></i>
+                    </span>
                 </div>
+                <label><input type="checkbox"> <span id="paul-newsletter-label"></span></label>
+                <button type="button" class="paul-btn paul-btn-register" id="paul-signup-btn"></button>
+                <p class="switch-link"><span id="paul-signup-switch"></span> <span id="goToLogin" style="cursor:pointer;"></span></p>
             </div>
         </div>
     </div>
+</div>
 
     <!-- ══ FLOATING NAV ══ -->
 <div id="floating-nav">

@@ -563,6 +563,30 @@ function applyPromoFreeItems() {
 
 
       const settings = products.find(p => p.type === "settings") || {};
+
+      // ══ INJECT AUTH POPUP TEXTS FROM SETTINGS ══
+        (function injectAuthPopupTexts() {
+            const ap = settings.auth_popup || {};
+
+            const set = (id, text) => {
+                const el = document.getElementById(id);
+                if (el && text) el.textContent = text;
+            };
+
+            set('paul-offer-title',      ap.offer_title);
+            set('paul-offer-subtitle',   ap.offer_subtitle);
+            set('paul-login-title',      ap.login_title);
+            set('paul-login-btn',        ap.login_btn);
+            set('paul-login-switch',     ap.login_switch);
+            set('goToSignup',            ap.login_switch_link);
+            set('paul-signup-title',     ap.signup_title);
+            set('paul-signup-btn',       ap.signup_btn);
+            set('paul-signup-switch',    ap.signup_switch);
+            set('goToLogin',             ap.signup_switch_link);
+            set('paul-newsletter-label', ap.signup_newsletter_label);
+            set('paul-remember-label',   ap.signup_remember_label);
+            set('paul-tooltip-text',     ap.tooltip_text);
+        })();
           // ── Chat widget inject ──
           (function() {
             const w     = settings.chat_widget      || {};
@@ -611,63 +635,13 @@ function applyPromoFreeItems() {
               });
             }
           })();
-      
+
+
       const plansAvailable = (settings.plans_available || 'no').toLowerCase() === 'yes';
       const planTriggerWrap = document.querySelector('.plan-request-trigger-wrap');
       if (planTriggerWrap) {
         planTriggerWrap.style.display = plansAvailable ? '' : 'none';
       }
-
-      // ══ AUTH POPUP — inject texts from settings ══
-        (function injectAuthPopupTexts() {
-          const ap = settings.auth_popup || {};
-          
-          const offerTitle = document.querySelector('.paul-offer-title');
-          const offerSub   = document.querySelector('.paul-offer-subtitle');
-          const tooltip    = document.querySelector('.paul-tooltip');
-
-          if (offerTitle && ap.offer_title)    offerTitle.textContent = ap.offer_title;
-          if (offerSub   && ap.offer_subtitle) offerSub.textContent   = ap.offer_subtitle;
-          if (tooltip    && ap.tooltip_text)   tooltip.textContent     = ap.tooltip_text;
-
-          // Login form
-          const loginForm = document.getElementById('loginForm');
-          if (loginForm) {
-            const h3 = loginForm.querySelector('h3');
-            const btn = loginForm.querySelector('.paul-btn-login');
-            const switchText = loginForm.querySelector('.switch-link');
-            const rememberLabel = loginForm.querySelector('label');
-
-            if (h3 && ap.login_title)             h3.textContent = ap.login_title;
-            if (btn && ap.login_btn)              btn.textContent = ap.login_btn;
-            if (rememberLabel && ap.signup_remember_label)
-              rememberLabel.childNodes[1].textContent = ' ' + ap.signup_remember_label;
-            if (switchText && ap.login_switch && ap.login_switch_link) {
-              switchText.childNodes[0].textContent = ap.login_switch + ' ';
-              const span = switchText.querySelector('#goToSignup');
-              if (span) span.textContent = ap.login_switch_link;
-            }
-          }
-
-          // Signup form
-          const signupForm = document.getElementById('signupForm');
-          if (signupForm) {
-            const h3 = signupForm.querySelector('h3');
-            const btn = signupForm.querySelector('.paul-btn-register');
-            const switchText = signupForm.querySelector('.switch-link');
-            const newsletterLabel = signupForm.querySelector('label');
-
-            if (h3 && ap.signup_title)   h3.textContent = ap.signup_title;
-            if (btn && ap.signup_btn)    btn.textContent = ap.signup_btn;
-            if (newsletterLabel && ap.signup_newsletter_label)
-              newsletterLabel.childNodes[1].textContent = ' ' + ap.signup_newsletter_label;
-            if (switchText && ap.signup_switch && ap.signup_switch_link) {
-              switchText.childNodes[0].textContent = ap.signup_switch + ' ';
-              const span = switchText.querySelector('#goToLogin');
-              if (span) span.textContent = ap.signup_switch_link;
-            }
-          }
-        })();
       // Free shipping threshold → risk-reversal section
       const freeShippingThreshold = (settings.cart_drawer && settings.cart_drawer.free_shipping_threshold)
         ? settings.cart_drawer.free_shipping_threshold
