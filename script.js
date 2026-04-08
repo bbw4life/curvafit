@@ -690,9 +690,12 @@ function applyPromoFreeItems() {
     (function injectNewsletterPopupTexts() {
       const np = settings.newsletter_popup || {};
 
-      const iconEl    = document.getElementById('newsletter-popup-icon');
-      const titleEl   = document.getElementById('newsletter-popup-title');
-      const messageEl = document.getElementById('newsletter-popup-message');
+      const popup     = document.getElementById('newsletter-popup');
+      if (!popup) return;
+
+      const iconEl    = popup.querySelector('.popup-icon i');
+      const titleEl   = popup.querySelector('.popup-content h3');
+      const messageEl = popup.querySelector('.popup-content p');
       const closeEl   = document.getElementById('popup-close-btn');
 
       if (iconEl && np.icon) {
