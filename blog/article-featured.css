@@ -315,7 +315,7 @@
   gap: var(--art-gap);
   max-width: calc(var(--art-content-max) + var(--art-sidebar-w) + var(--art-gap) + 80px);
   margin: 0 auto;
-  padding: 56px 40px 0;
+  padding: 50px 40px 0;
   align-items: start;
 }
 
@@ -1233,7 +1233,7 @@
 }
 
 /* ══════════════════════════════════════════════════════
-   ARTICLE REVIEWS — article-featured.css (append)
+   ARTICLE REVIEWS
 ══════════════════════════════════════════════════════ */
 
 /* ── Review form wrapper ── */
@@ -1288,10 +1288,6 @@
   gap: 14px;
 }
 
-@media (max-width: 560px) {
-  .art-review-row { grid-template-columns: 1fr; }
-}
-
 .art-review-field {
   display: flex;
   flex-direction: column;
@@ -1320,6 +1316,8 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   outline: none;
   resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .art-review-field input[type="text"]:focus,
@@ -1840,7 +1838,6 @@
   margin: 0 auto;
 }
 
-/* Related card (reuses blog-card style from blog.css) */
 .related-card {
   background: #fff;
   border-radius: 18px;
@@ -1944,7 +1941,7 @@
    FINAL CTA
 ════════════════════════════════════════ */
 .article-final-cta {
-  padding: 15px 00px;
+  padding: 15px 0;
   background: linear-gradient(135deg, var(--art-plum) 0%, var(--art-rose) 100%);
   position: relative;
   overflow: hidden;
@@ -2063,7 +2060,7 @@
   .article-layout {
     grid-template-columns: 1fr;
     grid-template-areas: "content";
-    padding: 40px 32px 0;
+    padding: 20px 15px 0;
     max-width: var(--art-content-max);
   }
 
@@ -2074,6 +2071,7 @@
    RESPONSIVE — Mobile (≤768px)
 ════════════════════════════════════════ */
 @media (max-width: 768px) {
+
   .article-hero {
     min-height: 70vh;
     padding-bottom: 40px;
@@ -2094,8 +2092,40 @@
     gap: 10px;
   }
 
+  /* ── Layout : padding latéral normal ── */
   .article-layout {
-    padding: 28px 20px 0;
+    padding: 16px 14px 0;
+    max-width: 100%;
+  }
+
+  /* ── Reactions : padding réduit ── */
+  .article-reactions {
+    padding: 20px 14px;
+    border-radius: 12px;
+  }
+
+  /* ── Review form : padding réduit ── */
+  .art-review-form-wrap {
+    padding: 20px 14px 18px;
+    border-radius: 12px;
+    margin-top: 20px;
+  }
+
+  /* ── Champs texte pleine largeur garantie ── */
+  .art-review-field input[type="text"],
+  .art-review-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── Prénom / Nom en colonne sur mobile ── */
+  .art-review-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* ── Review card padding réduit ── */
+  .art-rv-card {
+    padding: 14px 12px;
   }
 
   .article-habits-grid {
@@ -2111,11 +2141,16 @@
   }
 
   .article-mid-cta__inner {
-    padding: 28px 22px;
+    padding: 28px 18px;
+  }
+
+  .article-mid-cta__btns {
+    flex-direction: column;
+    align-items: center;
   }
 
   .article-newsletter__inner {
-    padding: 28px 22px;
+    padding: 28px 18px;
   }
 
   .article-newsletter__form {
@@ -2123,7 +2158,7 @@
   }
 
   .article-related {
-    padding: 40px 20px;
+    padding: 40px 16px;
   }
 
   .article-related__grid {
@@ -2141,27 +2176,22 @@
 
   .article-author-bio {
     flex-direction: column;
-    padding: 22px 20px;
+    padding: 22px 16px;
   }
 
   .article-blockquote {
-    padding: 22px 20px 18px 32px;
+    padding: 22px 16px 18px 32px;
   }
 
   .article-conclusion {
-    padding: 26px 22px;
+    padding: 26px 18px;
   }
 
   .article-results {
-    padding: 26px 22px;
+    padding: 26px 18px;
   }
 
   .article-share-bottom__btns {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .article-mid-cta__btns {
     flex-direction: column;
     align-items: center;
   }
@@ -2171,16 +2201,48 @@
     padding: 10px 12px;
     font-size: 0.82rem;
   }
+
+  .article-reactions__btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .article-reactions__btns .reaction-btn:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .reaction-btn {
+    padding: 10px 10px;
+  }
 }
 
 /* ════════════════════════════════════════
    RESPONSIVE — Mobile small (≤480px)
 ════════════════════════════════════════ */
 @media (max-width: 480px) {
+
   .article-hero__title { font-size: 1.45rem; }
-  .article-reactions__btns { flex-direction: column; align-items: center; }
   .article-hero__stats { gap: 10px; }
   .roadmap-week { padding-left: 70px; }
+
+  .article-reactions__btns {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .article-reactions {
+    padding: 16px 10px;
+  }
+
+  .art-review-form-wrap {
+    padding: 16px 10px 14px;
+  }
+
+  .art-rv-submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* ════════════════════════════════════════
