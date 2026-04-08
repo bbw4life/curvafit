@@ -1025,7 +1025,7 @@
       {"code": "BUNDLEFREE","items": 6,"percent": 30},
       {"code": "CURVA40","items": 7,"percent": 40}
     ],
-    "enable_media_zoom": "Yes",
+    "enable_media_zoom": "yes",
     "plans_available": "Yes",
     "collapsible_order_summary": "No",
     "flash_deal": {

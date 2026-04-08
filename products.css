@@ -419,24 +419,38 @@ button.buy-now.cta:hover {
     margin-bottom: 7px !important;
 }
 
+
 @media (max-width: 768px) {
-    .product-content {
-        width: 100vw !important;
-        max-width: 100vw !important;
-        margin-left: -20px !important;
-        margin-right: -20px !important;
-        padding: 25px 0 10px !important;
-        margin-top: 5px !important;
+
+    html, body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+    }
+    .product-layout {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 3px !important;
+        margin: 0px !important;
+    }
+    .product-media {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
         box-sizing: border-box !important;
-        border-radius: 0 !important;
+    }
+    .product-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 5px 0 0 0 !important;
+        padding: 10px 5px 5px !important;
+        box-sizing: border-box !important;
         box-shadow: inset 1px 0 0 #fef3c7, inset -1px 0 0 #fef3c7 !important;
     }
 
     .product-content > * {
-        width: calc(100% - 10px) !important;
-        max-width: calc(100% - 10px) !important;
-        margin-left: 5px !important;
-        margin-right: 5px !important;
+        max-width: 100% !important;
         box-sizing: border-box !important;
     }
 }
@@ -5916,4 +5930,6 @@ body::-webkit-scrollbar {
     font-size: 20px;
   }
 }
+
+
 
