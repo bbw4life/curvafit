@@ -941,6 +941,15 @@
       ],
       "banner_slide_duration_ms": 5000
     },
+    "sanaica_banner": {
+      "show": "Yes",
+      "video_url": "",
+      "slides": [
+        { "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/flash_3.jpg?v=1764080083", "alt": "Slim your waist at home in 10 minutes a day" },
+        { "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/flash_2_903b23a6-bd00-4969-8fbe-ec7586d6efd2.jpg?v=1764079925", "alt": "Burn belly fat at home without a gym" },
+        { "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/flash_1.jpg?v=1764079325", "alt": "Adjustable smart hula hoop fits every waist size" }
+      ]
+    },
     "social_links": {
       "facebook": "https://facebook.com/curvafit",
       "instagram": "https://instagram.com/curvafit",
