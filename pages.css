@@ -774,7 +774,7 @@ section + section { margin-top: var(--section-gap) !important; }
 ═══════════════════════════════════ */
 .comm-reviews-section {
   padding: 0.5rem 0;
-  overflow: hidden;
+  overflow: hidden; 
   background: #f9f3fa;
 }
 .comm-reviews-section .section-header {

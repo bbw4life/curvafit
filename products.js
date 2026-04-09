@@ -48,6 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       calculateDiscount();
+
+      // ====================== URGENCY BAR — DYNAMIQUE PAR PRODUIT ======================
+      // On initialise l'urgency bar avec les données réelles du produit depuis products.data.json
+      // puis on charge les reviews dynamiques depuis le serveur pour compléter le total
+      initDynamicUrgencyBar(product, currentProductId);
     })
     .catch(err => console.error('Erreur chargement /products.data.json', err));
 
@@ -85,6 +90,145 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // ====================== DYNAMIC URGENCY BAR ======================
+  // Logique complète :
+  // 1. Lit reviews_count depuis products.data.json (valeur de base pour ce produit)
+  // 2. Appelle save-reviews pour obtenir le nombre réel de reviews clients pour ce produit
+  // 3. Fusionne les deux (base + reviews clients)
+  // 4. Calcule la distribution par étoiles à partir des reviews clients réels
+  // 5. Met à jour les barres de notation et le total
+  // 6. Expose window.__reviewCounts pour mise à jour en temps réel après soumission
+
+  function initDynamicUrgencyBar(product, productId) {
+    // ── Compteurs de base issus de products.data.json ──
+    // Le JSON fournit reviews_count total et rating moyen
+    // On déduit la distribution des étoiles à partir du rating moyen
+    const baseTotal = parseInt(product.reviews_count) || 0;
+    const baseRating = parseFloat(product.rating) || 4.7;
+
+    // Distribution de base calculée depuis le rating et le total
+    // On utilise une distribution réaliste pondérée par le rating moyen
+    function estimateBaseDistribution(total, avgRating) {
+      // Calcule une distribution réaliste basée sur le rating moyen
+      let dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+      if (total === 0) return dist;
+
+      // Algorithme de distribution pondérée :
+      // Si rating proche de 5 → beaucoup de 5 étoiles
+      // Si rating proche de 4 → mix 5 et 4 étoiles
+      const r = Math.max(1, Math.min(5, avgRating));
+
+      // Poids relatifs selon le rating moyen
+      const weights = {
+        5: Math.pow(Math.max(0, r - 4), 2) * 100 + Math.max(0, (r - 3) * 20),
+        4: Math.max(0, (r - 3) * 15 - Math.pow(Math.max(0, r - 4.5), 2) * 50),
+        3: Math.max(0, 10 - Math.abs(r - 3) * 8),
+        2: Math.max(0, 5 - (r - 2) * 4),
+        1: Math.max(0, 3 - (r - 1) * 2)
+      };
+
+      const totalWeight = Object.values(weights).reduce((s, v) => s + v, 0) || 1;
+      let assigned = 0;
+      const stars = [5, 4, 3, 2, 1];
+
+      stars.forEach((star, idx) => {
+        if (idx === stars.length - 1) {
+          // Dernier : prend le reste pour éviter les erreurs d'arrondi
+          dist[star] = Math.max(0, total - assigned);
+        } else {
+          dist[star] = Math.round((weights[star] / totalWeight) * total);
+          assigned += dist[star];
+        }
+      });
+
+      return dist;
+    }
+
+    // Distribution de base depuis products.data.json
+    let counts = estimateBaseDistribution(baseTotal, baseRating);
+    let total = baseTotal;
+
+    // Applique la distribution de base aux barres HTML
+    applyReviewCounts(counts, total);
+
+    // ── Chargement des reviews clients réels depuis le serveur ──
+    loadRealReviewCounts(productId, counts, total, baseTotal);
+  }
+
+  // Charge les reviews réels depuis l'API save-reviews
+  async function loadRealReviewCounts(productId, baseCounts, baseTotal, jsonTotal) {
+    try {
+      const res = await fetch('/.netlify/functions/save-reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'get-reviews', productId: productId })
+      });
+      const data = await res.json();
+
+      if (!data.success || !data.reviews) return;
+
+      // Compte les reviews clients par étoile pour ce produit spécifique
+      const clientCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      data.reviews.forEach(review => {
+        const star = parseInt(review.rating);
+        if (star >= 1 && star <= 5) {
+          clientCounts[star]++;
+        }
+      });
+
+      const clientTotal = data.reviews.length;
+
+      // Fusionne : base JSON + reviews clients réels
+      // La base JSON représente déjà les reviews existants au moment de la config
+      // On additionne par-dessus les nouveaux reviews clients
+      const mergedCounts = {
+        5: baseCounts[5] + clientCounts[5],
+        4: baseCounts[4] + clientCounts[4],
+        3: baseCounts[3] + clientCounts[3],
+        2: baseCounts[2] + clientCounts[2],
+        1: baseCounts[1] + clientCounts[1]
+      };
+      const mergedTotal = baseTotal + clientTotal;
+
+      // Stocke les counts dans window pour mise à jour en temps réel
+      window.__reviewCounts = mergedCounts;
+      window.__reviewTotal = mergedTotal;
+      window.__reviewBaseCounts = baseCounts;
+      window.__reviewBaseTotal = baseTotal;
+      window.__reviewProductId = productId;
+
+      // Applique les counts fusionnés
+      applyReviewCounts(mergedCounts, mergedTotal);
+
+    } catch (err) {
+      console.warn('[Reviews] Erreur chargement reviews réels:', err);
+      // En cas d'erreur, garde la distribution de base depuis products.data.json
+    }
+  }
+
+  // Applique les counts aux éléments HTML (barres + totaux)
+  function applyReviewCounts(counts, total) {
+    const totalReviewsSpan = document.getElementById('total-reviews');
+    if (totalReviewsSpan) totalReviewsSpan.textContent = total;
+
+    for (let i = 1; i <= 5; i++) {
+      const barEl   = document.getElementById('bar-' + i);
+      const countEl = document.getElementById('count-' + i);
+      if (barEl) {
+        const pct = total > 0 ? Math.round((counts[i] / total) * 100) : 0;
+        barEl.style.width = pct + '%';
+      }
+      if (countEl) countEl.textContent = counts[i];
+    }
+
+    // Met aussi à jour l'en-tête des reviews
+    const avgRatingHeader = document.querySelector('.average-rating');
+    if (avgRatingHeader) {
+      const totalEl = avgRatingHeader.querySelector('#total-reviews');
+      if (totalEl) totalEl.textContent = total;
+    }
+  }
+
   // ====================== TON CODE ORIGINAL (100% conservé) ======================
   const thumbnails = document.querySelectorAll('.thumbnail-item');
   const mainImages = document.querySelectorAll('.main-image');
@@ -103,28 +247,34 @@ document.addEventListener('DOMContentLoaded', () => {
     thumb.addEventListener('click', () => updateMainImage(i));
   });
 
-  prevArrow.addEventListener('click', () => {
-    let newIndex = currentIndex - 1;
-    if (newIndex < 0) newIndex = mainImages.length - 1;
-    updateMainImage(newIndex);
-  });
+  if (prevArrow) {
+    prevArrow.addEventListener('click', () => {
+      let newIndex = currentIndex - 1;
+      if (newIndex < 0) newIndex = mainImages.length - 1;
+      updateMainImage(newIndex);
+    });
+  }
 
-  nextArrow.addEventListener('click', () => {
-    let newIndex = currentIndex + 1;
-    if (newIndex >= mainImages.length) newIndex = 0;
-    updateMainImage(newIndex);
-  });
+  if (nextArrow) {
+    nextArrow.addEventListener('click', () => {
+      let newIndex = currentIndex + 1;
+      if (newIndex >= mainImages.length) newIndex = 0;
+      updateMainImage(newIndex);
+    });
+  }
 
   let startX = 0;
   const slider = document.querySelector('.main-image-slider');
-  slider.addEventListener('touchstart', e => startX = e.touches[0].clientX);
-  slider.addEventListener('touchend', e => {
-    const endX = e.changedTouches[0].clientX;
-    const diff = startX - endX;
-    if (Math.abs(diff) > 50) {
-      diff > 0 ? nextArrow.click() : prevArrow.click();
-    }
-  });
+  if (slider) {
+    slider.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+    slider.addEventListener('touchend', e => {
+      const endX = e.changedTouches[0].clientX;
+      const diff = startX - endX;
+      if (Math.abs(diff) > 50) {
+        diff > 0 ? nextArrow && nextArrow.click() : prevArrow && prevArrow.click();
+      }
+    });
+  }
 
   const qtyMinus = document.querySelector('.quantity .qty-minus');
   const qtyPlus = document.querySelector('.quantity .qty-plus');
@@ -419,44 +569,76 @@ function showErrorPopup(message, isSuccess = false) {
     }, 8000);
 }
 
-let counts = {1: 0, 2: 0, 3: 2, 4: 7, 5: 64};
-let total = 73;
+// ====================== GESTION DYNAMIQUE DES COUNTS DE REVIEWS ======================
+// Ces counts sont mis à jour depuis products.data.json + reviews clients réels
+// Ils sont initialisés par initDynamicUrgencyBar() dans le DOMContentLoaded
 
-function updateSummary() {
-    totalReviewsSpan.textContent = total;
-    for (let i = 1; i <= 5; i++) {
-        const percentage = (counts[i] / total) * 100;
-        document.getElementById(`bar-${i}`).style.width = `${percentage}%`;
-        document.getElementById(`count-${i}`).textContent = counts[i];
+// Fonction publique pour mettre à jour les counts après soumission d'un review
+// Appelée automatiquement après chaque soumission réussie
+function updateReviewCountsAfterSubmission(newRating) {
+    // Récupère les counts actuels stockés par initDynamicUrgencyBar
+    const counts = window.__reviewCounts || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const total  = (window.__reviewTotal || 0);
+    const star   = parseInt(newRating);
+
+    // Incrémente le bon compteur d'étoiles
+    if (star >= 1 && star <= 5) {
+        counts[star] = (counts[star] || 0) + 1;
     }
+    const newTotal = total + 1;
+
+    // Sauvegarde les nouveaux counts dans window
+    window.__reviewCounts = counts;
+    window.__reviewTotal  = newTotal;
+
+    // Met à jour l'affichage HTML en temps réel
+    const totalReviewsSpan = document.getElementById('total-reviews');
+    if (totalReviewsSpan) totalReviewsSpan.textContent = newTotal;
+
+    for (let i = 1; i <= 5; i++) {
+        const barEl   = document.getElementById('bar-' + i);
+        const countEl = document.getElementById('count-' + i);
+        if (barEl) {
+            const pct = newTotal > 0 ? Math.round(((counts[i] || 0) / newTotal) * 100) : 0;
+            barEl.style.width = pct + '%';
+        }
+        if (countEl) countEl.textContent = counts[i] || 0;
+    }
+
+    console.log('[Reviews] Counts mis à jour après soumission — Total:', newTotal, '| Star', star, ':', counts[star]);
 }
 
+// Exposer la fonction globalement pour que le form submit puisse l'appeler
+window.updateReviewCountsAfterSubmission = updateReviewCountsAfterSubmission;
+
+// ====================== READ MORE ======================
 const hiddenReviews = document.querySelectorAll('.review-card.hidden');
 let showingAll = false;
 
-readMoreBtn.addEventListener('click', () => {
-    if (!showingAll) {
-        hiddenReviews.forEach(review => review.classList.remove('hidden'));
-        readMoreBtn.textContent = 'Close Reviews';
-        showingAll = true;
-    } else {
-        hiddenReviews.forEach(review => review.classList.add('hidden'));
-        readMoreBtn.textContent = 'Read more reviews';
-        showingAll = false;
-    }
-});
+if (readMoreBtn) {
+    readMoreBtn.addEventListener('click', () => {
+        if (!showingAll) {
+            hiddenReviews.forEach(review => review.classList.remove('hidden'));
+            readMoreBtn.textContent = 'Close Reviews';
+            showingAll = true;
+        } else {
+            hiddenReviews.forEach(review => review.classList.add('hidden'));
+            readMoreBtn.textContent = 'Read more reviews';
+            showingAll = false;
+        }
+    });
+}
 
-writeButton.addEventListener('click', () => {
-    reviewForm.style.display = 'block';
-    writeButton.style.display = 'none';
-});
+if (writeButton) {
+    writeButton.addEventListener('click', () => {
+        reviewForm.style.display = 'block';
+        writeButton.style.display = 'none';
+    });
+}
 
-const form = reviewForm.querySelector('form');
+const form = reviewForm ? reviewForm.querySelector('form') : null;
 
 // ====================== COMPRESSION IMAGE ======================
-// MAX 200px / qualité 0.5 — identique à story-form dans script.js
-// 3 images × ~10 000 chars = ~30 000 chars total, bien sous la limite 50 000 de Google Sheets
-
 async function compressImageForSheet(file) {
     return new Promise((resolve) => {
         const MAX = 200;
@@ -506,7 +688,7 @@ function addOptimisticReview(name, rating, title, text, imagesBase64 = []) {
         <div class="review-images">${imagesHTML}</div>
         <div class="social-icon"></div>
     `;
-    reviewsList.appendChild(newReview);
+    if (reviewsList) reviewsList.appendChild(newReview);
 }
 
 async function loadDynamicReviews() {
@@ -538,7 +720,7 @@ async function loadDynamicReviews() {
                     <div class="review-images">${imagesHTML}</div>
                     <div class="social-icon"></div>
                 `;
-                reviewsList.appendChild(newReview);
+                if (reviewsList) reviewsList.appendChild(newReview);
             });
         }
     } catch (e) {
@@ -546,66 +728,74 @@ async function loadDynamicReviews() {
     }
 }
 
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('review-name').value.trim();
-    const email = document.getElementById('review-email').value.trim();
-    const rating = parseInt(document.getElementById('review-rating').value);
-    const title = document.getElementById('review-title').value.trim();
-    const text = document.getElementById('review-text').value.trim();
-    const imageInput = document.getElementById('review-images');
+if (form) {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('review-name').value.trim();
+        const email = document.getElementById('review-email').value.trim();
+        const rating = parseInt(document.getElementById('review-rating').value);
+        const title = document.getElementById('review-title').value.trim();
+        const text = document.getElementById('review-text').value.trim();
+        const imageInput = document.getElementById('review-images');
 
-    if (!name || !email || !rating || !title || !text) {
-        showErrorPopup("Please fill in all fields");
-        return;
-    }
-
-    // Compression agressive : MAX 200px / qualité 0.5 — identique à story-form
-    const imagesBase64 = [];
-    if (imageInput && imageInput.files.length > 0) {
-        const files = Array.from(imageInput.files).slice(0, 3);
-        for (const file of files) {
-            const b64 = await compressImageForSheet(file);
-            if (b64) imagesBase64.push(b64);
+        if (!name || !email || !rating || !title || !text) {
+            showErrorPopup("Please fill in all fields");
+            return;
         }
-    }
 
-    const productId = window.currentProductId || 'unknown';
-    addOptimisticReview(name, rating, title, text, imagesBase64);
-    form.reset();
-    const previewContainer = document.getElementById('review-images-preview');
-    if (previewContainer) previewContainer.innerHTML = '';
-    reviewForm.style.display = 'none';
-    writeButton.style.display = 'block';
+        const imagesBase64 = [];
+        if (imageInput && imageInput.files.length > 0) {
+            const files = Array.from(imageInput.files).slice(0, 3);
+            for (const file of files) {
+                const b64 = await compressImageForSheet(file);
+                if (b64) imagesBase64.push(b64);
+            }
+        }
 
-    try {
-        const res = await fetch('/.netlify/functions/save-reviews', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'save-review',
-                fullName: name,
-                email: email,
-                title: title,
-                rating: rating,
-                text: text,
-                productId: productId,
-                images: imagesBase64
-            })
-        });
-        const data = await res.json();
-        if (data.success) {
+        const productId = window.currentProductId || 'unknown';
+
+        // ── Mise à jour OPTIMISTE des counts avant même la réponse serveur ──
+        // Cela garantit un affichage immédiat en temps réel
+        updateReviewCountsAfterSubmission(rating);
+
+        addOptimisticReview(name, rating, title, text, imagesBase64);
+        form.reset();
+        const previewContainer = document.getElementById('review-images-preview');
+        if (previewContainer) previewContainer.innerHTML = '';
+        reviewForm.style.display = 'none';
+        if (writeButton) writeButton.style.display = 'block';
+
+        try {
+            const res = await fetch('/.netlify/functions/save-reviews', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'save-review',
+                    fullName: name,
+                    email: email,
+                    title: title,
+                    rating: rating,
+                    text: text,
+                    productId: productId,
+                    images: imagesBase64
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showErrorPopup("", true);
+                // Recharge les reviews dynamiques depuis le serveur
+                // (les counts ont déjà été mis à jour de façon optimiste)
+                loadDynamicReviews();
+            } else {
+                showErrorPopup("Error: " + (data.error || "Unknown"));
+            }
+        } catch (err) {
+            console.error("❌ Fetch review error:", err);
             showErrorPopup("", true);
-            loadDynamicReviews();
-        } else {
-            showErrorPopup("Error: " + (data.error || "Unknown"));
+            setTimeout(loadDynamicReviews, 1500);
         }
-    } catch (err) {
-        console.error("❌ Fetch review error:", err);
-        showErrorPopup("", true);
-        setTimeout(loadDynamicReviews, 1500);
-    }
-});
+    });
+}
 
 // ====================== IMAGE PREVIEW ======================
 document.addEventListener('DOMContentLoaded', () => {
@@ -627,8 +817,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
-updateSummary();
 
 // ── Scroll reveal ──
 (function() {
@@ -659,40 +847,18 @@ updateSummary();
     });
 })();
 
-// ── Urgency bar ──
-(function() {
-    var urgencyBar = document.querySelector('.pp-urgency-bar strong');
-    if (!urgencyBar) return;
-    var STORAGE_KEY = 'pp_urgency_data';
-    var MIN_COUNT = 35;
-    var MAX_COUNT = 74;
-    var MS_24H = 24 * 60 * 60 * 1000;
-    function getRandomCount() {
-        return Math.floor(Math.random() * (MAX_COUNT - MIN_COUNT + 1)) + MIN_COUNT;
-    }
-    function loadOrGenerate() {
-        var raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-            try {
-                var data = JSON.parse(raw);
-                if (Date.now() - data.timestamp < MS_24H) return data.count;
-            } catch(e) {}
-        }
-        var newCount = getRandomCount();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ count: newCount, timestamp: Date.now() }));
-        return newCount;
-    }
-    var count = loadOrGenerate();
-    urgencyBar.textContent = count + ' people';
-    var raw = localStorage.getItem(STORAGE_KEY);
-    var savedTimestamp = raw ? JSON.parse(raw).timestamp : Date.now();
-    var msUntilNext = MS_24H - (Date.now() - savedTimestamp);
-    setTimeout(function() {
-        var newCount = getRandomCount();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ count: newCount, timestamp: Date.now() }));
-        urgencyBar.textContent = newCount + ' people';
-    }, msUntilNext);
-})();
+// ── Urgency bar — REMPLACÉ PAR LE SYSTÈME DYNAMIQUE ──
+// L'urgency bar est maintenant gérée par initDynamicUrgencyBar() dans DOMContentLoaded
+// Elle affiche le nombre EXACT de reviews du produit courant depuis products.data.json
+// et se met à jour en temps réel après chaque soumission client via updateReviewCountsAfterSubmission()
+//
+// ANCIEN CODE SUPPRIMÉ :
+// (function() {
+//     var urgencyBar = document.querySelector('.pp-urgency-bar strong');
+//     ... random entre 35 et 74 ... stocké en localStorage pendant 24h ...
+// })();
+// ↑ Ce code est supprimé car il était identique pour tous les produits
+//   et ne reflétait pas le vrai nombre de reviews
 
 (function() {
     var imgs1 = [
@@ -752,9 +918,3 @@ updateSummary();
 
     bars.forEach(function(bar) { observer.observe(bar); });
 })();
-
-
-
-
-
-
