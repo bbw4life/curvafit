@@ -1,4 +1,315 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+/* ══════════════════════════════════════════
+   CURVAFIT PRELOADER v2
+   Auto-injects HTML + logic into <body>
+══════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  /* ── 1. Inject HTML ── */
+  var html =
+    '<div id="cf-preloader" aria-hidden="true">' +
+      '<div class="cf-pl-backdrop"></div>' +
+      '<div class="cf-pl-stage">' +
+        '<div class="cf-pl-logo-wrap" id="cf-pl-logo">' +
+          '<svg width="52" height="52" viewBox="0 0 52 52" fill="none" aria-hidden="true">' +
+            '<circle cx="26" cy="26" r="24" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>' +
+            '<path d="M26 7C26 7 39 14 39 26C39 33.18 33.18 39 26 39C18.82 39 13 33.18 13 26C13 18.82 18.82 13 26 13" stroke="white" stroke-width="2.5" stroke-linecap="round"/>' +
+            '<circle cx="26" cy="26" r="5" fill="white"/>' +
+          '</svg>' +
+        '</div>' +
+        '<p class="cf-pl-brand">CurvaFit</p>' +
+        '<p class="cf-pl-tagline">Your transformation starts here</p>' +
+
+        /* Progress bar */
+        '<div class="cf-pl-indicator cf-ind-progress" id="cf-ind-progress">' +
+          '<div class="cf-pl-bar-track"><div class="cf-pl-bar-fill" id="cf-pl-bar"></div></div>' +
+        '</div>' +
+
+        /* Spinner ring */
+        '<div class="cf-pl-indicator cf-ind-spinner" id="cf-ind-spinner">' +
+          '<svg class="cf-pl-ring-svg" viewBox="0 0 40 40" aria-hidden="true">' +
+            '<circle cx="20" cy="20" r="16" stroke="rgba(255,255,255,0.15)" stroke-width="3" fill="none"/>' +
+            '<circle class="cf-pl-ring-arc" cx="20" cy="20" r="16" stroke="white" stroke-width="3" fill="none"' +
+              ' stroke-dasharray="100 101" stroke-linecap="round"/>' +
+          '</svg>' +
+        '</div>' +
+
+        /* Dots wave */
+        '<div class="cf-pl-indicator cf-ind-dots" id="cf-ind-dots">' +
+          '<span></span><span></span><span></span><span></span><span></span>' +
+        '</div>' +
+
+        /* Morph text */
+        '<div class="cf-pl-indicator cf-ind-morph" id="cf-ind-morph">' +
+          '<span id="cf-pl-morph-text">Loading</span>' +
+        '</div>' +
+
+        /* Pulse logo */
+        '<div class="cf-pl-indicator cf-ind-pulse" id="cf-ind-pulse">' +
+          '<svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true">' +
+            '<circle cx="32" cy="32" r="30" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>' +
+            '<circle cx="32" cy="32" r="21" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>' +
+            '<path d="M32 9C32 9 46 17 46 32C46 39.73 39.73 46 32 46C24.27 46 18 39.73 18 32C18 24.27 24.27 18 32 18" stroke="white" stroke-width="3" stroke-linecap="round"/>' +
+            '<circle cx="32" cy="32" r="6" fill="white"/>' +
+          '</svg>' +
+        '</div>' +
+
+      '</div>' +
+    '</div>';
+
+  var target = document.body || document.documentElement;
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  target.insertBefore(tmp.firstElementChild, target.firstChild);
+
+  /* ── 2. Inject CSS ── */
+  var css =
+    '#cf-preloader{' +
+      'position:fixed;inset:0;z-index:99999;' +
+      'display:flex;align-items:center;justify-content:center;' +
+      'transition:opacity .55s cubic-bezier(.4,0,.2,1),visibility .55s;' +
+    '}' +
+    '#cf-preloader.cf-pl-out{opacity:0;visibility:hidden;pointer-events:none;}' +
+
+    '.cf-pl-backdrop{' +
+      'position:absolute;inset:0;' +
+      'background:linear-gradient(160deg,#1a1a2e 0%,#16213e 55%,#0f3460 100%);' +
+    '}' +
+
+    '.cf-pl-stage{' +
+      'position:relative;z-index:1;' +
+      'display:flex;flex-direction:column;align-items:center;' +
+      'gap:0;' +
+    '}' +
+
+    /* Logo */
+    '.cf-pl-logo-wrap{' +
+      'margin-bottom:20px;' +
+      'animation:cf-logo-in .6s cubic-bezier(.34,1.56,.64,1) both;' +
+    '}' +
+    '@keyframes cf-logo-in{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}' +
+
+    /* Brand */
+    '.cf-pl-brand{' +
+      'margin:0 0 6px;' +
+      'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;' +
+      'font-size:22px;font-weight:700;letter-spacing:.04em;' +
+      'color:#fff;' +
+      'animation:cf-fade-up .5s .15s both;' +
+    '}' +
+
+    '.cf-pl-tagline{' +
+      'margin:0 0 32px;' +
+      'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;' +
+      'font-size:13px;font-weight:400;letter-spacing:.02em;' +
+      'color:rgba(255,255,255,.45);' +
+      'animation:cf-fade-up .5s .25s both;' +
+    '}' +
+
+    '@keyframes cf-fade-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}' +
+
+    /* All indicators hidden by default */
+    '.cf-pl-indicator{display:none;animation:cf-fade-up .45s .35s both;}' +
+    '.cf-pl-indicator.cf-active{display:flex;align-items:center;justify-content:center;}' +
+
+    /* ── Progress bar ── */
+    '.cf-ind-progress.cf-active{width:200px;height:3px;}' +
+    '.cf-pl-bar-track{width:100%;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;}' +
+    '.cf-pl-bar-fill{height:100%;width:0;background:#fff;border-radius:2px;transition:width .3s ease;}' +
+
+    /* ── Spinner ring ── */
+    '.cf-ind-spinner.cf-active{width:44px;height:44px;}' +
+    '.cf-pl-ring-svg{width:44px;height:44px;}' +
+    '.cf-pl-ring-arc{' +
+      'transform-origin:20px 20px;' +
+      'animation:cf-spin .9s linear infinite;' +
+    '}' +
+    '@keyframes cf-spin{to{transform:rotate(360deg)}}' +
+
+    /* ── Dots wave ── */
+    '.cf-ind-dots.cf-active{gap:7px;}' +
+    '.cf-ind-dots span{' +
+      'display:block;width:8px;height:8px;' +
+      'background:rgba(255,255,255,.8);border-radius:50%;' +
+      'animation:cf-wave .9s ease-in-out infinite;' +
+    '}' +
+    '.cf-ind-dots span:nth-child(1){animation-delay:0s}' +
+    '.cf-ind-dots span:nth-child(2){animation-delay:.12s}' +
+    '.cf-ind-dots span:nth-child(3){animation-delay:.24s}' +
+    '.cf-ind-dots span:nth-child(4){animation-delay:.36s}' +
+    '.cf-ind-dots span:nth-child(5){animation-delay:.48s}' +
+    '@keyframes cf-wave{0%,80%,100%{transform:scaleY(1);opacity:.4}40%{transform:scaleY(1.7);opacity:1}}' +
+
+    /* ── Morph text ── */
+    '.cf-ind-morph.cf-active{}' +
+    '.cf-ind-morph span{' +
+      'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;' +
+      'font-size:14px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;' +
+      'color:rgba(255,255,255,.7);' +
+      'transition:opacity .3s;' +
+    '}' +
+
+    /* ── Pulse logo ── */
+    '.cf-ind-pulse.cf-active svg{animation:cf-pulse 1.6s ease-in-out infinite;}' +
+    '@keyframes cf-pulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.08);opacity:1}}' +
+
+    /* Reduced-motion override */
+    '@media(prefers-reduced-motion:reduce){' +
+      '.cf-pl-logo-wrap,.cf-pl-brand,.cf-pl-tagline,.cf-pl-indicator{animation:none!important;opacity:1!important;transform:none!important}' +
+      '.cf-pl-ring-arc,.cf-ind-dots span,.cf-ind-pulse.cf-active svg{animation:none!important}' +
+    '}';
+
+  var styleEl = document.createElement('style');
+  styleEl.textContent = css;
+  (document.head || document.documentElement).appendChild(styleEl);
+
+  /* ── 3. State ── */
+  var pl       = document.getElementById('cf-preloader');
+  if (!pl) return;
+
+  var STYLE_MAP = {
+    style_progress_bar: 'cf-ind-progress',
+    style_spinner_ring: 'cf-ind-spinner',
+    style_dots_wave:    'cf-ind-dots',
+    style_morph_text:   'cf-ind-morph',
+    style_pulse_logo:   'cf-ind-pulse'
+  };
+
+  var MORPH_WORDS = ['Loading', 'Almost there', 'Preparing', 'Just a sec', 'Ready soon'];
+  var morphEl    = document.getElementById('cf-pl-morph-text');
+  var barEl      = document.getElementById('cf-pl-bar');
+  var morphTimer = null;
+  var barTimer   = null;
+  var morphIdx   = 0;
+  var dismissed  = false;
+
+  /* Minimum visible duration (ms) — gives the page a few seconds to breathe */
+  var MIN_SHOW_MS = 5000;
+  var startedAt   = Date.now();
+  var pageReady   = false;
+  var settingsOk  = false;
+  var canHide     = false;  /* true once both flags are set AND min time elapsed */
+
+  function tryHide() {
+    if (dismissed || !pageReady || !settingsOk) return;
+    var elapsed = Date.now() - startedAt;
+    var delay   = Math.max(0, MIN_SHOW_MS - elapsed);
+    setTimeout(doHide, delay);
+  }
+
+  function doHide() {
+    if (dismissed) return;
+    dismissed = true;
+    clearInterval(barTimer);
+    clearInterval(morphTimer);
+
+    /* Snap bar to 100% before fade */
+    if (barEl) {
+      barEl.style.transition = 'width .2s ease';
+      barEl.style.width = '100%';
+    }
+
+    var barActive = document.getElementById('cf-ind-progress') &&
+                    document.getElementById('cf-ind-progress').classList.contains('cf-active');
+    setTimeout(function () {
+      pl.classList.add('cf-pl-out');
+      setTimeout(function () {
+        if (pl && pl.parentNode) pl.parentNode.removeChild(pl);
+        if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+      }, 600);
+    }, barActive ? 220 : 0);
+  }
+
+  /* ── 4. Apply style ── */
+  function applyStyle(key) {
+    var id  = STYLE_MAP[key] || STYLE_MAP.style_progress_bar;
+    var el  = document.getElementById(id);
+    if (el) {
+      /* Force reflow so the fade-up animation replays after display:none → flex */
+      el.classList.add('cf-active');
+      void el.offsetWidth;
+      el.style.animationName = 'none';
+      requestAnimationFrame(function () {
+        el.style.animationName = '';
+      });
+    }
+
+    if (id === 'cf-ind-progress' && barEl) {
+      var pct = 2;
+      barEl.style.width = pct + '%';
+      barTimer = setInterval(function () {
+        /* Ease toward 88% but never reach 100 until hide */
+        pct += (88 - pct) * (Math.random() * .08 + .02);
+        if (pct > 88) pct = 88;
+        barEl.style.width = pct + '%';
+      }, 350);
+    }
+
+    if (id === 'cf-ind-morph' && morphEl) {
+      morphTimer = setInterval(function () {
+        morphIdx = (morphIdx + 1) % MORPH_WORDS.length;
+        morphEl.style.opacity = '0';
+        setTimeout(function () {
+          morphEl.textContent = MORPH_WORDS[morphIdx];
+          morphEl.style.opacity = '1';
+        }, 180);
+      }, 1100);
+    }
+  }
+
+  /* ── 5. Fetch settings ── */
+  fetch('/products.data.json')
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var arr      = Array.isArray(data) ? data : [];
+      var settings = arr.find(function (p) { return p.type === 'settings'; }) || {};
+      var cfg      = settings.preloader || {};
+
+      /* Respect show:yes/no */
+      var show = (cfg.show || 'yes').trim().toLowerCase();
+      if (show !== 'yes') {
+        /* Instantly remove without animation */
+        if (pl && pl.parentNode) pl.parentNode.removeChild(pl);
+        if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+        dismissed = true;
+        return;
+      }
+
+      /* Pick the first enabled style */
+      var activeKey = Object.keys(STYLE_MAP).find(function (k) {
+        return (cfg[k] || 'no').trim().toLowerCase() === 'yes';
+      }) || 'style_progress_bar';
+
+      applyStyle(activeKey);
+      settingsOk = true;
+      tryHide();
+    })
+    .catch(function () {
+      /* Fallback: show progress bar if fetch fails */
+      applyStyle('style_progress_bar');
+      settingsOk = true;
+      tryHide();
+    });
+
+  /* ── 6. Page load ── */
+  if (document.readyState === 'complete') {
+    pageReady = true;
+    tryHide();
+  } else {
+    window.addEventListener('load', function () {
+      pageReady = true;
+      tryHide();
+    });
+  }
+
+  /* ── 7. Absolute safety cap: 6s ── */
+  setTimeout(doHide, 6000);
+
+})();
+
+
  function upgradeShopifyImageUrl(url, size) {
   if (!url || typeof url !== 'string') return url;
   if (!url.includes('cdn.shopify.com')) return url;
@@ -2093,11 +2404,9 @@ window.__setWishlist = (w) => { wishlist = w; };
 
 })();
 
-
-
 (function initRememberCartPopup() {
   const settings = (products.find(p => p.type === 'settings') || {});
-  const rc = settings.remember_cart_popup || {};
+  const rc = settings.remember_cart_popup || {}; 
 
   if ((rc.show || 'yes').toLowerCase() !== 'yes') return;
 

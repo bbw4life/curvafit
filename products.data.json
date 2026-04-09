@@ -11,7 +11,7 @@
     "end_date": "2026-02-28",
     "single_discount": 5,
     "duo_discount": 10,
-    "trio_discount": 20,
+    "trio_discount": 20, 
     "rating": 4.7,
     "reviews_count": 79,
     "badge": { "icon": "fi-rr-flame", "text": "Best Seller" },
@@ -940,6 +940,14 @@
         {"image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bb_1.jpg?v=1768321816","text": "BBW = Bold, Beautiful, Worthy!"}
       ],
       "banner_slide_duration_ms": 5000
+    },
+    "preloader": {
+      "show": "yes",
+      "style_pulse_logo":   "no",
+      "style_progress_bar": "yes",
+      "style_spinner_ring": "no",
+      "style_dots_wave":    "no",
+      "style_morph_text":   "no"
     },
     "remember_cart_popup": {
       "show": "yes",

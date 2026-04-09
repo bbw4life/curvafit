@@ -594,6 +594,9 @@ function updateReviewCountsAfterSubmission(newRating) {
     // Met à jour l'affichage HTML en temps réel
     const totalReviewsSpan = document.getElementById('total-reviews');
     if (totalReviewsSpan) totalReviewsSpan.textContent = newTotal;
+    // ── Sync unique-reviews span (star rating block above product) ──
+    const uniqueReviewsEl = document.querySelector('.unique-reviews');
+    if (uniqueReviewsEl) uniqueReviewsEl.textContent = newTotal + ' reviews';
 
     for (let i = 1; i <= 5; i++) {
         const barEl   = document.getElementById('bar-' + i);
@@ -917,4 +920,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.3 });
 
     bars.forEach(function(bar) { observer.observe(bar); });
-})();
+})(); 

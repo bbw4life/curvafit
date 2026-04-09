@@ -773,7 +773,7 @@ section + section { margin-top: var(--section-gap) !important; }
    COMMUNITY REVIEWS MARQUEE
 ═══════════════════════════════════ */
 .comm-reviews-section {
-  padding: 0.5rem 0;
+  padding: 0.5rem 0; 
   overflow: hidden; 
   background: #f9f3fa;
 }
