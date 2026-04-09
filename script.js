@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
   var dismissed  = false;
 
   /* Minimum visible duration (ms) — gives the page a few seconds to breathe */
-  var MIN_SHOW_MS = 5000;
+  var MIN_SHOW_MS = 3000;
   var startedAt   = Date.now();
   var pageReady   = false;
   var settingsOk  = false;
