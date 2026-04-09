@@ -136,10 +136,29 @@
 
   <main id="article-main">
 
+     <!-- ═══════════════════════════════════════
+        BREADCRUMBS
+       ═══════════════════════════════════════ -->
+        <nav id="bc-nav" aria-label="Breadcrumb navigation" style="display:none;">
+        <div class="bc-wrapper">
+            <ol class="bc-list" id="bc-list">
+            <li class="bc-item">
+                <a href="/index.html">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:3px;">
+                    <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 21V12h6v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Home
+                </a>
+            </li>
+            </ol>
+        </div>
+        </nav>
+
     <!-- ══════════════ 1. HERO FULL-SCREEN ══════════════ -->
     <section class="article-hero" id="article-hero">
       <div class="article-hero__overlay"></div>
-      <img id="hero-image" src="" alt="" class="article-hero__bg">
+      <img id="hero-image" src="" alt="" class="article-hero__bg" style="display:none;">
 
       <div class="article-hero__content">
         <!-- Breadcrumb -->
@@ -894,6 +913,9 @@
       </div>
     </div>
   </div>
-
+<!-- ═══════════════════════════════════════
+     SNOW / FALLING EFFECT
+═══════════════════════════════════════ -->
+<div id="snow-container" aria-hidden="true"></div>
 </body>
 </html>

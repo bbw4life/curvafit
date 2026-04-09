@@ -13450,3 +13450,202 @@ html.fonts-loaded [class*="fa-"] {
     }
 }
 
+
+
+/* ═══════════════════════ BREADCRUMBS ═══════════════════════ */
+#bc-nav {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  box-shadow: 0 2px 12px rgba(233, 30, 140, 0.06), 0 1px 4px rgba(0,0,0,0.05);
+  position: relative;
+  z-index: 10;
+  animation: bc-fadein 0.4s ease both;
+}
+
+@keyframes bc-fadein {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.bc-wrapper {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 5px 20px;
+}
+
+.bc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  white-space: nowrap;
+  gap: 0;
+}
+
+.bc-list::-webkit-scrollbar { display: none; }
+
+.bc-item {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.bc-item a {
+  text-decoration: none;
+  color: #555;
+  opacity: 0.8;
+  transition: opacity 0.2s, color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.bc-item a:hover {
+  opacity: 1;
+  color: #e91e8c;
+}
+
+/* Séparateur entre items */
+.bc-item + .bc-item::before {
+  content: var(--bc-sep, '/');
+  color: #e91e8c;
+  margin: 0 8px;
+  font-size: 12px;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* Item actif (page courante) */
+.bc-item.bc-active a {
+  opacity: 1;
+  font-weight: 600;
+  color: #e91e8c;
+  pointer-events: none;
+  text-shadow: 0 0 12px rgba(233, 30, 140, 0.18);
+}
+
+/* Point décoratif après l'item actif */
+.bc-item.bc-active a::after {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  background: #e91e8c;
+  border-radius: 50%;
+  margin-left: 6px;
+  vertical-align: middle;
+  opacity: 0.7;
+  box-shadow: 0 0 6px rgba(233,30,140,0.4);
+}
+
+/* Icône home */
+.bc-item a svg {
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+/* Fix logo header qui bloque les clics */
+.logo a, .logo img {
+  position: relative;
+  z-index: 1;
+}
+
+.header-container {
+  position: relative;
+  z-index: 100;
+}
+
+/* ── Responsive mobile ── */
+@media (max-width: 768px) {
+  .bc-wrapper {
+    padding: 8px 14px;
+  }
+  .bc-item {
+    font-size: 11.5px;
+  }
+  .bc-item + .bc-item::before {
+    margin: 0 5px;
+    font-size: 10px;
+  }
+  .bc-item a svg {
+    width: 11px;
+    height: 11px;
+  }
+}
+
+.logo a {
+  display: inline-block !important;
+  line-height: 0 !important;
+}
+
+.logo img {
+  display: block !important;
+}
+
+.sticky-header {
+  z-index: 999 !important;
+  overflow: visible !important;
+}
+
+#bc-nav {
+  position: relative !important;
+  z-index: 998 !important;
+  pointer-events: auto !important;
+}
+
+#bc-nav * {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+
+/* ═══════════════════════ SNOW EFFECT ═══════════════════════ */
+#snow-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 99998;
+  overflow: hidden;
+}
+
+.snow-el {
+  position: absolute;
+  top: -60px;
+  pointer-events: none;
+  animation: snow-fall linear infinite;
+  will-change: transform;
+  user-select: none;
+}
+
+@keyframes snow-fall {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(110vh) translateX(var(--snow-drift, 30px)) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+

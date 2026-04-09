@@ -64,7 +64,7 @@
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_1.png?v=1775614664",
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_2.png?v=1775614663",
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_4.png?v=1775614663",
-      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_8.png?v=1775614664",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_8.png?v=1775614664", 
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_6.png?v=1775614664",
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_11.png?v=1775681801",
       "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/hula_3.png?v=1775614659",
@@ -941,6 +941,22 @@
       ],
       "banner_slide_duration_ms": 5000
     },
+    "remember_cart_popup": {
+      "show": "yes",
+      "avatar_image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/curva_AI.png?v=1775586792",
+      "avatar_video_url": "",
+      "position_bottom_right": "no",
+      "position_bottom_left": "yes",
+      "position_top_right": "no",
+      "position_top_left": "no",
+      "initial_delay_ms": 5000,
+      "display_duration_ms": 6000,
+      "interval_ms": 10000,
+      "subtitle_text": "Don't forget!",
+      "title_text": "You have [COUNT] item(s) in your cart",
+      "description_text": "Complete your order before it's gone!",
+      "button_text": "Complete My Purchase"
+    },
     "sanaica_banner": {
       "show": "Yes",
       "video_url": "",
@@ -950,6 +966,16 @@
         { "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/flash_1.jpg?v=1764079325", "alt": "Adjustable smart hula hoop fits every waist size" }
       ]
     },
+    "breadcrumbs": {
+      "show": "yes",
+      "separator_arrow":        "no",
+      "separator_slash":        "yes",
+      "separator_dash":         "no",
+      "separator_dot":          "no",
+      "separator_chevron":      "no",
+      "separator_pipe":         "no",
+      "separator_double_arrow": "no"
+    },
     "social_links": {
       "facebook": "https://facebook.com/curvafit",
       "instagram": "https://instagram.com/curvafit",
@@ -958,6 +984,25 @@
       "youtube": "https://youtube.com/@curvafit",
       "whatsapp": "https://wa.me/XXXXXXXX",
       "twitter": "https://x.com/curvafit"
+    },
+    "snow_effect": {
+      "show": "yes",
+      "effect_none":    "no",
+      "effect_dots":    "no",
+      "effect_stars":   "no",
+      "effect_snow":    "no",
+      "effect_sparkle": "no",
+      "effect_twinkle": "no",
+      "effect_hearts":  "no",
+      "effect_petals":  "no",
+      "effect_gifts":   "no",
+      "effect_bubbles": "yes",
+      "color": "#e91e8c",
+      "size_min": 7,
+      "size_max": 8,
+      "duration_min": 5,
+      "duration_max": 10,
+      "element_count": 10
     },
     "auth_popup": {
       "offer_title": "20% OFF TODAY ONLY!",

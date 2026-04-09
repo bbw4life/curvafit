@@ -218,6 +218,26 @@
     </header>
     <main>
 
+       <!-- ═══════════════════════════════════════
+        BREADCRUMBS
+       ═══════════════════════════════════════ -->
+        <nav id="bc-nav" aria-label="Breadcrumb navigation" style="display:none;">
+        <div class="bc-wrapper">
+            <ol class="bc-list" id="bc-list">
+            <li class="bc-item">
+                <a href="/index.html">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:3px;">
+                    <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 21V12h6v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Home
+                </a>
+            </li>
+            </ol>
+        </div>
+        </nav>
+        
+
 <!-- ░░ SOCIAL PROOF BAR ░░ -->
 <div class="col-social-proof-bar">
   <div class="col-social-proof-inner">
@@ -842,5 +862,53 @@
   </div>
 </div>
 <!-- END CURVAFIT AI CHATBOT WIDGET -->
+<!-- ═══════════════════════════════════════
+     REMEMBER CART POPUP
+═══════════════════════════════════════ -->
+<div id="rc-popup-container" style="display:none;" aria-live="polite" aria-label="Cart reminder">
+  <div id="rc-popup">
+
+    <button id="rc-close" aria-label="Close">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <div id="rc-popup-body">
+      <div id="rc-avatar-wrap">
+        <img id="rc-avatar-img" src="" alt="Support" style="display:none;">
+        <video id="rc-avatar-video" autoplay muted loop playsinline style="display:none;"></video>
+      </div>
+      <div id="rc-content">
+        <p id="rc-subtitle"></p>
+        <p id="rc-title"></p>
+        <p id="rc-description"></p>
+      </div>
+    </div>
+
+    <div id="rc-count-badge">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span id="rc-count-text">3 items waiting</span>
+    </div>
+
+    <a href="/checkout.html" id="rc-checkout-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+        <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <span id="rc-btn-text">Complete My Purchase</span>
+    </a>
+
+    <div id="rc-urgency-bar">
+      <div id="rc-urgency-fill"></div>
+    </div>
+  </div>
+</div>
+<!-- ═══════════════════════════════════════
+     SNOW / FALLING EFFECT
+═══════════════════════════════════════ -->
+<div id="snow-container" aria-hidden="true"></div>
 </body>
 </html>

@@ -2424,7 +2424,7 @@ details[open] .chevron {
     overflow: hidden;
     position: fixed !important;
     top: 0 !important;
-    z-index: 50 !important;
+    z-index: 1005 !important;
 }
 .paul-announcement-wrapper {
     max-width: 100%;
@@ -5935,5 +5935,303 @@ body::-webkit-scrollbar {
   }
 }
 
+
+/* ═══════════════════════ REMEMBER CART POPUP ═══════════════════════ */
+#rc-popup-container {
+  position: fixed;
+  z-index: 99999;
+  pointer-events: none;
+}
+
+#rc-popup-container.rc-pos-bottom-right { bottom: 28px; right: 28px; }
+#rc-popup-container.rc-pos-bottom-left  { bottom: 28px; left: 28px; }
+#rc-popup-container.rc-pos-top-right    { top: 95px; right: 28px; }
+#rc-popup-container.rc-pos-top-left     { top: 95px; left: 28px; }
+
+#rc-popup {
+  pointer-events: all;
+  background: #ffffff;
+  border: 1px solid rgba(233, 30, 140, 0.12);
+  border-radius: 24px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  max-width: 310px;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 4px 6px rgba(0,0,0,0.04),
+    0 12px 40px rgba(233, 30, 140, 0.10),
+    0 24px 60px rgba(0,0,0,0.08);
+  animation: rc-slidein 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+/* ── Bande déco top ── */
+#rc-popup::before {
+  content: '';
+  display: block;
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, #e91e8c, #ff6eb4, #c2185b);
+  background-size: 200% 100%;
+  animation: rc-shimmer 3s linear infinite;
+}
+
+@keyframes rc-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes rc-slidein {
+  from { opacity: 0; transform: translateY(24px) scale(0.94); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+#rc-popup.rc-hiding {
+  animation: rc-slideout 0.38s cubic-bezier(0.4,0,1,1) forwards;
+}
+
+@keyframes rc-slideout {
+  to { opacity: 0; transform: translateY(16px) scale(0.93); }
+}
+
+@keyframes rc-urgency-drain {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+/* ── Corps principal ── */
+#rc-popup-body {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 14px 4px 14px;
+}
+
+#rc-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: rgba(0,0,0,0.05);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  transition: background 0.2s, color 0.2s;
+  z-index: 2;
+}
+#rc-close:hover {
+  background: rgba(233, 30, 140, 0.10);
+  color: #e91e8c;
+}
+
+/* ── Avatar ── */
+#rc-avatar-wrap {
+  flex-shrink: 0;
+  position: relative;
+}
+
+#rc-avatar-img,
+#rc-avatar-video {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid transparent;
+  background-clip: padding-box;
+  box-shadow:
+    0 0 0 2.5px #fff,
+    0 0 0 4.5px rgba(233, 30, 140, 0.35);
+}
+
+/* Petit badge vert online sur l'avatar */
+#rc-avatar-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  width: 11px;
+  height: 11px;
+  background: #22c55e;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(34,197,94,0.3);
+}
+
+/* ── Textes ── */
+#rc-content {
+  flex: 1;
+  min-width: 0;
+  padding-right: 20px;
+}
+
+#rc-subtitle {
+  font-size: 10.5px;
+  color: #e91e8c;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 3px;
+}
+
+#rc-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 3px;
+  line-height: 1.35;
+}
+
+#rc-description {
+  font-size: 11.5px;
+  color: #888;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* ── Badge items count ── */
+#rc-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, rgba(233,30,140,0.08), rgba(194,24,91,0.06));
+  border: 1px solid rgba(233,30,140,0.18);
+  color: #c2185b;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 50px;
+  margin: 7px 14px 0;
+  width: fit-content;
+}
+
+#rc-count-badge svg {
+  flex-shrink: 0;
+}
+
+/* ── Bouton checkout ── */
+#rc-checkout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: linear-gradient(135deg, #f0248e, #c2185b);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 10px 16px;
+  margin: 9px 12px 11px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow:
+    0 4px 14px rgba(233, 30, 140, 0.35),
+    0 2px 6px rgba(0,0,0,0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shimmer hover sur le bouton */
+#rc-checkout-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.22), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+}
+#rc-checkout-btn:hover::after { left: 130%; }
+
+#rc-checkout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 24px rgba(233, 30, 140, 0.40),
+    0 4px 10px rgba(0,0,0,0.10);
+}
+#rc-checkout-btn:active {
+  transform: scale(0.98);
+}
+
+/* ── Barre de progression urgence ── */
+#rc-urgency-bar {
+  height: 3px;
+  background: rgba(233,30,140,0.10);
+  margin: 0 12px 10px;
+  border-radius: 50px;
+  overflow: hidden;
+}
+
+#rc-urgency-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #e91e8c, #ff6eb4);
+  border-radius: 50px;
+  animation: rc-urgency-drain linear forwards;
+}
+
+@media (max-width: 480px) {
+  #rc-popup-container.rc-pos-bottom-right { bottom: 14px; right: 10px; left: auto; }
+  #rc-popup-container.rc-pos-bottom-left  { bottom: 14px; left: 10px; right: auto; }
+  #rc-popup-container.rc-pos-top-right    { top: 78px; right: 10px; left: auto; }
+  #rc-popup-container.rc-pos-top-left     { top: 78px; left: 10px; right: auto; }
+
+  #rc-popup {
+    max-width: 250px;
+    border-radius: 16px;
+  }
+
+  #rc-popup-body {
+    padding: 10px 12px 2px 12px;
+    gap: 9px;
+  }
+
+  #rc-avatar-img,
+  #rc-avatar-video {
+    width: 38px;
+    height: 38px;
+  }
+
+  #rc-subtitle {
+    font-size: 9px;
+    margin-bottom: 1px;
+  }
+
+  #rc-title {
+    font-size: 11.5px;
+    margin-bottom: 1px;
+  }
+
+  #rc-description {
+    font-size: 10px;
+    margin: 0;
+  }
+
+  #rc-count-badge {
+    font-size: 9.5px;
+    padding: 3px 8px;
+    margin: 6px 12px 0;
+  }
+
+  #rc-checkout-btn {
+    font-size: 11.5px;
+    padding: 9px 12px;
+    margin: 8px 10px 10px;
+  }
+
+  #rc-urgency-bar {
+    height: 2px;
+    margin: 0 10px 10px;
+  }
+}
 
 

@@ -53,6 +53,10 @@
   padding-bottom: 60px;
 }
 
+#hero-image[src]:not([src=""]) {
+  display: block !important;
+}
+
 .article-hero__bg {
   position: absolute;
   inset: 0;

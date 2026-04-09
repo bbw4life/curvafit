@@ -277,7 +277,7 @@ section + section { margin-top: var(--section-gap) !important; }
 ───────────────────────────────────────────── */
 .marque-textuel-groupe-section {
   background: linear-gradient(90deg, var(--rose), var(--plum));
-  padding: 13px 0;
+  padding: 10px 0;
   overflow: hidden;
   position: relative;
 }
@@ -9187,10 +9187,11 @@ details p {
 
 /* ── COMMUNITY INTRO ── */
 .community-intro-section {
-    padding: 56px 0 48px;
+    padding: 20px 0 10px;
     background: linear-gradient(160deg, var(--charcoal), #2e1828);
     position: relative;
     overflow: hidden;
+    margin-top: -5px !important;
 }
 .community-intro-section::before {
     content: '';

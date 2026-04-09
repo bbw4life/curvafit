@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-
 (function initDraggables() {
 
   function makeDraggable(widget, opts) {
@@ -1918,6 +1917,331 @@ window.__getWishlist = () => wishlist;
 window.__setWishlist = (w) => { wishlist = w; };
 
 
+// ═══════════════════════════════════════
+//  SNOW / FALLING EFFECT
+// ═══════════════════════════════════════
+(function initSnowEffect() {
+  const settings = (products.find(p => p.type === 'settings') || {});
+  const se = settings.snow_effect || {};
+
+  if ((se.show || 'yes').toLowerCase() !== 'yes') return;
+
+  const container = document.getElementById('snow-container');
+  if (!container) return;
+
+  // ── Quel effet est actif (premier "yes" trouvé)
+  const effectMap = {
+    'effect_none':    null,
+    'effect_dots':    '•',
+    'effect_stars':   '★',
+    'effect_snow':    '❄',
+    'effect_sparkle': '✶',
+    'effect_twinkle': '⋆',
+    'effect_hearts':  '❤',
+    'effect_petals':  '🌸',
+    'effect_gifts':   '🎁',
+    'effect_bubbles': '○'
+  };
+
+  let activeSymbol = '•'; // fallback
+  let foundEffect  = false;
+  for (const [key, symbol] of Object.entries(effectMap)) {
+    if ((se[key] || 'no').toLowerCase() === 'yes') {
+      if (symbol === null) return; // effect_none = désactivé
+      activeSymbol = symbol;
+      foundEffect  = true;
+      break;
+    }
+  }
+  if (!foundEffect) return;
+
+  // ── Paramètres
+  const color       = se.color         || '#e91e8c';
+  const sizeMin     = parseInt(se.size_min)      || 10;
+  const sizeMax     = parseInt(se.size_max)      || 22;
+  const durMin      = parseFloat(se.duration_min) || 3;
+  const durMax      = parseFloat(se.duration_max) || 7;
+  const maxCount    = parseInt(se.element_count)  || 35;
+
+  // ── Crée un élément tombant
+  function createEl() {
+    if (container.children.length >= maxCount) return;
+
+    const el = document.createElement('span');
+    el.className   = 'snow-el';
+    el.textContent = activeSymbol;
+
+    const size     = Math.random() * (sizeMax - sizeMin) + sizeMin;
+    const left     = Math.random() * 100;
+    const duration = Math.random() * (durMax - durMin) + durMin;
+    const delay    = Math.random() * durMax;
+    const drift    = (Math.random() - 0.5) * 80;
+    const opacity  = Math.random() * 0.5 + 0.5;
+
+    el.style.cssText = `
+      left: ${left}vw;
+      font-size: ${size}px;
+      color: ${color};
+      opacity: ${opacity};
+      animation-duration: ${duration}s;
+      animation-delay: ${delay}s;
+      --snow-drift: ${drift}px;
+    `;
+
+    container.appendChild(el);
+
+    // Supprime l'élément après son animation
+    setTimeout(() => {
+      el.remove();
+    }, (duration + delay) * 1000 + 500);
+  }
+
+  // ── Lance la création en boucle
+  function spawnLoop() {
+    createEl();
+    const next = Math.random() * 600 + 200;
+    setTimeout(spawnLoop, next);
+  }
+
+  // ── Démarrage initial : crée plusieurs éléments d'un coup
+  for (let i = 0; i < Math.floor(maxCount / 2); i++) {
+    setTimeout(createEl, Math.random() * 3000);
+  }
+
+  // ── Boucle continue
+  setTimeout(spawnLoop, 1000);
+
+})();
+
+// ═══════════════════════════════════════
+//  BREADCRUMBS
+// ═══════════════════════════════════════
+(function initBreadcrumbs() {
+  const settings = (products.find(p => p.type === 'settings') || {});
+  const bc = settings.breadcrumbs || {};
+
+  if ((bc.show || 'yes').toLowerCase() !== 'yes') return;
+
+  const nav  = document.getElementById('bc-nav');
+  const list = document.getElementById('bc-list');
+  if (!nav || !list) return;
+
+  // ── Séparateur : lit les 7 clés, active celle qui a "yes"
+  const separatorMap = {
+    'separator_arrow':        '">"',
+    'separator_slash':        '"/"',
+    'separator_dash':         '"-"',
+    'separator_dot':          '"•"',
+    'separator_chevron':      '"»"',
+    'separator_pipe':         '"|"',
+    'separator_double_arrow': '">>"'
+  };
+
+  let activeSep = '"/"';
+  for (const [key, val] of Object.entries(separatorMap)) {
+    if ((bc[key] || 'no').toLowerCase() === 'yes') {
+      activeSep = val;
+      break;
+    }
+  }
+  document.documentElement.style.setProperty('--bc-sep', activeSep);
+
+  // ── Page courante
+  const currentPath  = window.location.pathname;
+  const currentTitle = document.title.split('|')[0].trim() || document.title;
+
+  // ── Historique localStorage (6 dernières pages)
+  const BC_KEY = 'bc_visited';
+  const BC_MAX = 6;
+
+  let visited = [];
+  try { visited = JSON.parse(localStorage.getItem(BC_KEY) || '[]'); } catch(e) {}
+
+  visited = visited.filter(p => p.url !== currentPath);
+
+  if (currentPath !== '/' && currentPath !== '/index.html') {
+    visited.unshift({ url: currentPath, title: currentTitle });
+  }
+
+  if (visited.length > BC_MAX) visited = visited.slice(0, BC_MAX);
+
+  try { localStorage.setItem(BC_KEY, JSON.stringify(visited)); } catch(e) {}
+
+  // ── Construire la liste
+  list.innerHTML = `
+    <li class="bc-item">
+      <a href="/index.html">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 21V12h6v9"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Home
+      </a>
+    </li>`;
+
+  visited.forEach(page => {
+    const isActive = page.url === currentPath;
+    const li = document.createElement('li');
+    li.className = 'bc-item' + (isActive ? ' bc-active' : '');
+    li.innerHTML = `<a href="${page.url}">${page.title}</a>`;
+    list.appendChild(li);
+  });
+
+  nav.style.display = 'block';
+
+})();
+
+
+
+(function initRememberCartPopup() {
+  const settings = (products.find(p => p.type === 'settings') || {});
+  const rc = settings.remember_cart_popup || {};
+
+  if ((rc.show || 'yes').toLowerCase() !== 'yes') return;
+
+  const container  = document.getElementById('rc-popup-container');
+  const popup      = document.getElementById('rc-popup');
+  const closeBtn   = document.getElementById('rc-close');
+  const avatarImg  = document.getElementById('rc-avatar-img');
+  const avatarVid  = document.getElementById('rc-avatar-video');
+  const subtitleEl = document.getElementById('rc-subtitle');
+  const titleEl    = document.getElementById('rc-title');
+  const descEl     = document.getElementById('rc-description');
+  const btnText    = document.getElementById('rc-btn-text');
+  const countText  = document.getElementById('rc-count-text');
+  const fill       = document.getElementById('rc-urgency-fill');
+
+  if (!container || !popup) return;
+
+  // ── Position : lit les 4 clés, active celle qui a "yes"
+  const positionMap = {
+    'position_bottom_right': 'rc-pos-bottom-right',
+    'position_bottom_left':  'rc-pos-bottom-left',
+    'position_top_right':    'rc-pos-top-right',
+    'position_top_left':     'rc-pos-top-left'
+  };
+
+  let activePos = 'rc-pos-bottom-right';
+  for (const [key, cls] of Object.entries(positionMap)) {
+    if ((rc[key] || 'no').toLowerCase() === 'yes') {
+      activePos = cls;
+      break;
+    }
+  }
+  container.classList.add(activePos);
+
+  // ── Avatar
+  if (rc.avatar_video_url) {
+    const src = document.createElement('source');
+    src.src = rc.avatar_video_url;
+    avatarVid.appendChild(src);
+    avatarVid.load();
+    avatarVid.style.display = 'block';
+    avatarImg.style.display = 'none';
+  } else if (rc.avatar_image) {
+    avatarImg.src = rc.avatar_image;
+    avatarImg.style.display = 'block';
+    avatarVid.style.display = 'none';
+  }
+
+  // ── Texts fixes
+  subtitleEl.textContent = rc.subtitle_text    || "Don't forget!";
+  descEl.textContent     = rc.description_text || "Complete your order before it's gone!";
+  btnText.textContent    = rc.button_text      || "Complete My Purchase";
+
+  const initialDelay = parseInt(rc.initial_delay_ms)    || 8000;
+  const displayTime  = parseInt(rc.display_duration_ms) || 6000;
+  const interval     = parseInt(rc.interval_ms)         || 30000;
+
+  let hideTimer  = null;
+  let cycleTimer = null;
+  let visible    = false;
+
+  // ── Calcule la quantité totale dans le cart (free inclus)
+  function getCartQty() {
+    return cart.reduce((sum, i) => sum + i.quantity, 0);
+  }
+
+  // ── Met à jour le titre + badge + barre urgence
+  function updateTitle() {
+    const qty = getCartQty();
+    const raw = rc.title_text || 'You have [COUNT] item(s) in your cart';
+    const label = qty > 1 ? 'items' : 'item';
+    titleEl.textContent = raw
+      .replace('[COUNT]', qty)
+      .replace('item(s)', label);
+
+    // Badge count
+    if (countText) {
+      countText.textContent = qty + (qty > 1 ? ' items waiting' : ' item waiting');
+    }
+
+    // Barre urgence — repart à 100% à chaque affichage
+    if (fill) {
+      fill.style.animation = 'none';
+      fill.offsetHeight; // force reflow
+      fill.style.animationDuration = displayTime + 'ms';
+      fill.style.animation = `rc-urgency-drain ${displayTime}ms linear forwards`;
+    }
+  }
+
+  function showPopup() {
+    const qty = getCartQty();
+    if (qty === 0) return;
+
+    updateTitle();
+    container.style.display = 'block';
+    popup.classList.remove('rc-hiding');
+    visible = true;
+
+    if (hideTimer) clearTimeout(hideTimer);
+    hideTimer = setTimeout(hidePopup, displayTime);
+  }
+
+  function hidePopup() {
+    if (!visible) return;
+    popup.classList.add('rc-hiding');
+    setTimeout(() => {
+      container.style.display = 'none';
+      popup.classList.remove('rc-hiding');
+      visible = false;
+    }, 380);
+  }
+
+  function scheduleCycle() {
+    clearInterval(cycleTimer);
+    cycleTimer = setInterval(() => {
+      if (!visible && getCartQty() > 0) showPopup();
+    }, interval);
+  }
+
+  // ── Fermeture manuelle
+  closeBtn.addEventListener('click', () => {
+    if (hideTimer) clearTimeout(hideTimer);
+    hidePopup();
+  });
+
+  // ── Premier affichage après le délai initial
+  setTimeout(() => {
+    if (getCartQty() > 0) showPopup();
+    scheduleCycle();
+  }, initialDelay);
+
+  // ── Fonction globale appelée par saveCart() à chaque changement
+  window.__rcRefresh = function() {
+    const qty = getCartQty();
+    updateTitle();
+    if (qty === 0) {
+      hidePopup();
+    } else if (!visible) {
+      if (hideTimer) clearTimeout(hideTimer);
+      showPopup();
+    }
+  };
+
+})();
 
 // ====================== FILTER BAR ======================
 (function initFilterBar() {
@@ -2999,8 +3323,11 @@ if (carousel) {
   const wishlistBadge = document.querySelector('.wishlist-badge');
   const cartIcon = document.querySelector('.cart-icon');
 
-  function saveCart() { localStorage.setItem('cart', JSON.stringify(cart)); }
-  function saveWishlist() { localStorage.setItem('wishlist', JSON.stringify(wishlist)); }
+  function saveCart() { 
+  localStorage.setItem('cart', JSON.stringify(cart));
+  if (typeof window.__rcRefresh === 'function') window.__rcRefresh();
+}
+function saveWishlist() { localStorage.setItem('wishlist', JSON.stringify(wishlist)); }
 
   function updateBadges() {
     const cartQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
