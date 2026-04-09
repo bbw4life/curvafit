@@ -988,7 +988,7 @@
     "snow_effect": {
       "show": "yes",
       "effect_none":    "no",
-      "effect_dots":    "no",
+      "effect_dots":    "yes",
       "effect_stars":   "no",
       "effect_snow":    "no",
       "effect_sparkle": "no",
@@ -996,13 +996,13 @@
       "effect_hearts":  "no",
       "effect_petals":  "no",
       "effect_gifts":   "no",
-      "effect_bubbles": "yes",
-      "color": "#e91e8c",
+      "effect_bubbles": "no",
+      "color": "#ffffff",
       "size_min": 7,
       "size_max": 8,
       "duration_min": 5,
       "duration_max": 10,
-      "element_count": 10
+      "element_count": 30
     },
     "auth_popup": {
       "offer_title": "20% OFF TODAY ONLY!",

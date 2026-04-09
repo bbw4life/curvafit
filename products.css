@@ -2420,7 +2420,7 @@ details[open] .chevron {
     width: 100%;
     background: #111;
     color: #fff;
-    font-size: 25px;
+    font-size: 25px; 
     overflow: hidden;
     position: fixed !important;
     top: 0 !important;
@@ -6233,5 +6233,7 @@ body::-webkit-scrollbar {
     margin: 0 10px 10px;
   }
 }
+
+
 
 
