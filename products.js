@@ -206,10 +206,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Applique les counts aux éléments HTML (barres + totaux)
   function applyReviewCounts(counts, total) {
     const totalReviewsSpan = document.getElementById('total-reviews');
     if (totalReviewsSpan) totalReviewsSpan.textContent = total;
+
+    // ── Sync du bloc .unique-reviews (header stars) ──
+    const uniqueReviewsEl = document.querySelector('.unique-reviews');
+    if (uniqueReviewsEl) uniqueReviewsEl.textContent = total + ' reviews';
 
     for (let i = 1; i <= 5; i++) {
       const barEl   = document.getElementById('bar-' + i);
@@ -594,6 +597,9 @@ function updateReviewCountsAfterSubmission(newRating) {
     // Met à jour l'affichage HTML en temps réel
     const totalReviewsSpan = document.getElementById('total-reviews');
     if (totalReviewsSpan) totalReviewsSpan.textContent = newTotal;
+    // ── Sync du bloc .unique-reviews (header stars) ──
+    const uniqueReviewsEl = document.querySelector('.unique-reviews');
+    if (uniqueReviewsEl) uniqueReviewsEl.textContent = newTotal + ' reviews';
 
     for (let i = 1; i <= 5; i++) {
         const barEl   = document.getElementById('bar-' + i);
@@ -758,12 +764,20 @@ if (form) {
         // Cela garantit un affichage immédiat en temps réel
         updateReviewCountsAfterSubmission(rating);
 
+        // Sauvegarde la position de scroll avant reset
+        const scrollPositionBeforeSubmit = window.scrollY;
+
         addOptimisticReview(name, rating, title, text, imagesBase64);
         form.reset();
         const previewContainer = document.getElementById('review-images-preview');
         if (previewContainer) previewContainer.innerHTML = '';
         reviewForm.style.display = 'none';
         if (writeButton) writeButton.style.display = 'block';
+
+        // Restaure la position de scroll (empêche le saut vers le bas)
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: scrollPositionBeforeSubmit, behavior: 'instant' });
+        });
 
         try {
             const res = await fetch('/.netlify/functions/save-reviews', {
