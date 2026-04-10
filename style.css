@@ -276,12 +276,22 @@ a { text-decoration: none; color: inherit; }
     cursor: pointer;
     font-size: 20px;
     color: var(--rose);
-    margin-left: 16px;
+    margin-left: 10px;
     padding: 8px;
     border-radius: 50%;
     transition: var(--transition);
 }
-.search-icon:hover { background: var(--rose-pale); }
+.search-icon:hover { background: var(--rose-pale);
+
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .search-icon {
+    margin-left: -12px !important;
+    margin-right: 10px !important;
+  }
+}
 
 .search-bar {
     display: none;
@@ -621,8 +631,6 @@ a { text-decoration: none; color: inherit; }
         padding-left: 30px;
         box-shadow: none;
     }
-
-    .search-icon { margin-left: 16px; }
 }
 
 /* ── MOBILE HEADER FIXES ── */
@@ -3212,7 +3220,7 @@ a { text-decoration: none; color: inherit; }
 
 .spotlight-grid img {
     width: 100%;
-    height: 240px;
+    height: 300px;
     object-fit: cover;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-soft);
@@ -5361,7 +5369,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 
     .filter-bar.is-fixed {
         position: fixed;
-         top: 85px;
+         top: 80px;
         left: 0;
         right: 0;
         width: 100%;
@@ -13842,4 +13850,26 @@ html.fonts-loaded [class*="fa-"] {
   .cf-pl-brand    { font-size: 24px; }
   .cf-pl-bar-wrap { width: 160px; }
 }
+
+
+
+.account-icon-wrapper {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0;
+}
+
+.account-icon-wrapper i {
+  font-size: 20px;
+  color: var(--primary-color, #e91e8c);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.account-icon-wrapper:hover i {
+  transform: scale(1.15);
+}
+
+
 

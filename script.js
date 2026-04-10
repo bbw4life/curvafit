@@ -719,6 +719,60 @@ function applyPromoFreeItems() {
     images[index].classList.add('active');
   }
 
+
+
+  function initAnnouncementBar() {
+  const slider = document.getElementById('paulAnnouncementSlider');
+  if (!slider) return;
+
+  const settings = (products.find(p => p.type === 'settings') || {});
+  const ab = settings.announcement_bar || {};
+
+  const items    = ab.items        || [];
+  const prefix   = ab.promo_prefix || 'Get 20% OFF with code:';
+  const code     = ab.promo_code   || 'paul26';
+  const copiedTx = ab.copied_text  || 'Copied!';
+
+  items.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'paul-announcement-item' + (i === 0 ? ' active' : '');
+    div.innerHTML = `${item.text} <i class="${item.icon}"></i>`;
+    slider.appendChild(div);
+  });
+
+  const promoDiv = document.createElement('div');
+  promoDiv.className = 'paul-announcement-item promo';
+  promoDiv.innerHTML = `
+    ${prefix}
+    <span class="paul-promo-code" id="paulPromoCode">
+      ${code}
+      <i class="fi fi-rr-copy copy-icon" id="copyIcon"></i>
+    </span>
+    <span class="copied-message" id="copiedMessage">${copiedTx}</span>`;
+  slider.appendChild(promoDiv);
+
+  const promoCodeEl = promoDiv.querySelector('#paulPromoCode');
+  const copiedMsgEl = promoDiv.querySelector('#copiedMessage');
+  if (promoCodeEl) {
+    promoCodeEl.addEventListener('click', () => {
+      navigator.clipboard.writeText(code).then(() => {
+        copiedMsgEl.style.display = 'inline';
+        setTimeout(() => { copiedMsgEl.style.display = 'none'; }, 2000);
+      });
+    });
+  }
+
+  const allItems = slider.querySelectorAll('.paul-announcement-item');
+  let current = 0;
+  function showItem(index) {
+    allItems.forEach((el, i) => el.classList.toggle('active', i === index));
+    current = index;
+  }
+  if (allItems.length > 1) {
+    setInterval(() => showItem((current + 1) % allItems.length), 4000);
+  }
+}
+
   // ====================== FETCH PRODUCTS ======================
   fetch('/products.data.json')
     .then(response => response.json())
@@ -2226,6 +2280,68 @@ window.__getCart = () => cart;
 window.__setCart = (c) => { cart = c; };
 window.__getWishlist = () => wishlist;
 window.__setWishlist = (w) => { wishlist = w; };
+initAnnouncementBar();
+
+
+
+
+// ══════════════════════════════════════════
+//  CART DRAWER REVIEWS — inject from settings
+// ══════════════════════════════════════════
+(function initCartReviews() {
+  const container = document.getElementById('cart-reviews-carousel');
+  if (!container) return;
+
+  const settings = (products.find(p => p.type === 'settings') || {});
+  const reviews  = settings.cart_reviews || [];
+
+  if (!reviews.length) return;
+
+  const googleSVG = `
+    <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+    </svg>`;
+
+  reviews.forEach(r => {
+    const stars = '★'.repeat(Math.min(5, Math.max(1, r.stars || 5)));
+
+    const item = document.createElement('div');
+    item.className = 'review-item';
+    item.innerHTML = `
+      <div class="review-item-inner">
+        <div class="review-top">
+          <img src="${r.avatar}" alt="${r.name}" class="review-avatar">
+          <div class="review-meta">
+            <h4>${r.name}</h4>
+            <div class="review-stars">${stars}</div>
+          </div>
+          <span class="verified-badge">${googleSVG}</span>
+        </div>
+        <p class="review-text">"${r.text}"</p>
+        <span class="review-date">${r.date}</span>
+      </div>`;
+
+    container.appendChild(item);
+  });
+
+  // Carousel auto-rotation
+  const items = container.querySelectorAll('.review-item');
+  if (items.length > 1) {
+    let current = 0;
+    items[current].classList.add('active');
+    setInterval(() => {
+      items[current].classList.remove('active');
+      current = (current + 1) % items.length;
+      items[current].classList.add('active');
+    }, 5000);
+  } else if (items.length === 1) {
+    items[0].classList.add('active');
+  }
+})();
+
 
 
 // ═══════════════════════════════════════
@@ -3269,6 +3385,32 @@ window.__setWishlist = (w) => { wishlist = w; };
 
   // ====================== SCROLL REVEAL ======================
   document.querySelectorAll('section').forEach(sec => { if (!sec.hasAttribute('data-scroll-reveal')) sec.setAttribute('data-scroll-reveal', ''); });
+
+
+
+
+  // ── INJECT ACCOUNT ICON IN HEADER ──
+(function injectAccountIcon() {
+  const accountIcon = document.createElement('div');
+  accountIcon.className = 'account-icon-wrapper';
+  accountIcon.id = 'header-account-trigger';
+  accountIcon.innerHTML = `<i class="fi fi-rr-user"></i>`;
+
+  accountIcon.addEventListener('click', () => {
+    const trigger = document.getElementById('paulTrigger');
+    if (trigger) trigger.click();
+  });
+
+  const headerContainer = document.querySelector('.header-container');
+  if (!headerContainer) return;
+
+  // Desktop : insérer APRÈS .search-icon
+  const searchIcon = headerContainer.querySelector('.search-icon');
+  if (searchIcon) {
+    searchIcon.insertAdjacentElement('afterend', accountIcon);
+  }
+})();
+
 
   // ====================== HAMBURGER ======================
   const hamburger = document.querySelector('.hamburger-menu');
@@ -4413,18 +4555,6 @@ const cartWrapper = document.querySelector('.icon-wrapper:has(.cart-icon)');
     announcementCurrent = index;
   }
   if (announcementItems.length > 0) setInterval(() => showAnnouncementItem((announcementCurrent + 1) % announcementItems.length), 4000);
-
-  // ====================== PROMO CODE ======================
-  const promoCode = document.getElementById("paulPromoCode");
-  const copiedMessage = document.getElementById("copiedMessage");
-  if (promoCode) {
-    promoCode.addEventListener("click", function() {
-      navigator.clipboard.writeText("paul26").then(function() {
-        copiedMessage.style.display = "inline";
-        setTimeout(() => { copiedMessage.style.display = "none"; }, 2000);
-      });
-    });
-  }
 
   // ====================== AUTO OPEN CART ======================
   if (window.location.pathname.toLowerCase().includes('shop.html') && localStorage.getItem('autoOpenCart') === 'true') {
@@ -6294,3 +6424,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
 })();
+
+
+
+

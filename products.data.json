@@ -911,6 +911,33 @@
   {
     "type": "settings",
     "allowed_languages": ["en", "fr", "es", "ar", "zh", "ht", "hi", "pt", "ru", "de", "ja"],
+    "chat_widget": {
+      "agent_name": "Curva",
+      "agent_title": "CurvaFit Fitness Expert",
+      "agent_badge": "Support",
+      "agent_logo": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/curva_AI.png?v=1775586792",
+      "input_placeholder": "Ask me anything about our products or your fitness journey…",
+      "typing_label": "Curva is typing…",
+      "powered_by": "Powered by CurvaFit AI · Press Enter to send"
+    },
+     "chat_quick_chips": [
+      { "icon": "fi fi-sr-flame",        "label": "Belly fat",       "msg": "What is your best product to burn belly fat at home?" },
+      { "icon": "fi fi-sr-shirt",        "label": "Sports bra",      "msg": "Show me your sports bra options for plus size women" },
+      { "icon": "fi fi-sr-meditation",   "label": "Leggings",        "msg": "I need leggings for yoga and home workouts" },
+      { "icon": "fi fi-sr-badge-dollar", "label": "Under $20",       "msg": "What are your most affordable products under $20?" },
+      { "icon": "fi fi-sr-seedling",     "label": "Beginner",        "msg": "I am a complete beginner, what do you recommend to start?" },
+      { "icon": "fi fi-sr-house-chimney","label": "Home workout",    "msg": "I want to lose belly fat fast at home without gym" },
+      { "icon": "fi fi-sr-spa",          "label": "Recovery",        "msg": "What can help me recover after my workout and reduce soreness?" },
+      { "icon": "fi fi-sr-heart-rate",   "label": "Health tracking", "msg": "I want to track my heart rate and sleep quality" },
+      { "icon": "fi fi-sr-dumbbell",     "label": "Programs",        "msg": "Tell me about your fitness programs and their prices" },
+      { "icon": "fi fi-sr-salad",        "label": "Nutrition plan",  "msg": "Give me a nutrition plan to lose weight as a plus size woman" },
+      { "icon": "fi fi-sr-drumstick",    "label": "Foods to eat",    "msg": "What foods should I eat to lose weight without starving?" },
+      { "icon": "fi fi-sr-calculator",   "label": "Calories",        "msg": "How many calories should I eat per day to lose weight safely?" },
+      { "icon": "fi fi-sr-ticket",       "label": "Promo codes",     "msg": "Do you have any active discount or promo codes today?" },
+      { "icon": "fi fi-sr-palette",      "label": "Colors & sizes",  "msg": "What colors and sizes are available for your products?" },
+      { "icon": "fi fi-sr-truck-side",   "label": "Delivery info",   "msg": "How long does delivery take and what is the shipping cost?" },
+      { "icon": "fi fi-sr-headset",      "label": "Human support",   "msg": "I need to speak with a real person from your team" }
+    ],
     "tax_rate": 0.5,
     "shipping_cost": 40.0,
     "shipping_standard_delay": "20–12 business days",
@@ -959,7 +986,7 @@
       "position_top_left": "no",
       "initial_delay_ms": 5000,
       "display_duration_ms": 6000,
-      "interval_ms": 10000,
+      "interval_ms": 40000,
       "subtitle_text": "Don't forget!",
       "title_text": "You have [COUNT] item(s) in your cart",
       "description_text": "Complete your order before it's gone!",
@@ -1037,23 +1064,39 @@
       "message": "You'll receive weekly tips, real meal plans, and exclusive member offers.",
       "close_btn": "Close"
     },
-    "chat_quick_chips": [
-      { "icon": "fi fi-sr-flame",        "label": "Belly fat",       "msg": "What is your best product to burn belly fat at home?" },
-      { "icon": "fi fi-sr-shirt",        "label": "Sports bra",      "msg": "Show me your sports bra options for plus size women" },
-      { "icon": "fi fi-sr-meditation",   "label": "Leggings",        "msg": "I need leggings for yoga and home workouts" },
-      { "icon": "fi fi-sr-badge-dollar", "label": "Under $20",       "msg": "What are your most affordable products under $20?" },
-      { "icon": "fi fi-sr-seedling",     "label": "Beginner",        "msg": "I am a complete beginner, what do you recommend to start?" },
-      { "icon": "fi fi-sr-house-chimney","label": "Home workout",    "msg": "I want to lose belly fat fast at home without gym" },
-      { "icon": "fi fi-sr-spa",          "label": "Recovery",        "msg": "What can help me recover after my workout and reduce soreness?" },
-      { "icon": "fi fi-sr-heart-rate",   "label": "Health tracking", "msg": "I want to track my heart rate and sleep quality" },
-      { "icon": "fi fi-sr-dumbbell",     "label": "Programs",        "msg": "Tell me about your fitness programs and their prices" },
-      { "icon": "fi fi-sr-salad",        "label": "Nutrition plan",  "msg": "Give me a nutrition plan to lose weight as a plus size woman" },
-      { "icon": "fi fi-sr-drumstick",    "label": "Foods to eat",    "msg": "What foods should I eat to lose weight without starving?" },
-      { "icon": "fi fi-sr-calculator",   "label": "Calories",        "msg": "How many calories should I eat per day to lose weight safely?" },
-      { "icon": "fi fi-sr-ticket",       "label": "Promo codes",     "msg": "Do you have any active discount or promo codes today?" },
-      { "icon": "fi fi-sr-palette",      "label": "Colors & sizes",  "msg": "What colors and sizes are available for your products?" },
-      { "icon": "fi fi-sr-truck-side",   "label": "Delivery info",   "msg": "How long does delivery take and what is the shipping cost?" },
-      { "icon": "fi fi-sr-headset",      "label": "Human support",   "msg": "I need to speak with a real person from your team" }
+    "announcement_bar": {
+      "items": [
+        { "text": "Free Shipping Worldwide", "icon": "fi fi-rr-globe" },
+        { "text": "Results in 30 Days — Guaranteed", "icon": "fi fi-rr-star" },
+        { "text": "Secure Checkout", "icon": "fi fi-rr-lock" },
+        { "text": "24/7 Customer Support", "icon": "fi fi-rr-headset" }
+      ],
+      "promo_prefix": "Get 40% OFF with code:",
+      "promo_code": "PAUL81",
+      "copied_text": "Copied succefull!"
+    },
+    "cart_reviews": [
+      {
+        "name": "Jane Doe",
+        "avatar": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/cuv_5.jpg?v=1771453843",
+        "stars": 5,
+        "text": "Spins for 20 minutes paul straight — absolutely love it!",
+        "date": "5 days ago"
+      },
+      {
+        "name": "Emily Smith",
+        "avatar": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/cuv_2.jpg?v=1771453353",
+        "stars": 5,
+        "text": "Lost 5 cm off waist in just one month!",
+        "date": "1 week ago"
+      },
+      {
+        "name": "Sara Johnson",
+        "avatar": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/big_style.webp?v=1771457385",
+        "stars": 5,
+        "text": "Fits my 47\" waist perfectly — game changer!",
+        "date": "9 days ago"
+      }
     ],
     "site_stats": {
       "members": 10000,
@@ -1067,15 +1110,6 @@
       "retention_rate": 78,
       "avg_waist_reduction": 5,
       "social_support_boost": 65
-    },
-    "chat_widget": {
-      "agent_name": "Curva",
-      "agent_title": "CurvaFit Fitness Expert",
-      "agent_badge": "Support",
-      "agent_logo": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/curva_AI.png?v=1775586792",
-      "input_placeholder": "Ask me anything about our products or your fitness journey…",
-      "typing_label": "Curva is typing…",
-      "powered_by": "Powered by CurvaFit AI · Press Enter to send"
     },
     "button_labels": {
       "add_to_cart": "Add to Cart",
