@@ -3316,13 +3316,13 @@ body {
 .pp-why-card p { font-size: 0.82rem; color: rgba(255,255,255,0.62); line-height: 1.6; }
 @media (max-width: 768px) {
     .pp-why-section { padding: 36px 0 30px; }
-    .pp-why-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pp-why-grid { grid-template-columns: 1fr 1fr !important; gap: 12px; }
     .pp-why-card { padding: 18px 12px 14px; }
 }
-@media (max-width: 480px) { .pp-why-grid { grid-template-columns: 1fr; } }
+
  
 .pp-before-after-section {
-    padding: 15px 0 10px;
+    padding: 10px 0 10px;
     background: white;
 }
 .pp-before-after-section .container { text-align: center; }
@@ -3339,6 +3339,19 @@ body {
     max-width: 760px;
     margin: 0 auto;
     text-align: left;
+}
+
+@media (max-width: 768px) {
+    .pp-ba-grid {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 12px !important;
+    }
+
+    .pp-ba-col {
+        flex: 0 0 calc(50% - 6px) !important;
+        box-sizing: border-box !important;
+    }
 }
 .pp-ba-col {
     border-radius: 14px;
@@ -3373,7 +3386,7 @@ body {
    SPOTLIGHT — Real Curvy Women, Real Confidence — Premium Redesign
 ================================================================ */
 .spotlight-section {
-    padding: 20px 0 10px;
+    padding: 10px 0 10px;
     background: linear-gradient(160deg, #fff5f8 0%, #fce4ec 100%);
     position: relative;
     overflow: hidden;
@@ -3411,7 +3424,7 @@ body {
 }
 .spotlight-grid img {
     width: 100%;
-    aspect-ratio: 3 / 4;
+    height: 400px;
     object-fit: cover;
     border-radius: 18px;
     border: 3px solid white;
@@ -3425,12 +3438,19 @@ body {
     border-color: #e91e63;
 }
 @media (max-width: 768px) {
-    .spotlight-section { padding: 40px 0 32px; }
-    .spotlight-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .spotlight-grid img { border-radius: 14px; }
-}
-@media (max-width: 480px) {
-    .spotlight-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .spotlight-grid {
+        display: flex !important;
+        overflow: hidden !important;
+        gap: 0 !important;
+        border-radius: 14px;
+    }
+
+    .spotlight-grid img {
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        border-radius: 14px !important;
+        transition: transform 0.6s ease !important;
+    }
 }
  
 
