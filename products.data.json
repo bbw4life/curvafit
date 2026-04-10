@@ -969,7 +969,7 @@
       "banner_slide_duration_ms": 5000
     },
     "preloader": {
-      "show": "yes",
+      "show": "no",
       "style_pulse_logo":   "no",
       "style_progress_bar": "yes",
       "style_spinner_ring": "no",
@@ -1099,7 +1099,8 @@
       }
     ],
     "site_stats": {
-      "members": 10000,
+      "members": 12000,
+      "weekly_discussions": 250,
       "satisfaction_rate": 98,
       "countries": 54,
       "average_rating": 4.8,

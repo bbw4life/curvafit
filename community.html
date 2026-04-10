@@ -629,43 +629,110 @@
             </div>
         </section>
 
-        <!-- ══ ORIGINAL — statistics-section community-stats ══ -->
-        <section id="statistics" class="statistics-section community-stats">
-            <div class="container">
-                <div class="section-header">
-                    <span class="section-label">By the Numbers</span>
-                    <h2>Community Statistics</h2>
-                    <p class="section-subtitle">A living, breathing community — not a static page. These numbers update every week.</p>
+       <!-- ══ STATISTICS — community-stats ══ -->
+<section id="statistics" class="statistics-section community-stats">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label">By the Numbers</span>
+            <h2>Community Statistics</h2>
+            <p class="section-subtitle">A living, breathing community — not a static page. These numbers update every week.</p>
+        </div>
+
+        <div class="stats-dashboard">
+
+            <div class="stats-left">
+
+                <div class="stat-row">
+                    <div class="stat-row-header">
+                        <span class="stat-row-icon"><i class="fi fi-rr-users"></i></span>
+                        <span class="stat-row-label">Active Members</span>
+                        <div class="stat-row-value-wrap">
+                            <span class="counter stat-row-value" data-target="10000" data-stat-counter data-stat-key="members">0</span>
+                            <span class="stat-row-suffix">+</span>
+                        </div>
+                    </div>
+                    <div class="stat-bar-track">
+                        <div class="stat-bar-fill" data-fill="100" data-stat-bar data-stat-key="members" data-stat-max="10000"></div>
+                    </div>
                 </div>
-                <div class="stat-grid">
-                    <div class="stat-card">
-                        <i class="fi fi-rr-users"></i>
-                        <div class="counter" data-target="10000">0</div>
-                        <p>+ Active Members</p>
+
+                <div class="stat-row">
+                    <div class="stat-row-header">
+                        <span class="stat-row-icon"><i class="fi fi-rr-comment"></i></span>
+                        <span class="stat-row-label">Weekly Discussions</span>
+                        <div class="stat-row-value-wrap">
+                            <span class="counter stat-row-value" data-target="250" data-stat-counter data-stat-key="weekly_discussions">0</span>
+                            <span class="stat-row-suffix">+</span>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <i class="fi fi-rr-comment"></i>
-                        <div class="counter" data-target="250">0</div>
-                        <p>+ Weekly Discussions</p>
+                    <div class="stat-bar-track">
+                        <div class="stat-bar-fill" data-fill="50" data-stat-bar data-stat-key="weekly_discussions" data-stat-max="500"></div>
                     </div>
-                    <div class="stat-card">
-                        <i class="fi fi-rr-heart"></i>
-                        <div class="counter" data-target="95">0</div>
-                        <p>% Feel More Supported</p>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-row-header">
+                        <span class="stat-row-icon"><i class="fi fi-rr-heart"></i></span>
+                        <span class="stat-row-label">Feel More Supported</span>
+                        <div class="stat-row-value-wrap">
+                            <span class="counter stat-row-value" data-target="95" data-stat-counter data-stat-key="feel_supported">0</span>
+                            <span class="stat-row-suffix">%</span>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <i class="fi fi-rr-star"></i>
-                        <div class="counter" data-target="49">0</div>
-                        <p>/5 Average Satisfaction</p>
+                    <div class="stat-bar-track">
+                        <div class="stat-bar-fill" data-fill="95" data-stat-bar data-stat-key="feel_supported" data-stat-max="100"></div>
                     </div>
-                    <div class="stat-card">
-                        <i class="fi fi-rr-trophy"></i>
-                        <div class="counter" data-target="500">0</div>
-                        <p>+ Monthly Challenges Completed</p>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-row-header">
+                        <span class="stat-row-icon"><i class="fi fi-rr-star"></i></span>
+                        <span class="stat-row-label">Average Satisfaction</span>
+                        <div class="stat-row-value-wrap">
+                            <span class="counter stat-row-value" data-target="49" data-stat-counter data-stat-key="avg_satisfaction">0</span>
+                            <span class="stat-row-suffix">/5</span>
+                        </div>
                     </div>
+                    <div class="stat-bar-track">
+                        <div class="stat-bar-fill" data-fill="98" data-stat-bar data-stat-key="avg_satisfaction" data-stat-max="5"></div>
+                    </div>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-row-header">
+                        <span class="stat-row-icon"><i class="fi fi-rr-trophy"></i></span>
+                        <span class="stat-row-label">Monthly Challenges Completed</span>
+                        <div class="stat-row-value-wrap">
+                            <span class="counter stat-row-value" data-target="500" data-stat-counter data-stat-key="monthly_challenges">0</span>
+                            <span class="stat-row-suffix">+</span>
+                        </div>
+                    </div>
+                    <div class="stat-bar-track">
+                        <div class="stat-bar-fill" data-fill="100" data-stat-bar data-stat-key="monthly_challenges" data-stat-max="500"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="stats-right">
+                <div class="stats-highlight">
+                    <div class="highlight-ring">
+                        <svg viewBox="0 0 120 120" class="ring-svg">
+                            <circle cx="60" cy="60" r="50" class="ring-bg"/>
+                            <circle cx="60" cy="60" r="50" class="ring-fill" data-fill="95" data-stat-ring data-stat-key="feel_supported" data-stat-max="100"/>
+                        </svg>
+                        <div class="highlight-inner">
+                            <span class="highlight-number"><span class="counter" data-target="95" data-stat-counter data-stat-key="feel_supported">0</span><span class="highlight-unit">%</span></span>
+                            <span class="highlight-desc">satisfaction</span>
+                        </div>
+                    </div>
+                    <p class="highlight-caption">of members say this community changed their life</p>
                 </div>
             </div>
-        </section>
+
+        </div>
+    </div>
+</section>
 
         <!-- ══ ORIGINAL — current-challenge-section ══ -->
         <section id="current-challenge" class="current-challenge-section">

@@ -801,28 +801,43 @@ function applyPromoFreeItems() {
   const s = settings.site_stats || {};
   if (!Object.keys(s).length) return;
 
-  function setCounter(selector) {
-    document.querySelectorAll(selector).forEach(el => {
-      const key = el.dataset.statKey;
-      if (key && s[key] !== undefined) {
-        el.setAttribute('data-target', s[key]);
-        el.textContent = '0';
-      }
-    });
-  }
+  // Counters → data-target
+  document.querySelectorAll('[data-stat-counter]').forEach(el => {
+    const key = el.dataset.statKey;
+    if (key && s[key] !== undefined) {
+      el.setAttribute('data-target', s[key]);
+      el.textContent = '0';
+    }
+  });
 
-  function setText(selector) {
-    document.querySelectorAll(selector).forEach(el => {
-      const key = el.dataset.statKey;
-      if (key && s[key] !== undefined) {
-        const suffix = key === 'satisfaction_rate' ? '%' : '';
-        el.textContent = s[key] + suffix;
-      }
-    });
-  }
+  // Text → textContent
+  document.querySelectorAll('[data-stat-text]').forEach(el => {
+    const key = el.dataset.statKey;
+    if (key && s[key] !== undefined) {
+      el.textContent = s[key];
+    }
+  });
 
-  setCounter('[data-stat-counter]');
-  setText('[data-stat-text]');
+  // Bars → data-fill (% calculé depuis data-stat-max)
+  document.querySelectorAll('[data-stat-bar]').forEach(el => {
+    const key = el.dataset.statKey;
+    const max = parseFloat(el.dataset.statMax) || 100;
+    if (key && s[key] !== undefined) {
+      const pct = Math.min((s[key] / max) * 100, 100);
+      el.setAttribute('data-fill', pct.toFixed(1));
+    }
+  });
+
+  // Ring → data-fill (% calculé depuis data-stat-max)
+  document.querySelectorAll('[data-stat-ring]').forEach(el => {
+    const key = el.dataset.statKey;
+    const max = parseFloat(el.dataset.statMax) || 100;
+    if (key && s[key] !== undefined) {
+      const pct = Math.min((s[key] / max) * 100, 100);
+      el.setAttribute('data-fill', pct.toFixed(1));
+    }
+  });
+
 })();
 // ====================== END INJECT SITE STATS ======================
 
@@ -3485,15 +3500,102 @@ initAnnouncementBar();
   window.addEventListener('scroll', revealOnScroll);
   revealOnScroll();
 
+
+
+
+
   // ====================== COUNTERS ======================
-  document.querySelectorAll('.counter').forEach(counter => {
-    const updateCount = () => {
-      const target = +counter.getAttribute('data-target'), count = +counter.innerText, increment = target / 200;
-      if (count < target) { counter.innerText = Math.ceil(count + increment); setTimeout(updateCount, 10); }
-      else counter.innerText = target;
-    };
-    new IntersectionObserver(entries => { if (entries[0].isIntersecting) updateCount(); }).observe(counter);
-  });
+document.querySelectorAll('.counter').forEach(counter => {
+  const updateCount = () => {
+    const target = +counter.getAttribute('data-target'), count = +counter.innerText, increment = target / 200;
+    if (count < target) { counter.innerText = Math.ceil(count + increment); setTimeout(updateCount, 10); }
+    else counter.innerText = target;
+  };
+  new IntersectionObserver(entries => { if (entries[0].isIntersecting) updateCount(); }).observe(counter);
+});
+
+// ====================== INJECT SITE STATS ======================
+(function injectSiteStats() {
+  // Attendre que products soit chargé
+  function run() {
+    const settings = (window.__allProducts || []).find(p => p.type === 'settings') || {};
+    const s = settings.site_stats || {};
+    if (!Object.keys(s).length) return;
+
+    // Counters → data-target
+    document.querySelectorAll('[data-stat-counter]').forEach(el => {
+      const key = el.dataset.statKey;
+      if (key && s[key] !== undefined) {
+        el.setAttribute('data-target', s[key]);
+        el.textContent = '0';
+      }
+    });
+
+    // Bars
+    document.querySelectorAll('[data-stat-bar]').forEach(el => {
+      const key = el.dataset.statKey;
+      const max = parseFloat(el.dataset.statMax) || null;
+      if (key && s[key] !== undefined && max !== null) {
+        const pct = Math.min((s[key] / max) * 100, 100);
+        el.setAttribute('data-fill', pct.toFixed(1));
+      }
+      el.style.width = '0%';
+
+      const trackEl = el.closest('.stat-bar-track') || el.parentElement || el;
+      const obs = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting) {
+          const fill = parseFloat(el.getAttribute('data-fill')) || 0;
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            el.style.width = fill + '%';
+          }));
+          obs.disconnect();
+        }
+      }, { threshold: 0.1 });
+      obs.observe(trackEl);
+    });
+
+    // Ring
+    const CIRCUMFERENCE = 2 * Math.PI * 50; // 314.159
+    document.querySelectorAll('[data-stat-ring]').forEach(el => {
+      const key = el.dataset.statKey;
+      const max = parseFloat(el.dataset.statMax) || null;
+      if (key && s[key] !== undefined && max !== null) {
+        const pct = Math.min((s[key] / max) * 100, 100);
+        el.setAttribute('data-fill', pct.toFixed(1));
+      }
+      el.style.strokeDasharray  = CIRCUMFERENCE.toFixed(2);
+      el.style.strokeDashoffset = CIRCUMFERENCE.toFixed(2);
+
+      const svgEl = el.closest('svg') || el.closest('.highlight-ring') || el;
+      const obs = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting) {
+          const fill   = parseFloat(el.getAttribute('data-fill')) || 0;
+          const offset = CIRCUMFERENCE - (fill / 100) * CIRCUMFERENCE;
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            el.style.strokeDashoffset = offset.toFixed(2);
+          }));
+          obs.disconnect();
+        }
+      }, { threshold: 0.1 });
+      obs.observe(svgEl);
+    });
+  }
+
+  // Si products déjà chargé, run immédiatement ; sinon attendre
+  if (window.__allProducts && window.__allProducts.length) {
+    run();
+  } else {
+    let tries = 0;
+    const wait = setInterval(() => {
+      if (window.__allProducts && window.__allProducts.length) {
+        clearInterval(wait);
+        run();
+      } else if (++tries > 50) clearInterval(wait);
+    }, 100);
+  }
+})();
+// ====================== END INJECT SITE STATS ======================
+
 
   // ====================== TESTIMONIAL CAROUSEL ======================
 const carousel = document.querySelector('.testimonial-carousel');
