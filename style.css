@@ -10232,8 +10232,10 @@ tbody tr:hover { background: var(--rose-ultra); }
     margin: -20px 0 48px;
   }
   .plan-form-row { grid-template-columns: 1fr; }
-  .plan-popup-header { padding: 24px 20px 20px; }
-  .plan-popup-body { padding: 10px; }
+  .plan-popup-overlay { padding: 8px 6px; }
+  .plan-popup-modal { border-radius: 16px; max-height: 82vh; }
+  .plan-popup-header { padding: 18px 14px 16px; }
+  .plan-popup-body { padding: 12px 14px 16px; }
 }
 
 
@@ -13271,13 +13273,13 @@ html.fonts-loaded [class*="fa-"] {
 /* ── Mobile ── */
 @media (max-width: 520px) {
   #cf-cookie-popup {
-    padding: 5 8px 10px !important;
+    padding: 5px 6px 10px;
     align-items: flex-end;
   }
   #cf-cookie-modal {
     border-radius: 16px;
     max-width: 100%;
-    max-height: 90dvh;
+    max-height: 82dvh;
     overflow-y: auto;
   }
   .cfck-header, .cfck-body, .cfck-footer {
@@ -13296,7 +13298,6 @@ html.fonts-loaded [class*="fa-"] {
   .cfck-btn--outline { order: 2; }
   .cfck-btn--primary { order: 1; }
 }
-
 
 
 /* ================================================================
