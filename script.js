@@ -8,27 +8,28 @@ document.addEventListener('DOMContentLoaded', () => {
   'use strict';
 
   var STYLE_MAP = {
-    style_progress_bar: 'cf-ind-progress',
-    style_spinner_ring: 'cf-ind-spinner',
-    style_dots_wave:    'cf-ind-dots',
-    style_morph_text:   'cf-ind-morph',
-    style_pulse_logo:   'cf-ind-pulse'
+    style_pulse_logo:   'style-pulse-logo',
+    style_progress_bar: 'style-progress-bar',
+    style_spinner_ring: 'style-spinner-ring',
+    style_dots_wave:    'style-dots-wave',
+    style_morph_text:   'style-morph-text'
   };
 
-  var MORPH_WORDS = ['Loading', 'Almost there', 'Preparing', 'Just a sec', 'Ready soon'];
-  var morphTimer = null;
-  var barTimer   = null;
-  var morphIdx   = 0;
-  var dismissed  = false;
-  var MIN_SHOW_MS = 3000;
-  var startedAt   = Date.now();
-  var pageReady   = false;
-  var pl          = null;
-  var styleEl     = null;
-  var barEl       = null;
-  var morphEl     = null;
+  var MORPH_TEXTS  = ['Loading', 'Preparing your journey', 'Almost there', 'Welcome ✨'];
+  var morphTimer   = null;
+  var barTimer     = null;
+  var morphIdx     = 0;
+  var dismissed    = false;
+  var MIN_SHOW_MS  = 3000;
+  var startedAt    = Date.now();
+  var pageReady    = false;
+  var pl           = null;
+  var styleEl      = null;
+  var barFill      = null;
+  var barPct       = null;
+  var morphEl      = null;
+  var currentPct   = 0;
 
-  /* ── 1. Fetch settings FIRST — before touching the DOM ── */
   fetch('/products.data.json')
     .then(function (r) { return r.json(); })
     .then(function (data) {
@@ -36,28 +37,27 @@ document.addEventListener('DOMContentLoaded', () => {
       var settings = arr.find(function (p) { return p.type === 'settings'; }) || {};
       var cfg      = settings.preloader || {};
 
-      /* ── Respect show: yes/no — exit immediately if no ── */
       var show = (cfg.show || 'yes').trim().toLowerCase();
-      if (show !== 'yes') return; /* nothing injected, nothing shown */
+      if (show !== 'yes') return;
 
-      /* ── show:yes → now inject HTML + CSS ── */
-      injectHTML();
       injectCSS();
+      injectHTML();
 
       pl      = document.getElementById('cf-preloader');
-      barEl   = document.getElementById('cf-pl-bar');
-      morphEl = document.getElementById('cf-pl-morph-text');
+      barFill = document.getElementById('cf-pre-progress-fill');
+      barPct  = document.getElementById('cf-pre-progress-pct');
+      morphEl = document.getElementById('cf-pre-morph-text');
 
       if (!pl) return;
 
-      /* Pick the first enabled style */
+      spawnParticles();
+
       var activeKey = Object.keys(STYLE_MAP).find(function (k) {
         return (cfg[k] || 'no').trim().toLowerCase() === 'yes';
-      }) || 'style_progress_bar';
+      }) || 'style_dots_wave';
 
       applyStyle(activeKey);
 
-      /* Page may already be ready by the time fetch resolves */
       if (pageReady) {
         tryHide();
       } else {
@@ -67,133 +67,227 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
     })
-    .catch(function () {
-      /* Fetch failed — do NOT show preloader, stay invisible */
-    });
+    .catch(function () {});
 
-  /* Mark page ready (may fire before or after fetch) */
   if (document.readyState === 'complete') {
     pageReady = true;
   } else {
-    window.addEventListener('load', function () {
-      pageReady = true;
-    });
+    window.addEventListener('load', function () { pageReady = true; });
   }
 
-  /* ── 2. Inject HTML ── */
   function injectHTML() {
-    var html =
-      '<div id="cf-preloader" aria-hidden="true">' +
-        '<div class="cf-pl-backdrop"></div>' +
-        '<div class="cf-pl-stage">' +
-          '<div class="cf-pl-logo-wrap" id="cf-pl-logo">' +
-            '<svg width="52" height="52" viewBox="0 0 52 52" fill="none" aria-hidden="true">' +
-              '<circle cx="26" cy="26" r="24" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>' +
-              '<path d="M26 7C26 7 39 14 39 26C39 33.18 33.18 39 26 39C18.82 39 13 33.18 13 26C13 18.82 18.82 13 26 13" stroke="white" stroke-width="2.5" stroke-linecap="round"/>' +
-              '<circle cx="26" cy="26" r="5" fill="white"/>' +
-            '</svg>' +
-          '</div>' +
-          '<p class="cf-pl-brand">CurvaFit</p>' +
-          '<p class="cf-pl-tagline">Your transformation starts here</p>' +
-          '<div class="cf-pl-indicator cf-ind-progress" id="cf-ind-progress">' +
-            '<div class="cf-pl-bar-track"><div class="cf-pl-bar-fill" id="cf-pl-bar"></div></div>' +
-          '</div>' +
-          '<div class="cf-pl-indicator cf-ind-spinner" id="cf-ind-spinner">' +
-            '<svg class="cf-pl-ring-svg" viewBox="0 0 40 40" aria-hidden="true">' +
-              '<circle cx="20" cy="20" r="16" stroke="rgba(255,255,255,0.15)" stroke-width="3" fill="none"/>' +
-              '<circle class="cf-pl-ring-arc" cx="20" cy="20" r="16" stroke="white" stroke-width="3" fill="none" stroke-dasharray="100 101" stroke-linecap="round"/>' +
-            '</svg>' +
-          '</div>' +
-          '<div class="cf-pl-indicator cf-ind-dots" id="cf-ind-dots">' +
-            '<span></span><span></span><span></span><span></span><span></span>' +
-          '</div>' +
-          '<div class="cf-pl-indicator cf-ind-morph" id="cf-ind-morph">' +
-            '<span id="cf-pl-morph-text">Loading</span>' +
-          '</div>' +
-          '<div class="cf-pl-indicator cf-ind-pulse" id="cf-ind-pulse">' +
-            '<svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true">' +
-              '<circle cx="32" cy="32" r="30" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>' +
-              '<circle cx="32" cy="32" r="21" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>' +
-              '<path d="M32 9C32 9 46 17 46 32C46 39.73 39.73 46 32 46C24.27 46 18 39.73 18 32C18 24.27 24.27 18 32 18" stroke="white" stroke-width="3" stroke-linecap="round"/>' +
-              '<circle cx="32" cy="32" r="6" fill="white"/>' +
-            '</svg>' +
-          '</div>' +
-        '</div>' +
-      '</div>';
-
     var target = document.body || document.documentElement;
-    var tmp    = document.createElement('div');
-    tmp.innerHTML = html;
-    target.insertBefore(tmp.firstElementChild, target.firstChild);
+    target.insertAdjacentHTML('afterbegin',
+      '<div id="cf-preloader" aria-hidden="true" role="status" aria-label="Loading CurvaFit">' +
+        '<div class="cf-pre-particles" id="cf-pre-particles"></div>' +
+        '<div class="cf-pre-logo-wrap">' +
+          '<div class="cf-pre-logo-ring"></div>' +
+          '<img class="cf-pre-logo" src="/src-images/LogoCurvafit(1).png" alt="CurvaFit" draggable="false">' +
+        '</div>' +
+        '<div class="cf-pre-brand">' +
+          '<span class="cf-pre-brand-name">CurvaFit</span>' +
+          '<span class="cf-pre-tagline">Your Transformation Starts Here</span>' +
+        '</div>' +
+        '<div class="cf-pre-progress-wrap">' +
+          '<div class="cf-pre-progress-track">' +
+            '<div class="cf-pre-progress-fill" id="cf-pre-progress-fill"></div>' +
+          '</div>' +
+          '<span class="cf-pre-progress-pct" id="cf-pre-progress-pct">0%</span>' +
+        '</div>' +
+        '<div class="cf-pre-spinner-wrap">' +
+          '<div class="cf-pre-spinner"></div>' +
+          '<div class="cf-pre-spinner"></div>' +
+          '<div class="cf-pre-spinner"></div>' +
+        '</div>' +
+        '<div class="cf-pre-dots-wrap">' +
+          '<div class="cf-pre-dot"></div>' +
+          '<div class="cf-pre-dot"></div>' +
+          '<div class="cf-pre-dot"></div>' +
+          '<div class="cf-pre-dot"></div>' +
+          '<div class="cf-pre-dot"></div>' +
+        '</div>' +
+        '<div class="cf-pre-morph-wrap">' +
+          '<span class="cf-pre-morph-text cf-morph-active" id="cf-pre-morph-text">Loading</span>' +
+        '</div>' +
+      '</div>'
+    );
   }
 
-  /* ── 3. Inject CSS ── */
   function injectCSS() {
     var css =
       '#cf-preloader{' +
-        'position:fixed;inset:0;z-index:99999;' +
-        'display:flex;align-items:center;justify-content:center;' +
-        'transition:opacity .55s cubic-bezier(.4,0,.2,1),visibility .55s;' +
+        'position:fixed;inset:0;z-index:999999;' +
+        'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;' +
+        'background:linear-gradient(160deg,#1e1a1c 0%,#2e1828 50%,#1a1020 100%);' +
+        'opacity:1;visibility:visible;pointer-events:all;overflow:hidden;' +
+        'transition:opacity .55s cubic-bezier(.4,0,.2,1),visibility .55s cubic-bezier(.4,0,.2,1);' +
       '}' +
-      '#cf-preloader.cf-pl-out{opacity:0;visibility:hidden;pointer-events:none;}' +
-      '.cf-pl-backdrop{' +
-        'position:absolute;inset:0;' +
-        'background:linear-gradient(160deg,#1a1a2e 0%,#16213e 55%,#0f3460 100%);' +
+      '#cf-preloader.cf-pre--hidden{opacity:0;visibility:hidden;pointer-events:none;}' +
+      '#cf-preloader::before{' +
+        'content:"";position:absolute;top:50%;left:50%;' +
+        'transform:translate(-50%,-50%);width:600px;height:600px;' +
+        'background:radial-gradient(ellipse at center,rgba(192,56,94,.18) 0%,rgba(123,63,110,.10) 40%,transparent 70%);' +
+        'pointer-events:none;animation:cfPreGlowPulse 3s ease-in-out infinite;' +
       '}' +
-      '.cf-pl-stage{' +
-        'position:relative;z-index:1;' +
-        'display:flex;flex-direction:column;align-items:center;gap:0;' +
+      '@keyframes cfPreGlowPulse{' +
+        '0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.7}' +
+        '50%{transform:translate(-50%,-50%) scale(1.2);opacity:1}' +
       '}' +
-      '.cf-pl-logo-wrap{margin-bottom:20px;animation:cf-logo-in .6s cubic-bezier(.34,1.56,.64,1) both;}' +
-      '@keyframes cf-logo-in{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}' +
-      '.cf-pl-brand{' +
-        'margin:0 0 6px;' +
-        'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;' +
-        'font-size:22px;font-weight:700;letter-spacing:.04em;color:#fff;' +
-        'animation:cf-fade-up .5s .15s both;' +
+      '.cf-pre-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;}' +
+      '.cf-pre-particle{position:absolute;border-radius:50%;animation:cfPreParticleFloat linear infinite;opacity:0;}' +
+      '@keyframes cfPreParticleFloat{' +
+        '0%{transform:translateY(100vh) scale(0);opacity:0}' +
+        '10%{opacity:.7}90%{opacity:.3}' +
+        '100%{transform:translateY(-10vh) scale(1);opacity:0}' +
       '}' +
-      '.cf-pl-tagline{' +
-        'margin:0 0 32px;' +
-        'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;' +
-        'font-size:13px;font-weight:400;letter-spacing:.02em;color:rgba(255,255,255,.45);' +
-        'animation:cf-fade-up .5s .25s both;' +
+      '.cf-pre-logo-wrap{position:relative;display:flex;align-items:center;justify-content:center;}' +
+      '.cf-pre-logo-ring{' +
+        'position:absolute;width:110px;height:110px;border-radius:50%;' +
+        'border:1.5px solid rgba(192,56,94,.25);animation:cfPreRingRotate 6s linear infinite;' +
       '}' +
-      '@keyframes cf-fade-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}' +
-      '.cf-pl-indicator{display:none;animation:cf-fade-up .45s .35s both;}' +
-      '.cf-pl-indicator.cf-active{display:flex;align-items:center;justify-content:center;}' +
-      '.cf-ind-progress.cf-active{width:200px;height:3px;}' +
-      '.cf-pl-bar-track{width:100%;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;}' +
-      '.cf-pl-bar-fill{height:100%;width:0;background:#fff;border-radius:2px;transition:width .3s ease;}' +
-      '.cf-ind-spinner.cf-active{width:44px;height:44px;}' +
-      '.cf-pl-ring-svg{width:44px;height:44px;}' +
-      '.cf-pl-ring-arc{transform-origin:20px 20px;animation:cf-spin .9s linear infinite;}' +
-      '@keyframes cf-spin{to{transform:rotate(360deg)}}' +
-      '.cf-ind-dots.cf-active{gap:7px;}' +
-      '.cf-ind-dots span{display:block;width:8px;height:8px;background:rgba(255,255,255,.8);border-radius:50%;animation:cf-wave .9s ease-in-out infinite;}' +
-      '.cf-ind-dots span:nth-child(1){animation-delay:0s}' +
-      '.cf-ind-dots span:nth-child(2){animation-delay:.12s}' +
-      '.cf-ind-dots span:nth-child(3){animation-delay:.24s}' +
-      '.cf-ind-dots span:nth-child(4){animation-delay:.36s}' +
-      '.cf-ind-dots span:nth-child(5){animation-delay:.48s}' +
-      '@keyframes cf-wave{0%,80%,100%{transform:scaleY(1);opacity:.4}40%{transform:scaleY(1.7);opacity:1}}' +
-      '.cf-ind-morph span{' +
-        'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;' +
-        'font-size:14px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;' +
-        'color:rgba(255,255,255,.7);transition:opacity .3s;' +
+      '.cf-pre-logo-ring::before{' +
+        'content:"";position:absolute;top:-3px;left:50%;width:6px;height:6px;' +
+        'background:#c0385e;border-radius:50%;transform:translateX(-50%);' +
+        'box-shadow:0 0 10px 3px rgba(192,56,94,.6);' +
       '}' +
-      '.cf-ind-pulse.cf-active svg{animation:cf-pulse 1.6s ease-in-out infinite;}' +
-      '@keyframes cf-pulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.08);opacity:1}}' +
-      '@media(prefers-reduced-motion:reduce){' +
-        '.cf-pl-logo-wrap,.cf-pl-brand,.cf-pl-tagline,.cf-pl-indicator{animation:none!important;opacity:1!important;transform:none!important}' +
-        '.cf-pl-ring-arc,.cf-ind-dots span,.cf-ind-pulse.cf-active svg{animation:none!important}' +
-      '}';
+      '@keyframes cfPreRingRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}' +
+      '.cf-pre-logo{' +
+        'width:80px;height:80px;object-fit:contain;position:relative;z-index:1;' +
+        'filter:drop-shadow(0 4px 20px rgba(192,56,94,.45));' +
+        'animation:cfPreLogoBreath 2.5s ease-in-out infinite;' +
+      '}' +
+      '@keyframes cfPreLogoBreath{' +
+        '0%,100%{transform:scale(1);filter:drop-shadow(0 4px 20px rgba(192,56,94,.45))}' +
+        '50%{transform:scale(1.05);filter:drop-shadow(0 6px 28px rgba(192,56,94,.65))}' +
+      '}' +
+      '.cf-pre-brand{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;}' +
+      '.cf-pre-brand-name{' +
+        'font-family:"Cormorant Garamond",Georgia,serif;font-size:2.4rem;font-weight:700;' +
+        'letter-spacing:-.02em;line-height:1;' +
+        'background:linear-gradient(135deg,#fff 40%,rgba(232,188,106,.85) 100%);' +
+        '-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;' +
+        'opacity:0;transform:translateY(12px);' +
+        'animation:cfPreFadeUp .7s cubic-bezier(.34,1.56,.64,1) .25s forwards;' +
+      '}' +
+      '.cf-pre-tagline{' +
+        'font-family:"DM Sans",system-ui,sans-serif;font-size:.78rem;font-weight:500;' +
+        'letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.45);' +
+        'opacity:0;transform:translateY(8px);animation:cfPreFadeUp .6s ease .5s forwards;' +
+      '}' +
+      '@keyframes cfPreFadeUp{to{opacity:1;transform:translateY(0)}}' +
+      '.cf-pre-progress-wrap{display:none;flex-direction:column;align-items:center;gap:8px;width:260px;}' +
+      '#cf-preloader.style-progress-bar .cf-pre-progress-wrap{display:flex;}' +
+      '.cf-pre-progress-track{width:100%;height:3px;background:rgba(255,255,255,.08);border-radius:100px;overflow:hidden;}' +
+      '.cf-pre-progress-fill{' +
+        'height:100%;width:0%;' +
+        'background:linear-gradient(90deg,#c0385e,#e8bc6a,#c0385e);background-size:200% 100%;' +
+        'border-radius:100px;transition:width .3s ease;animation:cfPreProgressShimmer 2s linear infinite;' +
+      '}' +
+      '@keyframes cfPreProgressShimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}' +
+      '.cf-pre-progress-pct{font-family:"DM Sans",sans-serif;font-size:.72rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.1em;}' +
+      '.cf-pre-spinner-wrap{display:none;position:relative;width:56px;height:56px;}' +
+      '#cf-preloader.style-spinner-ring .cf-pre-spinner-wrap{display:flex;align-items:center;justify-content:center;}' +
+      '.cf-pre-spinner{position:absolute;inset:0;border-radius:50%;border:2.5px solid transparent;}' +
+      '.cf-pre-spinner:nth-child(1){border-top-color:#c0385e;animation:cfPreSpinCW 1s linear infinite;}' +
+      '.cf-pre-spinner:nth-child(2){inset:8px;border-right-color:#e8bc6a;animation:cfPreSpinCCW .75s linear infinite;}' +
+      '.cf-pre-spinner:nth-child(3){inset:16px;border-bottom-color:rgba(255,255,255,.5);animation:cfPreSpinCW .5s linear infinite;}' +
+      '@keyframes cfPreSpinCW{to{transform:rotate(360deg)}}' +
+      '@keyframes cfPreSpinCCW{to{transform:rotate(-360deg)}}' +
+      '.cf-pre-dots-wrap{display:none;align-items:flex-end;gap:6px;height:28px;}' +
+      '#cf-preloader.style-dots-wave .cf-pre-dots-wrap{display:flex;}' +
+      '.cf-pre-dot{width:8px;height:8px;border-radius:50%;animation:cfPreDotWave 1.4s ease-in-out infinite;}' +
+      '.cf-pre-dot:nth-child(1){background:#c0385e;animation-delay:0s}' +
+      '.cf-pre-dot:nth-child(2){background:#d4506e;animation-delay:.16s}' +
+      '.cf-pre-dot:nth-child(3){background:#e8bc6a;animation-delay:.32s}' +
+      '.cf-pre-dot:nth-child(4){background:#d4506e;animation-delay:.48s}' +
+      '.cf-pre-dot:nth-child(5){background:#c0385e;animation-delay:.64s}' +
+      '@keyframes cfPreDotWave{0%,80%,100%{transform:scaleY(.4);opacity:.4}40%{transform:scaleY(1.4);opacity:1}}' +
+      '.cf-pre-morph-wrap{display:none;position:relative;height:22px;overflow:hidden;min-width:200px;text-align:center;}' +
+      '#cf-preloader.style-morph-text .cf-pre-morph-wrap{display:block;}' +
+      '.cf-pre-morph-text{' +
+        'position:absolute;width:100%;' +
+        'font-family:"DM Sans",sans-serif;font-size:.78rem;font-weight:500;' +
+        'letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);' +
+        'transition:all .4s cubic-bezier(.4,0,.2,1);' +
+      '}' +
+      '.cf-pre-morph-text.cf-morph-enter{transform:translateY(20px);opacity:0;}' +
+      '.cf-pre-morph-text.cf-morph-active{transform:translateY(0);opacity:1;}' +
+      '.cf-pre-morph-text.cf-morph-exit{transform:translateY(-20px);opacity:0;}' +
+      '#cf-preloader.style-pulse-logo .cf-pre-logo{animation:cfPrePulseLogo 1.2s ease-in-out infinite;}' +
+      '@keyframes cfPrePulseLogo{' +
+        '0%,100%{transform:scale(1);filter:drop-shadow(0 0 12px rgba(192,56,94,.5))}' +
+        '50%{transform:scale(1.15);filter:drop-shadow(0 0 32px rgba(192,56,94,.9))}' +
+      '}' +
+      '#cf-preloader.style-pulse-logo .cf-pre-logo-ring{animation:cfPreRingPulse 1.2s ease-in-out infinite;}' +
+      '@keyframes cfPreRingPulse{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.25);opacity:.9}}';
 
     styleEl = document.createElement('style');
     styleEl.textContent = css;
     (document.head || document.documentElement).appendChild(styleEl);
   }
 
-  /* ── 4. Hide logic ── */
+  function spawnParticles() {
+    var container = document.getElementById('cf-pre-particles');
+    if (!container) return;
+    var colors = [
+      'rgba(192,56,94,0.6)',
+      'rgba(232,188,106,0.5)',
+      'rgba(123,63,110,0.5)',
+      'rgba(255,255,255,0.25)'
+    ];
+    for (var i = 0; i < 22; i++) {
+      var p        = document.createElement('div');
+      p.className  = 'cf-pre-particle';
+      var size     = Math.random() * 5 + 3;
+      var left     = Math.random() * 100;
+      var duration = Math.random() * 6 + 5;
+      var delay    = Math.random() * 8;
+      var color    = colors[Math.floor(Math.random() * colors.length)];
+      p.style.cssText =
+        'width:' + size + 'px;height:' + size + 'px;' +
+        'left:' + left + '%;' +
+        'background:' + color + ';' +
+        'animation-duration:' + duration + 's;' +
+        'animation-delay:' + delay + 's;';
+      container.appendChild(p);
+    }
+  }
+
+  function applyStyle(key) {
+    var cssClass = STYLE_MAP[key] || STYLE_MAP.style_dots_wave;
+    Object.values(STYLE_MAP).forEach(function (cls) { pl.classList.remove(cls); });
+    pl.classList.add(cssClass);
+
+    if (cssClass === 'style-progress-bar' && barFill && barPct) {
+      barTimer = setInterval(function () {
+        var step = currentPct < 70 ? 3 : currentPct < 90 ? 1 : 0.4;
+        currentPct = Math.min(95, currentPct + step);
+        barFill.style.width  = currentPct + '%';
+        barPct.textContent   = Math.floor(currentPct) + '%';
+      }, 80);
+    }
+
+    if (cssClass === 'style-morph-text' && morphEl) {
+      morphEl.textContent = MORPH_TEXTS[0];
+      morphEl.className   = 'cf-pre-morph-text cf-morph-active';
+      morphTimer = setInterval(function () {
+        morphIdx = (morphIdx + 1) % MORPH_TEXTS.length;
+        morphEl.className = 'cf-pre-morph-text cf-morph-exit';
+        setTimeout(function () {
+          morphEl.textContent = MORPH_TEXTS[morphIdx];
+          morphEl.className   = 'cf-pre-morph-text cf-morph-enter';
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              morphEl.className = 'cf-pre-morph-text cf-morph-active';
+            });
+          });
+        }, 420);
+      }, 1600);
+    }
+
+    setTimeout(doHide, 8000);
+  }
+
   function tryHide() {
     if (dismissed || !pl) return;
     var elapsed = Date.now() - startedAt;
@@ -207,57 +301,19 @@ document.addEventListener('DOMContentLoaded', () => {
     clearInterval(barTimer);
     clearInterval(morphTimer);
 
-    if (barEl) {
-      barEl.style.transition = 'width .2s ease';
-      barEl.style.width = '100%';
+    if (barFill) {
+      barFill.style.width = '100%';
+      if (barPct) barPct.textContent = '100%';
     }
 
-    var barActive = document.getElementById('cf-ind-progress') &&
-                    document.getElementById('cf-ind-progress').classList.contains('cf-active');
-
+    var isProgress = pl.classList.contains('style-progress-bar');
     setTimeout(function () {
-      pl.classList.add('cf-pl-out');
+      pl.classList.add('cf-pre--hidden');
       setTimeout(function () {
         if (pl && pl.parentNode) pl.parentNode.removeChild(pl);
         if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
       }, 600);
-    }, barActive ? 220 : 0);
-  }
-
-  /* ── 5. Apply animation style ── */
-  function applyStyle(key) {
-    var id = STYLE_MAP[key] || STYLE_MAP.style_progress_bar;
-    var el = document.getElementById(id);
-    if (el) {
-      el.classList.add('cf-active');
-      void el.offsetWidth;
-      el.style.animationName = 'none';
-      requestAnimationFrame(function () { el.style.animationName = ''; });
-    }
-
-    if (id === 'cf-ind-progress' && barEl) {
-      var pct = 2;
-      barEl.style.width = pct + '%';
-      barTimer = setInterval(function () {
-        pct += (88 - pct) * (Math.random() * .08 + .02);
-        if (pct > 88) pct = 88;
-        barEl.style.width = pct + '%';
-      }, 350);
-    }
-
-    if (id === 'cf-ind-morph' && morphEl) {
-      morphTimer = setInterval(function () {
-        morphIdx = (morphIdx + 1) % MORPH_WORDS.length;
-        morphEl.style.opacity = '0';
-        setTimeout(function () {
-          morphEl.textContent = MORPH_WORDS[morphIdx];
-          morphEl.style.opacity = '1';
-        }, 180);
-      }, 1100);
-    }
-
-    /* Safety cap: 6s max */
-    setTimeout(doHide, 6000);
+    }, isProgress ? 350 : 0);
   }
 
 })();
