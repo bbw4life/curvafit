@@ -849,7 +849,7 @@ function applyPromoFreeItems() {
       const plansAvailable = (settings.plans_available || 'no').toLowerCase() === 'yes';
       const planTriggerWrap = document.querySelector('.plan-request-trigger-wrap');
       if (planTriggerWrap) {
-        planTriggerWrap.style.display = plansAvailable ? '' : 'none';
+        planTriggerWrap.style.display = plansAvailable ? 'none' : '';
       }
       // Free shipping threshold → risk-reversal section
       const freeShippingThreshold = (settings.cart_drawer && settings.cart_drawer.free_shipping_threshold)
@@ -2074,10 +2074,10 @@ initAnnouncementBar();
     const settings     = products.find(p => p.type === 'settings') || {};
     const plansOn      = (settings.plans_available || 'no').toLowerCase() === 'yes';
 
-    // 1. Plan request trigger button
+    // 1. Plan request trigger button — visible quand plans NON disponibles
     const triggerWrap  = document.querySelector('.plan-request-trigger-wrap');
     if (triggerWrap) {
-        triggerWrap.style.display = plansOn ? '' : 'none';
+        triggerWrap.style.display = plansOn ? 'none' : '';
     }
 
     // 2. Program card CTA buttons + prices
@@ -2086,16 +2086,13 @@ initAnnouncementBar();
         const priceEl  = card.querySelector('.prog-price');
 
         if (!plansOn) {
-            // Disable the CTA button
             if (ctaBtn) {
                 ctaBtn.disabled = true;
                 ctaBtn.classList.add('prog-cta--disabled');
                 ctaBtn.setAttribute('title', 'Plans temporarily unavailable');
-                // Remove event listeners by replacing with a clone
                 const clone = ctaBtn.cloneNode(true);
                 ctaBtn.parentNode.replaceChild(clone, ctaBtn);
             }
-            // Show price as $0.00 / Unavailable
             if (priceEl) {
                 priceEl.textContent = '$0.00';
                 priceEl.classList.add('prog-price--free');
@@ -2114,7 +2111,6 @@ initAnnouncementBar();
             });
         }
 
-        // Final CTA buttons
         document.querySelectorAll('.final-cta-btn').forEach(btn => {
             btn.disabled = true;
             btn.classList.add('prog-cta--disabled');
