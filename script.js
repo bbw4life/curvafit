@@ -743,95 +743,6 @@ function applyPromoFreeItems() {
 })();
 
 
-// ── PLAN REQUEST POPUP ──
-(function initPlanPopup() {
-  const overlay   = document.getElementById('plan-popup-overlay');
-  const openBtn   = document.getElementById('open-plan-popup');
-  const closeBtn  = document.getElementById('plan-popup-close');
-  const submitBtn = document.getElementById('plan-submit-btn');
-  const errorEl   = document.getElementById('plan-popup-error');
-  const successEl = document.getElementById('plan-popup-success');
-
-  if (!overlay || !openBtn) return;
-
-  function openPopup() {
-    overlay.classList.add('active');
-    overlay.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closePopup() {
-    overlay.classList.remove('active');
-    overlay.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-  }
-
-  openBtn.addEventListener('click', openPopup);
-  closeBtn.addEventListener('click', closePopup);
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopup(); });
-
-  submitBtn.addEventListener('click', async () => {
-    const firstName = document.getElementById('plan-firstname').value.trim();
-    const lastName  = document.getElementById('plan-lastname').value.trim();
-    const email     = document.getElementById('plan-email').value.trim();
-    const phone     = document.getElementById('plan-phone').value.trim();
-    const program   = document.getElementById('plan-program').value;
-    const consent   = document.getElementById('plan-consent').checked;
-
-    errorEl.style.display   = 'none';
-    successEl.style.display = 'none';
-
-    if (!firstName || !lastName || !email || !program) {
-      errorEl.textContent = 'Please fill in all required fields.';
-      errorEl.style.display = 'block';
-      return;
-    }
-    if (!email.includes('@')) {
-      errorEl.textContent = 'Please enter a valid email address.';
-      errorEl.style.display = 'block';
-      return;
-    }
-    if (!consent) {
-      errorEl.textContent = 'Please check the consent box to continue.';
-      errorEl.style.display = 'block';
-      return;
-    }
-
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fi fi-rr-spinner"></i> Sending...';
-
-    try {
-      const res  = await fetch('/.netlify/functions/save-plan-request', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ firstName, lastName, email, phone, program, consent: 'Yes' })
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        successEl.style.display = 'flex';
-        document.getElementById('plan-firstname').value = '';
-        document.getElementById('plan-lastname').value  = '';
-        document.getElementById('plan-email').value     = '';
-        document.getElementById('plan-phone').value     = '';
-        document.getElementById('plan-program').value   = '';
-        document.getElementById('plan-consent').checked = false;
-        submitBtn.innerHTML = '<i class="fi fi-rr-check"></i> Request Sent!';
-        setTimeout(() => { closePopup(); submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Send My Request'; }, 3000);
-      } else {
-        errorEl.textContent = 'An error occurred: ' + (data.error || 'Unknown error');
-        errorEl.style.display = 'block';
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Send My Request';
-      }
-    } catch (err) {
-      errorEl.textContent = 'Network error. Please try again.';
-      errorEl.style.display = 'block';
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Send My Request';
-    }
-  });
-})();
 
 
       const settings = products.find(p => p.type === "settings") || {};
@@ -2156,6 +2067,368 @@ window.__setCart = (c) => { cart = c; };
 window.__getWishlist = () => wishlist;
 window.__setWishlist = (w) => { wishlist = w; };
 initAnnouncementBar();
+
+
+// ── PLANS AVAILABLE — block program CTAs when setting = no ──
+(function applyPlansAvailableSetting() {
+    const settings     = products.find(p => p.type === 'settings') || {};
+    const plansOn      = (settings.plans_available || 'no').toLowerCase() === 'yes';
+
+    // 1. Plan request trigger button
+    const triggerWrap  = document.querySelector('.plan-request-trigger-wrap');
+    if (triggerWrap) {
+        triggerWrap.style.display = plansOn ? '' : 'none';
+    }
+
+    // 2. Program card CTA buttons + prices
+    document.querySelectorAll('.program-card').forEach(card => {
+        const ctaBtn   = card.querySelector('.prog-cta');
+        const priceEl  = card.querySelector('.prog-price');
+
+        if (!plansOn) {
+            // Disable the CTA button
+            if (ctaBtn) {
+                ctaBtn.disabled = true;
+                ctaBtn.classList.add('prog-cta--disabled');
+                ctaBtn.setAttribute('title', 'Plans temporarily unavailable');
+                // Remove event listeners by replacing with a clone
+                const clone = ctaBtn.cloneNode(true);
+                ctaBtn.parentNode.replaceChild(clone, ctaBtn);
+            }
+            // Show price as $0.00 / Unavailable
+            if (priceEl) {
+                priceEl.textContent = '$0.00';
+                priceEl.classList.add('prog-price--free');
+                priceEl.style.opacity = '0.4';
+            }
+        }
+    });
+
+    // 3. Comparison table price row
+    if (!plansOn) {
+        const priceRow = document.querySelector('.comparison-table-section .price-row');
+        if (priceRow) {
+            priceRow.querySelectorAll('td:not(:first-child)').forEach(td => {
+                td.textContent = '$0.00';
+                td.style.opacity = '0.4';
+            });
+        }
+
+        // Final CTA buttons
+        document.querySelectorAll('.final-cta-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('prog-cta--disabled');
+            btn.setAttribute('title', 'Plans temporarily unavailable');
+            const clone = btn.cloneNode(true);
+            btn.parentNode.replaceChild(clone, btn);
+        });
+    }
+
+    // 4. Block open-plan-program-popup triggers
+    if (!plansOn) {
+        document.querySelectorAll('.open-plan-program-popup').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('prog-cta--disabled');
+            btn.setAttribute('title', 'Plans temporarily unavailable');
+            const clone = btn.cloneNode(true);
+            btn.parentNode.replaceChild(clone, btn);
+        });
+    }
+})();
+
+
+// ══════════════════════════════════════════════════════
+//   PLAN REQUEST RESERVATION POPUP
+// ══════════════════════════════════════════════════════
+(function initPlanReservationPopup() {
+    'use strict';
+
+    // ── DOM refs ──
+    const overlay       = document.getElementById('plan-popup-overlay');
+    const modal         = overlay ? overlay.querySelector('.plan-popup-modal') : null;
+    const closeBtn      = document.getElementById('plan-popup-close');
+    const openBtn       = document.getElementById('open-plan-popup');
+    const stepForm      = document.getElementById('plan-step-form');
+    const stepPayment   = document.getElementById('plan-step-payment');
+    const stepThanks    = document.getElementById('plan-step-thanks');
+    const submitBtn     = document.getElementById('plan-submit-btn');
+    const payBtn        = document.getElementById('plan-pay-btn');
+    const backBtn       = document.getElementById('plan-back-btn');
+    const closeThanks   = document.getElementById('plan-close-thanks');
+    const spotsCount    = document.getElementById('plan-spots-count');
+
+    if (!overlay || !modal) return;
+
+    // ── State ──
+    let clientData = {};
+    let selectedProgram = '';
+
+    // ── Simulate decreasing spots (marketing) ──
+    const SPOTS_KEY = 'plan_spots_remaining';
+    let spotsRemaining = parseInt(sessionStorage.getItem(SPOTS_KEY) || '27');
+    if (spotsCount) spotsCount.textContent = spotsRemaining;
+
+    function decreaseSpot() {
+        if (spotsRemaining > 1) {
+            spotsRemaining = Math.max(1, spotsRemaining - 1);
+            sessionStorage.setItem(SPOTS_KEY, spotsRemaining);
+            if (spotsCount) spotsCount.textContent = spotsRemaining;
+        }
+    }
+    // Decrease a spot every 90–180 seconds while page is open
+    setInterval(decreaseSpot, Math.random() * 90000 + 90000);
+
+    // ── Open / Close ──
+    function openPopup() {
+        showStep('form');
+        clearErrors();
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+    function closePopup() {
+        overlay.classList.remove('active');
+        overlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+    function showStep(step) {
+        if (stepForm)    stepForm.style.display    = step === 'form'    ? '' : 'none';
+        if (stepPayment) stepPayment.style.display = step === 'payment' ? '' : 'none';
+        if (stepThanks)  stepThanks.style.display  = step === 'thanks'  ? '' : 'none';
+    }
+
+    if (openBtn)   openBtn.addEventListener('click', openPopup);
+    if (closeBtn)  closeBtn.addEventListener('click', closePopup);
+    if (closeThanks) closeThanks.addEventListener('click', closePopup);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closePopup(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
+    if (backBtn) backBtn.addEventListener('click', () => showStep('form'));
+
+    // ── Error helpers ──
+    function showError(id, msg) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+    function clearErrors() {
+        ['plan-popup-error', 'plan-pay-error'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.textContent = ''; el.style.display = 'none'; }
+        });
+    }
+    function val(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+    }
+    function setBtnLoading(btn, loading, label) {
+        if (!btn) return;
+        btn.disabled = loading;
+        btn.innerHTML = loading
+            ? '<div class="plan-spinner"></div> Processing...'
+            : label;
+    }
+
+    // ── STEP 1 → validate → go to payment ──
+    if (submitBtn) {
+        submitBtn.addEventListener('click', () => {
+            clearErrors();
+            const firstName = val('plan-firstname');
+            const lastName  = val('plan-lastname');
+            const email     = val('plan-email');
+            const phone     = val('plan-phone');
+            const program   = val('plan-program');
+            const consent   = document.getElementById('plan-consent') && document.getElementById('plan-consent').checked;
+
+            if (!firstName || !lastName || !email || !program) {
+                showError('plan-popup-error', 'Please fill in all required fields.');
+                return;
+            }
+            if (!email.includes('@') || !email.includes('.')) {
+                showError('plan-popup-error', 'Please enter a valid email address.');
+                return;
+            }
+            if (!consent) {
+                showError('plan-popup-error', 'Please check the consent box to continue.');
+                return;
+            }
+
+            clientData = { firstName, lastName, email, phone, program, consent: 'Yes' };
+            selectedProgram = program;
+
+            // Update payment step labels
+            const payProgramName = document.getElementById('plan-pay-program-name');
+            if (payProgramName) payProgramName.textContent = program;
+
+            showStep('payment');
+        });
+    }
+
+    // ── STEP 2 → Pay Now ──
+    if (payBtn) {
+        payBtn.addEventListener('click', async () => {
+            clearErrors();
+            const method = document.querySelector('input[name="plan-payment"]:checked');
+            if (!method) {
+                showError('plan-pay-error', 'Please choose a payment method.');
+                return;
+            }
+
+            setBtnLoading(payBtn, true);
+
+            try {
+                const settings = (window.__allProducts || []).find(p => p.type === 'settings') || {};
+                const reservationPrice = settings.reservation_price || 10;
+
+                if (method.value === 'stripe') {
+                    await handleStripeReservation(reservationPrice, settings);
+                } else {
+                    await handlePaypalReservation(reservationPrice, settings);
+                }
+            } catch (err) {
+                showError('plan-pay-error', err.message || 'Payment failed. Please try again.');
+                setBtnLoading(payBtn, false, '<i class="fi fi-rr-lock"></i> Pay $10 — Reserve My Spot');
+            }
+        });
+    }
+
+    // ── Stripe ──
+    async function handleStripeReservation(price, settings) {
+        const stripePriceId = settings.reservation_stripe_price_id || '';
+        if (!stripePriceId) {
+            throw new Error('Stripe reservation price ID not configured yet.');
+        }
+
+        const res  = await fetch('/.netlify/functions/create-reservation-stripe-session', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                priceId:  stripePriceId,
+                amount:   price,
+                program:  selectedProgram,
+                customer: clientData,
+            }),
+        });
+        const data = await res.json();
+        if (!data.success || !data.sessionId) throw new Error(data.error || 'Stripe session failed.');
+
+        sessionStorage.setItem('plan_res_client',  JSON.stringify(clientData));
+        sessionStorage.setItem('plan_res_program', selectedProgram);
+
+        const stripeKey = window.STRIPE_PUBLIC_KEY || settings.stripe_public_key || '';
+        const stripe    = Stripe(stripeKey);
+        await stripe.redirectToCheckout({ sessionId: data.sessionId });
+    }
+
+    // ── PayPal ──
+    async function handlePaypalReservation(price, settings) {
+        const paypalPlanId = settings.reservation_paypal_plan_id || '';
+        if (!paypalPlanId) {
+            throw new Error('PayPal reservation plan ID not configured yet.');
+        }
+
+        const res  = await fetch('/.netlify/functions/create-reservation-paypal', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                planId:   paypalPlanId,
+                amount:   price,
+                program:  selectedProgram,
+                customer: clientData,
+            }),
+        });
+        const data = await res.json();
+        if (!data.success || !data.approvalUrl) throw new Error(data.error || 'PayPal failed.');
+
+        sessionStorage.setItem('plan_res_client',  JSON.stringify(clientData));
+        sessionStorage.setItem('plan_res_program', selectedProgram);
+
+        window.location.href = data.approvalUrl;
+    }
+
+    // ── Check return from payment redirect ──
+    async function checkReturnFromReservationPayment() {
+        const params    = new URLSearchParams(window.location.search);
+        const sessionId = params.get('res_session_id');
+        const subId     = params.get('res_subscription_id');
+        const ppToken   = params.get('res_token');
+
+        if (!sessionId && !subId && !ppToken) return;
+
+        const pendingClient  = JSON.parse(sessionStorage.getItem('plan_res_client')  || 'null');
+        const pendingProgram = sessionStorage.getItem('plan_res_program');
+
+        if (!pendingClient) return;
+
+        // Show popup directly in thanks step
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        showStep('thanks');
+
+        const thanksName = document.getElementById('plan-thanks-name');
+        const thanksBadge = document.getElementById('plan-thanks-program-text');
+        if (thanksName)  thanksName.textContent  = `Welcome, ${pendingClient.firstName}!`;
+        if (thanksBadge) thanksBadge.textContent = pendingProgram || '';
+
+        // Verify server-side
+        try {
+            const provider   = sessionId ? 'stripe' : 'paypal';
+            const paymentId  = sessionId || subId || ppToken;
+
+            const verifyRes  = await fetch('/.netlify/functions/verify-reservation-payment', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ provider, paymentId }),
+            });
+            const verifyData = await verifyRes.json();
+
+            if (verifyData.success) {
+                // Save to Google Sheet
+                await saveReservationToSheet({
+                    ...pendingClient,
+                    program: pendingProgram,
+                });
+            } else {
+                console.warn('[ReservationPopup] Payment verification failed:', verifyData.error);
+            }
+
+            // Clean session & URL
+            sessionStorage.removeItem('plan_res_client');
+            sessionStorage.removeItem('plan_res_program');
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, '', cleanUrl);
+
+        } catch (err) {
+            console.error('[ReservationPopup] Verification error:', err.message);
+        }
+    }
+
+    // ── Save to Sheet ──
+    async function saveReservationToSheet(payload) {
+        try {
+            await fetch('/.netlify/functions/save-plan-request', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({
+                    firstName: payload.firstName,
+                    lastName:  payload.lastName,
+                    email:     payload.email,
+                    phone:     payload.phone || '',
+                    program:   payload.program,
+                    consent:   payload.consent || 'Yes',
+                    type:      'reservation',
+                    amount:    10,
+                }),
+            });
+        } catch (e) {
+            console.warn('[ReservationPopup] saveReservationToSheet failed:', e.message);
+        }
+    }
+
+    checkReturnFromReservationPayment();
+
+})();
 
 
 // ══ SPOTLIGHT SLIDER — mobile only ══
@@ -6821,6 +7094,8 @@ document.addEventListener('DOMContentLoaded', function () {
     checkReturnFromPayment();
 
 })();
+
+
 
 
 

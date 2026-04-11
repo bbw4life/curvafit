@@ -2193,35 +2193,6 @@
 .col-qv-btn--cart:hover { background: var(--col-accent); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(201,96,58,0.35); }
 .col-qv-btn--view { background: var(--col-surface-2); color: var(--col-text); border: 1.5px solid var(--col-border); text-decoration: none; }
 .col-qv-btn--view:hover { border-color: var(--col-accent); color: var(--col-accent); }
-
-/* ── Mobile ── */
-/* ── Mobile ── */
-@media (max-width: 520px) {
-  .col-qv-overlay {
-    padding: 6px;
-    align-items: flex-end;
-  }
-  .col-qv-modal {
-    border-radius: 16px;
-    max-height: 82vh;
-  }
-  .col-qv-inner {
-    grid-template-columns: 1fr;
-  }
-  .col-qv-media {
-    border-radius: 16px 16px 0 0;
-    aspect-ratio: 4/3;
-  }
-  .col-qv-info {
-    padding: 16px 14px 20px;
-  }
-  .col-qv-title {
-    font-size: 18px;
-  }
-  .col-qv-price {
-    font-size: 22px;
-  }
-}
 /* ================================================================
    EXIT INTENT POPUP
    FIX #2 — icone FA pour le cadeau
