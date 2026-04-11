@@ -1124,9 +1124,9 @@
       "bundle_trio": "Add 3 Items & Checkout"
     },
     "programs": {
-      "beginner": {"price": 199,"label": "Start Soft Start"},
-      "intermediate": {"price": 259,"label": "Start Deeper Refiner"},
-      "maintenance": {"price": 379,"label": "Start Forever Fit"}
+      "beginner": {"price": 99,"label": "Start Soft Start"},
+      "intermediate": {"price": 159,"label": "Start Deeper Refiner"},
+      "maintenance": {"price": 479,"label": "Start Forever Fit"}
     },
     "promos": [
       {"code": "PAUL81","items": 10,"percent": 40},

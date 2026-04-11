@@ -12,10 +12,11 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="/animations.css">
+    <link rel="stylesheet" href="animations.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.5.1/uicons-solid-rounded/css/uicons-solid-rounded.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-straight/css/uicons-regular-straight.css">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+    <script src="/preloader-inline.js"></script>
 </head>
 <body>
 
@@ -41,7 +42,7 @@
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="index.html" class="active"><i class="fi fi-rr-home"></i> Home</a></li>
+                    <li><a href="/index.html"><i class="fi fi-rr-settings"></i> Home</a></li>
                     <li><a href="/method.html"><i class="fi fi-rr-settings"></i> Method</a></li>
                     <li><a href="programs.html" class="active"><i class="fi fi-rr-gym"></i> Programs</a></li>
                     <li><a href="nutrition.html"><i class="fi fi-rr-apple-whole"></i> Nutrition</a></li>
@@ -261,7 +262,7 @@
             <button id="open-plan-popup" class="plan-request-trigger-btn">
             <span class="plan-btn-icon">
             <i class="fi fi-rr-paper-plane"></i>
-            </span>
+            </span> 
             <span class="plan-btn-text">
             <strong>Request a Personalized Plan</strong>
             <small>A coach will contact you within 24 hours</small>
@@ -341,203 +342,358 @@
         </div>
         </div>
 
-        <!-- PROGRAM TIERS -->
-        <section id="program-tiers" class="program-tiers-section">
-            <div class="container">
-                <div class="section-header">
-                    <span class="section-label">The 3 Programs</span>
-                    <h2>Every Program. Every Detail.</h2>
-                    <p class="section-subtitle">Not marketing bullets. The exact content, structure, and expected results of each program — so you know exactly what you are getting.</p>
+        <!-- ══════════════════════════════════════════════════════
+     PROGRAM TIERS — with per-plan popup + payment + thanks
+     Add this section to your page as-is.
+     Requires: plan-popup.css  +  plan-popup.js
+══════════════════════════════════════════════════════ -->
+
+<!-- PROGRAM TIERS -->
+<section id="program-tiers" class="program-tiers-section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label">The 3 Programs</span>
+            <h2>Every Program. Every Detail.</h2>
+            <p class="section-subtitle">Not marketing bullets. The exact content, structure, and expected results of each program — so you know exactly what you are getting.</p>
+        </div>
+        <div class="tiers-grid">
+
+            <!-- BEGINNER -->
+            <div class="program-card" id="program-beginner">
+                <div class="prog-tier-label"><i class="fi fi-rr-seedling"></i> Beginner · Weeks 1–8</div>
+                <div class="prog-icon-wrap"><i class="fi fi-rr-seedling"></i></div>
+                <h3>Soft Start — Curve Slimmer</h3>
+                <p class="slogan">"Build the habits that make everything else possible."</p>
+                <div class="prog-meta">
+                    <span><i class="fi fi-rr-clock"></i> 8 Weeks</span>
+                    <span><i class="fi fi-rr-walking"></i> Low-Impact</span>
+                    <span><i class="fi fi-rr-home"></i> 100% At Home</span>
                 </div>
-                <div class="tiers-grid">
-
-                    <!-- BEGINNER -->
-                    <div class="program-card" id="program-beginner">
-                        <div class="prog-tier-label"><i class="fi fi-rr-seedling"></i> Beginner · Weeks 1–8</div>
-                        <div class="prog-icon-wrap"><i class="fi fi-rr-seedling"></i></div>
-                        <h3>Soft Start — Curve Slimmer</h3>
-                        <p class="slogan">"Build the habits that make everything else possible."</p>
-                        <div class="prog-meta">
-                            <span><i class="fi fi-rr-clock"></i> 8 Weeks</span>
-                            <span><i class="fi fi-rr-walking"></i> Low-Impact</span>
-                            <span><i class="fi fi-rr-home"></i> 100% At Home</span>
-                        </div>
-
-                        <div class="prog-forwho">
-                            <div class="prog-forwho-label">This program is for you if:</div>
-                            <ul>
-                                <li><i class="fi fi-rr-check"></i> You have never followed a structured fitness program before</li>
-                                <li><i class="fi fi-rr-check"></i> You have joint pain or discomfort that limits movement</li>
-                                <li><i class="fi fi-rr-check"></i> You want to start gently and build sustainable habits first</li>
-                                <li><i class="fi fi-rr-check"></i> You need to lose 10 kg or more</li>
-                            </ul>
-                        </div>
-
-                        <div class="prog-weekly">
-                            <div class="prog-weekly-label">What happens each week:</div>
-                            <div class="prog-week-item">
-                                <span class="prog-week-num">Wk 1–2</span>
-                                <span class="prog-week-desc">Nutrition only + 15-min daily walk. Eliminate liquid sugars. Set sleep schedule. No exercise pressure.</span>
-                            </div>
-                            <div class="prog-week-item">
-                                <span class="prog-week-num">Wk 3–4</span>
-                                <span class="prog-week-desc">Walk increases to 30 min. First floor exercises introduced (2×/week, 20 min). Protein focus begins.</span>
-                            </div>
-                            <div class="prog-week-item">
-                                <span class="prog-week-num">Wk 5–6</span>
-                                <span class="prog-week-desc">3× floor workouts per week. Plateau management protocol. Weekly progress log activated.</span>
-                            </div>
-                            <div class="prog-week-item">
-                                <span class="prog-week-num">Wk 7–8</span>
-                                <span class="prog-week-desc">Consolidation. Habits reviewed. Optional transition assessment to Intermediate program.</span>
-                            </div>
-                        </div>
-
-                        <ul>
-                            <li>8-week protein-first meal plan (3 meals/day)</li>
-                            <li>Floor workout video library (20–25 min sessions)</li>
-                            <li>Daily walking progression guide</li>
-                            <li>Weekly multi-metric progress tracker</li>
-                            <li>Community access (10,000+ members)</li>
-                            <li>Method Science PDF guide</li>
-                            <li>Sleep & cortisol management protocol</li>
-                        </ul>
-
-                        <div class="prog-results-badge">
-                            <i class="fi fi-rr-chart-line-up"></i>
-                            Expected: <strong>−2 to 4 kg/month</strong> with full consistency
-                        </div>
-
-                        <div class="prog-price">$99</div>
-                        <a href="#signup" class="cta button-3d prog-cta">Start Soft Start →</a>
-                    </div>
-
-                    <!-- INTERMEDIATE — Featured -->
-                    <div class="program-card program-card--featured" id="program-intermediate">
-                        <div class="badge-paul">Most Popular</div>
-                        <div class="prog-tier-label prog-tier-label--featured"><i class="fi fi-rr-flame"></i> Intermediate · Months 2–4</div>
-                        <div class="prog-icon-wrap prog-icon-wrap--featured"><i class="fi fi-sr-dumbbell-ray"></i></div>
-                        <h3>Deeper Curve Refiner</h3>
-                        <p class="slogan">"Accelerate fat loss while your body adapts to real strength."</p>
-                        <div class="prog-meta">
-                            <span><i class="fi fi-rr-clock"></i> 12 Weeks</span>
-                            <span><i class="fi fi-rr-dumbbell"></i> Moderate Intensity</span>
-                            <span><i class="fi fi-rr-home"></i> 100% At Home</span>
-                        </div>
-
-                        <div class="prog-forwho">
-                            <div class="prog-forwho-label">This program is for you if:</div>
-                            <ul>
-                                <li><i class="fi fi-rr-check"></i> You have completed 4+ weeks of Beginner or have a fitness base</li>
-                                <li><i class="fi fi-rr-check"></i> You can walk 30 min daily without joint pain</li>
-                                <li><i class="fi fi-rr-check"></i> You want to accelerate fat loss with more structure</li>
-                                <li><i class="fi fi-rr-check"></i> You are ready to add light resistance training</li>
-                            </ul>
-                        </div>
-
-                        <div class="prog-weekly">
-                            <div class="prog-weekly-label">What happens each week:</div>
-                            <div class="prog-week-item">
-                                <span class="prog-week-num">Wk 1–3</span>
-                                <span class="prog-week-desc">Deficit increases to 400–500 cal/day. Protein raised to 1.0g/kg. 4× weekly sessions introduced.</span>
-                            </div>
-                            <div class="prog-week-item">
-                                <span class="prog-week-num">Wk 4–6</span>
-                                <span class="prog-week-desc">Resistance bands added (optional). Sessions increase to 30–35 min. Cortisol tracking integrated.</span>
-                            </div>
-                            <div class="prog-week-item">
-                                <span class="prog-week-num">Wk 7–9</span>
-                                <span class="prog-week-desc">Progressive overload on floor exercises. Mid-program assessment. Sleep optimization deepened.</span>
-                            </div>
-                            <div class="prog-week-item">
-                                <span class="prog-week-num">Wk 10–12</span>
-                                <span class="prog-week-desc">Peak phase. Results consolidation. Transition to Maintenance assessment and calorie recalibration.</span>
-                            </div>
-                        </div>
-
-                        <ul>
-                            <li>12-week high-protein meal plan (optimized for 400–500 cal deficit)</li>
-                            <li>Full workout video library (25–35 min, 4×/week)</li>
-                            <li>Resistance band training guide (optional equipment)</li>
-                            <li>Weekly tracker + plateau resolution protocol</li>
-                            <li>Priority community access + weekly live challenges</li>
-                            <li>Cortisol management + sleep optimization deep-dive</li>
-                            <li>Method Science PDF guide (advanced edition)</li>
-                            <li>Mid-program coach review at week 6</li>
-                        </ul>
-
-                        <div class="prog-results-badge prog-results-badge--featured">
-                            <i class="fi fi-rr-chart-line-up"></i>
-                            Expected: <strong>−3 to 5 kg/month</strong> with full consistency
-                        </div>
-
-                        <div class="prog-price prog-price--featured">$149</div>
-                        <a href="#signup" class="cta button-3d prog-cta">Start Deeper Refiner →</a>
-                    </div>
-
-                    <!-- MAINTENANCE -->
-                    <div class="program-card" id="program-maintenance">
-                        <div class="prog-tier-label prog-tier-label--elite"><i class="fi fi-rr-star"></i> Maintenance · Month 5+</div>
-                        <div class="prog-icon-wrap"><i class="fi fi-rr-shield-check"></i></div>
-                        <h3>Forever Fit — Maintainer</h3>
-                        <p class="slogan">"Keep your results for life. No yo-yo. No regain. Just permanence."</p>
-                        <div class="prog-meta">
-                            <span><i class="fi fi-rr-infinity"></i> Ongoing</span>
-                            <span><i class="fi fi-rr-chart-line-up"></i> Stabilization</span>
-                            <span><i class="fi fi-rr-home"></i> 100% At Home</span>
-                        </div>
-
-                        <div class="prog-forwho">
-                            <div class="prog-forwho-label">This program is for you if:</div>
-                            <ul>
-                                <li><i class="fi fi-rr-check"></i> You have reached your goal weight or are within 2–3 kg of it</li>
-                                <li><i class="fi fi-rr-check"></i> You want to stop losing and start maintaining permanently</li>
-                                <li><i class="fi fi-rr-check"></i> You have yo-yo dieted before and want to break the cycle for good</li>
-                                <li><i class="fi fi-rr-check"></i> You want a flexible, sustainable long-term lifestyle structure</li>
-                            </ul>
-                        </div>
-
-                        <div class="prog-weekly">
-                            <div class="prog-weekly-label">How the transition works:</div>
-                            <div class="prog-week-item">
-                                <span class="prog-week-num">Wk 1–2</span>
-                                <span class="prog-week-desc">Calorie increase begins: +100 cal/week. Weight monitored closely. Deficit officially ends.</span>
-                            </div>
-                            <div class="prog-week-item">
-                                <span class="prog-week-num">Wk 3–4</span>
-                                <span class="prog-week-desc">+200 cal total from baseline. Meal structure becomes flexible within protein targets. Exercise reduces to 2–3×/week.</span>
-                            </div>
-                            <div class="prog-week-item">
-                                <span class="prog-week-num">Wk 5–6</span>
-                                <span class="prog-week-desc">New maintenance calorie level confirmed. Full lifestyle integration. No strict tracking required.</span>
-                            </div>
-                            <div class="prog-week-item">
-                                <span class="prog-week-num">Month 2+</span>
-                                <span class="prog-week-desc">Ongoing check-ins. Flexible nutrition. 2–3 sessions/week to preserve muscle and metabolic rate permanently.</span>
-                            </div>
-                        </div>
-
-                        <ul>
-                            <li>Anti-yo-yo calorie recalibration protocol (+100 cal/week over 4–6 weeks)</li>
-                            <li>Flexible maintenance meal strategy (no strict counting)</li>
-                            <li>2–3×/week muscle-preservation workout plan</li>
-                            <li>Long-term habit reinforcement framework</li>
-                            <li>Community access — maintenance group (women at same stage)</li>
-                            <li>Monthly check-in system to catch early regain signals</li>
-                        </ul>
-
-                        <div class="prog-results-badge">
-                            <i class="fi fi-rr-shield-check"></i>
-                            Goal: <strong>Zero regain</strong> — permanent stabilization
-                        </div>
-
-                        <div class="prog-price">$79</div>
-                        <a href="#signup" class="cta button-3d prog-cta">Start Forever Fit →</a>
-                    </div>
-
+                <div class="prog-forwho">
+                    <div class="prog-forwho-label">This program is for you if:</div>
+                    <ul>
+                        <li><i class="fi fi-rr-check"></i> You have never followed a structured fitness program before</li>
+                        <li><i class="fi fi-rr-check"></i> You have joint pain or discomfort that limits movement</li>
+                        <li><i class="fi fi-rr-check"></i> You want to start gently and build sustainable habits first</li>
+                        <li><i class="fi fi-rr-check"></i> You need to lose 10 kg or more</li>
+                    </ul>
                 </div>
+                <div class="prog-weekly">
+                    <div class="prog-weekly-label">What happens each week:</div>
+                    <div class="prog-week-item"><span class="prog-week-num">Wk 1–2</span><span class="prog-week-desc">Nutrition only + 15-min daily walk. Eliminate liquid sugars. Set sleep schedule. No exercise pressure.</span></div>
+                    <div class="prog-week-item"><span class="prog-week-num">Wk 3–4</span><span class="prog-week-desc">Walk increases to 30 min. First floor exercises introduced (2×/week, 20 min). Protein focus begins.</span></div>
+                    <div class="prog-week-item"><span class="prog-week-num">Wk 5–6</span><span class="prog-week-desc">3× floor workouts per week. Plateau management protocol. Weekly progress log activated.</span></div>
+                    <div class="prog-week-item"><span class="prog-week-num">Wk 7–8</span><span class="prog-week-desc">Consolidation. Habits reviewed. Optional transition assessment to Intermediate program.</span></div>
+                </div>
+                <ul>
+                    <li>8-week protein-first meal plan (3 meals/day)</li>
+                    <li>Floor workout video library (20–25 min sessions)</li>
+                    <li>Daily walking progression guide</li>
+                    <li>Weekly multi-metric progress tracker</li>
+                    <li>Community access (10,000+ members)</li>
+                    <li>Method Science PDF guide</li>
+                    <li>Sleep & cortisol management protocol</li>
+                </ul>
+                <div class="prog-results-badge">
+                    <i class="fi fi-rr-chart-line-up"></i>
+                    Expected: <strong>−2 to 4 kg/month</strong> with full consistency
+                </div>
+                <div class="prog-price" id="price-beginner">$99</div>
+                <!-- CTA opens plan popup -->
+                <button
+                    class="cta button-3d prog-cta open-plan-program-popup"
+                    data-plan="Beginner — Soft Start"
+                    data-plan-key="beginner">
+                    Start Soft Start →
+                </button>
             </div>
-        </section>
+
+            <!-- INTERMEDIATE — Featured -->
+            <div class="program-card program-card--featured" id="program-intermediate">
+                <div class="badge-paul">Most Popular</div>
+                <div class="prog-tier-label prog-tier-label--featured"><i class="fi fi-rr-flame"></i> Intermediate · Months 2–4</div>
+                <div class="prog-icon-wrap prog-icon-wrap--featured"><i class="fi fi-sr-dumbbell-ray"></i></div>
+                <h3>Deeper Curve Refiner</h3>
+                <p class="slogan">"Accelerate fat loss while your body adapts to real strength."</p>
+                <div class="prog-meta">
+                    <span><i class="fi fi-rr-clock"></i> 12 Weeks</span>
+                    <span><i class="fi fi-rr-dumbbell"></i> Moderate Intensity</span>
+                    <span><i class="fi fi-rr-home"></i> 100% At Home</span>
+                </div>
+                <div class="prog-forwho">
+                    <div class="prog-forwho-label">This program is for you if:</div>
+                    <ul>
+                        <li><i class="fi fi-rr-check"></i> You have completed 4+ weeks of Beginner or have a fitness base</li>
+                        <li><i class="fi fi-rr-check"></i> You can walk 30 min daily without joint pain</li>
+                        <li><i class="fi fi-rr-check"></i> You want to accelerate fat loss with more structure</li>
+                        <li><i class="fi fi-rr-check"></i> You are ready to add light resistance training</li>
+                    </ul>
+                </div>
+                <div class="prog-weekly">
+                    <div class="prog-weekly-label">What happens each week:</div>
+                    <div class="prog-week-item"><span class="prog-week-num">Wk 1–3</span><span class="prog-week-desc">Deficit increases to 400–500 cal/day. Protein raised to 1.0g/kg. 4× weekly sessions introduced.</span></div>
+                    <div class="prog-week-item"><span class="prog-week-num">Wk 4–6</span><span class="prog-week-desc">Resistance bands added (optional). Sessions increase to 30–35 min. Cortisol tracking integrated.</span></div>
+                    <div class="prog-week-item"><span class="prog-week-num">Wk 7–9</span><span class="prog-week-desc">Progressive overload on floor exercises. Mid-program assessment. Sleep optimization deepened.</span></div>
+                    <div class="prog-week-item"><span class="prog-week-num">Wk 10–12</span><span class="prog-week-desc">Peak phase. Results consolidation. Transition to Maintenance assessment and calorie recalibration.</span></div>
+                </div>
+                <ul>
+                    <li>12-week high-protein meal plan (optimized for 400–500 cal deficit)</li>
+                    <li>Full workout video library (25–35 min, 4×/week)</li>
+                    <li>Resistance band training guide (optional equipment)</li>
+                    <li>Weekly tracker + plateau resolution protocol</li>
+                    <li>Priority community access + weekly live challenges</li>
+                    <li>Cortisol management + sleep optimization deep-dive</li>
+                    <li>Method Science PDF guide (advanced edition)</li>
+                    <li>Mid-program coach review at week 6</li>
+                </ul>
+                <div class="prog-results-badge prog-results-badge--featured">
+                    <i class="fi fi-rr-chart-line-up"></i>
+                    Expected: <strong>−3 to 5 kg/month</strong> with full consistency
+                </div>
+                <div class="prog-price prog-price--featured" id="price-intermediate">$149</div>
+                <button
+                    class="cta button-3d prog-cta open-plan-program-popup"
+                    data-plan="Intermediate — Deeper Refiner"
+                    data-plan-key="intermediate">
+                    Start Deeper Refiner →
+                </button>
+            </div>
+
+            <!-- MAINTENANCE -->
+            <div class="program-card" id="program-maintenance">
+                <div class="prog-tier-label prog-tier-label--elite"><i class="fi fi-rr-star"></i> Maintenance · Month 5+</div>
+                <div class="prog-icon-wrap"><i class="fi fi-rr-shield-check"></i></div>
+                <h3>Forever Fit — Maintainer</h3>
+                <p class="slogan">"Keep your results for life. No yo-yo. No regain. Just permanence."</p>
+                <div class="prog-meta">
+                    <span><i class="fi fi-rr-infinity"></i> Ongoing</span>
+                    <span><i class="fi fi-rr-chart-line-up"></i> Stabilization</span>
+                    <span><i class="fi fi-rr-home"></i> 100% At Home</span>
+                </div>
+                <div class="prog-forwho">
+                    <div class="prog-forwho-label">This program is for you if:</div>
+                    <ul>
+                        <li><i class="fi fi-rr-check"></i> You have reached your goal weight or are within 2–3 kg of it</li>
+                        <li><i class="fi fi-rr-check"></i> You want to stop losing and start maintaining permanently</li>
+                        <li><i class="fi fi-rr-check"></i> You have yo-yo dieted before and want to break the cycle for good</li>
+                        <li><i class="fi fi-rr-check"></i> You want a flexible, sustainable long-term lifestyle structure</li>
+                    </ul>
+                </div>
+                <div class="prog-weekly">
+                    <div class="prog-weekly-label">How the transition works:</div>
+                    <div class="prog-week-item"><span class="prog-week-num">Wk 1–2</span><span class="prog-week-desc">Calorie increase begins: +100 cal/week. Weight monitored closely. Deficit officially ends.</span></div>
+                    <div class="prog-week-item"><span class="prog-week-num">Wk 3–4</span><span class="prog-week-desc">+200 cal total from baseline. Meal structure becomes flexible within protein targets. Exercise reduces to 2–3×/week.</span></div>
+                    <div class="prog-week-item"><span class="prog-week-num">Wk 5–6</span><span class="prog-week-desc">New maintenance calorie level confirmed. Full lifestyle integration. No strict tracking required.</span></div>
+                    <div class="prog-week-item"><span class="prog-week-num">Month 2+</span><span class="prog-week-desc">Ongoing check-ins. Flexible nutrition. 2–3 sessions/week to preserve muscle and metabolic rate permanently.</span></div>
+                </div>
+                <ul>
+                    <li>Anti-yo-yo calorie recalibration protocol (+100 cal/week over 4–6 weeks)</li>
+                    <li>Flexible maintenance meal strategy (no strict counting)</li>
+                    <li>2–3×/week muscle-preservation workout plan</li>
+                    <li>Long-term habit reinforcement framework</li>
+                    <li>Community access — maintenance group (women at same stage)</li>
+                    <li>Monthly check-in system to catch early regain signals</li>
+                </ul>
+                <div class="prog-results-badge">
+                    <i class="fi fi-rr-shield-check"></i>
+                    Goal: <strong>Zero regain</strong> — permanent stabilization
+                </div>
+                <div class="prog-price" id="price-maintenance">$79</div>
+                <button
+                    class="cta button-3d prog-cta open-plan-program-popup"
+                    data-plan="Maintenance — Forever Fit"
+                    data-plan-key="maintenance">
+                    Start Forever Fit →
+                </button>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════
+     PLAN PROGRAM POPUP  (unique, shared between all 3 plans)
+══════════════════════════════════════════════════════ -->
+<div id="plan-program-overlay" class="pp-overlay" aria-hidden="true">
+    <div class="pp-modal" role="dialog" aria-modal="true" aria-labelledby="pp-title">
+
+        <!-- Close -->
+        <button class="pp-close" id="pp-close" aria-label="Close">
+            <i class="fi fi-rr-cross"></i>
+        </button>
+
+        <!-- ── STEP 1 : INFO FORM ── -->
+        <div class="pp-step" id="pp-step-form">
+            <div class="pp-header">
+                <div class="pp-badge" id="pp-badge">
+                    <i class="fi fi-rr-seedling"></i>
+                    <span id="pp-badge-text">Beginner Program</span>
+                </div>
+                <h2 id="pp-title">Start Your Program</h2>
+                <p>Fill in your details — your subscription will be set up instantly.</p>
+            </div>
+
+            <div class="pp-body">
+                <!-- Plan locked display -->
+                <div class="pp-plan-locked">
+                    <i class="fi fi-rr-lock"></i>
+                    <div>
+                        <strong id="pp-plan-name-display">Beginner — Soft Start</strong>
+                        <span id="pp-plan-price-display">$99 / month</span>
+                    </div>
+                    <div class="pp-plan-check"><i class="fi fi-rr-check"></i></div>
+                </div>
+
+                <!-- Form -->
+                <div class="pp-form-row">
+                    <div class="pp-form-group">
+                        <label for="pp-firstname">First Name *</label>
+                        <input type="text" id="pp-firstname" placeholder="Maria" autocomplete="given-name">
+                    </div>
+                    <div class="pp-form-group">
+                        <label for="pp-lastname">Last Name *</label>
+                        <input type="text" id="pp-lastname" placeholder="Doe" autocomplete="family-name">
+                    </div>
+                    <div class="pp-form-group pp-form-group--full">
+                        <label for="pp-email">Email *</label>
+                        <input type="email" id="pp-email" placeholder="maria@email.com" autocomplete="email">
+                    </div>
+                    <div class="pp-form-group pp-form-group--full">
+                        <label for="pp-phone">Phone</label>
+                        <input type="tel" id="pp-phone" placeholder="+1 000 000 0000" autocomplete="tel">
+                    </div>
+                </div>
+
+                <!-- Consent -->
+                <div class="pp-checkbox-wrap">
+                    <input type="checkbox" id="pp-consent">
+                    <label for="pp-consent">
+                        <strong>I want to subscribe to this CurvaFit program.</strong>
+                        I agree to be charged the subscription amount and contacted by my coach within 24 hours.
+                    </label>
+                </div>
+
+                <div class="pp-error" id="pp-error" style="display:none;"></div>
+
+                <!-- Continue to payment -->
+                <button class="pp-submit-btn" id="pp-continue-btn">
+                    <i class="fi fi-rr-credit-card"></i>
+                    Continue to Payment
+                </button>
+
+                <p class="pp-privacy">
+                    <i class="fi fi-rr-shield-check"></i>
+                    Secure · No data shared · Cancel anytime
+                </p>
+            </div>
+        </div>
+
+        <!-- ── STEP 2 : PAYMENT METHOD ── -->
+        <div class="pp-step" id="pp-step-payment" style="display:none;">
+            <div class="pp-header pp-header--payment">
+                <i class="fi fi-rr-lock pp-lock-icon"></i>
+                <h2>Choose Payment Method</h2>
+                <p>Secure subscription — processed via your chosen provider.</p>
+            </div>
+
+            <div class="pp-body">
+                <!-- Plan summary reminder -->
+                <div class="pp-plan-locked pp-plan-locked--sm">
+                    <i class="fi fi-rr-check-circle"></i>
+                    <div>
+                        <strong id="pp-pay-plan-name">Beginner — Soft Start</strong>
+                        <span id="pp-pay-plan-price">$99 / month</span>
+                    </div>
+                </div>
+
+                <!-- Payment options -->
+                <div class="pp-pay-options">
+                    <label class="pp-pay-option" id="pp-opt-stripe">
+                        <input type="radio" name="pp-payment" value="stripe" checked>
+                        <div class="pp-pay-option-inner">
+                            <i class="fi fi-rr-credit-card"></i>
+                            <div>
+                                <strong>Credit / Debit Card</strong>
+                                <small>Powered by Stripe</small>
+                            </div>
+                        </div>
+                        <div class="pp-pay-check"></div>
+                    </label>
+
+                    <label class="pp-pay-option" id="pp-opt-paypal">
+                        <input type="radio" name="pp-payment" value="paypal">
+                        <div class="pp-pay-option-inner">
+                            <i class="fi fi-brands-paypal" style="color:#003087;font-size:1.3rem;"></i>
+                            <div>
+                                <strong>PayPal</strong>
+                                <small>Fast & secure checkout</small>
+                            </div>
+                        </div>
+                        <div class="pp-pay-check"></div>
+                    </label>
+                </div>
+
+                <div class="pp-error" id="pp-pay-error" style="display:none;"></div>
+
+                <button class="pp-submit-btn" id="pp-pay-btn">
+                    <i class="fi fi-rr-lock"></i>
+                    Pay Now
+                </button>
+
+                <button class="pp-back-btn" id="pp-back-btn">
+                    <i class="fi fi-rr-arrow-left"></i> Back
+                </button>
+
+                <p class="pp-privacy">
+                    <i class="fi fi-rr-shield-check"></i>
+                    256-bit SSL · PCI compliant · Cancel anytime
+                </p>
+            </div>
+        </div>
+
+        <!-- ── STEP 3 : THANK YOU ── -->
+        <div class="pp-step" id="pp-step-thanks" style="display:none;">
+            <div class="pp-thanks-wrap">
+                <div class="pp-thanks-ring">
+                    <div class="pp-thanks-icon">
+                        <i class="fi fi-rr-check"></i>
+                    </div>
+                </div>
+                <h2 class="pp-thanks-title">You're in! 🌸</h2>
+                <p class="pp-thanks-sub" id="pp-thanks-name">Welcome, Maria!</p>
+                <p class="pp-thanks-msg">
+                    Your subscription is confirmed. A CurvaFit coach will reach out within <strong>24 hours</strong>
+                    to kick off your personalized journey.
+                </p>
+                <div class="pp-thanks-plan-badge" id="pp-thanks-plan-badge">
+                    <i class="fi fi-rr-seedling"></i>
+                    <span id="pp-thanks-plan-text">Beginner — Soft Start</span>
+                </div>
+                <div class="pp-thanks-details">
+                    <div class="pp-thanks-detail-item">
+                        <i class="fi fi-rr-envelope"></i>
+                        <span>Check your inbox for confirmation</span>
+                    </div>
+                    <div class="pp-thanks-detail-item">
+                        <i class="fi fi-rr-users"></i>
+                        <span>Community access sent within 1 hour</span>
+                    </div>
+                    <div class="pp-thanks-detail-item">
+                        <i class="fi fi-rr-headset"></i>
+                        <span>Your coach contacts you within 24h</span>
+                    </div>
+                </div>
+                <button class="pp-close-thanks-btn" id="pp-close-thanks">
+                    <i class="fi fi-rr-heart"></i>
+                    Start My Journey
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- END PLAN PROGRAM POPUP -->
 
         <!-- COMPARISON TABLE -->
         <section id="comparison-table" class="comparison-table-section">
@@ -1021,7 +1177,7 @@
     </footer>
 
     <script src="script.js"></script>
-    <script src="/animations.js"></script>
+     <script src="/animations.js"></script>
     <script src="/search.js"></script>
 
     <!-- Quiz Logic -->

@@ -2555,7 +2555,7 @@ details[open] .chevron {
     overflow: hidden;
     position: fixed !important;
     top: 0 !important;
-    z-index: 1005 !important;
+    z-index: 1000 !important;
 }
 .paul-announcement-wrapper {
     max-width: 100%;

@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-
 /* ══════════════════════════════════════════
-   CURVAFIT PRELOADER v3
-   Fetch-first: HTML/CSS only injected if show:yes
+   CURVAFIT PRELOADER
 ══════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -24,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
   var startedAt    = Date.now();
   var pageReady    = false;
   var pl           = null;
-  var styleEl      = null;
   var barFill      = null;
   var barPct       = null;
   var morphEl      = null;
@@ -38,17 +35,21 @@ document.addEventListener('DOMContentLoaded', () => {
       var cfg      = settings.preloader || {};
 
       var show = (cfg.show || 'yes').trim().toLowerCase();
-      if (show !== 'yes') return;
 
-      injectCSS();
-      injectHTML();
+      pl = document.getElementById('cf-preloader');
+      if (!pl) return;
 
-      pl      = document.getElementById('cf-preloader');
+      if (show !== 'yes') {
+        // Masquage instantané — pas de transition, pas de délai
+        pl.style.cssText = 'display:none!important';
+        var st = document.getElementById('cf-pre-style');
+        if (st && st.parentNode) st.parentNode.removeChild(st);
+        return;
+      }
+
       barFill = document.getElementById('cf-pre-progress-fill');
       barPct  = document.getElementById('cf-pre-progress-pct');
       morphEl = document.getElementById('cf-pre-morph-text');
-
-      if (!pl) return;
 
       spawnParticles();
 
@@ -73,157 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
     pageReady = true;
   } else {
     window.addEventListener('load', function () { pageReady = true; });
-  }
-
-  function injectHTML() {
-    var target = document.body || document.documentElement;
-    target.insertAdjacentHTML('afterbegin',
-      '<div id="cf-preloader" aria-hidden="true" role="status" aria-label="Loading CurvaFit">' +
-        '<div class="cf-pre-particles" id="cf-pre-particles"></div>' +
-        '<div class="cf-pre-logo-wrap">' +
-          '<div class="cf-pre-logo-ring"></div>' +
-          '<img class="cf-pre-logo" src="/src-images/LogoCurvafit(1).png" alt="CurvaFit" draggable="false">' +
-        '</div>' +
-        '<div class="cf-pre-brand">' +
-          '<span class="cf-pre-brand-name">CurvaFit</span>' +
-          '<span class="cf-pre-tagline">Your Transformation Starts Here</span>' +
-        '</div>' +
-        '<div class="cf-pre-progress-wrap">' +
-          '<div class="cf-pre-progress-track">' +
-            '<div class="cf-pre-progress-fill" id="cf-pre-progress-fill"></div>' +
-          '</div>' +
-          '<span class="cf-pre-progress-pct" id="cf-pre-progress-pct">0%</span>' +
-        '</div>' +
-        '<div class="cf-pre-spinner-wrap">' +
-          '<div class="cf-pre-spinner"></div>' +
-          '<div class="cf-pre-spinner"></div>' +
-          '<div class="cf-pre-spinner"></div>' +
-        '</div>' +
-        '<div class="cf-pre-dots-wrap">' +
-          '<div class="cf-pre-dot"></div>' +
-          '<div class="cf-pre-dot"></div>' +
-          '<div class="cf-pre-dot"></div>' +
-          '<div class="cf-pre-dot"></div>' +
-          '<div class="cf-pre-dot"></div>' +
-        '</div>' +
-        '<div class="cf-pre-morph-wrap">' +
-          '<span class="cf-pre-morph-text cf-morph-active" id="cf-pre-morph-text">Loading</span>' +
-        '</div>' +
-      '</div>'
-    );
-  }
-
-  function injectCSS() {
-    var css =
-      '#cf-preloader{' +
-        'position:fixed;inset:0;z-index:999999;' +
-        'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;' +
-        'background:linear-gradient(160deg,#1e1a1c 0%,#2e1828 50%,#1a1020 100%);' +
-        'opacity:1;visibility:visible;pointer-events:all;overflow:hidden;' +
-        'transition:opacity .55s cubic-bezier(.4,0,.2,1),visibility .55s cubic-bezier(.4,0,.2,1);' +
-      '}' +
-      '#cf-preloader.cf-pre--hidden{opacity:0;visibility:hidden;pointer-events:none;}' +
-      '#cf-preloader::before{' +
-        'content:"";position:absolute;top:50%;left:50%;' +
-        'transform:translate(-50%,-50%);width:600px;height:600px;' +
-        'background:radial-gradient(ellipse at center,rgba(192,56,94,.18) 0%,rgba(123,63,110,.10) 40%,transparent 70%);' +
-        'pointer-events:none;animation:cfPreGlowPulse 3s ease-in-out infinite;' +
-      '}' +
-      '@keyframes cfPreGlowPulse{' +
-        '0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.7}' +
-        '50%{transform:translate(-50%,-50%) scale(1.2);opacity:1}' +
-      '}' +
-      '.cf-pre-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;}' +
-      '.cf-pre-particle{position:absolute;border-radius:50%;animation:cfPreParticleFloat linear infinite;opacity:0;}' +
-      '@keyframes cfPreParticleFloat{' +
-        '0%{transform:translateY(100vh) scale(0);opacity:0}' +
-        '10%{opacity:.7}90%{opacity:.3}' +
-        '100%{transform:translateY(-10vh) scale(1);opacity:0}' +
-      '}' +
-      '.cf-pre-logo-wrap{position:relative;display:flex;align-items:center;justify-content:center;}' +
-      '.cf-pre-logo-ring{' +
-        'position:absolute;width:110px;height:110px;border-radius:50%;' +
-        'border:1.5px solid rgba(192,56,94,.25);animation:cfPreRingRotate 6s linear infinite;' +
-      '}' +
-      '.cf-pre-logo-ring::before{' +
-        'content:"";position:absolute;top:-3px;left:50%;width:6px;height:6px;' +
-        'background:#c0385e;border-radius:50%;transform:translateX(-50%);' +
-        'box-shadow:0 0 10px 3px rgba(192,56,94,.6);' +
-      '}' +
-      '@keyframes cfPreRingRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}' +
-      '.cf-pre-logo{' +
-        'width:80px;height:80px;object-fit:contain;position:relative;z-index:1;' +
-        'filter:drop-shadow(0 4px 20px rgba(192,56,94,.45));' +
-        'animation:cfPreLogoBreath 2.5s ease-in-out infinite;' +
-      '}' +
-      '@keyframes cfPreLogoBreath{' +
-        '0%,100%{transform:scale(1);filter:drop-shadow(0 4px 20px rgba(192,56,94,.45))}' +
-        '50%{transform:scale(1.05);filter:drop-shadow(0 6px 28px rgba(192,56,94,.65))}' +
-      '}' +
-      '.cf-pre-brand{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;}' +
-      '.cf-pre-brand-name{' +
-        'font-family:"Cormorant Garamond",Georgia,serif;font-size:2.4rem;font-weight:700;' +
-        'letter-spacing:-.02em;line-height:1;' +
-        'background:linear-gradient(135deg,#fff 40%,rgba(232,188,106,.85) 100%);' +
-        '-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;' +
-        'opacity:0;transform:translateY(12px);' +
-        'animation:cfPreFadeUp .7s cubic-bezier(.34,1.56,.64,1) .25s forwards;' +
-      '}' +
-      '.cf-pre-tagline{' +
-        'font-family:"DM Sans",system-ui,sans-serif;font-size:.78rem;font-weight:500;' +
-        'letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.45);' +
-        'opacity:0;transform:translateY(8px);animation:cfPreFadeUp .6s ease .5s forwards;' +
-      '}' +
-      '@keyframes cfPreFadeUp{to{opacity:1;transform:translateY(0)}}' +
-      '.cf-pre-progress-wrap{display:none;flex-direction:column;align-items:center;gap:8px;width:260px;}' +
-      '#cf-preloader.style-progress-bar .cf-pre-progress-wrap{display:flex;}' +
-      '.cf-pre-progress-track{width:100%;height:3px;background:rgba(255,255,255,.08);border-radius:100px;overflow:hidden;}' +
-      '.cf-pre-progress-fill{' +
-        'height:100%;width:0%;' +
-        'background:linear-gradient(90deg,#c0385e,#e8bc6a,#c0385e);background-size:200% 100%;' +
-        'border-radius:100px;transition:width .3s ease;animation:cfPreProgressShimmer 2s linear infinite;' +
-      '}' +
-      '@keyframes cfPreProgressShimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}' +
-      '.cf-pre-progress-pct{font-family:"DM Sans",sans-serif;font-size:.72rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.1em;}' +
-      '.cf-pre-spinner-wrap{display:none;position:relative;width:56px;height:56px;}' +
-      '#cf-preloader.style-spinner-ring .cf-pre-spinner-wrap{display:flex;align-items:center;justify-content:center;}' +
-      '.cf-pre-spinner{position:absolute;inset:0;border-radius:50%;border:2.5px solid transparent;}' +
-      '.cf-pre-spinner:nth-child(1){border-top-color:#c0385e;animation:cfPreSpinCW 1s linear infinite;}' +
-      '.cf-pre-spinner:nth-child(2){inset:8px;border-right-color:#e8bc6a;animation:cfPreSpinCCW .75s linear infinite;}' +
-      '.cf-pre-spinner:nth-child(3){inset:16px;border-bottom-color:rgba(255,255,255,.5);animation:cfPreSpinCW .5s linear infinite;}' +
-      '@keyframes cfPreSpinCW{to{transform:rotate(360deg)}}' +
-      '@keyframes cfPreSpinCCW{to{transform:rotate(-360deg)}}' +
-      '.cf-pre-dots-wrap{display:none;align-items:flex-end;gap:6px;height:28px;}' +
-      '#cf-preloader.style-dots-wave .cf-pre-dots-wrap{display:flex;}' +
-      '.cf-pre-dot{width:8px;height:8px;border-radius:50%;animation:cfPreDotWave 1.4s ease-in-out infinite;}' +
-      '.cf-pre-dot:nth-child(1){background:#c0385e;animation-delay:0s}' +
-      '.cf-pre-dot:nth-child(2){background:#d4506e;animation-delay:.16s}' +
-      '.cf-pre-dot:nth-child(3){background:#e8bc6a;animation-delay:.32s}' +
-      '.cf-pre-dot:nth-child(4){background:#d4506e;animation-delay:.48s}' +
-      '.cf-pre-dot:nth-child(5){background:#c0385e;animation-delay:.64s}' +
-      '@keyframes cfPreDotWave{0%,80%,100%{transform:scaleY(.4);opacity:.4}40%{transform:scaleY(1.4);opacity:1}}' +
-      '.cf-pre-morph-wrap{display:none;position:relative;height:22px;overflow:hidden;min-width:200px;text-align:center;}' +
-      '#cf-preloader.style-morph-text .cf-pre-morph-wrap{display:block;}' +
-      '.cf-pre-morph-text{' +
-        'position:absolute;width:100%;' +
-        'font-family:"DM Sans",sans-serif;font-size:.78rem;font-weight:500;' +
-        'letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);' +
-        'transition:all .4s cubic-bezier(.4,0,.2,1);' +
-      '}' +
-      '.cf-pre-morph-text.cf-morph-enter{transform:translateY(20px);opacity:0;}' +
-      '.cf-pre-morph-text.cf-morph-active{transform:translateY(0);opacity:1;}' +
-      '.cf-pre-morph-text.cf-morph-exit{transform:translateY(-20px);opacity:0;}' +
-      '#cf-preloader.style-pulse-logo .cf-pre-logo{animation:cfPrePulseLogo 1.2s ease-in-out infinite;}' +
-      '@keyframes cfPrePulseLogo{' +
-        '0%,100%{transform:scale(1);filter:drop-shadow(0 0 12px rgba(192,56,94,.5))}' +
-        '50%{transform:scale(1.15);filter:drop-shadow(0 0 32px rgba(192,56,94,.9))}' +
-      '}' +
-      '#cf-preloader.style-pulse-logo .cf-pre-logo-ring{animation:cfPreRingPulse 1.2s ease-in-out infinite;}' +
-      '@keyframes cfPreRingPulse{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.25);opacity:.9}}';
-
-    styleEl = document.createElement('style');
-    styleEl.textContent = css;
-    (document.head || document.documentElement).appendChild(styleEl);
   }
 
   function spawnParticles() {
@@ -262,8 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
       barTimer = setInterval(function () {
         var step = currentPct < 70 ? 3 : currentPct < 90 ? 1 : 0.4;
         currentPct = Math.min(95, currentPct + step);
-        barFill.style.width  = currentPct + '%';
-        barPct.textContent   = Math.floor(currentPct) + '%';
+        barFill.style.width = currentPct + '%';
+        barPct.textContent  = Math.floor(currentPct) + '%';
       }, 80);
     }
 
@@ -311,7 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
       pl.classList.add('cf-pre--hidden');
       setTimeout(function () {
         if (pl && pl.parentNode) pl.parentNode.removeChild(pl);
-        if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+        var st = document.getElementById('cf-pre-style');
+        if (st && st.parentNode) st.parentNode.removeChild(st);
       }, 600);
     }, isProgress ? 350 : 0);
   }
@@ -6546,3 +6397,430 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
 })();
+
+
+/* ══════════════════════════════════════════════════════
+   PLAN PROGRAM POPUP  —  plan-popup.js.
+══════════════════════════════════════════════════════ */
+
+(function initPlanProgramPopup() {
+    'use strict';
+    const PLAN_CONFIG = {
+        beginner: {
+            label:    'Beginner — Soft Start',
+            badge:    'Beginner Program',
+            icon:     'fi fi-rr-seedling',
+            priceKey: 'program_price_beginner',        // key in settings JSON
+            priceFallback: '$99',
+            stripePriceId:  '',   // fill after creating in Stripe dashboard
+            paypalPlanId:   '',   // fill after creating in PayPal dashboard
+        },
+        intermediate: {
+            label:    'Intermediate — Deeper Refiner',
+            badge:    'Intermediate Program',
+            icon:     'fi fi-sr-dumbbell-ray',
+            priceKey: 'program_price_intermediate',
+            priceFallback: '$149',
+            stripePriceId:  '',
+            paypalPlanId:   '',
+        },
+        maintenance: {
+            label:    'Maintenance — Forever Fit',
+            badge:    'Maintenance Program',
+            icon:     'fi fi-rr-shield-check',
+            priceKey: 'program_price_maintenance',
+            priceFallback: '$79',
+            stripePriceId:  '',
+            paypalPlanId:   '',
+        },
+    };
+
+    /* cached settings */
+    let _settings = null;
+
+    async function getSettings() {
+        if (_settings) return _settings;
+        try {
+            const r = await fetch('/products.data.json');
+            const data = await r.json();
+            _settings = (Array.isArray(data) ? data : []).find(p => p.type === 'settings') || {};
+        } catch (e) {
+            _settings = {};
+        }
+        return _settings;
+    }
+
+    function getPriceFromSettings(settings, key, fallback) {
+        if (settings[key]) return settings[key];
+        if (settings.programs && settings.programs[key.replace('program_price_', '')] && settings.programs[key.replace('program_price_', '')].price) {
+            return settings.programs[key.replace('program_price_', '')].price;
+        }
+        return fallback;
+    }
+
+    /* ── DOM refs ── */
+    const overlay       = document.getElementById('plan-program-overlay');
+    const modal         = overlay ? overlay.querySelector('.pp-modal') : null;
+    const closeBtn      = document.getElementById('pp-close');
+    const stepForm      = document.getElementById('pp-step-form');
+    const stepPayment   = document.getElementById('pp-step-payment');
+    const stepThanks    = document.getElementById('pp-step-thanks');
+    const continueBtn   = document.getElementById('pp-continue-btn');
+    const payBtn        = document.getElementById('pp-pay-btn');
+    const backBtn       = document.getElementById('pp-back-btn');
+    const closeThanks   = document.getElementById('pp-close-thanks');
+
+    if (!overlay || !modal) return;
+
+    /* ── State ── */
+    let currentPlanKey  = '';
+    let currentPlanData = null;
+    let clientData      = {};
+
+    /* ──────────────────────────────────────────────────
+       OPEN POPUP
+    ────────────────────────────────────────────────── */
+    async function openPopup(planKey) {
+        currentPlanKey  = planKey;
+        currentPlanData = PLAN_CONFIG[planKey];
+        if (!currentPlanData) return;
+
+        const settings  = await getSettings();
+        const price     = getPriceFromSettings(settings, currentPlanData.priceKey, currentPlanData.priceFallback);
+        const priceLabel = price.toString().startsWith('$') ? price + ' / month' : '$' + price + ' / month';
+
+        // Update badge & labels
+        setText('pp-badge-text',          currentPlanData.badge);
+        setText('pp-plan-name-display',   currentPlanData.label);
+        setText('pp-plan-price-display',  priceLabel);
+        setText('pp-pay-plan-name',       currentPlanData.label);
+        setText('pp-pay-plan-price',      priceLabel);
+        setText('pp-thanks-plan-text',    currentPlanData.label);
+
+        // Update badge icon
+        const badgeIcon = overlay.querySelector('.pp-badge > i');
+        if (badgeIcon) { badgeIcon.className = currentPlanData.icon; }
+
+        // Reset to step 1
+        showStep('form');
+        clearErrors();
+        clearFields();
+
+        // Show
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePopup() {
+        overlay.classList.remove('active');
+        overlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    /* ──────────────────────────────────────────────────
+       STEP NAVIGATION
+    ────────────────────────────────────────────────── */
+    function showStep(step) {
+        stepForm.style.display    = step === 'form'    ? '' : 'none';
+        stepPayment.style.display = step === 'payment' ? '' : 'none';
+        stepThanks.style.display  = step === 'thanks'  ? '' : 'none';
+    }
+
+    /* ──────────────────────────────────────────────────
+       STEP 1 → validate form → go to payment
+    ────────────────────────────────────────────────── */
+    continueBtn.addEventListener('click', () => {
+        clearErrors();
+
+        const firstName = val('pp-firstname');
+        const lastName  = val('pp-lastname');
+        const email     = val('pp-email');
+        const phone     = val('pp-phone');
+        const consent   = document.getElementById('pp-consent').checked;
+
+        if (!firstName || !lastName || !email) {
+            showError('pp-error', 'Please fill in all required fields.');
+            return;
+        }
+        if (!email.includes('@') || !email.includes('.')) {
+            showError('pp-error', 'Please enter a valid email address.');
+            return;
+        }
+        if (!consent) {
+            showError('pp-error', 'Please check the consent box to continue.');
+            return;
+        }
+
+        // Save for later
+        clientData = { firstName, lastName, email, phone, consent: 'Yes' };
+
+        showStep('payment');
+    });
+
+    /* ──────────────────────────────────────────────────
+       BACK BUTTON
+    ────────────────────────────────────────────────── */
+    backBtn.addEventListener('click', () => showStep('form'));
+
+    /* ──────────────────────────────────────────────────
+       STEP 2 → Pay Now
+    ────────────────────────────────────────────────── */
+    payBtn.addEventListener('click', async () => {
+        clearErrors();
+
+        const method = document.querySelector('input[name="pp-payment"]:checked')?.value;
+        if (!method) {
+            showError('pp-pay-error', 'Please choose a payment method.');
+            return;
+        }
+
+        const settings = await getSettings();
+
+        // Get subscription IDs (from settings or PLAN_CONFIG)
+        const progSettings  = settings.programs?.[currentPlanKey] || {};
+        const stripePriceId = progSettings.stripe_price_id || currentPlanData.stripePriceId;
+        const paypalPlanId  = progSettings.paypal_plan_id  || currentPlanData.paypalPlanId;
+
+        setBtnLoading(payBtn, true);
+
+        try {
+            if (method === 'stripe') {
+                await handleStripe(stripePriceId, settings);
+            } else {
+                await handlePayPal(paypalPlanId, settings);
+            }
+        } catch (err) {
+            showError('pp-pay-error', err.message || 'Payment failed. Please try again.');
+            setBtnLoading(payBtn, false);
+        }
+    });
+
+    /* ──────────────────────────────────────────────────
+       STRIPE — redirect to Stripe Checkout (subscription)
+    ────────────────────────────────────────────────── */
+    async function handleStripe(priceId, settings) {
+        if (!priceId) {
+            // No subscription ID yet → alert developer
+            throw new Error('Stripe subscription price ID not configured yet. Please set it in your dashboard.');
+        }
+
+        const res  = await fetch('/.netlify/functions/create-plan-stripe-session', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                priceId,
+                planKey:   currentPlanKey,
+                planLabel: currentPlanData.label,
+                customer:  clientData,
+            }),
+        });
+        const data = await res.json();
+        if (!data.success || !data.sessionId) {
+            throw new Error(data.error || 'Stripe session failed.');
+        }
+
+        // Save pending info in sessionStorage so thankyou step can pick it up
+        sessionStorage.setItem('pp_pending_client',   JSON.stringify(clientData));
+        sessionStorage.setItem('pp_pending_plan_key', currentPlanKey);
+        sessionStorage.setItem('pp_pending_plan',     currentPlanData.label);
+
+        const STRIPE_PUBLIC_KEY = window.STRIPE_PUBLIC_KEY || settings.stripe_public_key || '';
+        const stripe = Stripe(STRIPE_PUBLIC_KEY);
+        await stripe.redirectToCheckout({ sessionId: data.sessionId });
+        // After redirect back, thankyou.html handles the rest.
+        // But we also handle inline below for PayPal which stays in popup.
+    }
+
+    /* ──────────────────────────────────────────────────
+       PAYPAL — redirect to PayPal subscription approval
+    ────────────────────────────────────────────────── */
+    async function handlePayPal(planId, settings) {
+        if (!planId) {
+            throw new Error('PayPal plan ID not configured yet. Please set it in your dashboard.');
+        }
+
+        const res  = await fetch('/.netlify/functions/create-plan-paypal-subscription', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                planId,
+                planKey:   currentPlanKey,
+                planLabel: currentPlanData.label,
+                customer:  clientData,
+            }),
+        });
+        const data = await res.json();
+        if (!data.success || !data.approvalUrl) {
+            throw new Error(data.error || 'PayPal subscription failed.');
+        }
+
+        sessionStorage.setItem('pp_pending_client',   JSON.stringify(clientData));
+        sessionStorage.setItem('pp_pending_plan_key', currentPlanKey);
+        sessionStorage.setItem('pp_pending_plan',     currentPlanData.label);
+
+        window.location.href = data.approvalUrl;
+    }
+
+    /* ──────────────────────────────────────────────────
+       AFTER REDIRECT BACK — check URL params
+       Called on page load if returning from Stripe/PayPal
+    ────────────────────────────────────────────────── */
+    async function checkReturnFromPayment() {
+        const params      = new URLSearchParams(window.location.search);
+        const sessionId   = params.get('pp_session_id');   // Stripe subscription
+        const subId       = params.get('subscription_id'); // PayPal subscription
+        const ppToken     = params.get('token');            // PayPal approval token
+
+        if (!sessionId && !subId && !ppToken) return;
+
+        const pendingClient  = JSON.parse(sessionStorage.getItem('pp_pending_client')  || 'null');
+        const pendingPlanKey = sessionStorage.getItem('pp_pending_plan_key');
+        const pendingPlan    = sessionStorage.getItem('pp_pending_plan');
+
+        if (!pendingClient || !pendingPlanKey) return;
+
+        // Re-open the popup in thanks step immediately (good UX)
+        currentPlanKey  = pendingPlanKey;
+        currentPlanData = PLAN_CONFIG[pendingPlanKey];
+
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        showStep('thanks');
+        setText('pp-thanks-name',      `Welcome, ${pendingClient.firstName}!`);
+        setText('pp-thanks-plan-text', pendingPlan || '');
+
+        // Verify payment server-side THEN save to sheet
+        try {
+            const provider = sessionId ? 'stripe' : 'paypal';
+            const paymentId = sessionId || subId || ppToken;
+
+            const verifyRes  = await fetch('/.netlify/functions/verify-plan-payment', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ provider, paymentId, planKey: pendingPlanKey }),
+            });
+            const verifyData = await verifyRes.json();
+
+            if (!verifyData.success) {
+                // Payment failed — hide thanks, show error in payment step
+                showStep('payment');
+                showError('pp-pay-error', verifyData.error || 'Payment verification failed. Please contact support.');
+                return;
+            }
+
+            // Payment verified → save to sheet
+            await savePlanRequest({
+                ...pendingClient,
+                program: pendingPlan,
+                planKey: pendingPlanKey,
+            });
+
+            // Clear session
+            sessionStorage.removeItem('pp_pending_client');
+            sessionStorage.removeItem('pp_pending_plan_key');
+            sessionStorage.removeItem('pp_pending_plan');
+
+            // Clean URL
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, '', cleanUrl);
+
+        } catch (err) {
+            console.error('[PlanPopup] Verification error:', err.message);
+        }
+    }
+
+    /* ──────────────────────────────────────────────────
+       SAVE TO SHEET via save-plan-request.js
+    ────────────────────────────────────────────────── */
+    async function savePlanRequest(payload) {
+        try {
+            await fetch('/.netlify/functions/save-plan-request', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({
+                    firstName: payload.firstName,
+                    lastName:  payload.lastName,
+                    email:     payload.email,
+                    phone:     payload.phone || '',
+                    program:   payload.program,
+                    consent:   payload.consent || 'Yes',
+                }),
+            });
+        } catch (e) {
+            console.warn('[PlanPopup] savePlanRequest failed:', e.message);
+        }
+    }
+
+    /* ──────────────────────────────────────────────────
+       CLOSE ACTIONS
+    ────────────────────────────────────────────────── */
+    closeBtn.addEventListener('click', closePopup);
+    closeThanks.addEventListener('click', closePopup);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closePopup(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
+
+    /* ──────────────────────────────────────────────────
+       BIND OPEN BUTTONS on program cards
+    ────────────────────────────────────────────────── */
+    document.querySelectorAll('.open-plan-program-popup').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const planKey = btn.dataset.planKey;
+            if (planKey) openPopup(planKey);
+        });
+    });
+
+    /* ──────────────────────────────────────────────────
+       HELPERS
+    ────────────────────────────────────────────────── */
+    function val(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+    }
+    function setText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+    }
+    function showError(id, msg) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+    function clearErrors() {
+        ['pp-error', 'pp-pay-error'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.textContent = ''; el.style.display = 'none'; }
+        });
+    }
+    function clearFields() {
+        ['pp-firstname','pp-lastname','pp-email','pp-phone'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        const cb = document.getElementById('pp-consent');
+        if (cb) cb.checked = false;
+        // Reset payment radio to stripe
+        const stripeRadio = document.querySelector('input[name="pp-payment"][value="stripe"]');
+        if (stripeRadio) stripeRadio.checked = true;
+    }
+    function setBtnLoading(btn, loading) {
+        if (loading) {
+            btn.disabled = true;
+            btn.innerHTML = '<div class="pp-spinner"></div> Processing...';
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fi fi-rr-lock"></i> Pay Now';
+        }
+    }
+
+    /* ──────────────────────────────────────────────────
+       ON PAGE LOAD — check if returning from payment
+    ────────────────────────────────────────────────── */
+    checkReturnFromPayment();
+
+})();
+
+
+

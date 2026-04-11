@@ -575,7 +575,7 @@
   background: var(--col-surface);
   display: flex;
   flex-direction: column;
-  z-index: 1005;
+  z-index: 1009;
   transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 4px 0 32px rgba(26,23,20,0.12);
   overflow: hidden;
