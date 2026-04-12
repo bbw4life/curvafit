@@ -2140,49 +2140,46 @@ initAnnouncementBar();
 (function initPlanReservationPopup() {
     'use strict';
 
-    // ── DOM refs ──
-    const overlay       = document.getElementById('plan-popup-overlay');
-    const modal         = overlay ? overlay.querySelector('.plan-popup-modal') : null;
-    const closeBtn      = document.getElementById('plan-popup-close');
-    const openBtn       = document.getElementById('open-plan-popup');
-    const stepForm      = document.getElementById('plan-step-form');
-    const stepPayment   = document.getElementById('plan-step-payment');
-    const stepThanks    = document.getElementById('plan-step-thanks');
-    const submitBtn     = document.getElementById('plan-submit-btn');
-    const payBtn        = document.getElementById('plan-pay-btn');
-    const backBtn       = document.getElementById('plan-back-btn');
-    const closeThanks   = document.getElementById('plan-close-thanks');
-    const spotsCount    = document.getElementById('plan-spots-count');
+    const overlay     = document.getElementById('plan-popup-overlay');
+    const modal       = overlay ? overlay.querySelector('.plan-popup-modal') : null;
+    const closeBtn    = document.getElementById('plan-popup-close');
+    const openBtn     = document.getElementById('open-plan-popup');
+    const stepForm    = document.getElementById('plan-step-form');
+    const stepPayment = document.getElementById('plan-step-payment');
+    const stepThanks  = document.getElementById('plan-step-thanks');
+    const submitBtn   = document.getElementById('plan-submit-btn');
+    const payBtn      = document.getElementById('plan-pay-btn');
+    const backBtn     = document.getElementById('plan-back-btn');
+    const closeThanks = document.getElementById('plan-close-thanks');
+    const spotsCount  = document.getElementById('plan-spots-count');
 
     if (!overlay || !modal) return;
 
-    // ── State ──
-    let clientData = {};
+    let clientData      = {};
     let selectedProgram = '';
-    let reservationPrice = 10; // fallback par défaut
+    let reservationPrice = 10;
 
-    // ── Inject price from settings into all .plan-reservation-price-label spans ──
+    // ── Inject price labels ──
     function injectPriceLabels(price) {
-        const label = '$' + price;
         document.querySelectorAll('.plan-reservation-price-label').forEach(el => {
-            el.textContent = label;
+            el.textContent = '$' + price;
         });
     }
 
-    // ── Load price from settings as soon as possible ──
+    // ── Load price from settings ──
     function loadReservationPrice() {
-        const settings = (window.__allProducts || []).find(p => p.type === 'settings') || {};
-        if (settings.reservation_price !== undefined) {
-            reservationPrice = parseFloat(settings.reservation_price) || 10;
+        const s = (window.__allProducts || []).find(p => p.type === 'settings') || {};
+        if (s.reservation_price !== undefined) {
+            reservationPrice = parseFloat(s.reservation_price) || 10;
             injectPriceLabels(reservationPrice);
         } else {
             let tries = 0;
             const wait = setInterval(() => {
                 tries++;
-                const s = (window.__allProducts || []).find(p => p.type === 'settings') || {};
-                if (s.reservation_price !== undefined) {
+                const s2 = (window.__allProducts || []).find(p => p.type === 'settings') || {};
+                if (s2.reservation_price !== undefined) {
                     clearInterval(wait);
-                    reservationPrice = parseFloat(s.reservation_price) || 10;
+                    reservationPrice = parseFloat(s2.reservation_price) || 10;
                     injectPriceLabels(reservationPrice);
                 } else if (tries > 60) {
                     clearInterval(wait);
@@ -2191,10 +2188,9 @@ initAnnouncementBar();
             }, 100);
         }
     }
-
     loadReservationPrice();
 
-    // ── Simulate decreasing spots (marketing) ──
+    // ── Spots ──
     const SPOTS_KEY = 'plan_spots_remaining';
     let spotsRemaining = parseInt(sessionStorage.getItem(SPOTS_KEY) || '27');
     if (spotsCount) spotsCount.textContent = spotsRemaining;
@@ -2227,6 +2223,18 @@ initAnnouncementBar();
         if (stepPayment) stepPayment.style.display = step === 'payment' ? '' : 'none';
         if (stepThanks)  stepThanks.style.display  = step === 'thanks'  ? '' : 'none';
     }
+    function showThanksStep(firstName, program) {
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        showStep('thanks');
+        injectPriceLabels(reservationPrice);
+        const thanksName  = document.getElementById('plan-thanks-name');
+        const thanksBadge = document.getElementById('plan-thanks-program-text');
+        if (thanksName)  thanksName.textContent  = 'Welcome, ' + firstName + '!';
+        if (thanksBadge) thanksBadge.textContent = program || '';
+        window.history.replaceState({}, '', window.location.pathname);
+    }
 
     if (openBtn)     openBtn.addEventListener('click', openPopup);
     if (closeBtn)    closeBtn.addEventListener('click', closePopup);
@@ -2235,7 +2243,7 @@ initAnnouncementBar();
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
     if (backBtn) backBtn.addEventListener('click', () => showStep('form'));
 
-    // ── Error helpers ──
+    // ── Helpers ──
     function showError(id, msg) {
         const el = document.getElementById(id);
         if (!el) return;
@@ -2252,15 +2260,15 @@ initAnnouncementBar();
         const el = document.getElementById(id);
         return el ? el.value.trim() : '';
     }
-    function setBtnLoading(btn, loading, label) {
+    function setBtnLoading(btn, loading) {
         if (!btn) return;
         btn.disabled = loading;
         btn.innerHTML = loading
             ? '<div class="plan-spinner"></div> Processing...'
-            : label;
+            : '<i class="fi fi-rr-lock"></i> Pay $' + reservationPrice + ' — Reserve My Spot';
     }
 
-    // ── STEP 1 → validate → go to payment ──
+    // ── STEP 1 ──
     if (submitBtn) {
         submitBtn.addEventListener('click', () => {
             clearErrors();
@@ -2284,7 +2292,7 @@ initAnnouncementBar();
                 return;
             }
 
-            clientData = { firstName, lastName, email, phone, program, consent: 'Yes' };
+            clientData      = { firstName, lastName, email, phone, program, consent: 'Yes' };
             selectedProgram = program;
 
             const payProgramName = document.getElementById('plan-pay-program-name');
@@ -2294,7 +2302,7 @@ initAnnouncementBar();
         });
     }
 
-    // ── STEP 2 → Pay Now ──
+    // ── STEP 2 → Pay ──
     if (payBtn) {
         payBtn.addEventListener('click', async () => {
             clearErrors();
@@ -2303,30 +2311,28 @@ initAnnouncementBar();
                 showError('plan-pay-error', 'Please choose a payment method.');
                 return;
             }
-
-            setBtnLoading(payBtn, true, '');
-
+            setBtnLoading(payBtn, true);
             try {
                 if (method.value === 'stripe') {
-                    await handleStripeReservation(reservationPrice);
+                    await handleStripe();
                 } else {
-                    await handlePaypalReservation(reservationPrice);
+                    await handlePaypal();
                 }
             } catch (err) {
                 showError('plan-pay-error', err.message || 'Payment failed. Please try again.');
-                setBtnLoading(payBtn, false, '<i class="fi fi-rr-lock"></i> Pay $' + reservationPrice + ' — Reserve My Spot');
+                setBtnLoading(payBtn, false);
             }
         });
     }
 
-    // ── Stripe ──
-    // La Netlify function lit RESERVATION_STRIPE_PRICE_ID depuis les variables d'environnement
-    async function handleStripeReservation(price) {
-        const res = await fetch('/.netlify/functions/create-reservation-stripe-session', {
+    // ── Stripe : crée la session et redirige ──
+    async function handleStripe() {
+        const res  = await fetch('/.netlify/functions/create-reservation-stripe-session', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify({
-                amount:   price,
+                action:   'create',
+                amount:   reservationPrice,
                 program:  selectedProgram,
                 customer: clientData,
             }),
@@ -2343,14 +2349,14 @@ initAnnouncementBar();
         await stripe.redirectToCheckout({ sessionId: data.sessionId });
     }
 
-    // ── PayPal ──
-    // La Netlify function lit RESERVATION_PAYPAL_PLAN_ID depuis les variables d'environnement
-    async function handlePaypalReservation(price) {
-        const res = await fetch('/.netlify/functions/create-reservation-paypal', {
+    // ── PayPal : crée l'ordre et redirige ──
+    async function handlePaypal() {
+        const res  = await fetch('/.netlify/functions/create-reservation-paypal', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify({
-                amount:   price,
+                action:   'create',
+                amount:   reservationPrice,
                 program:  selectedProgram,
                 customer: clientData,
             }),
@@ -2364,84 +2370,92 @@ initAnnouncementBar();
         window.location.href = data.approvalUrl;
     }
 
-    // ── Check return from payment redirect ──
-    async function checkReturnFromReservationPayment() {
+    // ══════════════════════════════════════════
+    //  RETOUR STRIPE — res_session_id dans l'URL
+    // ══════════════════════════════════════════
+    async function checkReturnFromStripe() {
         const params    = new URLSearchParams(window.location.search);
         const sessionId = params.get('res_session_id');
-        const subId     = params.get('res_subscription_id');
-        const ppToken   = params.get('res_token');
-
-        if (!sessionId && !subId && !ppToken) return;
+        if (!sessionId) return false;
 
         const pendingClient  = JSON.parse(sessionStorage.getItem('plan_res_client')  || 'null');
-        const pendingProgram = sessionStorage.getItem('plan_res_program');
+        const pendingProgram = sessionStorage.getItem('plan_res_program') || '';
 
-        if (!pendingClient) return;
+        // Afficher popup remerciements immédiatement
+        const firstName = pendingClient ? pendingClient.firstName : '';
+        showThanksStep(firstName, pendingProgram);
 
-        overlay.classList.add('active');
-        overlay.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-        showStep('thanks');
-
-        injectPriceLabels(reservationPrice);
-
-        const thanksName  = document.getElementById('plan-thanks-name');
-        const thanksBadge = document.getElementById('plan-thanks-program-text');
-        if (thanksName)  thanksName.textContent  = `Welcome, ${pendingClient.firstName}!`;
-        if (thanksBadge) thanksBadge.textContent = pendingProgram || '';
-
+        // Vérifier paiement + sauvegarder dans le sheet (dans la même function)
         try {
-            const provider  = sessionId ? 'stripe' : 'paypal';
-            const paymentId = sessionId || subId || ppToken;
-
-            const verifyRes  = await fetch('/.netlify/functions/verify-reservation-payment', {
+            const res  = await fetch('/.netlify/functions/create-reservation-stripe-session', {
                 method:  'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify({ provider, paymentId }),
+                body:    JSON.stringify({ action: 'verify', sessionId }),
             });
-            const verifyData = await verifyRes.json();
-
-            if (verifyData.success) {
-                await saveReservationToSheet({
-                    ...pendingClient,
-                    program: pendingProgram,
-                });
-            } else {
-                console.warn('[ReservationPopup] Payment verification failed:', verifyData.error);
+            const data = await res.json();
+            if (!data.success) {
+                console.warn('[ReservationPopup] Stripe verify:', data.error);
             }
-
-            sessionStorage.removeItem('plan_res_client');
-            sessionStorage.removeItem('plan_res_program');
-            window.history.replaceState({}, '', window.location.pathname);
-
         } catch (err) {
-            console.error('[ReservationPopup] Verification error:', err.message);
+            console.error('[ReservationPopup] Stripe verify error:', err.message);
         }
+
+        sessionStorage.removeItem('plan_res_client');
+        sessionStorage.removeItem('plan_res_program');
+        return true;
     }
 
-    // ── Save to Sheet ──
-    async function saveReservationToSheet(payload) {
+    // ══════════════════════════════════════════
+    //  RETOUR PAYPAL — res_paypal=1&token=XXX dans l'URL
+    //  PayPal ajoute automatiquement ?token=ORDERID&PayerID=XXXX
+    // ══════════════════════════════════════════
+    async function checkReturnFromPaypal() {
+        const params    = new URLSearchParams(window.location.search);
+        const resPaypal = params.get('res_paypal');
+        const orderID   = params.get('token'); // PayPal passe l'orderID comme "token"
+
+        if (!resPaypal || !orderID) return false;
+
+        const pendingClient  = JSON.parse(sessionStorage.getItem('plan_res_client')  || 'null');
+        const pendingProgram = sessionStorage.getItem('plan_res_program') || '';
+
+        // Afficher popup remerciements immédiatement
+        const firstName = pendingClient ? pendingClient.firstName : '';
+        showThanksStep(firstName, pendingProgram);
+
+        // Capturer paiement + sauvegarder dans le sheet (dans la même function)
         try {
-            await fetch('/.netlify/functions/save-plan-request', {
+            const res  = await fetch('/.netlify/functions/create-reservation-paypal', {
                 method:  'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body:    JSON.stringify({
-                    firstName: payload.firstName,
-                    lastName:  payload.lastName,
-                    email:     payload.email,
-                    phone:     payload.phone || '',
-                    program:   payload.program,
-                    consent:   payload.consent || 'Yes',
-                    type:      'reservation',
-                    amount:    reservationPrice,
+                    action:     'capture',
+                    orderID:    orderID,
+                    clientData: pendingClient,
+                    program:    pendingProgram,
+                    amount:     reservationPrice,
                 }),
             });
-        } catch (e) {
-            console.warn('[ReservationPopup] saveReservationToSheet failed:', e.message);
+            const data = await res.json();
+            if (!data.success) {
+                console.warn('[ReservationPopup] PayPal capture:', data.error);
+            }
+        } catch (err) {
+            console.error('[ReservationPopup] PayPal capture error:', err.message);
         }
+
+        sessionStorage.removeItem('plan_res_client');
+        sessionStorage.removeItem('plan_res_program');
+        return true;
     }
 
-    checkReturnFromReservationPayment();
+    // ── Init ──
+    async function init() {
+        const stripeHandled = await checkReturnFromStripe();
+        if (!stripeHandled) await checkReturnFromPaypal();
+    }
+
+    init();
 
 })();
 
