@@ -10482,6 +10482,30 @@ tbody tr:hover { background: var(--rose-ultra); }
   gap: 5px;
 }
 
+.plan-request-subtitle {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 480px;
+  margin: 0 auto 12px;
+  padding: 0 20px;
+  font-size: 13px;
+  color: #9b6070;
+  line-height: 1.55;
+  font-style: italic;
+}
+.plan-request-subtitle i {
+  color: #c0385a;
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+a.plan-close-thanks-btn {
+  display: inline-flex;
+  text-decoration: none;
+}
+
 /* ══════════════════════════════════════════════════
    THANK YOU STEP
 ══════════════════════════════════════════════════ */

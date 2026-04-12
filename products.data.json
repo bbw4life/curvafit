@@ -1138,7 +1138,7 @@
     ],
     "enable_media_zoom": "yes", 
     "plans_available": "no",
-    "reservation_price": 100, 
+    "reservation_price": 50, 
     "collapsible_order_summary": "No",
     "flash_deal": {
       "hours": 8
