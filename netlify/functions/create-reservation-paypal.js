@@ -1,5 +1,4 @@
 // netlify/functions/create-reservation-paypal.js
-// Lit RESERVATION_PAYPAL_PLAN_ID depuis les variables d'environnement Netlify
 
 const fetch = require('node-fetch');
 
@@ -9,19 +8,12 @@ exports.handler = async (event) => {
 
     const { amount, program, customer } = JSON.parse(event.body);
 
-    // ── Lire le Plan ID depuis les variables Netlify ──
-    const paypalPlanId = process.env.RESERVATION_PAYPAL_PLAN_ID || '';
-
-    if (!paypalPlanId) {
-      throw new Error('RESERVATION_PAYPAL_PLAN_ID not configured in Netlify environment variables.');
-    }
-
-    const BASE_URL   = process.env.BASE_URL || '';
+    const BASE_URL    = process.env.BASE_URL || '';
     const PAYPAL_BASE = process.env.PAYPAL_ENV === 'live'
       ? 'https://api-m.paypal.com'
       : 'https://api-m.sandbox.paypal.com';
 
-    // ── Obtenir le token PayPal ──
+    // ── Token PayPal ──
     const auth = Buffer.from(
       `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`
     ).toString('base64');
@@ -72,7 +64,7 @@ exports.handler = async (event) => {
       throw new Error(errText || 'PayPal order creation failed');
     }
 
-    const orderData = await orderRes.json();
+    const orderData   = await orderRes.json();
     const approvalLink = orderData.links.find(l => l.rel === 'approve');
     if (!approvalLink) throw new Error('No PayPal approval URL found');
 
