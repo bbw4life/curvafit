@@ -271,6 +271,28 @@ a { text-decoration: none; color: inherit; }
     100% { bottom: 78px; opacity: 0; transform: scale(0.2); }
 }
 
+/* ── STICKY HEADER — style.css ── */
+.sticky-header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 1001 !important;
+}
+
+body {
+    padding-top: 60px !important;
+}
+
+@media (max-width: 899px) {
+    .sticky-header {
+        top: 0 !important;
+    }
+    body {
+        padding-top: 48px !important;
+    }
+}
 
 .search-icon {
     cursor: pointer;
@@ -432,7 +454,10 @@ a { text-decoration: none; color: inherit; }
 }
 
 .logo a:hover::after { left: 160%; }
-
+.logo a::after {
+  display: none !important;
+  content: none !important;
+}
 
 .main-nav ul {
     display: flex;
@@ -5529,7 +5554,7 @@ tbody tr:hover { background: var(--rose-ultra); }
     padding: 16px 20px;
     background: var(--bg, #fff);
     position: sticky;
-    top: 90px;
+    top: 120px;
     z-index: 40;
     border-bottom: 1px solid rgba(0,0,0,0.07);
     width: 100%;
@@ -5551,7 +5576,7 @@ tbody tr:hover { background: var(--rose-ultra); }
 
     .filter-bar.is-fixed {
         position: fixed;
-         top: 80px;
+         top: 110px;
         left: 0;
         right: 0;
         width: 100%;
@@ -10574,7 +10599,6 @@ tbody tr:hover { background: var(--rose-ultra); }
   .plan-popup-spots-count { font-size: 2.2rem; }
 }
 
-
 /* ─────────────────────────────────────────────
    PROGRAM CARDS — new inner elements
    (extends existing .program-card from style.css)
@@ -14160,16 +14184,6 @@ html.fonts-loaded [class*="fa-"] {
   }
 }
 
-.logo a {
-  display: inline-block !important;
-  line-height: 0 !important;
-}
-
-.logo img {
-  display: block !important;
-}
-
-
 #bc-nav {
   position: relative !important;
   z-index: 998 !important;
@@ -14180,6 +14194,63 @@ html.fonts-loaded [class*="fa-"] {
   pointer-events: auto !important;
   cursor: pointer !important;
 }
+
+#bc-nav {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 997 !important;
+}
+
+/* Sans announcement bar */
+body:not(:has(.paul-announcement-bar)) #bc-nav {
+  top: 60px !important;
+}
+
+/* Avec announcement bar desktop */
+body:has(.paul-announcement-bar) #bc-nav {
+  top: calc(38px + 60px) !important;
+}
+
+/* Avec announcement bar mobile */
+@media (max-width: 899px) {
+  body:not(:has(.paul-announcement-bar)) #bc-nav {
+    top: 48px !important;
+  }
+  body:has(.paul-announcement-bar) #bc-nav {
+    top: calc(28px + 48px) !important;
+  }
+}
+
+/* Compenser la hauteur du breadcrumb dans le body */
+body {
+  padding-top: calc(var(--bc-height, 36px) + 60px) !important;
+}
+
+body:has(.paul-announcement-bar) {
+  padding-top: calc(38px + 60px + 36px) !important;
+}
+
+@media (max-width: 899px) {
+  body {
+    padding-top: calc(var(--bc-height, 36px) + 48px) !important;
+  }
+  body:has(.paul-announcement-bar) {
+    padding-top: calc(28px + 48px + 36px) !important;
+  }
+}
+
+
+.logo a {
+  display: inline-block !important;
+  line-height: 0 !important;
+}
+
+.logo img {
+  display: block !important;
+}
+
 
 
 /* ═══════════════════════ SNOW EFFECT ═══════════════════════ */

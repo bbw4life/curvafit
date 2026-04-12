@@ -1137,7 +1137,8 @@
       {"code": "paul26","items": 2,"percent": 10}
     ],
     "enable_media_zoom": "yes",
-    "plans_available": "no", 
+    "plans_available": "no",
+    "reservation_price": 100, 
     "collapsible_order_summary": "No",
     "flash_deal": {
       "hours": 8

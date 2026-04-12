@@ -2133,6 +2133,7 @@ initAnnouncementBar();
 })();
 
 
+
 // ══════════════════════════════════════════════════════
 //   PLAN REQUEST RESERVATION POPUP
 // ══════════════════════════════════════════════════════
@@ -2158,6 +2159,40 @@ initAnnouncementBar();
     // ── State ──
     let clientData = {};
     let selectedProgram = '';
+    let reservationPrice = 10; // fallback par défaut
+
+    // ── Inject price from settings into all .plan-reservation-price-label spans ──
+    function injectPriceLabels(price) {
+        const label = '$' + price;
+        document.querySelectorAll('.plan-reservation-price-label').forEach(el => {
+            el.textContent = label;
+        });
+    }
+
+    // ── Load price from settings as soon as possible ──
+    function loadReservationPrice() {
+        const settings = (window.__allProducts || []).find(p => p.type === 'settings') || {};
+        if (settings.reservation_price !== undefined) {
+            reservationPrice = parseFloat(settings.reservation_price) || 10;
+            injectPriceLabels(reservationPrice);
+        } else {
+            let tries = 0;
+            const wait = setInterval(() => {
+                tries++;
+                const s = (window.__allProducts || []).find(p => p.type === 'settings') || {};
+                if (s.reservation_price !== undefined) {
+                    clearInterval(wait);
+                    reservationPrice = parseFloat(s.reservation_price) || 10;
+                    injectPriceLabels(reservationPrice);
+                } else if (tries > 60) {
+                    clearInterval(wait);
+                    injectPriceLabels(reservationPrice);
+                }
+            }, 100);
+        }
+    }
+
+    loadReservationPrice();
 
     // ── Simulate decreasing spots (marketing) ──
     const SPOTS_KEY = 'plan_spots_remaining';
@@ -2171,7 +2206,6 @@ initAnnouncementBar();
             if (spotsCount) spotsCount.textContent = spotsRemaining;
         }
     }
-    // Decrease a spot every 90–180 seconds while page is open
     setInterval(decreaseSpot, Math.random() * 90000 + 90000);
 
     // ── Open / Close ──
@@ -2181,6 +2215,7 @@ initAnnouncementBar();
         overlay.classList.add('active');
         overlay.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
+        injectPriceLabels(reservationPrice);
     }
     function closePopup() {
         overlay.classList.remove('active');
@@ -2193,8 +2228,8 @@ initAnnouncementBar();
         if (stepThanks)  stepThanks.style.display  = step === 'thanks'  ? '' : 'none';
     }
 
-    if (openBtn)   openBtn.addEventListener('click', openPopup);
-    if (closeBtn)  closeBtn.addEventListener('click', closePopup);
+    if (openBtn)     openBtn.addEventListener('click', openPopup);
+    if (closeBtn)    closeBtn.addEventListener('click', closePopup);
     if (closeThanks) closeThanks.addEventListener('click', closePopup);
     overlay.addEventListener('click', e => { if (e.target === overlay) closePopup(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
@@ -2252,7 +2287,6 @@ initAnnouncementBar();
             clientData = { firstName, lastName, email, phone, program, consent: 'Yes' };
             selectedProgram = program;
 
-            // Update payment step labels
             const payProgramName = document.getElementById('plan-pay-program-name');
             if (payProgramName) payProgramName.textContent = program;
 
@@ -2270,36 +2304,28 @@ initAnnouncementBar();
                 return;
             }
 
-            setBtnLoading(payBtn, true);
+            setBtnLoading(payBtn, true, '');
 
             try {
-                const settings = (window.__allProducts || []).find(p => p.type === 'settings') || {};
-                const reservationPrice = settings.reservation_price || 10;
-
                 if (method.value === 'stripe') {
-                    await handleStripeReservation(reservationPrice, settings);
+                    await handleStripeReservation(reservationPrice);
                 } else {
-                    await handlePaypalReservation(reservationPrice, settings);
+                    await handlePaypalReservation(reservationPrice);
                 }
             } catch (err) {
                 showError('plan-pay-error', err.message || 'Payment failed. Please try again.');
-                setBtnLoading(payBtn, false, '<i class="fi fi-rr-lock"></i> Pay $10 — Reserve My Spot');
+                setBtnLoading(payBtn, false, '<i class="fi fi-rr-lock"></i> Pay $' + reservationPrice + ' — Reserve My Spot');
             }
         });
     }
 
     // ── Stripe ──
-    async function handleStripeReservation(price, settings) {
-        const stripePriceId = settings.reservation_stripe_price_id || '';
-        if (!stripePriceId) {
-            throw new Error('Stripe reservation price ID not configured yet.');
-        }
-
-        const res  = await fetch('/.netlify/functions/create-reservation-stripe-session', {
+    // La Netlify function lit RESERVATION_STRIPE_PRICE_ID depuis les variables d'environnement
+    async function handleStripeReservation(price) {
+        const res = await fetch('/.netlify/functions/create-reservation-stripe-session', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify({
-                priceId:  stripePriceId,
                 amount:   price,
                 program:  selectedProgram,
                 customer: clientData,
@@ -2311,23 +2337,19 @@ initAnnouncementBar();
         sessionStorage.setItem('plan_res_client',  JSON.stringify(clientData));
         sessionStorage.setItem('plan_res_program', selectedProgram);
 
+        const settings  = (window.__allProducts || []).find(p => p.type === 'settings') || {};
         const stripeKey = window.STRIPE_PUBLIC_KEY || settings.stripe_public_key || '';
         const stripe    = Stripe(stripeKey);
         await stripe.redirectToCheckout({ sessionId: data.sessionId });
     }
 
     // ── PayPal ──
-    async function handlePaypalReservation(price, settings) {
-        const paypalPlanId = settings.reservation_paypal_plan_id || '';
-        if (!paypalPlanId) {
-            throw new Error('PayPal reservation plan ID not configured yet.');
-        }
-
-        const res  = await fetch('/.netlify/functions/create-reservation-paypal', {
+    // La Netlify function lit RESERVATION_PAYPAL_PLAN_ID depuis les variables d'environnement
+    async function handlePaypalReservation(price) {
+        const res = await fetch('/.netlify/functions/create-reservation-paypal', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify({
-                planId:   paypalPlanId,
                 amount:   price,
                 program:  selectedProgram,
                 customer: clientData,
@@ -2356,21 +2378,21 @@ initAnnouncementBar();
 
         if (!pendingClient) return;
 
-        // Show popup directly in thanks step
         overlay.classList.add('active');
         overlay.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
         showStep('thanks');
 
-        const thanksName = document.getElementById('plan-thanks-name');
+        injectPriceLabels(reservationPrice);
+
+        const thanksName  = document.getElementById('plan-thanks-name');
         const thanksBadge = document.getElementById('plan-thanks-program-text');
         if (thanksName)  thanksName.textContent  = `Welcome, ${pendingClient.firstName}!`;
         if (thanksBadge) thanksBadge.textContent = pendingProgram || '';
 
-        // Verify server-side
         try {
-            const provider   = sessionId ? 'stripe' : 'paypal';
-            const paymentId  = sessionId || subId || ppToken;
+            const provider  = sessionId ? 'stripe' : 'paypal';
+            const paymentId = sessionId || subId || ppToken;
 
             const verifyRes  = await fetch('/.netlify/functions/verify-reservation-payment', {
                 method:  'POST',
@@ -2380,7 +2402,6 @@ initAnnouncementBar();
             const verifyData = await verifyRes.json();
 
             if (verifyData.success) {
-                // Save to Google Sheet
                 await saveReservationToSheet({
                     ...pendingClient,
                     program: pendingProgram,
@@ -2389,11 +2410,9 @@ initAnnouncementBar();
                 console.warn('[ReservationPopup] Payment verification failed:', verifyData.error);
             }
 
-            // Clean session & URL
             sessionStorage.removeItem('plan_res_client');
             sessionStorage.removeItem('plan_res_program');
-            const cleanUrl = window.location.pathname;
-            window.history.replaceState({}, '', cleanUrl);
+            window.history.replaceState({}, '', window.location.pathname);
 
         } catch (err) {
             console.error('[ReservationPopup] Verification error:', err.message);
@@ -2414,7 +2433,7 @@ initAnnouncementBar();
                     program:   payload.program,
                     consent:   payload.consent || 'Yes',
                     type:      'reservation',
-                    amount:    10,
+                    amount:    reservationPrice,
                 }),
             });
         } catch (e) {
