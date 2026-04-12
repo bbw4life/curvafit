@@ -1195,78 +1195,95 @@ details[open] .chevron {
 .modal-paul-guide-content {
     position: relative;
     width: 95%;
-    max-width: 420px;
-    max-height: 80vh;
+    max-width: 500px;
+    max-height: 85vh;
     background-color: #fffbfb;
-    border: 1px solid #fc61b6;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-    padding: 2px 20px;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    padding: 28px 28px 24px 28px;
     overflow-y: auto;
+    overflow-x: hidden;
     box-sizing: border-box;
+    border: 2px solid transparent;
+    animation: borderAnimation 2s linear infinite;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.modal-paul-guide-content::-webkit-scrollbar {
+    display: none;
 }
 .modal-paul-guide-content.animated-border {
     border: 2px solid transparent;
     animation: borderAnimation 2s linear infinite;
 }
 @keyframes borderAnimation {
-    0% { border-color: #ff00dd; }
-    50% { border-color: #501650; }
+    0%   { border-color: #ff00dd; }
+    50%  { border-color: #501650; }
     100% { border-color: #912861; }
 }
 .modal-paul-guide-close {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    font-size: 30px;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 20px;
     cursor: pointer;
-    color: #ebdbe5;
+    color: #fff;
     line-height: 1;
-    font-weight: 300;
+    font-weight: 400;
     background-color: #e70d0d;
-    padding: 1px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    z-index: 10;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 .modal-paul-guide-title {
     text-align: left;
-    margin: 0 0 5px 0 !important;
+    margin: 0 0 16px 0 !important;
     font-weight: 700;
     color: #000000;
-    font-size: 20px;
+    font-size: 22px;
+    padding-right: 40px;
+    line-height: 1.3;
 }
 .modal-paul-guide-row {
     display: flex;
     align-items: flex-start;
-    gap: 14px;
-    margin-bottom: 1px !important;
+    gap: 20px;
+    margin-bottom: 16px !important;
 }
 .modal-paul-guide-image {
-    flex: 0 0 48%;
-    max-width: 48%;
+    flex: 0 0 42%;
+    max-width: 42%;
 }
 .modal-paul-guide-image img {
     max-width: 100%;
     height: auto;
     display: block;
-    border: 1px solid #050505;
+    border: 1px solid #ddd;
     border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 .modal-paul-guide-side-text {
     flex: 1;
-    line-height: 1.3;
+    line-height: 1.6;
     padding-top: 0;
     word-wrap: break-word;
     overflow-wrap: break-word;
     hyphens: auto;
-    color: #000000;
+    color: #222;
     font-size: 14px;
 }
 .modal-paul-guide-side-text.truncated {
     position: relative;
+    max-height: 160px;
     overflow: hidden;
 }
 .modal-paul-guide-side-text.truncated::after {
@@ -1274,11 +1291,11 @@ details[open] .chevron {
     position: absolute;
     bottom: 0;
     right: 0;
-    padding: 1px 10px;
-    background: #ebe4e4;
-    color: #2564eb;
+    padding: 2px 10px;
+    background: #f0e8f0;
+    color: #912861;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     border-radius: 6px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     cursor: pointer;
@@ -1286,20 +1303,21 @@ details[open] .chevron {
 }
 .modal-paul-guide-side-text.expanded {
     overflow: visible;
+    max-height: none;
 }
 .modal-paul-guide-side-text.expanded::after {
     content: "Close";
     background: #ff0000;
-    color: #c7c2c2;
+    color: #fff;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     border-radius: 6px;
-    padding: 1px 10px;
+    padding: 2px 10px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     cursor: pointer;
 }
 .modal-paul-guide-bold-title {
-    margin: 10px !important;
+    margin: 14px 0 8px 0 !important;
     color: #000000;
     font-size: 18px;
     font-weight: bold;
@@ -1308,28 +1326,81 @@ details[open] .chevron {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
+    font-size: 14px;
 }
 .modal-paul-guide-detailed-text table thead tr {
-    background-color: #f0f0f0;
+    background-color: #912861;
+    color: #fff;
 }
 .modal-paul-guide-detailed-text table th {
-    border: 1px solid #ddd;
-    padding: 8px;
+    border: 1px solid #c97;
+    padding: 10px 8px;
     text-align: left;
+    font-weight: 600;
 }
 .modal-paul-guide-detailed-text table td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 9px 8px;
+}
+.modal-paul-guide-detailed-text table tbody tr:nth-child(even) {
+    background-color: #fdf0f7;
 }
 .modal-paul-guide-detailed-text p {
     margin-top: 10px;
+    line-height: 1.6;
+    color: #333;
 }
+
+/* ── DESKTOP ── */
+@media (min-width: 769px) {
+    .modal-paul-guide-content {
+        max-width: 500px;
+        padding: 32px 36px 28px 36px;
+    }
+    .modal-paul-guide-title {
+        font-size: 24px;
+    }
+}
+
+/* ── MOBILE ── */
 @media (max-width: 768px) {
-    .size-chart-paul-guide-modal { margin: 0 auto 12px; padding: 2px; }
-    .modal-paul-guide-bold-title { margin-bottom: -5px !important; margin-top: 0px !important; }
-    .modal-paul-guide-row { gap: 10px; }
-    .modal-paul-guide-image { flex: 0 0 50%; max-width: 50%; }
-    .modal-paul-guide-content { width: 92%; }
+    .modal-paul-guide-content {
+        width: 96%;
+        max-width: 100%;
+        max-height: 88vh;
+        padding: 20px;
+        border-radius: 14px;
+    }
+    .modal-paul-guide-title {
+        font-size: 18px;
+        margin-bottom: 12px !important;
+        padding-right: 36px;
+    }
+    .modal-paul-guide-bold-title {
+        font-size: 16px;
+        margin: 10px 0 6px 0 !important;
+    }
+    .modal-paul-guide-row {
+        gap: 12px;
+        margin-bottom: 12px !important;
+    }
+    .modal-paul-guide-image {
+        flex: 0 0 48%;
+        max-width: 48%;
+    }
+    .modal-paul-guide-side-text {
+        font-size: 13px;
+    }
+    .modal-paul-guide-detailed-text table {
+        font-size: 12px;
+        overflow-x: auto;
+        display: block;
+        width: 100%;
+    }
+    .modal-paul-guide-detailed-text table th,
+    .modal-paul-guide-detailed-text table td {
+        padding: 7px 10px;
+    }
 }
  
 /* ── Live Viewers ── */
