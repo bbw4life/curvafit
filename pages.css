@@ -7696,70 +7696,6 @@ details p {
     background: var(--rose-ultra);
 }
 
-/* ── TABLE MOBILE FIX ── */
-@media (max-width: 768px) {
-
-    /* Wrapper pour permettre le scroll horizontal propre */
-    .privacy-table-wrap {
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        border-radius: var(--radius-sm);
-        margin: 18px 0;
-    }
-
-    /* Le tableau sort du padding de l'article pour occuper toute la largeur */
-    .privacy-article .privacy-table {
-        display: block;
-        width: calc(100% + 24px);
-        margin-left: -12px;
-        margin-right: -12px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        white-space: nowrap;
-        margin-top: 18px;
-        margin-bottom: 18px;
-        border-radius: 0;
-    }
-
-    .privacy-article .privacy-table thead,
-    .privacy-article .privacy-table tbody,
-    .privacy-article .privacy-table tr {
-        display: table-row-group;
-    }
-
-    .privacy-article .privacy-table thead {
-        display: table-header-group;
-    }
-
-    .privacy-article .privacy-table tr {
-        display: table-row;
-    }
-
-    .privacy-article .privacy-table th,
-    .privacy-article .privacy-table td {
-        display: table-cell;
-        white-space: normal;
-        min-width: 110px;
-        max-width: 200px;
-        word-break: break-word;
-        font-size: 0.80rem;
-        padding: 9px 16px;
-        vertical-align: top;
-    }
-
-    /* Colonne "Required?" plus étroite */
-    .privacy-article .privacy-table th:last-child,
-    .privacy-article .privacy-table td:last-child {
-        min-width: 80px;
-        max-width: 100px;
-    }
-
-    /* Article padding réduit sur mobile */
-    .privacy-article {
-        padding: 18px 12px;
-    }
-}
 
 /* ── CONTACT INFO ── */
 .contact-info {
@@ -7942,6 +7878,75 @@ details p {
     transform: translateX(4px);
 }
 .privacy-article ul li strong { color: var(--charcoal); }
+
+
+
+@media (max-width: 768px) {
+
+    .privacy-article {
+        padding: 18px 0px;
+    }
+
+    .privacy-article .privacy-table {
+      display: table;
+      width: calc(100% + 24px);
+      margin-left: -12px;
+      margin-right: -12px;
+      table-layout: fixed;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      font-size: 0.76rem;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 0;
+  }
+
+    .privacy-article .privacy-table thead {
+        display: table-header-group;
+    }
+
+    .privacy-article .privacy-table tbody {
+        display: table-row-group;
+    }
+
+    .privacy-article .privacy-table tr {
+        display: table-row;
+    }
+
+    .privacy-article .privacy-table th,
+    .privacy-article .privacy-table td {
+        display: table-cell;
+        white-space: normal;
+        word-break: break-word;
+        padding: 8px 6px;
+        vertical-align: top;
+        font-size: 0.76rem;
+        text-align: left;
+    }
+
+    .privacy-article .privacy-table td::before,
+    .privacy-article .privacy-table th::before {
+        content: none;
+    }
+
+    .privacy-article .privacy-table th:nth-child(1),
+    .privacy-article .privacy-table td:nth-child(1) {
+        width: 30%;
+        font-weight: 600;
+    }
+
+    .privacy-article .privacy-table th:nth-child(2),
+    .privacy-article .privacy-table td:nth-child(2) {
+        width: 50%;
+    }
+
+    .privacy-article .privacy-table th:nth-child(3),
+    .privacy-article .privacy-table td:nth-child(3) {
+        width: 20%;
+        text-align: center;
+    }
+
+}
 
 
 
