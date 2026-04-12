@@ -43,7 +43,7 @@ exports.handler = async (event) => {
         },
       ],
       application_context: {
-        return_url: `${BASE_URL}/programs.html?res_token={token}&res_subscription_id={subscription_id}`,
+        return_url: `${BASE_URL}/programs.html?res_paypal=1`,
         cancel_url: `${BASE_URL}/programs.html`,
         brand_name: 'CurvaFit',
         user_action: 'PAY_NOW',
@@ -64,7 +64,7 @@ exports.handler = async (event) => {
       throw new Error(errText || 'PayPal order creation failed');
     }
 
-    const orderData   = await orderRes.json();
+    const orderData    = await orderRes.json();
     const approvalLink = orderData.links.find(l => l.rel === 'approve');
     if (!approvalLink) throw new Error('No PayPal approval URL found');
 
