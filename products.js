@@ -816,7 +816,7 @@ if (form) {
         form.reset();
         const previewContainer = document.getElementById('review-images-preview');
         if (previewContainer) previewContainer.innerHTML = '';
-        reviewForm.style.display = 'none';
+        if (reviewForm) reviewForm.style.display = 'none';
         if (writeButton) writeButton.style.display = 'block';
 
         // Restaure la position de scroll (empêche le saut vers le bas)
