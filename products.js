@@ -55,6 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
       initDynamicUrgencyBar(product, currentProductId);
     })
     .catch(err => console.error('Erreur chargement /products.data.json', err));
+    // Déplace le modal dans le body pour que position:fixed fonctionne
+  const overlay = document.getElementById('review-modal-overlay');
+  if (overlay && overlay.parentElement !== document.body) {
+      document.body.appendChild(overlay);
+  }
 
   // ====================== HELPERS CJ ======================
   function setupColorListeners() {
@@ -637,12 +642,38 @@ if (readMoreBtn) {
 
 if (writeButton) {
     writeButton.addEventListener('click', () => {
-        reviewForm.style.display = 'block';
-        writeButton.style.display = 'none';
+        document.getElementById('review-modal-overlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
     });
 }
 
-const form = reviewForm ? reviewForm.querySelector('form') : null;
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('review-modal-overlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+});
+
+function closeModal() {
+    const overlay = document.getElementById('review-modal-overlay');
+    overlay.style.animation = 'overlayIn 0.18s ease reverse';
+    setTimeout(() => {
+        overlay.classList.remove('open');
+        overlay.style.animation = '';
+        document.body.style.overflow = '';
+        document.getElementById('modal-form-wrap').style.display = '';
+        document.getElementById('modal-success').style.display = '';
+        document.getElementById('modal-review-form').reset();
+        const btn = document.getElementById('modal-submit');
+        btn.disabled = false;
+        btn.querySelector('.btn-label').style.opacity = '1';
+        btn.querySelector('.btn-spinner').style.display = 'none';
+    }, 180);
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+});
+
+const form = document.getElementById('modal-review-form');
 
 // ====================== COMPRESSION IMAGE ======================
 async function compressImageForSheet(file) {
@@ -766,6 +797,20 @@ if (form) {
 
         // Sauvegarde la position de scroll avant reset
         const scrollPositionBeforeSubmit = window.scrollY;
+
+
+        // Spinner → success
+        const btn = document.getElementById('modal-submit');
+        btn.disabled = true;
+        btn.querySelector('.btn-label').style.opacity = '0';
+        btn.querySelector('.btn-spinner').style.display = 'block';
+
+        await new Promise(resolve => setTimeout(resolve, 1400));
+
+        document.getElementById('modal-form-wrap').style.display = 'none';
+        const successEl = document.getElementById('modal-success');
+        successEl.style.display = 'flex';
+        setTimeout(closeModal, 2400);
 
         addOptimisticReview(name, rating, title, text, imagesBase64);
         form.reset();
