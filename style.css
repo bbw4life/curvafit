@@ -10488,11 +10488,14 @@ tbody tr:hover { background: var(--rose-ultra); }
   gap: 8px;
   max-width: 480px;
   margin: 0 auto 12px;
-  padding: 0 20px;
+  padding: 12px 16px;
   font-size: 13px;
   color: #9b6070;
   line-height: 1.55;
   font-style: italic;
+  background: linear-gradient(135deg, #fdf0f3, #fff8f5);
+  border: 1px solid #f0c8d2;
+  border-radius: 12px;
 }
 .plan-request-subtitle i {
   color: #c0385a;
