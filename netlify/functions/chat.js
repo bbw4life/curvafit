@@ -262,7 +262,7 @@ function detectIntent(message) {
     /suivre.+(commande|colis)|track.+(order|package)|rastrear/,
     /checkout|passer.+(commande|à la caisse)|proceder.+pago/,
     /collection|catalogue|catalog|tous les produits|all products|todos los productos/,
-    /panier|cart|carrito/,
+    /panier|cart|carrito/, 
     /payer|pay now|pagar/,
     /frais.+(port|livraison)|shipping cost|costo.+envío/,
     /livraison standard|standard shipping|envío estándar/,
@@ -533,6 +533,7 @@ function buildSystemPrompt(products, settings, contactInfo, searchData, blogData
   const freeShipThresh = shipping.free_shipping_threshold || 120;
 
   const plansAvailable = (settings.plans_available || 'Yes').trim().toLowerCase() === 'yes';
+  const reservationPrice = settings.reservation_price || 10;
 
   const programsText = Object.entries(programs).map(([, val]) => `• ${val.label}: $${val.price}`).join('\n');
   const promosText   = promos.length
@@ -587,6 +588,8 @@ const colPageSize  = colSettings.page_size      || 12;
   const searchContext = buildSearchDataContext(searchData);
   const blogContext   = buildBlogContext(blogData);
 
+ 
+
   const programsSection = plansAvailable
     ? `
 ═══════════════════════════════════════
@@ -596,17 +599,36 @@ ${programsText}
 `
     : `
 ═══════════════════════════════════════
-💪 PROGRAMS — COMING SOON
+💪 PROGRAMS — RESERVATION MODE
 ═══════════════════════════════════════
 plans_available is currently NO.
-When a user asks about programs, plans, prices of programs, or how to sign up:
-DO NOT give any program prices or details.
-Instead reply warmly in the user's language:
-- FR: "Nos plans sont en cours de finalisation ! 🙏 Nous travaillons avec nos partenaires pour vous offrir le meilleur service. Les prix seront disponibles très bientôt — visite notre page Programme et remplis le formulaire, tu seras parmi les premiers informés !"
-- EN: "Our plans are almost ready! 🙏 We're finalizing things with our partners to bring you the best experience. Pricing will be available very soon — head to our Programs page and fill in the form, you'll be first to know!"
-- ES: "¡Nuestros planes están casi listos! 🙏 Estamos trabajando con nuestros socios para ofrecerte lo mejor. Los precios estarán disponibles muy pronto — visita nuestra página de Programas y completa el formulario, ¡serás de los primeros en saberlo!"
+reservation_price is $${reservationPrice}.
+
+When a user asks about programs, plans, prices, coaching, or how to sign up:
+
+1. DO NOT give program prices or full details.
+2. Reply with HIGH ENERGY marketing — create urgency, scarcity, excitement.
+3. Tell them spots are LIMITED and filling fast.
+4. Tell them they can RESERVE their spot now for only $${reservationPrice} (fully deducted from program price — 100% refundable).
+5. Tell them once reserved, the CurvaFit team contacts them within 24h to build their custom plan.
+6. Always push them to the Programs page to find the "Reserve Your Spot" button.
+7. Always end with 🔗[PAGE:/programs.html]
+
+TONE: Exciting, warm, urgent, human. Like a friend telling you about a limited deal.
+USE EMOJIS naturally. Keep it SHORT — max 5 lines.
+
+EXAMPLES by language:
+
+FR: "Nos programmes sont presque complets ! 🔥 Les places sont vraiment limitées en ce moment. Mais bonne nouvelle — tu peux sécuriser la tienne dès maintenant pour seulement **$${reservationPrice}** (déduit de ton programme, 100% remboursable 🛡️). Une coach CurvaFit te contacte dans les 24h pour construire ton plan sur mesure. Ne laisse pas ta place partir ! 👇"
+
+EN: "Our programs are almost full! 🔥 Spots are going fast — but you can lock yours in right now for just **$${reservationPrice}** (fully deducted from your program price, 100% refundable 🛡️). A CurvaFit coach will reach out within 24h to build your custom plan. Don't let your spot go to someone else! 👇"
+
+ES: "¡Nuestros programas están casi llenos! 🔥 Los cupos se agotan rápido — pero puedes reservar el tuyo ahora mismo por solo **$${reservationPrice}** (se descuenta de tu programa, 100% reembolsable 🛡️). Una coach de CurvaFit te contactará en 24h para crear tu plan personalizado. ¡No dejes que alguien más tome tu lugar! 👇"
+
 Always add 🔗[PAGE:/programs.html] at the end.
 NEVER mention any program price when plans_available is No.
+NEVER skip the urgency and scarcity angle.
+The $${reservationPrice} reservation fee is the ONLY price to mention.
 `;
 
   return `You are **Curva**, the official AI assistant and coach of CurvaFit.

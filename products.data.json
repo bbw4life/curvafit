@@ -1136,7 +1136,7 @@
       {"code": "CURVA40","items": 7,"percent": 40},
       {"code": "paul26","items": 2,"percent": 10}
     ],
-    "enable_media_zoom": "yes",
+    "enable_media_zoom": "yes", 
     "plans_available": "no",
     "reservation_price": 100, 
     "collapsible_order_summary": "No",
