@@ -10488,17 +10488,17 @@ tbody tr:hover { background: var(--rose-ultra); }
   gap: 8px;
   max-width: 480px;
   margin: 0 auto 12px;
-  padding: 12px 16px;
+  padding: 14px 16px;
   font-size: 13px;
-  color: #9b6070;
+  color: #1a4a38;
   line-height: 1.55;
   font-style: italic;
-  background: linear-gradient(135deg, #fdf0f3, #fff8f5);
-  border: 1px solid #f0c8d2;
+  background: rgba(34,160,107,0.06);
+  border: 1px solid rgba(34,160,107,0.18);
   border-radius: 12px;
 }
 .plan-request-subtitle i {
-  color: #c0385a;
+  color: #22a06b;
   font-size: 14px;
   flex-shrink: 0;
   margin-top: 2px;
