@@ -1,4 +1,98 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+
+  
+  (function () {
+    'use strict';
+
+    // Ne pas tracker la page analytics elle-même
+    if (window.location.pathname.includes('curvafit-analytiques')) return;
+
+    function getBrowser() {
+      const ua = navigator.userAgent;
+      if (ua.includes('Firefox')) return 'Firefox';
+      if (ua.includes('SamsungBrowser')) return 'Samsung';
+      if (ua.includes('OPR') || ua.includes('Opera')) return 'Opera';
+      if (ua.includes('Edg')) return 'Edge';
+      if (ua.includes('Chrome')) return 'Chrome';
+      if (ua.includes('Safari')) return 'Safari';
+      return 'Other';
+    }
+
+    function getDevice() {
+      const ua = navigator.userAgent;
+      if (/tablet|ipad|playbook|silk/i.test(ua)) return 'tablet';
+      if (/mobile|android|iphone|ipod|blackberry|windows phone/i.test(ua)) return 'mobile';
+      return 'desktop';
+    }
+
+    function genId() {
+      return 'sess_' + Math.random().toString(36).slice(2, 10) + '_' + Date.now();
+    }
+
+    let sessionId = sessionStorage.getItem('cf_an_sid');
+    if (!sessionId) { sessionId = genId(); sessionStorage.setItem('cf_an_sid', sessionId); }
+
+    const startTime  = Date.now();
+    let clicks       = 0;
+    let menuClicks   = 0;
+    let actionsCount = 0;
+    let maxScroll    = 0;
+    let sent         = false;
+
+    document.addEventListener('click', function (e) {
+      clicks++; actionsCount++;
+      const target = e.target.closest('a, button, .nav, nav');
+      if (target && (target.tagName === 'A' || target.tagName === 'BUTTON')) menuClicks++;
+    });
+
+    window.addEventListener('scroll', function () {
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      const pct  = docH > 0 ? Math.round((window.scrollY / docH) * 100) : 0;
+      if (pct > maxScroll) maxScroll = pct;
+    });
+
+    function sendData() {
+      if (sent) return;
+      sent = true;
+
+      const timeOnPage = Math.round((Date.now() - startTime) / 1000);
+
+      const payload = {
+        timestamp:    new Date().toISOString(),
+        sessionId,
+        country:      'Unknown',
+        city:         'Unknown',
+        pageUrl:      window.location.href,
+        pageTitle:    document.title,
+        timeOnPage,
+        clicks,
+        menuClicks,
+        scrollDepth:  maxScroll,
+        referrer:     document.referrer || 'direct',
+        device:       getDevice(),
+        browser:      getBrowser(),
+        screenWidth:  window.screen.width,
+        actionsCount
+      };
+
+      fetch('/.netlify/functions/save-analytics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).catch(() => {});
+    }
+
+    window.addEventListener('pagehide', sendData);
+    window.addEventListener('beforeunload', sendData);
+    setTimeout(sendData, 90000);
+  })();
+
+
+
+
+
 /* ══════════════════════════════════════════
    CURVAFIT PRELOADER
 ══════════════════════════════════════════ */

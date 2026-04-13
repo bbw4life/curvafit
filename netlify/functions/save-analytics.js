@@ -27,7 +27,7 @@ exports.handler = async (event) => {
     if (event.httpMethod === "GET") {
       const res = await sheets.spreadsheets.values.get({
         spreadsheetId,
-        range: "CurvafitAnalitique!A:O"  // ✅ corrigé
+        range: "CurvafitAnalitique!A:O"
       });
       const rows = res.data.values || [];
       return { statusCode: 200, headers, body: JSON.stringify({ success: true, rows }) };
@@ -37,22 +37,47 @@ exports.handler = async (event) => {
       if (!event.body) return { statusCode: 400, headers, body: JSON.stringify({ success: false, error: "No body" }) };
       const data = JSON.parse(event.body);
 
+      // ── Géolocalisation IP ──
+      let country = data.country || "Unknown";
+      let city    = data.city    || "Unknown";
+
+      if (country === "Unknown" || city === "Unknown") {
+        try {
+          // Récupère l'IP réelle du visiteur
+          const ip =
+            (event.headers["x-forwarded-for"] || "").split(",")[0].trim() ||
+            (event.headers["client-ip"] || "").trim() ||
+            "";
+
+          if (ip && ip !== "127.0.0.1" && ip !== "::1") {
+            const geoRes  = await fetch(`https://ip-api.com/json/${ip}?fields=status,country,city`);
+            const geoData = await geoRes.json();
+            if (geoData.status === "success") {
+              country = geoData.country || "Unknown";
+              city    = geoData.city    || "Unknown";
+            }
+          }
+        } catch (geoErr) {
+          console.warn("[ANALYTICS] Geo lookup failed:", geoErr.message);
+        }
+      }
+
       const row = [[
-        data.timestamp         || new Date().toISOString(),
-        data.sessionId         || "",
-        data.country           || "Unknown",
-        data.city              || "Unknown",
-        data.pageUrl           || "",
-        data.pageTitle         || "",
-        data.timeOnPage        || 0,
-        data.clicks            || 0,
-        data.menuClicks        || 0,
-        data.scrollDepth       || 0,
-        data.referrer          || "direct",
-        data.device            || "desktop",
-        data.browser           || "unknown",
-        data.screenWidth       || 0,
-        data.actionsCount      || 0
+        data.timestamp    || new Date().toISOString(),
+        data.sessionId    || "",
+        country,
+        city,
+        data.pageUrl      || "",
+        data.pageTitle    || "",
+        data.timeOnPage   || 0,
+        data.clicks       || 0,
+        data.menuClicks   || 0,
+        data.scrollDepth  || 0,
+        data.referrer     || "direct",
+        data.device       || "desktop",
+        data.browser      || "unknown",
+        data.screenWidth  || 0,
+        data.actionsCount || 0
       ]];
 
       await sheets.spreadsheets.values.append({
@@ -67,6 +92,7 @@ exports.handler = async (event) => {
     }
 
     return { statusCode: 405, headers, body: JSON.stringify({ success: false, error: "Method not allowed" }) };
+
   } catch (err) {
     console.error("[ANALYTICS]", err.message);
     return {
