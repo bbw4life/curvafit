@@ -10104,13 +10104,14 @@ tbody tr:hover { background: var(--rose-ultra); }
   border-radius: 50%;
   background: rgba(255,255,255,0.22);
   border: none;
-  color: #fff;
-  font-size: 13px;
+  color: #fff !important;
+  font-size: 16px;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   z-index: 10;
   transition: background 0.15s;
 }
+.plan-popup-close i { color: #fff !important; }
 .plan-popup-close:hover { background: rgba(255,255,255,0.40); }
 
 /* ── HEADER ── */
@@ -10498,6 +10499,29 @@ tbody tr:hover { background: var(--rose-ultra); }
   border-radius: 12px;
 }
 .plan-request-subtitle i {
+  color: #22a06b;
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.plan-thanks-marketing-msg {
+  font-size: 13px;
+  color: #1a4a38;
+  font-style: italic;
+  line-height: 1.6;
+  text-align: center;
+  background: rgba(34,160,107,0.06);
+  border: 1px solid rgba(34,160,107,0.18);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 7px;
+}
+.plan-thanks-marketing-msg i {
   color: #22a06b;
   font-size: 14px;
   flex-shrink: 0;
