@@ -647,6 +647,14 @@ if (writeButton) {
     });
 }
 
+const writeReviewBottom = document.querySelector('.write-review-bottom');
+if (writeReviewBottom) {
+    writeReviewBottom.addEventListener('click', () => {
+        document.getElementById('review-modal-overlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    });
+}
+
 document.getElementById('modal-close').addEventListener('click', closeModal);
 document.getElementById('review-modal-overlay').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeModal();

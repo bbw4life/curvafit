@@ -10102,7 +10102,7 @@ tbody tr:hover { background: var(--rose-ultra); }
   top: 14px; right: 14px;
   width: 32px; height: 32px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.22) !important;
   border: none;
   color: #fff !important;
   font-size: 16px;
@@ -10112,7 +10112,7 @@ tbody tr:hover { background: var(--rose-ultra); }
   transition: background 0.15s;
 }
 .plan-popup-close i { color: #fff !important; }
-.plan-popup-close:hover { background: rgba(255,255,255,0.40); }
+.plan-popup-close:hover { background: rgba(255,255,255,0.40) !important; }
 
 /* ── HEADER ── */
 .plan-popup-header {

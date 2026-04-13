@@ -1810,35 +1810,33 @@ function applyPromoFreeItems() {
         }
 
         // Delivery dates
-        if (prod) {
-          const baseStartStr = prod.start_date, baseEndStr = prod.end_date;
-          if (!baseStartStr || !baseEndStr) { showTextDelivery(); return; }
-          const baseStart = new Date(baseStartStr + "T00:00:00");
-          const baseEnd   = new Date(baseEndStr   + "T00:00:00");
-          if (isNaN(baseStart.getTime()) || isNaN(baseEnd.getTime())) { showTextDelivery(); return; }
-          const today = new Date(); today.setHours(0,0,0,0);
-          const cycleDays = Math.max(1, Math.ceil((baseStart - today) / 86400000)) + Math.max(1, Math.ceil((baseEnd - baseStart) / 86400000));
-          let currentStart = new Date(baseStart), currentEnd = new Date(baseEnd);
-          while (currentEnd < today) {
-            currentStart.setDate(currentStart.getDate() + cycleDays);
-            currentEnd.setDate(currentEnd.getDate() + cycleDays);
-          }
-          if (currentEnd <= today) {
-            currentStart.setDate(currentStart.getDate() + cycleDays);
-            currentEnd.setDate(currentEnd.getDate() + cycleDays);
-          }
-          function formatDate(date) {
-            return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getFullYear()).slice(-2)}`;
-          }
-          const startEl = document.getElementById("start-date"), endEl = document.getElementById("end-date");
-          if (startEl && endEl) { startEl.innerText = formatDate(currentStart); endEl.innerText = formatDate(currentEnd); }
-          showTextDelivery();
-          function showTextDelivery() {
-            const textEl = document.getElementById("delivery-text");
-            if (textEl) textEl.style.visibility = "visible";
-          }
-        }
-      }
+if (prod) {
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  const cycleStart = parseInt(prod.cycle_days_start);
+  const cycleEnd   = parseInt(prod.cycle_days_end);
+
+  if (!cycleStart || !cycleEnd || cycleStart <= 0 || cycleEnd <= 0) { showTextDelivery(); return; }
+
+  const currentStart = new Date(today);
+  const currentEnd   = new Date(today);
+  currentStart.setDate(today.getDate() + cycleStart);
+  currentEnd.setDate(today.getDate() + cycleEnd);
+
+  function formatDate(date) {
+    return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getFullYear()).slice(-2)}`;
+  }
+
+  const startEl = document.getElementById("start-date"), endEl = document.getElementById("end-date");
+  if (startEl && endEl) { startEl.innerText = formatDate(currentStart); endEl.innerText = formatDate(currentEnd); }
+
+  showTextDelivery();
+  function showTextDelivery() {
+    const textEl = document.getElementById("delivery-text");
+    if (textEl) textEl.style.visibility = "visible";
+  }
+}
+}
 
       // Mini media sliders
       document.querySelectorAll('.mini-media-slider').forEach(slider => {
@@ -2131,7 +2129,6 @@ initAnnouncementBar();
         });
     }
 })();
-
 
 
 // ══════════════════════════════════════════════════════

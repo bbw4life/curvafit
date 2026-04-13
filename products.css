@@ -1941,7 +1941,8 @@ details[open] .chevron {
     background: #f8bbd0;
 }
 
-#write-review {
+#write-review,
+.write-review-bottom  {
     display: inline-block;
     padding: 10px 22px;
     background: #1a1018;
