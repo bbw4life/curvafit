@@ -6599,7 +6599,7 @@ tbody tr:hover { background: var(--rose-ultra); }
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 1900;
 }
 
 .wishlist-modal.active { display: flex; }

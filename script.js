@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
 
-  
+
   (function () {
     'use strict';
 
@@ -88,8 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('beforeunload', sendData);
     setTimeout(sendData, 90000);
   })();
-
-
 
 
 

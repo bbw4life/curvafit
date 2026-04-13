@@ -648,6 +648,242 @@
             </div>
         </section>
 
+        <div class="plan-request-trigger-wrap">
+        <button class="plan-request-trigger-btn open-plan-popup-extra">
+            <span class="plan-btn-icon"><i class="fi fi-rr-paper-plane"></i></span>
+            <span class="plan-btn-text">
+            <strong>Reserve Your Spot — Limited Places</strong>
+            <small>Only 30 spots available · Secure yours for <span class="plan-reservation-price-label">...</span></small>
+            </span>
+            <span class="plan-btn-arrow"><i class="fi fi-rr-arrow-right"></i></span>
+        </button>
+        </div>
+
+        <!-- PLAN REQUEST POPUP -->
+        <div id="plan-popup-overlay" class="plan-popup-overlay" aria-hidden="true">
+        <div class="plan-popup-modal" role="dialog" aria-modal="true" aria-labelledby="plan-popup-title">
+
+            <button class="plan-popup-close" id="plan-popup-close" aria-label="Close">
+            <i class="fi fi-rr-cross"></i>
+            </button>
+
+            <!-- ── STEP 1 : RESERVATION FORM ── -->
+            <div class="plan-popup-step" id="plan-step-form">
+
+            <!-- Urgency bar -->
+            <div class="plan-popup-urgency-bar">
+                <div class="plan-popup-urgency-fill" id="plan-urgency-fill"></div>
+            </div>
+
+            <div class="plan-popup-header">
+                <div class="plan-popup-badge">
+                <i class="fi fi-rr-fire"></i> Limited Availability
+                </div>
+                <div class="plan-popup-spots-row">
+                <span class="plan-popup-spots-count" id="plan-spots-count">27</span>
+                <span class="plan-popup-spots-label">spots remaining out of 30</span>
+                </div>
+                <h2 id="plan-popup-title">Reserve Your Place Now</h2>
+                <p>Secure your personalized coaching spot before it's gone. Our coaches build your custom program within 24 hours.</p>
+            </div>
+
+            <div class="plan-popup-body">
+
+                <!-- Social proof strip -->
+                <div class="plan-popup-social-proof">
+                <div class="plan-popup-avatars">
+                    <img src="https://cdn.shopify.com/s/files/1/0978/0353/4627/files/Customer_plan_1.png?v=1776041141" alt="">
+                    <img src="https://cdn.shopify.com/s/files/1/0978/0353/4627/files/Customer_plan_2.png?v=1776041141" alt="">
+                    <img src="https://cdn.shopify.com/s/files/1/0978/0353/4627/files/Customer_plan_3.png?v=1776041141 alt="">
+                    <img src="https://cdn.shopify.com/s/files/1/0978/0353/4627/files/Customer_plan_4.png?v=1776041171" alt="">
+                    <img src="https://cdn.shopify.com/s/files/1/0978/0353/4627/files/Customer_plan_5.png?v=1776041141 alt="">
+                </div>
+                <span><strong>5 women</strong> reserved in the last hour</span>
+                </div>
+
+                <!-- Price highlight -->
+                <div class="plan-popup-price-block">
+                <div class="plan-popup-price-inner">
+                    <div class="plan-popup-price-left">
+                    <span class="plan-popup-price-label">Reservation fee</span>
+                    <span class="plan-popup-price-value plan-reservation-price-label">...</span>
+                    <span class="plan-popup-price-note">Deducted from your program price</span>
+                    </div>
+                    <div class="plan-popup-price-badge">
+                    <i class="fi fi-rr-shield-check"></i>
+                    Refundable
+                    </div>
+                </div>
+                </div>
+
+                <!-- Form -->
+                <div class="plan-form-row">
+                <div class="plan-form-group">
+                    <label for="plan-firstname">First Name *</label>
+                    <input type="text" id="plan-firstname" placeholder="Maria" autocomplete="given-name">
+                </div>
+                <div class="plan-form-group">
+                    <label for="plan-lastname">Last Name *</label>
+                    <input type="text" id="plan-lastname" placeholder="Doe" autocomplete="family-name">
+                </div>
+                <div class="plan-form-group">
+                    <label for="plan-email">Email *</label>
+                    <input type="email" id="plan-email" placeholder="maria@email.com" autocomplete="email">
+                </div>
+                <div class="plan-form-group">
+                    <label for="plan-phone">Phone</label>
+                    <input type="tel" id="plan-phone" placeholder="+1 000 000 0000" autocomplete="tel">
+                </div>
+                <div class="plan-form-group plan-form-group--full">
+                    <label for="plan-program">Desired Program *</label>
+                    <select id="plan-program">
+                    <option value="" disabled selected>Choose a program...</option>
+                    <option value="Beginner — Soft Start">Beginner — Soft Start</option>
+                    <option value="Intermediate — Deeper Refiner">Intermediate — Deeper Refiner</option>
+                    <option value="Maintenance — Forever Fit">Maintenance — Forever Fit</option>
+                    <option value="Not sure — help me choose">Not sure — help me choose</option>
+                    </select>
+                </div>
+                </div>
+
+                <div class="plan-checkbox-wrap">
+                <input type="checkbox" id="plan-consent">
+                <label for="plan-consent">
+                    <strong>I want to reserve my coaching spot at CurvaFit.</strong>
+                    I agree to be contacted by a coach within 24 hours and understand the <span class="plan-reservation-price-label">...</span> reservation fee is deducted from my program cost.
+                </label>
+                </div>
+
+                <div class="plan-popup-error" id="plan-popup-error" style="display:none;"></div>
+
+                <button class="plan-submit-btn" id="plan-submit-btn">
+                <i class="fi fi-rr-credit-card"></i>
+                Continue to Payment
+                </button>
+
+                <p class="plan-privacy-note">
+                <i class="fi fi-rr-shield-check"></i>
+                Secure · 100% refundable · No hidden fees
+                </p>
+            </div>
+            </div>
+
+            <!-- ── STEP 2 : PAYMENT METHOD ── -->
+            <div class="plan-popup-step" id="plan-step-payment" style="display:none;">
+
+            <div class="plan-popup-urgency-bar">
+                <div class="plan-popup-urgency-fill" id="plan-urgency-fill-2"></div>
+            </div>
+
+            <div class="plan-popup-header plan-popup-header--payment">
+                <i class="fi fi-rr-lock plan-lock-icon"></i>
+                <h2>Choose Payment Method</h2>
+                <p>Secure <span class="plan-reservation-price-label">...</span> reservation — processed via your chosen provider.</p>
+            </div>
+
+            <div class="plan-popup-body">
+
+                <!-- Plan summary reminder -->
+                <div class="plan-popup-summary-strip">
+                <i class="fi fi-rr-check-circle"></i>
+                <div>
+                    <strong id="plan-pay-program-name">Beginner — Soft Start</strong>
+                    <span>Reservation fee: <span class="plan-reservation-price-label">...</span> · Deducted from program price</span>
+                </div>
+                </div>
+
+                <!-- Payment options -->
+                <div class="plan-pay-options">
+                <label class="plan-pay-option" id="plan-opt-stripe">
+                    <input type="radio" name="plan-payment" value="stripe" checked>
+                    <div class="plan-pay-option-inner">
+                    <i class="fi fi-rr-credit-card"></i>
+                    <div>
+                        <strong>Credit / Debit Card</strong>
+                        <small>Powered by Stripe · Secure</small>
+                    </div>
+                    </div>
+                    <div class="plan-pay-check"></div>
+                </label>
+
+                <label class="plan-pay-option" id="plan-opt-paypal">
+                    <input type="radio" name="plan-payment" value="paypal">
+                    <div class="plan-pay-option-inner">
+                    <i class="fi fi-brands-paypal" style="color:#003087;font-size:1.3rem;"></i>
+                    <div>
+                        <strong>PayPal</strong>
+                        <small>Fast &amp; secure checkout</small>
+                    </div>
+                    </div>
+                    <div class="plan-pay-check"></div>
+                </label>
+                </div>
+
+                <div class="plan-popup-error" id="plan-pay-error" style="display:none;"></div>
+
+                <button class="plan-submit-btn" id="plan-pay-btn">
+                <i class="fi fi-rr-lock"></i>
+                Pay <span class="plan-reservation-price-label">...</span> — Reserve My Spot
+                </button>
+
+                <button class="plan-back-btn" id="plan-back-btn">
+                <i class="fi fi-rr-arrow-left"></i> Back
+                </button>
+
+                <p class="plan-privacy-note">
+                <i class="fi fi-rr-shield-check"></i>
+                256-bit SSL · PCI compliant · 100% refundable
+                </p>
+            </div>
+            </div>
+
+            <!-- ── STEP 3 : THANK YOU ── -->
+            <div class="plan-popup-step" id="plan-step-thanks" style="display:none;">
+            <div class="plan-thanks-wrap">
+                <div class="plan-thanks-ring">
+                <div class="plan-thanks-icon">
+                    <i class="fi fi-rr-check"></i>
+                </div>
+                </div>
+                <h2 class="plan-thanks-title">Your spot is reserved! 🌸</h2>
+                <p class="plan-thanks-sub" id="plan-thanks-name">Welcome, Maria!</p>
+                <p class="plan-thanks-msg">
+                Your <span class="plan-reservation-price-label">...</span> reservation is confirmed and will be deducted from your program price.
+                A CurvaFit coach will contact you within <strong>24 hours</strong> to start building your custom plan.
+                </p>
+                <div class="plan-thanks-program-badge" id="plan-thanks-program-badge">
+                <i class="fi fi-rr-seedling"></i>
+                <span id="plan-thanks-program-text">Beginner — Soft Start</span>
+                </div>
+                <div class="plan-thanks-details">
+                <div class="plan-thanks-detail-item">
+                    <i class="fi fi-rr-envelope"></i>
+                    <span>Confirmation sent to your inbox</span>
+                </div>
+                <div class="plan-thanks-detail-item">
+                    <i class="fi fi-rr-headset"></i>
+                    <span>Coach contacts you within 24h</span>
+                </div>
+                <div class="plan-thanks-detail-item">
+                    <i class="fi fi-rr-dollar"></i>
+                    <span><span class="plan-reservation-price-label">...</span> deducted from your program total</span>
+                </div>
+                </div>
+                <p class="plan-thanks-marketing-msg">
+                <i class="fi fi-rr-sparkles"></i>
+                Discover products designed to support every step of your transformation — from belly fat to full-body confidence.
+                </p>
+
+                <a href="collection.html" class="plan-close-thanks-btn" id="plan-close-thanks">
+                <i class="fi fi-rr-heart"></i>
+                Start My Journey
+                </a>
+            </div>
+            </div>
+
+        </div>
+        </div>
+
         <!-- 10. WHO FOR -->
         <section id="who-for" class="who-for-section" data-scroll-reveal>
             <div class="container">
@@ -921,7 +1157,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
+    <script src="/script.js"></script>
     <script src="/animations.js"></script>
     <script src="/search.js"></script>
 
@@ -1079,5 +1315,12 @@
      SNOW / FALLING EFFECT
 ═══════════════════════════════════════ -->
 <div id="snow-container" aria-hidden="true"></div>
+<!-- Stripe Public Key -->
+<script>
+    window.STRIPE_PUBLIC_KEY = "pk_test_51PMDwoF9QAVBUyaUqwc7ekbAhyZdI9oA3ubZT8b7TtWGrykoPLvsql4mexEwEoS5pggyssqN6jpj2w5VQMHOSftf00q97Rbt1f";
+</script>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AbHxiQOr022CZ5tf7LtOUlpW-NZxUMfCxankCaZnFJNcN6msJ_eNT3HAptmJhcaQDNltCahOOzi4CoPX&currency=USD&intent=capture"></script>
 </body>
 </html>
