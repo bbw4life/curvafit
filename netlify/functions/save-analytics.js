@@ -27,7 +27,7 @@ exports.handler = async (event) => {
     if (event.httpMethod === "GET") {
       const res = await sheets.spreadsheets.values.get({
         spreadsheetId,
-        range: "Sheet1!A:O"
+        range: "CurvafitAnalitique!A:O"  // ✅ corrigé
       });
       const rows = res.data.values || [];
       return { statusCode: 200, headers, body: JSON.stringify({ success: true, rows }) };
