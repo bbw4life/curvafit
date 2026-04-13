@@ -237,17 +237,72 @@
   }
   @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-  /* ── RESPONSIVE ── */
+  /* ══════════════════════════════════════════
+     RESPONSIVE — MOBILE FIRST
+  ══════════════════════════════════════════ */
+
+  /* Tablette */
   @media (max-width: 900px) {
     .charts-row, .charts-row-3 { grid-template-columns: 1fr; }
     .main { padding: 18px 16px; }
     .topbar { padding: 0 16px; }
     #last-refresh { display: none; }
   }
+
+  /* Mobile */
   @media (max-width: 600px) {
-    .kpi-grid { grid-template-columns: 1fr 1fr; }
-    .data-table { font-size: 12px; }
-    .data-table th, .data-table td { padding: 9px 12px; }
+    /* Topbar */
+    .topbar { height: 52px; padding: 0 14px; }
+    .topbar-logo { height: 26px; }
+    .topbar-title { font-size: 13px; }
+    .topbar-badge { display: none; }
+    .topbar-divider { display: none; }
+    .live-label { display: none; }
+    .btn-refresh span { display: none; }   /* cache le texte "Refresh", garde juste l'icône */
+    .btn-refresh { padding: 7px 10px; }
+
+    /* Layout */
+    .main { padding: 14px 12px; }
+    .page-header h1 { font-size: 18px; }
+    .page-header p { font-size: 12px; }
+
+    /* Filtre */
+    .filter-row { gap: 6px; }
+    .filter-btn { padding: 5px 10px; font-size: 11px; }
+
+    /* KPI — 2 colonnes */
+    .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .kpi-value { font-size: 22px; }
+    .kpi-card { padding: 14px 14px; }
+
+    /* Charts */
+    .chart-card { padding: 14px 14px; }
+    .chart-title { font-size: 13px; }
+
+    /* Table — scroll horizontal + colonnes cachées */
+    .table-head { padding: 14px 14px 10px; }
+    .table-search { width: 100%; }
+    .table-head { flex-direction: column; align-items: flex-start; }
+
+    /* Cache les colonnes secondaires sur mobile */
+    .data-table .col-city,
+    .data-table .col-menu,
+    .data-table .col-referrer { display: none; }
+
+    .data-table th { padding: 8px 10px; font-size: 9px; }
+    .data-table td { padding: 9px 10px; font-size: 12px; }
+
+    /* Rank list */
+    .rank-bar-wrap { width: 60px; }
+  }
+
+  /* Très petit mobile */
+  @media (max-width: 380px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .kpi-value { font-size: 20px; }
+    .kpi-label { font-size: 10px; }
+    .kpi-sub { display: none; }
+    .filter-btn { padding: 4px 8px; font-size: 10px; }
   }
 
   /* ── SCROLL ── */
@@ -293,7 +348,7 @@
         <polyline points="23 4 23 10 17 10"></polyline>
         <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
       </svg>
-      Refresh
+      <span>Refresh</span>
     </button>
   </div>
 </div>
@@ -448,20 +503,20 @@
       <span class="table-title">All sessions</span>
       <input type="text" class="table-search" id="table-search" placeholder="Search country, page, city..." oninput="filterTable()">
     </div>
-    <div style="overflow-x: auto;">
+    <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
       <table class="data-table" id="sessions-table">
         <thead>
           <tr>
             <th>Time</th>
             <th>Country</th>
-            <th>City</th>
+            <th class="col-city">City</th>
             <th>Page</th>
             <th>Time on page</th>
             <th>Clicks</th>
-            <th>Menu clicks</th>
+            <th class="col-menu">Menu clicks</th>
             <th>Scroll</th>
             <th>Device</th>
-            <th>Referrer</th>
+            <th class="col-referrer">Referrer</th>
           </tr>
         </thead>
         <tbody id="sessions-tbody">
@@ -527,7 +582,6 @@ async function loadData() {
     const res  = await fetch(API);
     const data = await res.json();
     if (data.success && data.rows) {
-      // Skip header row (index 0), filter empty rows
       const rows = data.rows.filter((r, i) => i > 0 && r.length > 0);
       allRows = rows.reverse();
       renderAll();
@@ -652,7 +706,6 @@ function renderTopPages() {
   const counts = {};
   filteredRows.forEach(r => {
     const p = simplifyUrl(r[4]) || '/';
-    // Exclure la page analytics elle-même
     if (p.includes('curvafit-analytiques') || p.includes('analytics')) return;
     counts[p] = (counts[p] || 0) + 1;
   });
@@ -782,17 +835,17 @@ function renderTable(rows) {
     return `<tr>
       <td class="td-muted" style="white-space:nowrap">${ts}</td>
       <td>${country}</td>
-      <td class="td-muted">${city}</td>
+      <td class="td-muted col-city">${city}</td>
       <td>
         <div style="font-size:12px;font-weight:500;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${page}">${page}</div>
         <div class="td-url" title="${pageTitle}">${pageTitle}</div>
       </td>
       <td class="td-time">${timeOn}s</td>
       <td class="td-clicks">${clicks}</td>
-      <td style="color:var(--accent3);font-weight:600">${menuC}</td>
+      <td class="col-menu" style="color:var(--accent3);font-weight:600">${menuC}</td>
       <td class="td-scroll">${scroll}%</td>
       <td><span class="td-device ${deviceClass}">${capitalize(deviceClass)}</span></td>
-      <td class="td-muted" style="font-size:11px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${referrer}</td>
+      <td class="td-muted col-referrer" style="font-size:11px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${referrer}</td>
     </tr>`;
   }).join('');
 }

@@ -38,28 +38,40 @@ exports.handler = async (event) => {
       const data = JSON.parse(event.body);
 
       // ── Géolocalisation IP ──
-      let country = data.country || "Unknown";
-      let city    = data.city    || "Unknown";
+      let country = "Unknown";
+      let city    = "Unknown";
 
-      if (country === "Unknown" || city === "Unknown") {
-        try {
-          // Récupère l'IP réelle du visiteur
-          const ip =
-            (event.headers["x-forwarded-for"] || "").split(",")[0].trim() ||
-            (event.headers["client-ip"] || "").trim() ||
-            "";
+      try {
+        // Récupère l'IP réelle du visiteur — plusieurs headers possibles selon le proxy
+        const rawIp =
+          (event.headers["x-nf-client-connection-ip"] || "").trim() ||   // Netlify native header (le plus fiable)
+          (event.headers["x-forwarded-for"] || "").split(",")[0].trim() ||
+          (event.headers["x-real-ip"] || "").trim() ||
+          (event.headers["client-ip"] || "").trim() ||
+          "";
 
-          if (ip && ip !== "127.0.0.1" && ip !== "::1") {
-            const geoRes  = await fetch(`https://ip-api.com/json/${ip}?fields=status,country,city`);
-            const geoData = await geoRes.json();
-            if (geoData.status === "success") {
-              country = geoData.country || "Unknown";
-              city    = geoData.city    || "Unknown";
+        const ip = rawIp.replace(/^::ffff:/, ""); // Normalise les IPv4-mapped IPv6
+
+        if (ip && ip !== "127.0.0.1" && ip !== "::1" && ip !== "") {
+          // Essai 1 : ip-api.com (gratuit, 1000 req/min)
+          const geoRes  = await fetch(`http://ip-api.com/json/${ip}?fields=status,country,city&lang=en`);
+          const geoData = await geoRes.json();
+
+          if (geoData.status === "success") {
+            country = geoData.country || "Unknown";
+            city    = geoData.city    || "Unknown";
+          } else {
+            // Essai 2 : ipapi.co comme fallback
+            const fallbackRes  = await fetch(`https://ipapi.co/${ip}/json/`);
+            const fallbackData = await fallbackRes.json();
+            if (!fallbackData.error) {
+              country = fallbackData.country_name || "Unknown";
+              city    = fallbackData.city         || "Unknown";
             }
           }
-        } catch (geoErr) {
-          console.warn("[ANALYTICS] Geo lookup failed:", geoErr.message);
         }
+      } catch (geoErr) {
+        console.warn("[ANALYTICS] Geo lookup failed:", geoErr.message);
       }
 
       const row = [[
