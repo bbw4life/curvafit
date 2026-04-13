@@ -15297,5 +15297,7 @@ body:has(.paul-announcement-bar) {
     .pp-thanks-title { font-size: 1.65rem; }
 }
 
-
+.open-plan-popup-extra {
+  margin-bottom: -50px !important;
+}
 

@@ -847,10 +847,9 @@ function applyPromoFreeItems() {
 
 
       const plansAvailable = (settings.plans_available || 'no').toLowerCase() === 'yes';
-      const planTriggerWrap = document.querySelector('.plan-request-trigger-wrap');
-      if (planTriggerWrap) {
-        planTriggerWrap.style.display = plansAvailable ? 'none' : '';
-      }
+      document.querySelectorAll('.plan-request-trigger-wrap').forEach(wrap => {
+        wrap.style.display = plansAvailable ? 'none' : '';
+      });
       // Free shipping threshold → risk-reversal section
       const freeShippingThreshold = (settings.cart_drawer && settings.cart_drawer.free_shipping_threshold)
         ? settings.cart_drawer.free_shipping_threshold
@@ -1344,16 +1343,16 @@ function applyPromoFreeItems() {
         if (cells[3]) cells[3].textContent = `$${programMap.maintenance.price}`;
       }
 
-      const finalBtns = document.querySelectorAll('.final-cta-btn');
-      finalBtns.forEach(btn => {
-        if (btn.classList.contains('final-cta-btn--beginner'))
-          btn.innerHTML = `<i class="fa-solid fa-seedling"></i> Start Beginner — $${programMap.beginner.price}`;
-        else if (btn.classList.contains('final-cta-btn--featured'))
-          btn.innerHTML = `<i class="fa-solid fa-fire-flame-curved"></i> Start Intermediate — $${programMap.intermediate.price}`;
-        else if (btn.classList.contains('final-cta-btn--maintenance'))
-          btn.innerHTML = `<i class="fa-solid fa-star"></i> Start Maintenance — $${programMap.maintenance.price}`;
-      });
-
+      const plansOn = (settings.plans_available || 'no').toLowerCase() === 'yes';
+    const finalBtns = document.querySelectorAll('.final-cta-btn');
+    finalBtns.forEach(btn => {
+      if (btn.classList.contains('final-cta-btn--beginner'))
+        btn.innerHTML = `<i class="fa-solid fa-seedling"></i> Start Beginner — $${plansOn ? programMap.beginner.price : '0.00'}`;
+      else if (btn.classList.contains('final-cta-btn--featured'))
+        btn.innerHTML = `<i class="fa-solid fa-fire-flame-curved"></i> Start Intermediate — $${plansOn ? programMap.intermediate.price : '0.00'}`;
+      else if (btn.classList.contains('final-cta-btn--maintenance'))
+        btn.innerHTML = `<i class="fa-solid fa-star"></i> Start Maintenance — $${plansOn ? programMap.maintenance.price : '0.00'}`;
+    });
 
       // ══ INJECT CONTACT EMAILS FROM SETTINGS ══
       (function injectContactEmails() {
@@ -1810,33 +1809,33 @@ function applyPromoFreeItems() {
         }
 
         // Delivery dates
-if (prod) {
-  const today = new Date(); today.setHours(0,0,0,0);
+      if (prod) {
+        const today = new Date(); today.setHours(0,0,0,0);
 
-  const cycleStart = parseInt(prod.cycle_days_start);
-  const cycleEnd   = parseInt(prod.cycle_days_end);
+        const cycleStart = parseInt(prod.cycle_days_start);
+        const cycleEnd   = parseInt(prod.cycle_days_end);
 
-  if (!cycleStart || !cycleEnd || cycleStart <= 0 || cycleEnd <= 0) { showTextDelivery(); return; }
+        if (!cycleStart || !cycleEnd || cycleStart <= 0 || cycleEnd <= 0) { showTextDelivery(); return; }
 
-  const currentStart = new Date(today);
-  const currentEnd   = new Date(today);
-  currentStart.setDate(today.getDate() + cycleStart);
-  currentEnd.setDate(today.getDate() + cycleEnd);
+        const currentStart = new Date(today);
+        const currentEnd   = new Date(today);
+        currentStart.setDate(today.getDate() + cycleStart);
+        currentEnd.setDate(today.getDate() + cycleEnd);
 
-  function formatDate(date) {
-    return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getFullYear()).slice(-2)}`;
-  }
+        function formatDate(date) {
+          return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getFullYear()).slice(-2)}`;
+        }
 
-  const startEl = document.getElementById("start-date"), endEl = document.getElementById("end-date");
-  if (startEl && endEl) { startEl.innerText = formatDate(currentStart); endEl.innerText = formatDate(currentEnd); }
+        const startEl = document.getElementById("start-date"), endEl = document.getElementById("end-date");
+        if (startEl && endEl) { startEl.innerText = formatDate(currentStart); endEl.innerText = formatDate(currentEnd); }
 
-  showTextDelivery();
-  function showTextDelivery() {
-    const textEl = document.getElementById("delivery-text");
-    if (textEl) textEl.style.visibility = "visible";
-  }
-}
-}
+        showTextDelivery();
+        function showTextDelivery() {
+          const textEl = document.getElementById("delivery-text");
+          if (textEl) textEl.style.visibility = "visible";
+        }
+      }
+     }
 
       // Mini media sliders
       document.querySelectorAll('.mini-media-slider').forEach(slider => {
@@ -2234,6 +2233,9 @@ initAnnouncementBar();
     }
 
     if (openBtn)     openBtn.addEventListener('click', openPopup);
+    document.querySelectorAll('.open-plan-popup-extra').forEach(btn => {
+      btn.addEventListener('click', openPopup);
+    });
     if (closeBtn)    closeBtn.addEventListener('click', closePopup);
     if (closeThanks) closeThanks.addEventListener('click', closePopup);
     overlay.addEventListener('click', e => { if (e.target === overlay) closePopup(); });
