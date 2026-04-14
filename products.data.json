@@ -1205,6 +1205,26 @@
         {"id": "Pdg-Francenel-product2","subtitle": "S to 6XL — compresses and shapes"},
         {"id": "Pdg-Francenel-product7","subtitle": "S to 5XL — all-day comfort"}
       ]
-    }
+    },
+    "widget_visibility": {
+        "pages": [
+          "/blog/article10.html",
+          "/blog/article18.html",
+          "/blog/article19.html",
+          "/blog/article1.html",
+          "/blog/article2.html",
+          "/blog/article3.html",
+          "/blog/article4.html",
+          "/blog/article5.html",
+          "/blog/article6.html",
+          "/blog/article7.html",
+          "/blog/article8.html",
+          "/blog/article9.html"
+        ],
+        "cf_chat_toggle": "no",
+        "paul_trigger": "no",
+        "floating_nav": "no",
+        "audio_player": "yes"
+      }
   }
 ]

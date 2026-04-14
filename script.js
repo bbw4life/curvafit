@@ -732,6 +732,35 @@ function applyPromoFreeItems() {
       products = data;
       window.__allProducts = data;
 
+
+      // ══════════════════════════════════════════
+      //  WIDGET VISIBILITY PER PAGE
+      // ══════════════════════════════════════════
+      (function applyWidgetVisibility() {
+        const settings = products.find(p => p.type === 'settings') || {};
+        const wv = settings.widget_visibility;
+        if (!wv) return;
+
+        const currentPath = window.location.pathname;
+        const pages = wv.pages || [];
+
+        // Only apply on listed pages
+        if (!pages.some(p => currentPath.endsWith(p) || currentPath === p)) return;
+
+        const widgetMap = {
+          'cf_chat_toggle': document.getElementById('cf-chat-toggle'),
+          'paul_trigger':   document.querySelector('.paul-indicator-wrapper'),
+          'floating_nav':   document.getElementById('floating-nav'),
+          'audio_player':   document.getElementById('audio-player')
+        };
+
+        Object.entries(widgetMap).forEach(([key, el]) => {
+          if (!el) return;
+          const show = (wv[key] || 'yes').toLowerCase() === 'yes';
+          el.style.setProperty('display', show ? '' : 'none', 'important');
+        });
+      })();
+
       // ── Inject audio src from settings ──
     (function injectAudioSrc() {
       const settings = products.find(p => p.type === 'settings') || {};

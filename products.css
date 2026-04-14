@@ -1947,7 +1947,7 @@ details[open] .chevron {
     padding: 10px 22px;
     background: #1a1018;
     color: #fff;
-    border: none;
+    border: none; 
     border-radius: 6px;
     cursor: pointer;
     font-weight: 700;
@@ -5982,8 +5982,6 @@ body::-webkit-scrollbar {
     .mpp-header h2 { font-size: 1.2rem; }
     .my-product-btn { width: 100%; }
 }
-
-
 
 
 
