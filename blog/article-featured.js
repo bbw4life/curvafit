@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       var jsonLd = {
         '@context': 'https://schema.org',
-        '@type': 'Article',
+        '@type': 'Article', 
         'headline': f.title,
         'description': f.excerpt,
         'image': f.image,
@@ -668,3 +668,7 @@ document.addEventListener('DOMContentLoaded', function () {
   loadStats();
 
 })();
+
+
+
+
