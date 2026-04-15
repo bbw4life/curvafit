@@ -25,7 +25,6 @@
       "label": "Reader Satisfaction"
     }
   ],
-
   "featured": {
     "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/article_1.png?v=1775497369",
     "imageAlt": "Curvy woman building healthy habits through journaling and gentle exercise",
@@ -40,9 +39,8 @@
     "date": "March 9, 2025",
     "views": "8.2k", 
     "readTime": "7 min read",
-    "url": "/blog/article-featured .html"
+    "url": "/blog/article-featured.html"
   },
-
   "cards": [
     {
       "id": "card-1",

@@ -3,10 +3,9 @@
 ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
+  // Ajoute cette ligne au tout début :
+  if (!document.body.classList.contains('a1-page')) return;
 
-  /* ════════════════════════════════════════════════════════════
-     1.  LOAD DATA FROM blog-articles.json — card-1 specific
-  ════════════════════════════════════════════════════════════ */
   fetch('/blog/blog-articles.json')
     .then(function (res) { return res.json(); })
     .then(function (data) {
@@ -4033,7 +4032,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var cardData = null;
         if (data.cards) {
           data.cards.forEach(function (c) {
-            if (c.id === 'card-4') cardData = c;
+            if (c.id === 'card-6') cardData = c;
           });
         }
 
@@ -11336,8 +11335,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* ================================================================
    ARTICLE 15 — "Intermittent Fasting for Curvy Women"
-   ADD THIS BLOCK TO /blog/articles.js
-   Reads: card-15 from editorsPicks in blog-articles.json
 ================================================================ */
 
 (function () {
@@ -12098,6 +12095,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }); // end DOMContentLoaded
 
 })(); // end IIFE
+
+
+
+
 
 
 
