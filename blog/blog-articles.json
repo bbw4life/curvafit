@@ -339,30 +339,54 @@
   ],
   "editorsPicks": [
   {
-    "id": "card-13",
+   "id": "card-13",
     "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/article15.png?v=1775497367",
     "imageAlt": "Cute plus-size workout clothes",
     "category": "Style & Fitness",
     "title": "Cute Workout Clothes for Curvy Gals",
     "excerpt": "Feel confident and comfortable in gear designed for your curves.",
+    "date": "March 9, 2025",
+    "views": "8.2k",
+    "readTime": "7 min read",
+    "author": {
+      "name": "Dr. Sarah Mitchell",
+      "role": "Wellness Expert",
+      "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/customers_8.png?v=1774717607"
+    },
     "url": "/blog/article13.html"
-  },
+    },
   {
-    "id": "card-14",
+   "id": "card-14",
     "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/article16.png?v=1775497365",
     "imageAlt": "Pilates for plus-size beginners",
     "category": "Home Workouts",
     "title": "Pilates for Plus-Size Beginners",
     "excerpt": "Gentle movements to build core strength and flexibility.",
+    "author": {
+      "name": "Lisa",
+      "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/Coach_2.png?v=1774716188"
+    },
+    "views": "8.1k",
+    "date": "Apr 1, 2026",
+    "readTime": "10 min",
     "url": "/blog/article14.html"
-  },
+    },
   {
     "id": "card-15",
-    "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/article17.png?v=1775497370",
-    "imageAlt": "Strength training for curvy women",
-    "category": "Strength Training",
-    "title": "Strength Training Essentials for Curvy Women",
-    "excerpt": "Build muscle and boost metabolism safely and confidently.",
+    "category": "nutrition-for-curvy-women",
+    "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/article16.png?v=1775497365",
+    "imageAlt": "Curvy woman practising intermittent fasting and circadian eating",
+    "badge": "Nutrition",
+    "isNew": true,
+    "title": "Intermittent Fasting for Curvy Women: What the Science Actually Says",
+    "excerpt": "The complete evidence-based guide to intermittent fasting for plus-size women — what works, what doesn't, and how to do it without wrecking your hormones.",
+    "author": {
+      "name": "Anna",
+      "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/Coach_3.png?v=1774716188"
+    },
+    "views": "9.3k",
+    "date": "Apr 8, 2026",
+    "readTime": "10 min",
     "url": "/blog/article15.html"
   }
 ]

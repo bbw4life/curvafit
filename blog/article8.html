@@ -6,7 +6,7 @@
 
   <title id="page-title">Real Journeys: How One Curvy Woman Found Balance | CurvaFit Journal</title>
   <meta id="meta-description" name="description" content="Inspiring story of transformation through patience and self-compassion.">
-  <meta name="keywords" content="curvy woman transformation, plus size wellness journey, body positive real story, curvy fitness success, self-compassion weight loss, real women real results, curvy body confidence">
+  <meta name="keywords" content="curvy woman wellness journey, plus size transformation story, body positive real story, curvy woman balance self-compassion, real weight loss story curvy">
   <meta name="author" content="Curva — CurvaFit Journal">
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   <meta name="theme-color" content="#c0385e">
@@ -168,7 +168,7 @@
 
   <main id="article-main" class="a8-main">
 
-    <!-- ══════════════ BREADCRUMBS ══════════════ -->
+     <!-- ══════════════ BREADCRUMBS ══════════════ -->
     <nav id="bc-nav" aria-label="Breadcrumb navigation" style="display:none;">
       <div class="bc-wrapper">
         <ol class="bc-list" id="bc-list">
@@ -185,441 +185,565 @@
       </div>
     </nav>
 
-    <!-- ══════════════ IMMERSIVE FULLSCREEN HERO ══════════════ -->
+    <!-- ══════════════ CINEMATIC STORY HERO ══════════════ -->
     <section class="a8-hero" id="a8-hero">
 
-      <!-- Background image with warm overlay -->
-      <div class="a8-hero__bg">
-        <img id="a8-hero-bg-img" src="https://cdn.shopify.com/s/files/1/0978/0353/4627/files/article9.png?v=1775497370" alt="" aria-hidden="true" class="a8-hero__bg-img">
-        <div class="a8-hero__bg-overlay"></div>
-        <div class="a8-hero__bg-grain" aria-hidden="true"></div>
+      <!-- Layered background -->
+      <div class="a8-hero__backdrop">
+        <img id="a8-hero-bg" src="" alt="" aria-hidden="true">
+        <div class="a8-hero__vignette"></div>
+        <div class="a8-hero__film-grain" aria-hidden="true"></div>
       </div>
 
-      <!-- Floating breadcrumb -->
-      <nav class="a8-breadcrumb" aria-label="Breadcrumb">
-        <a href="/index.html"><i class="fi fi-rr-home"></i> Home</a>
-        <i class="fi fi-rr-angle-right a8-breadcrumb__sep"></i>
-        <a href="/blog/blog.html">Journal</a>
-        <i class="fi fi-rr-angle-right a8-breadcrumb__sep"></i>
-        <span id="a8-breadcrumb-cat">Real Stories</span>
-      </nav>
+      <!-- Floating chapter label -->
+      <div class="a8-hero__chapter" aria-hidden="true">
+        <span class="a8-chapter-line"></span>
+        <span class="a8-chapter-text">A CurvaFit Story</span>
+        <span class="a8-chapter-line"></span>
+      </div>
 
-      <!-- Central hero content — cinematic layout -->
-      <div class="a8-hero__content">
+      <!-- Main content -->
+      <div class="a8-hero__inner">
 
-        <!-- Label row -->
-        <div class="a8-hero__label-row">
-          <span class="a8-hero__badge" id="a8-hero-badge"></span>
-          <span class="a8-hero__new-badge" id="a8-hero-new-badge" style="display:none">✦ NEW</span>
-          <span class="a8-hero__dot" aria-hidden="true">◆</span>
-          <span class="a8-hero__issue">Issue <span class="a8-hero__issue-num">08</span></span>
-          <span class="a8-hero__dot" aria-hidden="true">◆</span>
-          <span class="a8-hero__date" id="a8-hero-date"></span>
+        <!-- Breadcrumb -->
+        <nav class="a8-breadcrumb" aria-label="Breadcrumb">
+          <a href="/index.html">Home</a>
+          <i class="fi fi-rr-angle-right"></i>
+          <a href="/blog/blog.html">Journal</a>
+          <i class="fi fi-rr-angle-right"></i>
+          <span id="a8-hero-badge-bc">Real Stories</span>
+        </nav>
+
+        <!-- Badges row -->
+        <div class="a8-hero__badges">
+          <span class="a8-badge a8-badge--cat" id="a8-hero-badge"></span>
+          <span class="a8-badge a8-badge--new" id="a8-hero-new-badge" style="display:none;">✦ New</span>
+          <span class="a8-badge a8-badge--time"><i class="fi fi-rr-clock"></i> <span id="a8-hero-readtime"></span></span>
         </div>
 
-        <!-- Grand title -->
+        <!-- Big cinematic title -->
         <h1 class="a8-hero__title" id="a8-hero-title">
           Real Journeys:<br>
-          <em>How One Curvy<br>Woman Found Balance</em>
+          <em>How One Curvy Woman</em><br>
+          Found Balance
         </h1>
 
-        <!-- Subtitle strip -->
-        <p class="a8-hero__subtitle" id="a8-hero-excerpt">Inspiring story of transformation through patience and self-compassion.</p>
+        <p class="a8-hero__deck" id="a8-hero-excerpt"></p>
 
-        <!-- Author + meta bar -->
-        <div class="a8-hero__meta-bar">
-          <div class="a8-hero__author">
-            <img id="a8-hero-author-img" src="" alt="" class="a8-hero__author-img">
-            <div class="a8-hero__author-text">
-              <span class="a8-hero__author-by">Story narrated by</span>
-              <span class="a8-hero__author-name" id="a8-hero-author-name"></span>
-            </div>
+        <!-- Stats row -->
+        <div class="a8-hero__stats">
+          <div class="a8-stat"><i class="fi fi-rr-eye"></i><span id="a8-hero-views"></span></div>
+          <div class="a8-stat"><i class="fi fi-rr-calendar"></i><span id="a8-hero-date"></span></div>
+          <div class="a8-stat"><i class="fi fi-rr-user"></i><span id="a8-hero-author-chip"></span></div>
+        </div>
+
+        <!-- Author card inline -->
+        <div class="a8-hero__author">
+          <div class="a8-hero__author-avatar-wrap">
+            <img id="a8-hero-author-img" src="" alt="" class="a8-hero__author-avatar">
+            <div class="a8-hero__author-ring" aria-hidden="true"></div>
           </div>
-          <div class="a8-hero__meta-divider" aria-hidden="true"></div>
-          <div class="a8-hero__meta-items">
-            <span><i class="fi fi-rr-clock"></i> <span id="a8-hero-readtime"></span></span>
-            <span><i class="fi fi-rr-eye"></i> <span id="a8-hero-views"></span></span>
+          <div class="a8-hero__author-info">
+            <span class="a8-hero__author-name" id="a8-hero-author-name"></span>
+            <span class="a8-hero__author-role">Wellness Writer &amp; Real Stories Editor</span>
           </div>
         </div>
 
-        <!-- Action row -->
-        <div class="a8-hero__actions">
-          <a href="#a8-content" class="a8-hero__cta">
-            <span class="a8-hero__cta-ring" aria-hidden="true"></span>
-            <i class="fi fi-rr-book-open-cover"></i>
-            <span>Read Her Story</span>
-          </a>
-          <div class="a8-hero__share-strip">
-            <button class="a8-share-btn a8-share-btn--fb" aria-label="Share on Facebook"><i class="fab fa-facebook-f"></i></button>
-            <button class="a8-share-btn a8-share-btn--pi" aria-label="Share on Pinterest"><i class="fab fa-pinterest-p"></i></button>
-            <button class="a8-share-btn a8-share-btn--wa" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp"></i></button>
+        <!-- Share buttons -->
+        <div class="a8-hero__share">
+          <span class="a8-share-label">Share this story</span>
+          <div class="a8-share-row">
+            <a href="#" class="a8-share-btn a8-share-btn--fb" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="a8-share-btn a8-share-btn--pi" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+            <a href="#" class="a8-share-btn a8-share-btn--wa" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" class="a8-share-btn a8-share-btn--tw" aria-label="Twitter/X"><i class="fab fa-x-twitter"></i></a>
             <button class="a8-share-btn a8-share-btn--copy" id="a8-hero-copy" aria-label="Copy link"><i class="fi fi-rr-link"></i></button>
           </div>
         </div>
 
-      </div>
-
-      <!-- Scroll invite -->
-      <div class="a8-hero__scroll-invite" aria-hidden="true">
-        <span>Scroll to read</span>
-        <div class="a8-hero__scroll-line"></div>
-      </div>
-
-      <!-- Floating story stat chips -->
-      <div class="a8-chip a8-chip--1">
-        <i class="fi fi-rr-heart"></i>
-        <div>
-          <strong>9.2k</strong>
-          <span>Women inspired</span>
+        <!-- Scroll prompt -->
+        <div class="a8-hero__scroll-cue">
+          <div class="a8-scroll-track"><div class="a8-scroll-dot"></div></div>
+          <span>Begin reading</span>
         </div>
+
       </div>
-      <div class="a8-chip a8-chip--2">
-        <i class="fi fi-rr-star"></i>
-        <div>
-          <strong>Real Story</strong>
-          <span>No filters, no faking</span>
+
+      <!-- Right image panel -->
+      <div class="a8-hero__portrait" aria-hidden="true">
+        <img id="a8-hero-portrait" src="" alt="">
+        <div class="a8-hero__portrait-overlay"></div>
+
+        <!-- Floating story cards -->
+        <div class="a8-float-card a8-float-card--1">
+          <div class="a8-float-card__icon"><i class="fi fi-rr-heart"></i></div>
+          <div>
+            <strong>9.2k Women</strong>
+            <span>found hope in this story</span>
+          </div>
+        </div>
+        <div class="a8-float-card a8-float-card--2">
+          <div class="a8-float-card__icon"><i class="fi fi-rr-star"></i></div>
+          <div>
+            <strong>Real &amp; Unfiltered</strong>
+            <span>no airbrushing, no shortcuts</span>
+          </div>
         </div>
       </div>
 
     </section>
 
-    <!-- ══════════════ WARM INTRO BAND ══════════════ -->
-    <div class="a8-intro-band" id="a8-content">
-      <div class="a8-intro-band__inner">
-        <span class="a8-intro-band__eyebrow">✦ A Letter to Every Curvy Woman Reading This</span>
-        <p class="a8-intro-band__text">This story belongs to someone who looked in the mirror and decided — quietly, bravely — that she deserved more than what the world had told her was possible. Her name is Sophie. You may already know her, because her story sounds a great deal like yours.</p>
+    <!-- ══════════════ STORY RIBBON ══════════════ -->
+    <div class="a8-ribbon">
+      <div class="a8-ribbon__inner">
+        <div class="a8-ribbon__item"><i class="fi fi-rr-book-open-reader"></i><span>Verified Story</span></div>
+        <div class="a8-ribbon__sep">◆</div>
+        <div class="a8-ribbon__item"><i class="fi fi-rr-clock"></i><span id="a8-ribbon-readtime">—</span></div>
+        <div class="a8-ribbon__sep">◆</div>
+        <div class="a8-ribbon__item"><i class="fi fi-rr-eye"></i><span id="a8-ribbon-views">—</span></div>
+        <div class="a8-ribbon__sep">◆</div>
+        <div class="a8-ribbon__item"><i class="fi fi-rr-calendar"></i><span id="a8-ribbon-date">—</span></div>
       </div>
     </div>
 
-    <!-- ══════════════ MAIN CONTENT ══════════════ -->
+    <!-- ══════════════ MAIN LAYOUT ══════════════ -->
     <div class="a8-layout">
 
-      <!-- LEFT FLOATING SHARE RAIL -->
-      <aside class="a8-share-rail" id="a8-share-rail">
-        <span class="a8-share-rail__label">Share</span>
-        <button class="a8-share-btn a8-share-btn--fb" aria-label="Facebook"><i class="fab fa-facebook-f"></i></button>
-        <button class="a8-share-btn a8-share-btn--pi" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></button>
-        <button class="a8-share-btn a8-share-btn--wa" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></button>
-        <button class="a8-share-btn a8-share-btn--tw" aria-label="Twitter"><i class="fab fa-x-twitter"></i></button>
-        <button class="a8-share-btn a8-share-btn--copy" aria-label="Copy link"><i class="fi fi-rr-link"></i></button>
-        <div class="a8-share-rail__progress-wrap" aria-hidden="true">
-          <div class="a8-share-rail__progress-bar" id="a8-rail-progress"></div>
+      <!-- ═══ SIDEBAR ═══ -->
+      <aside class="a8-sidebar" id="a8-sidebar">
+
+        <!-- TOC -->
+        <div class="a8-sidebar-card a8-toc-card">
+          <div class="a8-sidebar-card__label"><i class="fi fi-rr-list"></i> Story Chapters</div>
+          <nav class="a8-toc-nav" id="a8-toc-nav" aria-label="Table of contents"></nav>
         </div>
+
+        <!-- Story insight -->
+        <div class="a8-sidebar-card a8-insight-card">
+          <div class="a8-sidebar-card__label"><i class="fi fi-rr-sparkles"></i> Story Insight</div>
+          <div class="a8-insight-quote">
+            <span class="a8-insight-quote__mark">"</span>
+            <p>Balance isn't a destination — it's a daily practice of choosing yourself, again and again, without needing permission.</p>
+          </div>
+          <span class="a8-insight-author">— <span id="a8-sidebar-author"></span></span>
+        </div>
+
+        <!-- Sidebar CTA -->
+        <div class="a8-sidebar-card a8-sidebar-cta">
+          <div class="a8-sidebar-cta__eyebrow">✦ Write your own story</div>
+          <h3>Your Transformation Starts Here</h3>
+          <p>Join thousands of curvy women rewriting their relationship with their body — with science, compassion, and community.</p>
+          <a href="/programs.html" class="a8-sidebar-cta__btn">Start My Journey →</a>
+        </div>
+
+        <!-- Sticky share -->
+        <div class="a8-sticky-share" id="a8-sticky-share">
+          <span>Share</span>
+          <a href="#" class="a8-share-btn a8-share-btn--fb" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="a8-share-btn a8-share-btn--pi" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+          <a href="#" class="a8-share-btn a8-share-btn--wa" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="a8-share-btn a8-share-btn--tw" aria-label="Twitter/X"><i class="fab fa-x-twitter"></i></a>
+          <button class="a8-share-btn a8-share-btn--copy" aria-label="Copy link"><i class="fi fi-rr-link"></i></button>
+        </div>
+
       </aside>
 
-      <!-- ARTICLE BODY -->
-      <article class="a8-body" id="a8-body">
+      <!-- ═══ ARTICLE ═══ -->
+      <article class="a8-content" id="a8-content">
 
-        <!-- ■ CHAPTER 1 — BEFORE -->
-        <div class="a8-chapter" id="a8-ch-1">
-          <div class="a8-chapter__label">
-            <span class="a8-chapter__num">Chapter I</span>
-            <div class="a8-chapter__rule" aria-hidden="true"></div>
-            <span class="a8-chapter__title-small">The Weight of Before</span>
-          </div>
-
-          <p class="a8-dropcap">Sophie Adams was thirty-four years old when she realised she had been holding her breath for the better part of a decade. Not literally — though there were yoga classes she had avoided for fear of the poses, and photographs she had declined to be in, and plane seats that had made her feel like an inconvenience. But emotionally, she had been holding herself small. Waiting to exhale until she was smaller too.</p>
-
-          <p>"I thought happiness was something I had to earn through my body," she says, sitting across from me in her sun-filled kitchen, a mug of turmeric latte warming her hands. "I told myself: when I lose the weight, I'll book the holiday. When I lose the weight, I'll buy the dress. When I lose the weight, I'll let myself be happy."</p>
-
-          <p>She pauses. Smiles. The kind of smile that contains a whole education.</p>
-
-          <p>"The weight I actually needed to lose was the waiting."</p>
-
-          <!-- Pull quote — handwritten style -->
-          <div class="a8-pull-quote">
-            <div class="a8-pull-quote__ornament" aria-hidden="true">❝</div>
-            <blockquote id="a8-quote-1">"The weight I actually needed to lose was the waiting."</blockquote>
-            <cite>— <span class="a8-pull-quote__author" id="a8-quote-cite-1"></span></cite>
-          </div>
-        </div>
-
-        <!-- ■ CHAPTER 2 — THE TURNING POINT -->
-        <div class="a8-chapter" id="a8-ch-2">
-          <div class="a8-chapter__label">
-            <span class="a8-chapter__num">Chapter II</span>
-            <div class="a8-chapter__rule" aria-hidden="true"></div>
-            <span class="a8-chapter__title-small">The Morning Everything Changed</span>
-          </div>
-
-          <p>It was an ordinary Tuesday — which, Sophie insists, is exactly when life-changing things tend to happen. She was on her fourth diet of the year. The kitchen counter held a stack of tupperware, each labelled with a day and a calorie count. The scale had gone down 3 kilograms. And she was, in her own words, "absolutely miserable."</p>
-
-          <p>"I was weighing my food to the gram, logging every bite, obsessing over numbers. And yes, I was losing weight. But I was also losing myself. My relationships. My joy. I'd refuse dinner invitations because I couldn't control the menu. I snapped at people I loved because I was hungry. I was not living — I was managing."</p>
-
-          <p>That Tuesday morning, she sat at the kitchen table, looked at her tupperware containers, and felt something she couldn't name immediately. It wasn't resignation. It was clarity.</p>
-
-          <p>"I thought: what if I stopped treating my body like a problem to solve and started treating it like a home to love?"</p>
-
-          <!-- Illustrated moment — scene card -->
-          <div class="a8-scene-card">
-            <div class="a8-scene-card__icon"><i class="fi fi-rr-sunrise"></i></div>
-            <div class="a8-scene-card__body">
-              <span class="a8-scene-card__label">The Turning Point</span>
-              <p>Sophie closed her calorie-tracking app. She opened the window. She made herself a proper breakfast — eggs, toast, a handful of strawberries — and she ate it sitting down, without guilt, for the first time in months.</p>
-              <span class="a8-scene-card__note">"It was the most rebellious thing I had ever done. And the most nourishing."</span>
+        <!-- ══ DISCOVER ══ -->
+        <div class="a8-discover" id="a8-section-discover">
+          <div class="a8-discover__eyebrow"><i class="fi fi-rr-sparkles"></i> What this story reveals</div>
+          <div class="a8-discover__grid">
+            <div class="a8-discover__item">
+              <span class="a8-discover__num">01</span>
+              <span>How a decade of failed diets led to the one shift that changed everything</span>
+            </div>
+            <div class="a8-discover__item">
+              <span class="a8-discover__num">02</span>
+              <span>The moment she stopped fighting her body — and what happened next</span>
+            </div>
+            <div class="a8-discover__item">
+              <span class="a8-discover__num">03</span>
+              <span>Five daily rituals that rebuilt her energy, confidence, and joy</span>
+            </div>
+            <div class="a8-discover__item">
+              <span class="a8-discover__num">04</span>
+              <span>How she navigates setbacks without spiralling into shame</span>
+            </div>
+            <div class="a8-discover__item">
+              <span class="a8-discover__num">05</span>
+              <span>The surprising role community played in her sustained transformation</span>
+            </div>
+            <div class="a8-discover__item">
+              <span class="a8-discover__num">06</span>
+              <span>Her message to every woman who has ever felt like giving up</span>
             </div>
           </div>
         </div>
 
-        <!-- ■ CHAPTER 3 — THE METHOD -->
-        <div class="a8-chapter" id="a8-ch-3">
-          <div class="a8-chapter__label">
-            <span class="a8-chapter__num">Chapter III</span>
-            <div class="a8-chapter__rule" aria-hidden="true"></div>
-            <span class="a8-chapter__title-small">What She Actually Did</span>
-          </div>
+        <!-- ══ INTRO ══ -->
+        <div class="a8-section" id="a8-section-intro">
+          <p class="a8-lead">Some stories don't begin with a dramatic before-and-after. Some begin with a Tuesday morning, a bathroom mirror, and a quiet decision to try — not harder, but differently.</p>
 
-          <p>What came next was not a dramatic montage. It was quiet, incremental, and deeply imperfect. Sophie didn't hire a personal trainer or buy an elaborate supplement stack. She made a list — on paper, with a pen — of things that had made her body feel good, historically. Not thin. Not praised. Just <em>good</em>.</p>
+          <p>The woman at the centre of this story asked us not to call it a "transformation." She calls it a <em>recalibration</em>. A slow, imperfect, deeply human process of learning to live inside her body rather than at war with it. And in many ways, that reframing is the whole point.</p>
 
-          <p>The list was shorter than she expected, and more honest. Walking in the morning light. Dancing alone in her kitchen. Swimming. Cooking food that smelled beautiful. Sleeping without an alarm.</p>
+          <p>We spent several weeks with her — over video calls, voice notes, and a long afternoon walk in her neighbourhood — to document not just what she did, but how she felt along the way. The fear. The elation. The weeks nothing moved. The morning she realised she'd stopped dreading mirrors.</p>
 
-          <p>"I decided to treat that list like a prescription. Not all at once. One thing at a time. Slowly."</p>
+          <p>This is that story. Unedited, unfiltered, and entirely her own.</p>
+        </div>
 
-          <!-- The Pillars grid — warm, organic design -->
-          <div class="a8-pillars">
-
-            <div class="a8-pillar">
-              <div class="a8-pillar__icon-wrap">
-                <i class="fi fi-rr-walking"></i>
-              </div>
-              <div class="a8-pillar__body">
-                <h3>Movement She Actually Enjoyed</h3>
-                <p>Sophie began with 20-minute morning walks — no headphones, no podcast, no fitness tracker. Just movement for the pleasure of it. Within three weeks, she was walking 45 minutes daily. Not because a plan told her to, but because she wanted to.</p>
-                <div class="a8-pillar__result">
-                  <i class="fi fi-rr-arrow-trend-up"></i>
-                  <span>Energy levels doubled within 6 weeks</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="a8-pillar">
-              <div class="a8-pillar__icon-wrap">
-                <i class="fi fi-rr-salad"></i>
-              </div>
-              <div class="a8-pillar__body">
-                <h3>Food as Nourishment, Not Numbers</h3>
-                <p>She stopped counting calories entirely. Instead, she asked herself one question before eating: "Does this nourish me?" Sometimes the answer was a bowl of lentil soup. Sometimes it was a slice of birthday cake with her niece. Both were valid answers.</p>
-                <div class="a8-pillar__result">
-                  <i class="fi fi-rr-arrow-trend-up"></i>
-                  <span>Relationship with food transformed over 3 months</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="a8-pillar">
-              <div class="a8-pillar__icon-wrap">
-                <i class="fi fi-rr-moon"></i>
-              </div>
-              <div class="a8-pillar__body">
-                <h3>Sleep as Sacred</h3>
-                <p>"I used to sleep five hours because I was up late logging macros and reading diet forums," she laughs. She implemented a non-negotiable 9pm wind-down: no phone, a warm bath, a novel. Sleep became her highest-priority health habit — before food, before exercise.</p>
-                <div class="a8-pillar__result">
-                  <i class="fi fi-rr-arrow-trend-up"></i>
-                  <span>Cortisol reduced, cravings decreased significantly</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="a8-pillar">
-              <div class="a8-pillar__icon-wrap">
-                <i class="fi fi-rr-users"></i>
-              </div>
-              <div class="a8-pillar__body">
-                <h3>Community Over Competition</h3>
-                <p>She joined a women's wellness group — not a weight-loss challenge, but a genuine community of curvy women supporting each other's lives. The shift from competition to connection was, she says, the single most powerful thing she did.</p>
-                <div class="a8-pillar__result">
-                  <i class="fi fi-rr-arrow-trend-up"></i>
-                  <span>Accountability without judgement — stayed consistent</span>
-                </div>
-              </div>
-            </div>
-
+        <!-- ══ STORY PULLQUOTE ══ -->
+        <div class="a8-pullquote">
+          <div class="a8-pullquote__inner">
+            <span class="a8-pullquote__open" aria-hidden="true">"</span>
+            <blockquote>I didn't need to lose weight to start living. But I did need to start living — fully, joyfully, in this exact body — before anything else could change.</blockquote>
+            <cite>— <span id="a8-pullquote-author"></span></cite>
           </div>
         </div>
 
-        <!-- ■ CHAPTER 4 — THE NUMBERS -->
-        <div class="a8-chapter" id="a8-ch-4">
-          <div class="a8-chapter__label">
-            <span class="a8-chapter__num">Chapter IV</span>
-            <div class="a8-chapter__rule" aria-hidden="true"></div>
-            <span class="a8-chapter__title-small">What The Numbers Actually Show</span>
+        <!-- ══ CHAPTER 1 ══ -->
+        <div class="a8-section" id="a8-section-chapter1">
+          <div class="a8-chapter-header">
+            <span class="a8-chapter-num">Chapter 01</span>
+            <h2>The Diet That Finally Broke Her</h2>
           </div>
 
-          <p>For those who want to know — and Sophie offers this not as a goal to replicate, but as evidence that patience works — here is what changed in 18 months of living, not dieting:</p>
+          <p>By the time she was 34, she had tried seventeen different approaches to losing weight. She remembered them not by name but by feeling: the one that left her dizzy by Wednesday, the one she quit on Day 9, the one she almost completed but didn't, the one her sister recommended that only made her feel more like a failure when it didn't stick.</p>
 
-          <!-- Stats — story-driven visual timeline -->
-          <div class="a8-results-strip">
+          <p>"Every diet gave me the same message in slightly different packaging," she told us. "Work harder. Want it more. You're not disciplined enough. There's something broken in you that this plan will fix — if you just follow it properly." And every time it didn't work, she accepted the blame entirely.</p>
 
-            <div class="a8-result-item">
-              <div class="a8-result-item__month">Month 1</div>
-              <div class="a8-result-item__bar-wrap">
-                <div class="a8-result-item__bar" style="--a8-bar-w: 15%"></div>
-              </div>
-              <div class="a8-result-item__label">Energy returned. Sleep improved. First 2kg released.</div>
+          <p>The seventeenth attempt ended on a Sunday evening with a full packet of biscuits, a Netflix series she wasn't watching, and the most exhausted feeling she'd ever had. Not full. Not guilty. Just <em>tired</em>. Bone-tired of the cycle.</p>
+
+          <!-- Story callout -->
+          <div class="a8-story-callout a8-story-callout--revelation">
+            <div class="a8-story-callout__icon"><i class="fi fi-rr-bulb"></i></div>
+            <div class="a8-story-callout__body">
+              <strong>The Turning Point</strong>
+              <p>She didn't make a plan that night. She didn't set a new goal or buy a new programme. She simply decided she was done blaming herself for something that was never entirely her fault to begin with.</p>
             </div>
-
-            <div class="a8-result-item">
-              <div class="a8-result-item__month">Month 3</div>
-              <div class="a8-result-item__bar-wrap">
-                <div class="a8-result-item__bar" style="--a8-bar-w: 35%"></div>
-              </div>
-              <div class="a8-result-item__label">Clothes fitting differently. Mood stable for the first time in years.</div>
-            </div>
-
-            <div class="a8-result-item">
-              <div class="a8-result-item__month">Month 6</div>
-              <div class="a8-result-item__bar-wrap">
-                <div class="a8-result-item__bar" style="--a8-bar-w: 55%"></div>
-              </div>
-              <div class="a8-result-item__label">8kg released. Started swimming again. Booked that holiday she'd deferred for 3 years.</div>
-            </div>
-
-            <div class="a8-result-item">
-              <div class="a8-result-item__month">Month 12</div>
-              <div class="a8-result-item__bar-wrap">
-                <div class="a8-result-item__bar" style="--a8-bar-w: 78%"></div>
-              </div>
-              <div class="a8-result-item__label">16kg released. Blood markers excellent. Off blood pressure medication.</div>
-            </div>
-
-            <div class="a8-result-item a8-result-item--peak">
-              <div class="a8-result-item__month">Month 18</div>
-              <div class="a8-result-item__bar-wrap">
-                <div class="a8-result-item__bar" style="--a8-bar-w: 100%"></div>
-              </div>
-              <div class="a8-result-item__label">22kg released. More importantly: she stopped measuring her worth in kilograms.</div>
-            </div>
-
           </div>
 
-          <div class="a8-stats-note">
-            <i class="fi fi-rr-info"></i>
-            <p>These results reflect one individual's authentic journey. Results vary based on individual health, habits, and consistency. Sophie's story is shared with her permission and full editorial approval.</p>
-          </div>
+          <p>What she discovered later — through a psychologist who specialised in body image — was that chronic dieting had literally rewired her hunger hormones, suppressed her metabolism, and trained her brain to associate food restriction with shame. The "broken" thing wasn't her willpower. It was the approach itself.</p>
         </div>
 
-        <!-- ■ MID STORY QUOTE — FULL WIDTH -->
-        <div class="a8-full-quote">
-          <div class="a8-full-quote__inner">
-            <div class="a8-full-quote__deco" aria-hidden="true">
-              <span>S T O R Y</span>
-            </div>
-            <blockquote>"I didn't get healthy to be smaller. I got healthy to be <em>more</em> — more present, more joyful, more alive. The smaller body was a side effect of a larger life."</blockquote>
-            <cite id="a8-full-quote-author">— Sophie Adams, Real Stories</cite>
+        <!-- ══ TIMELINE ══ -->
+        <div class="a8-timeline" id="a8-section-timeline">
+          <div class="a8-timeline__header">
+            <span class="a8-timeline__eyebrow"><i class="fi fi-rr-time-past"></i> Her Journey</span>
+            <h3>18 Months, Month by Month</h3>
           </div>
-        </div>
+          <div class="a8-timeline__track">
 
-        <!-- ■ CHAPTER 5 — LESSONS -->
-        <div class="a8-chapter" id="a8-ch-5">
-          <div class="a8-chapter__label">
-            <span class="a8-chapter__num">Chapter V</span>
-            <div class="a8-chapter__rule" aria-hidden="true"></div>
-            <span class="a8-chapter__title-small">What She Wants You to Know</span>
-          </div>
-
-          <p>When I ask Sophie what she would say to a woman who is exactly where she was two years ago — exhausted, sceptical, hopeful in a half-broken way — she doesn't hesitate.</p>
-
-          <!-- Lessons — warm card style -->
-          <div class="a8-lessons">
-
-            <div class="a8-lesson">
-              <span class="a8-lesson__num">01</span>
-              <div class="a8-lesson__body">
-                <h3>Stop making your body the enemy</h3>
-                <p>Your body is not working against you. It is doing precisely what it was designed to do under the conditions you've given it. Change the conditions — sleep, stress, nourishment, joy — and your body will respond. It always does. It cannot do otherwise.</p>
+            <div class="a8-timeline__item a8-timeline__item--left">
+              <div class="a8-timeline__dot"></div>
+              <div class="a8-timeline__card">
+                <span class="a8-timeline__month">Month 1–2</span>
+                <h4>The Pause</h4>
+                <p>No dieting. No goals. Just journalling how she felt in her body each day. Learning to distinguish hunger from emotion. Sleeping more. Crying sometimes.</p>
+                <div class="a8-timeline__mood a8-timeline__mood--hard">Hardest months</div>
               </div>
             </div>
 
-            <div class="a8-lesson">
-              <span class="a8-lesson__num">02</span>
-              <div class="a8-lesson__body">
-                <h3>Slow is not failure — slow is sustainable</h3>
-                <p>Every crash diet she had done had "worked" — for a few weeks. The approach that actually changed her life moved at a pace that felt almost embarrassingly slow. One walk. One better sleep. One meal eaten without guilt. Tiny, consistent, compounding.</p>
+            <div class="a8-timeline__item a8-timeline__item--right">
+              <div class="a8-timeline__dot"></div>
+              <div class="a8-timeline__card">
+                <span class="a8-timeline__month">Month 3–4</span>
+                <h4>First Movement</h4>
+                <p>Started 20-minute morning walks — not to burn calories, but to feel the morning air and think clearly. No tracking. No fitness app. Just walking.</p>
+                <div class="a8-timeline__mood a8-timeline__mood--gentle">Gentle progress</div>
               </div>
             </div>
 
-            <div class="a8-lesson">
-              <span class="a8-lesson__num">03</span>
-              <div class="a8-lesson__body">
-                <h3>You are allowed to feel good right now</h3>
-                <p>"This is the one I needed to hear most," Sophie says quietly. "You don't have to earn the right to feel good in your body. You don't have to weigh a certain amount to deserve pleasure, rest, beauty, adventure. You are allowed — right now, today, as you are — to feel good."</p>
+            <div class="a8-timeline__item a8-timeline__item--left">
+              <div class="a8-timeline__dot"></div>
+              <div class="a8-timeline__card">
+                <span class="a8-timeline__month">Month 5–7</span>
+                <h4>Rebuilding Food Trust</h4>
+                <p>Working with a nutritionist to rebuild normal eating patterns. No forbidden foods. No calorie counting. Learning to eat slowly and notice satisfaction.</p>
+                <div class="a8-timeline__mood a8-timeline__mood--growing">Rebuilding</div>
               </div>
             </div>
 
-            <div class="a8-lesson">
-              <span class="a8-lesson__num">04</span>
-              <div class="a8-lesson__body">
-                <h3>Find your people — they exist</h3>
-                <p>The community of curvy women she found was not the support group she expected. It was funnier, more honest, more brilliant than that. Women sharing tips on wide-fit trainers and hormone-friendly recipes and the best swimsuits for fuller busts. Women cheering for each other's bloodwork results, not just their jeans size.</p>
+            <div class="a8-timeline__item a8-timeline__item--right">
+              <div class="a8-timeline__dot"></div>
+              <div class="a8-timeline__card">
+                <span class="a8-timeline__month">Month 8–10</span>
+                <h4>The Energy Shift</h4>
+                <p>Energy levels stabilised. Sleep deepened. She noticed she was laughing more. Added gentle strength training — twice a week, just 30 minutes.</p>
+                <div class="a8-timeline__mood a8-timeline__mood--growing">Real momentum</div>
               </div>
             </div>
 
-            <div class="a8-lesson">
-              <span class="a8-lesson__num">05</span>
-              <div class="a8-lesson__body">
-                <h3>Self-compassion is not self-indulgence</h3>
-                <p>The research is clear: self-compassion — treating yourself with the same kindness you'd offer a close friend — is not a luxury or an excuse. It is a measurable predictor of long-term healthy behaviour change. The women who sustain transformation are not the harshest critics of themselves. They are the most forgiving.</p>
+            <div class="a8-timeline__item a8-timeline__item--left">
+              <div class="a8-timeline__dot"></div>
+              <div class="a8-timeline__card">
+                <span class="a8-timeline__month">Month 11–14</span>
+                <h4>Community &amp; Confidence</h4>
+                <p>Joined the CurvaFit community. Found women who spoke her language. Began sharing her story in small, private posts. First time she felt genuinely proud of her body.</p>
+                <div class="a8-timeline__mood a8-timeline__mood--thriving">Thriving</div>
+              </div>
+            </div>
+
+            <div class="a8-timeline__item a8-timeline__item--right">
+              <div class="a8-timeline__dot a8-timeline__dot--final"></div>
+              <div class="a8-timeline__card a8-timeline__card--final">
+                <span class="a8-timeline__month">Month 15–18</span>
+                <h4>Balance Found</h4>
+                <p>Not "perfect." Not finished. But genuinely balanced — in her eating, her movement, her self-talk, and her relationship with her own reflection.</p>
+                <div class="a8-timeline__mood a8-timeline__mood--balanced">Balance achieved</div>
               </div>
             </div>
 
           </div>
         </div>
 
-        <!-- ■ CHAPTER 6 — WHERE SHE IS NOW -->
-        <div class="a8-chapter" id="a8-ch-6">
-          <div class="a8-chapter__label">
-            <span class="a8-chapter__num">Chapter VI</span>
-            <div class="a8-chapter__rule" aria-hidden="true"></div>
-            <span class="a8-chapter__title-small">Where Sophie Is Now</span>
+        <!-- ══ CHAPTER 2 ══ -->
+        <div class="a8-section" id="a8-section-chapter2">
+          <div class="a8-chapter-header">
+            <span class="a8-chapter-num">Chapter 02</span>
+            <h2>The Five Rituals That Changed Everything</h2>
           </div>
 
-          <p>Two years after that Tuesday morning, Sophie's kitchen counter no longer holds labelled tupperware. It holds a fruit bowl, a plant she grew from a cutting, and a stack of novels she's actually reading. She swims three mornings a week at a local outdoor pool. She travels — she's booked a trip to Portugal that she put off for four years. She wears a swimsuit in public and photographs herself in it because she likes how she looks.</p>
+          <p>When we asked her what actually worked — after all the false starts, all the plans that promised results and delivered shame — she didn't mention a diet. She mentioned five small practices, each one so undramatic it would barely register as "wellness advice."</p>
 
-          <p>"Not because I'm perfect," she's quick to add. "Because I'm mine. This body carried me to this moment. It deserves to be in the frame."</p>
+          <p>But together, they restructured her days around nourishment rather than punishment. And that, she said, was the only thing that had ever actually changed anything.</p>
 
-          <p>She still has hard days. She still, occasionally, stands in front of the mirror and hears old voices. But they are quieter now. And she has better things to listen to.</p>
+          <div class="a8-rituals-grid">
 
-          <!-- Sophie now — feature card -->
-          <div class="a8-now-card">
-            <div class="a8-now-card__accent" aria-hidden="true"></div>
-            <div class="a8-now-card__content">
-              <span class="a8-now-card__eyebrow">Sophie Today ✦</span>
-              <div class="a8-now-card__grid">
-                <div class="a8-now-card__item">
-                  <i class="fi fi-rr-heart-rate"></i>
-                  <strong>Blood pressure</strong>
-                  <span>Normalised without medication</span>
+            <div class="a8-ritual-card">
+              <div class="a8-ritual-card__number">01</div>
+              <div class="a8-ritual-card__icon"><i class="fi fi-rr-sunrise"></i></div>
+              <h4>The 7-Minute Morning</h4>
+              <p>Every morning — before the phone, before the news, before coffee — she spent seven minutes doing absolutely nothing except breathing and noticing how her body felt. Not meditating formally. Just pausing.</p>
+              <div class="a8-ritual-card__why">
+                <span>Why it worked</span>
+                <p>It interrupted the cortisol spike that was driving her stress-eating by 9am. It also gave her an anchor to return to when days got chaotic.</p>
+              </div>
+            </div>
+
+            <div class="a8-ritual-card">
+              <div class="a8-ritual-card__number">02</div>
+              <div class="a8-ritual-card__icon"><i class="fi fi-rr-walking"></i></div>
+              <h4>The Non-Exercise Walk</h4>
+              <p>She walked every morning with one rule: it was not exercise. It was thinking time. She left her earphones at home, walked at whatever pace felt good, and let her mind wander.</p>
+              <div class="a8-ritual-card__why">
+                <span>Why it worked</span>
+                <p>Removing the "exercise" label removed the performance anxiety. She stopped dreading it because she'd stopped measuring it. The movement became intrinsically enjoyable.</p>
+              </div>
+            </div>
+
+            <div class="a8-ritual-card">
+              <div class="a8-ritual-card__number">03</div>
+              <div class="a8-ritual-card__icon"><i class="fi fi-rr-utensils"></i></div>
+              <h4>Eating Without Screens</h4>
+              <p>Once a day — usually lunch — she ate at her kitchen table with no phone, no laptop, no television. Just the food, the taste, the texture, and the sensation of actually eating.</p>
+              <div class="a8-ritual-card__why">
+                <span>Why it worked</span>
+                <p>Mindful eating reduced her portion sizes naturally, without restriction. She started noticing when she was genuinely satisfied — something she'd lost the ability to feel during years of diet-rule eating.</p>
+              </div>
+            </div>
+
+            <div class="a8-ritual-card">
+              <div class="a8-ritual-card__number">04</div>
+              <div class="a8-ritual-card__icon"><i class="fi fi-rr-notebook"></i></div>
+              <h4>The Evening Body Check-In</h4>
+              <p>Three sentences in a notebook before sleep: one thing her body did well today, one thing she's grateful her body can do, one kind word to say to herself that she actually believed.</p>
+              <div class="a8-ritual-card__why">
+                <span>Why it worked</span>
+                <p>It gradually shifted her internal monologue from surveillance ("what did I do wrong today") to appreciation. Not toxic positivity — just honest, small acknowledgments of her own humanity.</p>
+              </div>
+            </div>
+
+            <div class="a8-ritual-card a8-ritual-card--wide">
+              <div class="a8-ritual-card__number">05</div>
+              <div class="a8-ritual-card__icon"><i class="fi fi-rr-users"></i></div>
+              <h4>Weekly Connection</h4>
+              <p>One conversation per week — phone, video, in-person, didn't matter — with someone who saw her clearly and spoke kindly. No advice needed. Just genuine connection. The CurvaFit community group became her primary source of this after month eleven.</p>
+              <div class="a8-ritual-card__why">
+                <span>Why it worked</span>
+                <p>Loneliness had been one of her most consistent emotional eating triggers. Having a reliable weekly anchor of genuine human warmth removed the need for food to serve that function. Her Friday night biscuit habit dissolved almost without her noticing.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ══ QUOTES SLIDER ══ -->
+        <div class="a8-quotes-band">
+          <div class="a8-quotes-band__inner">
+            <div class="a8-quotes-band__quote active" id="a8-q-0">
+              <span class="a8-quotes-band__mark">"</span>
+              <p>The first time I walked past a mirror and thought 'she looks okay' — and realised I was talking about myself — I stood there for five full minutes just processing that.</p>
+            </div>
+            <div class="a8-quotes-band__quote" id="a8-q-1">
+              <span class="a8-quotes-band__mark">"</span>
+              <p>People kept waiting for me to say I'd lost weight. What I'd actually lost was the exhausting habit of hating myself every morning.</p>
+            </div>
+            <div class="a8-quotes-band__quote" id="a8-q-2">
+              <span class="a8-quotes-band__mark">"</span>
+              <p>Balance looked nothing like I expected. It wasn't about being perfect every day. It was about being kind to myself on the days I wasn't.</p>
+            </div>
+            <div class="a8-quotes-band__nav">
+              <button class="a8-qbtn a8-qbtn--prev" id="a8-q-prev" aria-label="Previous quote"><i class="fi fi-rr-angle-left"></i></button>
+              <div class="a8-q-dots">
+                <span class="a8-q-dot active" data-q="0"></span>
+                <span class="a8-q-dot" data-q="1"></span>
+                <span class="a8-q-dot" data-q="2"></span>
+              </div>
+              <button class="a8-qbtn a8-qbtn--next" id="a8-q-next" aria-label="Next quote"><i class="fi fi-rr-angle-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ CHAPTER 3 ══ -->
+        <div class="a8-section" id="a8-section-chapter3">
+          <div class="a8-chapter-header">
+            <span class="a8-chapter-num">Chapter 03</span>
+            <h2>Navigating Setbacks Without Shame</h2>
+          </div>
+
+          <p>Her story is not a straight line. She wants to be clear about that. There were months where the rituals slipped, where the old thought patterns came back, where she found herself standing at the open fridge at midnight not knowing what she was looking for.</p>
+
+          <p>"The difference," she says, "wasn't that those moments stopped happening. The difference was what I did <em>after</em> them."</p>
+
+          <figure class="a8-figure">
+            <img id="a8-figure-img" src="" alt="" loading="lazy">
+            <figcaption id="a8-figure-caption">Her story is proof that balance is not the absence of hard days — it's the presence of self-compassion on those days.</figcaption>
+          </figure>
+
+          <!-- Setback strategy cards -->
+          <div class="a8-setback-grid">
+
+            <div class="a8-setback-card">
+              <div class="a8-setback-card__icon a8-setback-card__icon--old"><i class="fi fi-rr-cross-circle"></i></div>
+              <div class="a8-setback-card__label">Old response</div>
+              <p>"This proves I can't do this. I might as well just give up for the rest of the week."</p>
+            </div>
+
+            <div class="a8-setback-arrow" aria-hidden="true">
+              <i class="fi fi-rr-arrow-right"></i>
+            </div>
+
+            <div class="a8-setback-card">
+              <div class="a8-setback-card__icon a8-setback-card__icon--new"><i class="fi fi-rr-check-circle"></i></div>
+              <div class="a8-setback-card__label">New response</div>
+              <p>"That was a hard night and I'm human. Tomorrow morning still belongs to me. I'll take my walk."</p>
+            </div>
+
+          </div>
+
+          <p>She began to see setbacks as data rather than verdicts. A week of disrupted sleep would predict a difficult food week. A stressful period at work would predict increased cravings. Understanding these patterns didn't make her immune to them — but it did make her feel less surprised, less ashamed, and less inclined to catastrophise.</p>
+
+          <div class="a8-story-callout a8-story-callout--insight">
+            <div class="a8-story-callout__icon"><i class="fi fi-rr-brain"></i></div>
+            <div class="a8-story-callout__body">
+              <strong>Her therapist's reframe</strong>
+              <p>"She told me: a setback isn't a relapse. A relapse is when you stop trying. As long as I came back — even three weeks later, even messily — I hadn't failed. I'd just taken a longer route."</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ CHAPTER 4 — COMMUNITY ══ -->
+        <div class="a8-section" id="a8-section-chapter4">
+          <div class="a8-chapter-header">
+            <span class="a8-chapter-num">Chapter 04</span>
+            <h2>The Role of Community in Sustained Change</h2>
+          </div>
+
+          <p>She had always assumed wellness was a solo project. That needing support was a sign of weakness. That if she couldn't "figure it out herself," she wasn't doing it right.</p>
+
+          <p>The CurvaFit community disabused her of this idea within her first week. "I wrote a post — just a few sentences about having a hard day — and by the next morning I had thirty responses from women who'd had the exact same hard day. That feeling of recognition, of not being alone in it, was more therapeutic than anything I'd ever bought in a bottle or a programme."</p>
+
+          <!-- Community stats visual -->
+          <div class="a8-community-visual">
+            <div class="a8-community-visual__header">
+              <i class="fi fi-rr-users"></i>
+              <h3>What Community Gave Her</h3>
+            </div>
+            <div class="a8-community-stats">
+              <div class="a8-comm-stat">
+                <div class="a8-comm-stat__circle">
+                  <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(192,56,94,0.12)" stroke-width="10"/>
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#c0385e" stroke-width="10"
+                      stroke-dasharray="264" stroke-dashoffset="66" stroke-linecap="round"
+                      transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <span>75%</span>
                 </div>
-                <div class="a8-now-card__item">
-                  <i class="fi fi-rr-smile"></i>
-                  <strong>Mental health</strong>
-                  <span>No longer in therapy for food anxiety</span>
+                <p>Reduction in shame after difficult eating episodes</p>
+              </div>
+              <div class="a8-comm-stat">
+                <div class="a8-comm-stat__circle">
+                  <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(192,56,94,0.12)" stroke-width="10"/>
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#c9903a" stroke-width="10"
+                      stroke-dasharray="264" stroke-dashoffset="106" stroke-linecap="round"
+                      transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <span>60%</span>
                 </div>
-                <div class="a8-now-card__item">
-                  <i class="fi fi-rr-swimming-pool"></i>
-                  <strong>Activity</strong>
-                  <span>Swims 3× weekly — her "meditation"</span>
+                <p>Increase in motivation to maintain her rituals</p>
+              </div>
+              <div class="a8-comm-stat">
+                <div class="a8-comm-stat__circle">
+                  <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(192,56,94,0.12)" stroke-width="10"/>
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#7c5cbf" stroke-width="10"
+                      stroke-dasharray="264" stroke-dashoffset="29" stroke-linecap="round"
+                      transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <span>89%</span>
                 </div>
-                <div class="a8-now-card__item">
-                  <i class="fi fi-rr-plane"></i>
-                  <strong>Life</strong>
-                  <span>Portugal booked. Dress already chosen.</span>
+                <p>Felt understood and accepted exactly as she was</p>
+              </div>
+            </div>
+            <p class="a8-community-visual__note">Self-reported measures over 6 months of community engagement.</p>
+          </div>
+
+          <p>The community also challenged her in ways she hadn't anticipated. Seeing other women at different stages of their journey — some just beginning, some further along — gave her both perspective on her progress and models for the kind of wellness she was trying to build. "I stopped comparing my body to Instagram bodies. I started comparing my mindset to <em>mine</em>, six months ago."</p>
+        </div>
+
+        <!-- ══ CHAPTER 5 — MESSAGE ══ -->
+        <div class="a8-section a8-section--final-chapter" id="a8-section-chapter5">
+          <div class="a8-chapter-header">
+            <span class="a8-chapter-num">Chapter 05</span>
+            <h2>Her Message to You</h2>
+          </div>
+
+          <p>We ended our conversations by asking her what she would say to the woman reading this who is where she was eighteen months ago — standing at the edge of yet another beginning, exhausted and hopeful in equal measure.</p>
+
+          <p>She paused a long time before answering. Then:</p>
+
+          <div class="a8-final-message">
+            <div class="a8-final-message__inner">
+              <div class="a8-final-message__content">
+                <span class="a8-final-message__open" aria-hidden="true">"</span>
+                <p>Stop trying to earn your body. It's already yours. It carried you here, through everything, without being asked. Start there — with gratitude, even if it feels fake at first. Especially then. And find one person — just one — who sees you clearly and speaks to you kindly. The rest builds from there.</p>
+                <p>You don't need to fix yourself. You need to know you. And then you need to be incredibly, stubbornly, defiantly patient with the process of becoming well.</p>
+                <p>It's worth it. I promise."</p>
+              </div>
+              <div class="a8-final-message__author">
+                <img id="a8-msg-author-img" src="" alt="" class="a8-final-message__avatar">
+                <div>
+                  <span id="a8-msg-author-name"></span>
+                  <em>CurvaFit Community Member</em>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ■ MID CTA -->
+        <!-- ══ MID CTA ══ -->
         <div class="a8-mid-cta" id="a8-mid-cta">
-          <div class="a8-mid-cta__bg" aria-hidden="true"></div>
-          <div class="a8-mid-cta__content">
-            <span class="a8-mid-cta__eyebrow">✦ Your Story Starts Now</span>
-            <h2>Ready to Write Your Own Journey?</h2>
-            <p>Sophie's transformation began with one decision. CurvaFit gives you the structure, the community, and the science to make that decision stick — for good.</p>
+          <div class="a8-mid-cta__inner">
+            <span class="a8-mid-cta__eyebrow">✦ Ready to write your own story?</span>
+            <h2>Your Journey Starts With One Honest Step</h2>
+            <p>Join a community of curvy women building real, lasting wellness — without crash diets, shame, or unrealistic expectations.</p>
             <div class="a8-mid-cta__btns">
               <a href="/programs.html" class="a8-mid-cta__primary">Explore Programs →</a>
-              <a href="/success.html" class="a8-mid-cta__ghost">Read More Stories</a>
+              <a href="/community.html" class="a8-mid-cta__secondary">Join the Community</a>
             </div>
             <div class="a8-mid-cta__trust">
               <span><i class="fi fi-rr-shield-check"></i> 30-Day Guarantee</span>
@@ -629,109 +753,42 @@
           </div>
         </div>
 
-        <!-- ■ CHAPTER 7 — THE SCIENCE BEHIND HER STORY -->
-        <div class="a8-chapter" id="a8-ch-7">
-          <div class="a8-chapter__label">
-            <span class="a8-chapter__num">Chapter VII</span>
-            <div class="a8-chapter__rule" aria-hidden="true"></div>
-            <span class="a8-chapter__title-small">The Science Behind Sophie's Story</span>
-          </div>
-
-          <p>Sophie's intuitive approach wasn't just emotionally resonant — it was scientifically sound. The strategies she landed on align precisely with what decades of behavioural health research have shown to be most effective for sustainable, long-term transformation in women.</p>
-
-          <div class="a8-science-grid">
-
-            <div class="a8-science-card">
-              <div class="a8-science-card__tag">Research</div>
-              <h4>Why Self-Compassion Works</h4>
-              <p>Studies in behavioural psychology consistently show that self-compassionate individuals are more likely to engage in healthy behaviours after setbacks, not less. Harsh self-criticism activates the threat response — increasing cortisol, promoting fat storage, and reducing motivation. Kindness does the opposite.</p>
-            </div>
-
-            <div class="a8-science-card">
-              <div class="a8-science-card__tag">Research</div>
-              <h4>Sleep &amp; Weight Regulation</h4>
-              <p>Insufficient sleep (under 7 hours) significantly elevates ghrelin (hunger hormone) and reduces leptin (satiety hormone), creating relentless appetite signals. Sophie's commitment to sleep was not passive self-care — it was one of the most metabolically powerful decisions she made.</p>
-            </div>
-
-            <div class="a8-science-card">
-              <div class="a8-science-card__tag">Research</div>
-              <h4>Intuitive Movement vs. Obligatory Exercise</h4>
-              <p>Exercise undertaken for enjoyment produces significantly better long-term adherence than exercise undertaken for weight loss. When movement is pleasurable, it stops competing with willpower — it becomes something you protect, not something you endure.</p>
-            </div>
-
-            <div class="a8-science-card">
-              <div class="a8-science-card__tag">Research</div>
-              <h4>Community &amp; Accountability</h4>
-              <p>Social support is one of the strongest predictors of sustained health behaviour change. Belonging to a group with shared values and goals reduces the perceived difficulty of change, provides practical strategies, and increases identity alignment with health-promoting behaviours.</p>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- ■ CONCLUSION — LETTER STYLE -->
-        <div class="a8-conclusion" id="a8-section-conclusion">
-          <div class="a8-conclusion__paper">
-            <div class="a8-conclusion__paper-lines" aria-hidden="true"></div>
-            <div class="a8-conclusion__content">
-              <span class="a8-conclusion__salutation">A note from <span id="a8-conclusion-author"></span>,</span>
-              <h2>To the Woman Reading This Right Now</h2>
-              <p>Sophie's story is not an exception. It is a template. Not for a specific number of kilograms lost, or a specific number of months elapsed — but for the orientation of the journey. Towards self, not away from it. Towards life, not towards a goal weight.</p>
-              <p>If there is one thing we hope you carry from this story, it is this: the transformation you are seeking is not located somewhere outside your body, waiting to be earned. It is already in progress — in every good night's sleep, every nourishing meal, every walk taken not for calories burned but for the simple, extraordinary fact of being alive and moving through the world.</p>
-              <p>Begin where you are. Begin today.</p>
-              <div class="a8-conclusion__sig">
-                <img id="a8-conclusion-author-img" src="" alt="" class="a8-conclusion__sig-img">
-                <div>
-                  <em class="a8-conclusion__sig-name" id="a8-conclusion-author-name"></em>
-                  <span class="a8-conclusion__sig-role">CurvaFit Journal</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ■ AUTHOR BIO -->
+        <!-- ══ AUTHOR BIO ══ -->
         <div class="a8-author-bio" id="a8-author-bio">
-          <div class="a8-author-bio__stripe" aria-hidden="true"></div>
-          <div class="a8-author-bio__inner">
-            <div class="a8-author-bio__left">
-              <img id="a8-bio-img" src="" alt="" class="a8-author-bio__avatar">
-              <div class="a8-author-bio__socials">
-                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
-                <a href="#" aria-label="Twitter/X"><i class="fab fa-x-twitter"></i></a>
-              </div>
-            </div>
-            <div class="a8-author-bio__right">
-              <span class="a8-author-bio__eyebrow">Narrated by</span>
-              <h3 id="a8-bio-name"></h3>
-              <span class="a8-author-bio__role">Wellness Writer &amp; Storyteller, CurvaFit Journal</span>
-              <p>A passionate advocate for authentic wellness storytelling, she believes that real women's journeys — messy, non-linear, deeply human — are more instructive than any protocol. She seeks out women whose transformations illuminate what sustainable wellness actually feels like from the inside.</p>
-              <div class="a8-author-bio__stats">
-                <div class="a8-author-bio__stat"><span>9.2k</span><em>Reads</em></div>
-                <div class="a8-author-bio__stat"><span>48+</span><em>Stories told</em></div>
-                <div class="a8-author-bio__stat"><span>Real</span><em>Always</em></div>
-              </div>
+          <div class="a8-author-bio__img-wrap">
+            <img id="a8-bio-img" src="" alt="" class="a8-author-bio__img">
+            <div class="a8-author-bio__ring" aria-hidden="true"></div>
+          </div>
+          <div class="a8-author-bio__body">
+            <span class="a8-author-bio__written">Story documented by</span>
+            <h3 class="a8-author-bio__name" id="a8-bio-name"></h3>
+            <span class="a8-author-bio__role">Real Stories Editor, CurvaFit Journal</span>
+            <p><span id="a8-bio-name2"></span> has spent five years documenting the real, unfiltered journeys of curvy women around the world. Her writing sits at the intersection of wellness journalism and lived experience — honest, deeply human, and always rooted in compassion rather than judgment.</p>
+            <div class="a8-author-bio__socials">
+              <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+              <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+              <a href="#" aria-label="Twitter/X"><i class="fab fa-x-twitter"></i></a>
             </div>
           </div>
         </div>
 
-        <!-- ■ REACTIONS -->
+        <!-- ══ REACTIONS ══ -->
         <div class="article-reactions a8-reactions" id="a8-article-reactions" data-article-id="article8">
-          <div class="article-reactions__label">Did Sophie's story move you?</div>
+          <div class="article-reactions__label">Did this story move you?</div>
           <div class="article-reactions__btns">
-            <button class="reaction-btn" id="a8-btn-helpful" data-reaction="helpful" aria-label="This moved me">
+            <button class="reaction-btn" id="a8-btn-helpful" data-reaction="helpful" aria-label="This inspired me">
               <span class="reaction-btn__icon"><i class="fa-solid fa-heart"></i></span>
-              <span class="reaction-btn__label">This moved me</span>
+              <span class="reaction-btn__label">This inspired me</span>
               <span class="reaction-btn__count" id="a8-count-helpful">—</span>
             </button>
-            <button class="reaction-btn" id="a8-btn-inspired" data-reaction="inspired" aria-label="I needed this today">
-              <span class="reaction-btn__icon"><i class="fa-solid fa-sun"></i></span>
-              <span class="reaction-btn__label">I needed this today</span>
+            <button class="reaction-btn" id="a8-btn-inspired" data-reaction="inspired" aria-label="I feel seen">
+              <span class="reaction-btn__icon"><i class="fa-solid fa-hand-holding-heart"></i></span>
+              <span class="reaction-btn__label">I feel seen</span>
               <span class="reaction-btn__count" id="a8-count-inspired">—</span>
             </button>
-            <button class="reaction-btn" id="a8-btn-more" data-reaction="more" aria-label="Share this story">
+            <button class="reaction-btn" id="a8-btn-more" data-reaction="more" aria-label="Share">
               <span class="reaction-btn__icon"><i class="fa-solid fa-share-nodes"></i></span>
-              <span class="reaction-btn__label">Share her story</span>
+              <span class="reaction-btn__label">Share Story</span>
               <span class="reaction-btn__count" id="a8-count-more">—</span>
             </button>
           </div>
@@ -740,8 +797,8 @@
           <div class="art-review-form-wrap" id="a8-art-review-form-wrap">
             <div class="art-review-form-header">
               <i class="fi fi-rr-edit"></i>
-              <strong>Your voice matters</strong>
-              <span>Does Sophie's story resonate? Share your own.</span>
+              <strong>Share your reaction</strong>
+              <span>Your words could be the reason another woman keeps going 💗</span>
             </div>
             <form class="art-review-form" id="a8-art-review-form" novalidate>
               <div class="art-review-row">
@@ -774,13 +831,13 @@
                 <input type="hidden" id="a8-rv-rating" value="0">
               </div>
               <div class="art-review-field">
-                <label for="a8-rv-text">Your Story or Thoughts <span class="art-rv-req">*</span></label>
-                <textarea id="a8-rv-text" placeholder="Did Sophie's journey resonate? Share your own experience, what moved you, what you're taking from this…" rows="4" maxlength="600" required></textarea>
+                <label for="a8-rv-text">Your Comment <span class="art-rv-req">*</span></label>
+                <textarea id="a8-rv-text" placeholder="How did this story resonate with you? What touched you most?…" rows="4" maxlength="600" required></textarea>
                 <span class="art-rv-char-count"><span id="a8-rv-char-num">0</span>/600</span>
               </div>
               <p class="art-rv-error" id="a8-rv-error" style="display:none;"></p>
-              <p class="art-rv-success" id="a8-rv-success" style="display:none;"><i class="fi fi-rr-check-circle"></i> Thank you for sharing your voice ✨</p>
-              <button type="submit" class="art-rv-submit-btn" id="a8-rv-submit"><i class="fi fi-rr-paper-plane"></i> Share My Story</button>
+              <p class="art-rv-success" id="a8-rv-success" style="display:none;"><i class="fi fi-rr-check-circle"></i> Thank you! Your story has been shared 💗</p>
+              <button type="submit" class="art-rv-submit-btn" id="a8-rv-submit"><i class="fi fi-rr-paper-plane"></i> Submit Review</button>
             </form>
           </div>
 
@@ -788,34 +845,34 @@
           <div class="art-reviews-list-wrap" id="a8-art-reviews-list-wrap" style="display:none;">
             <div class="art-reviews-list-header">
               <i class="fi fi-sr-comments"></i>
-              <strong>Reader Stories</strong>
+              <strong>Reader Responses</strong>
               <span id="a8-rv-count-label">0 responses</span>
             </div>
             <div class="art-reviews-list" id="a8-art-reviews-list"></div>
-            <button class="art-rv-load-more" id="a8-rv-load-more" style="display:none;">Load more stories</button>
+            <button class="art-rv-load-more" id="a8-rv-load-more" style="display:none;">Load more responses</button>
           </div>
         </div>
 
-        <!-- ■ SOCIAL SHARE BOTTOM -->
+        <!-- ══ SHARE BOTTOM ══ -->
         <div class="article-share-bottom a8-share-bottom" id="a8-article-share-bottom">
-          <span class="article-share-bottom__label">Share Sophie's story — another woman may need it today ✨</span>
+          <span class="article-share-bottom__label">Know someone who needs this story? Pass it on with love ✨</span>
           <div class="article-share-bottom__btns">
-            <button class="a8-share-btn a8-share-btn--fb a8-share-btn--lg" aria-label="Facebook"><i class="fab fa-facebook-f"></i><span>Facebook</span></button>
-            <button class="a8-share-btn a8-share-btn--pi a8-share-btn--lg" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i><span>Pinterest</span></button>
-            <button class="a8-share-btn a8-share-btn--wa a8-share-btn--lg" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></button>
-            <button class="a8-share-btn a8-share-btn--tw a8-share-btn--lg" aria-label="Twitter/X"><i class="fab fa-x-twitter"></i><span>Share</span></button>
+            <a href="#" class="a8-share-btn a8-share-btn--fb a8-share-btn--lg" aria-label="Facebook"><i class="fab fa-facebook-f"></i><span>Facebook</span></a>
+            <a href="#" class="a8-share-btn a8-share-btn--pi a8-share-btn--lg" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i><span>Pinterest</span></a>
+            <a href="#" class="a8-share-btn a8-share-btn--wa a8-share-btn--lg" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>
+            <a href="#" class="a8-share-btn a8-share-btn--tw a8-share-btn--lg" aria-label="Twitter/X"><i class="fab fa-x-twitter"></i><span>Share</span></a>
             <button class="a8-share-btn a8-share-btn--copy a8-share-btn--lg" id="a8-bottom-copy" aria-label="Copy link"><i class="fi fi-rr-link"></i><span>Copy Link</span></button>
           </div>
         </div>
 
-        <!-- ■ NEWSLETTER -->
+        <!-- ══ NEWSLETTER ══ -->
         <div class="article-newsletter a8-newsletter" id="a8-article-newsletter">
           <div class="article-newsletter__inner">
-            <span class="article-newsletter__eyebrow">✦ More Real Stories Every Week</span>
-            <h2 class="article-newsletter__title">Stories That Sound Like Yours</h2>
-            <p class="article-newsletter__sub">Join <span data-stat-text data-stat-key="members"></span>+ curvy women who receive authentic wellness stories, science-backed guidance, and community updates every week.</p>
+            <span class="article-newsletter__eyebrow">✦ More Stories Like This</span>
+            <h2 class="article-newsletter__title">Real Stories, Every Week</h2>
+            <p class="article-newsletter__sub">Join <span data-stat-text data-stat-key="members"></span>+ curvy women reading the CurvaFit Journal. Honest stories, evidence-based insights, and radical kindness in your inbox.</p>
             <form class="article-newsletter__form" id="a8-article-nl-form">
-              <input type="email" id="a8-article-nl-email" placeholder="Your email address" required>
+              <input type="email" id="a8-article-nl-email" placeholder="Enter your email address" required>
               <button type="submit"><i class="fi fi-rr-paper-plane"></i> Subscribe Free</button>
             </form>
             <p class="article-newsletter__promise">🔒 No spam. Unsubscribe anytime.</p>
@@ -825,25 +882,25 @@
       </article>
     </div>
 
-    <!-- ■ RELATED ARTICLES -->
+    <!-- ══ RELATED ARTICLES ══ -->
     <section class="article-related a8-related" id="a8-article-related">
       <div class="container">
         <div class="article-related__header">
-          <span class="article-related__eyebrow">✦ More Real Stories</span>
-          <h2 class="article-related__title">Other Journeys Worth Reading</h2>
+          <span class="article-related__eyebrow">✦ Keep Reading</span>
+          <h2 class="article-related__title">More Stories That Matter</h2>
         </div>
         <div class="article-related__grid" id="a8-related-grid"></div>
       </div>
     </section>
 
-    <!-- ■ FINAL CTA -->
+    <!-- ══ FINAL CTA ══ -->
     <section class="article-final-cta a8-final-cta" id="a8-article-final-cta">
       <div class="article-final-cta__inner">
-        <span class="article-final-cta__eyebrow">✦ Your Journey Begins Here</span>
-        <h2>Join <span data-stat-text data-stat-key="members"></span>+ Curvy Women Already Living Their Story</h2>
-        <p>CurvaFit was built for women like Sophie — and for women like you. Science-based, body-positive, community-driven wellness designed for curvy bodies.</p>
+        <span class="article-final-cta__eyebrow">✦ Be the next story we tell</span>
+        <h2>Your Journey Deserves to Be Celebrated</h2>
+        <p>Our programs give you the structure, science, and sisterhood to build your own version of balance — one real, imperfect, beautiful day at a time.</p>
         <div class="article-final-cta__btns">
-          <a href="/programs.html" class="article-final-cta__primary">Start Your Program →</a>
+          <a href="/programs.html" class="article-final-cta__primary">Explore Our Programs →</a>
           <a href="/community.html" class="article-final-cta__secondary">Join the Community</a>
         </div>
         <div class="article-final-cta__trust">

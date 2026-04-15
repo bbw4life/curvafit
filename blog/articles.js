@@ -5649,7 +5649,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* ================================================================
    ARTICLE 8 — "Real Journeys: How One Curvy Woman Found Balance"
-   ADD THIS BLOCK TO: /blog/articles.js
+   ADD THIS ENTIRE BLOCK INTO: /blog/articles.js
 ================================================================ */
 
 (function () {
@@ -5678,7 +5678,7 @@ document.addEventListener('DOMContentLoaded', function () {
           return;
         }
 
-        /* ── Meta tags ─────────────────────────────────────── */
+        // ── Meta tags ──────────────────────────────────────────
         var pageTitle = document.getElementById('page-title');
         if (pageTitle) pageTitle.textContent = cardData.title + ' | CurvaFit Journal';
 
@@ -5691,10 +5691,10 @@ document.addEventListener('DOMContentLoaded', function () {
         var metaOgDesc = document.getElementById('meta-og-desc');
         if (metaOgDesc) metaOgDesc.setAttribute('content', cardData.excerpt);
 
-        var metaOgImg = document.getElementById('meta-og-image');
-        if (metaOgImg) metaOgImg.setAttribute('content', cardData.image);
+        var metaOgImage = document.getElementById('meta-og-image');
+        if (metaOgImage) metaOgImage.setAttribute('content', cardData.image);
 
-        /* ── JSON-LD ───────────────────────────────────────── */
+        // ── JSON-LD ────────────────────────────────────────────
         var jsonLd = document.getElementById('json-ld');
         if (jsonLd) {
           jsonLd.textContent = JSON.stringify({
@@ -5714,53 +5714,71 @@ document.addEventListener('DOMContentLoaded', function () {
           });
         }
 
-        /* ── Hero fields ───────────────────────────────────── */
-        var bgImg = document.getElementById('a8-hero-bg-img');
-        if (bgImg) { bgImg.src = cardData.image; bgImg.alt = cardData.imageAlt || cardData.title; }
+        // ── Hero images ────────────────────────────────────────
+        var heroBg = document.getElementById('a8-hero-bg');
+        if (heroBg) { heroBg.src = cardData.image; heroBg.alt = cardData.imageAlt || cardData.title; }
 
+        var heroPortrait = document.getElementById('a8-hero-portrait');
+        if (heroPortrait) { heroPortrait.src = cardData.image; heroPortrait.alt = cardData.imageAlt || cardData.title; }
+
+        // Figure inside article
+        var figureImg     = document.getElementById('a8-figure-img');
+        var figureCaption = document.getElementById('a8-figure-caption');
+        if (figureImg) { figureImg.src = cardData.image; figureImg.alt = cardData.imageAlt || cardData.title; }
+        if (figureCaption) figureCaption.textContent = (cardData.imageAlt || 'Her story is proof that balance is not the absence of hard days — it\'s the presence of self-compassion on those days.');
+
+        // ── Hero text fields ───────────────────────────────────
         a8setText('a8-hero-badge',       cardData.badge);
-        a8setText('a8-hero-date',        cardData.date);
+        a8setText('a8-hero-badge-bc',    cardData.badge);
         a8setText('a8-hero-readtime',    cardData.readTime);
         a8setText('a8-hero-views',       cardData.views + ' reads');
+        a8setText('a8-hero-date',        cardData.date);
+        a8setText('a8-hero-author-chip', cardData.author.name);
         a8setText('a8-hero-author-name', cardData.author.name);
         a8setText('a8-hero-excerpt',     cardData.excerpt);
-        a8setText('a8-breadcrumb-cat',   cardData.badge);
 
-        // Title — inject dynamically (split for display)
+        // ── Hero title — inject author-driven title ────────────
         var heroTitle = document.getElementById('a8-hero-title');
         if (heroTitle) {
-          // Build title: use card title for SEO, keep design split
-          heroTitle.innerHTML = cardData.title.replace('Real Journeys:', 'Real Journeys:').replace('How One Curvy Woman Found Balance', '<em>How One Curvy<br>Woman Found Balance</em>');
-          // Fallback if title doesn't match expected pattern
-          if (!heroTitle.querySelector('em')) {
-            heroTitle.textContent = cardData.title;
-          }
+          heroTitle.innerHTML =
+            'Real Journeys:<br>' +
+            '<em>How One Curvy Woman</em><br>' +
+            'Found Balance';
         }
 
-        // Show/hide "New" badge
+        // New badge
         var newBadge = document.getElementById('a8-hero-new-badge');
         if (newBadge) newBadge.style.display = cardData.isNew ? 'inline-flex' : 'none';
 
+        // Author image
         var authorImg = document.getElementById('a8-hero-author-img');
         if (authorImg) { authorImg.src = cardData.author.image; authorImg.alt = cardData.author.name; }
 
-        /* ── Quote attributions ────────────────────────────── */
-        a8setText('a8-quote-cite-1', cardData.author.name);
-        a8setText('a8-full-quote-author', '— ' + cardData.author.name + ', Real Stories');
+        // ── Sidebar ────────────────────────────────────────────
+        a8setText('a8-sidebar-author', cardData.author.name);
 
-        /* ── Conclusion ────────────────────────────────────── */
-        a8setText('a8-conclusion-author', cardData.author.name);
-        var conclusionImg = document.getElementById('a8-conclusion-author-img');
-        if (conclusionImg) { conclusionImg.src = cardData.author.image; conclusionImg.alt = cardData.author.name; }
-        a8setText('a8-conclusion-author-name', cardData.author.name);
-
-        /* ── Author bio ────────────────────────────────────── */
+        // ── Bio ────────────────────────────────────────────────
         var bioImg = document.getElementById('a8-bio-img');
         if (bioImg) { bioImg.src = cardData.author.image; bioImg.alt = cardData.author.name; }
-        a8setText('a8-bio-name', cardData.author.name);
+        a8setText('a8-bio-name',  cardData.author.name);
+        a8setText('a8-bio-name2', cardData.author.name);
 
-        /* ── Related articles ──────────────────────────────── */
+        // ── Pullquote cite ─────────────────────────────────────
+        a8setText('a8-pullquote-author', cardData.author.name);
+
+        // ── Final message author ───────────────────────────────
+        var msgAuthorImg = document.getElementById('a8-msg-author-img');
+        if (msgAuthorImg) { msgAuthorImg.src = cardData.author.image; msgAuthorImg.alt = cardData.author.name; }
+        a8setText('a8-msg-author-name', cardData.author.name);
+
+        // ── Ribbon ─────────────────────────────────────────────
+        a8setText('a8-ribbon-readtime', cardData.readTime);
+        a8setText('a8-ribbon-views',    cardData.views + ' reads');
+        a8setText('a8-ribbon-date',     cardData.date);
+
+        // ── Related articles ───────────────────────────────────
         a8InjectRelated(data.cards, cardData.category, 'card-8');
+
       })
       .catch(function (err) {
         console.error('articles.js [a8]: error loading blog-articles.json:', err);
@@ -5790,7 +5808,7 @@ document.addEventListener('DOMContentLoaded', function () {
       relatedGrid.innerHTML = picks.map(function (card) {
         return '<a href="' + card.url + '" class="related-card">' +
           '<div class="related-card__img-wrap">' +
-            '<img src="' + card.image + '" alt="' + a8EscAttr(card.imageAlt || card.title) + '" loading="lazy">' +
+            '<img src="' + card.image + '" alt="' + a8EscHtml(card.imageAlt || card.title) + '" loading="lazy">' +
             '<span class="related-card__badge">' + a8EscHtml(card.badge) + '</span>' +
           '</div>' +
           '<div class="related-card__body">' +
@@ -5808,59 +5826,80 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     /* ════════════════════════════════════════════════════════════
-       3. READING PROGRESS BAR
+       3. TABLE OF CONTENTS
+    ════════════════════════════════════════════════════════════ */
+    function a8BuildTOC() {
+      var tocNav   = document.getElementById('a8-toc-nav');
+      if (!tocNav) return;
+      var headings = document.querySelectorAll('.a8-content h2');
+      if (!headings.length) return;
+
+      var links = [];
+      headings.forEach(function (h2, i) {
+        if (!h2.id) h2.id = 'a8-toc-h-' + i;
+        var a = document.createElement('a');
+        a.href = '#' + h2.id;
+        a.textContent = h2.textContent;
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var target = document.getElementById(h2.id);
+          if (target) {
+            var top = target.getBoundingClientRect().top + window.scrollY - 100;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+          }
+        });
+        tocNav.appendChild(a);
+        links.push({ el: h2, link: a });
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          var found = links.find(function (l) { return l.el === entry.target; });
+          if (found) found.link.classList.toggle('active', entry.isIntersecting);
+        });
+      }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+      links.forEach(function (l) { observer.observe(l.el); });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       4. READING PROGRESS BAR
     ════════════════════════════════════════════════════════════ */
     function a8InitProgressBar() {
       var bar = document.getElementById('reading-progress-bar');
       if (!bar) return;
-      bar.style.background = 'linear-gradient(90deg, #b5533c, #6b2d5a)';
-
-      function update() {
-        var scrollTop = window.scrollY || document.documentElement.scrollTop;
-        var docH      = document.documentElement.scrollHeight - window.innerHeight;
-        bar.style.width = (docH > 0 ? Math.min((scrollTop / docH) * 100, 100) : 0).toFixed(1) + '%';
+      function updateProgress() {
+        var scrollTop  = window.scrollY || document.documentElement.scrollTop;
+        var docHeight  = document.documentElement.scrollHeight - window.innerHeight;
+        var progress   = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+        bar.style.width = progress.toFixed(1) + '%';
       }
-
-      window.addEventListener('scroll', update, { passive: true });
-      update();
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress();
     }
 
 
     /* ════════════════════════════════════════════════════════════
-       4. LEFT RAIL SHARE PROGRESS & VISIBILITY
+       5. STICKY SIDEBAR SHARE
     ════════════════════════════════════════════════════════════ */
-    function a8InitShareRail() {
-      var rail     = document.getElementById('a8-share-rail');
-      var hero     = document.getElementById('a8-hero');
-      var railBar  = document.getElementById('a8-rail-progress');
+    function a8InitSidebarShare() {
+      var stickyShare = document.getElementById('a8-sticky-share');
+      var hero        = document.getElementById('a8-hero');
+      if (!stickyShare || !hero) return;
 
-      if (!rail || !hero) return;
-
-      // Show/hide rail after hero
-      var heroObs = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          rail.style.opacity   = e.isIntersecting ? '0' : '1';
-          rail.style.transform = e.isIntersecting ? 'translateX(-8px)' : 'translateX(0)';
-          rail.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          stickyShare.classList.toggle('visible', !entry.isIntersecting);
         });
       }, { threshold: 0 });
 
-      heroObs.observe(hero);
-
-      // Progress bar
-      if (railBar) {
-        window.addEventListener('scroll', function () {
-          var scrollTop = window.scrollY;
-          var docH      = document.documentElement.scrollHeight - window.innerHeight;
-          var pct       = docH > 0 ? Math.min((scrollTop / docH) * 100, 100) : 0;
-          railBar.style.height = pct.toFixed(1) + '%';
-        }, { passive: true });
-      }
+      observer.observe(hero);
     }
 
 
     /* ════════════════════════════════════════════════════════════
-       5. SHARE BUTTONS
+       6. SHARE BUTTONS
     ════════════════════════════════════════════════════════════ */
     function a8InitShareButtons() {
       var url   = encodeURIComponent(window.location.href);
@@ -5868,17 +5907,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
       document.querySelectorAll('.a8-share-btn').forEach(function (btn) {
 
-        // Copy
-        if (btn.classList.contains('a8-share-btn--copy')) {
+        // Copy buttons
+        if (btn.id === 'a8-hero-copy' || btn.id === 'a8-bottom-copy' ||
+            btn.classList.contains('a8-share-btn--copy')) {
           btn.addEventListener('click', function (e) {
             e.preventDefault();
             navigator.clipboard.writeText(window.location.href).then(function () {
+              btn.classList.add('copied');
               var icon = btn.querySelector('i');
-              var orig = icon ? icon.className : '';
+              var originalClass = icon ? icon.className : '';
               if (icon) icon.className = 'fi fi-rr-check';
               setTimeout(function () {
-                if (icon) icon.className = orig;
-              }, 2000);
+                btn.classList.remove('copied');
+                if (icon) icon.className = originalClass;
+              }, 2200);
             }).catch(function () {
               var ta = document.createElement('textarea');
               ta.value = window.location.href;
@@ -5897,7 +5939,7 @@ document.addEventListener('DOMContentLoaded', function () {
           if (btn.classList.contains('a8-share-btn--fb')) {
             shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
           } else if (btn.classList.contains('a8-share-btn--pi')) {
-            var imgEl = document.getElementById('a8-hero-bg-img');
+            var imgEl = document.getElementById('a8-hero-portrait');
             var img   = encodeURIComponent(imgEl ? imgEl.src : '');
             shareUrl  = 'https://pinterest.com/pin/create/button/?url=' + url + '&description=' + title + '&media=' + img;
           } else if (btn.classList.contains('a8-share-btn--wa')) {
@@ -5905,92 +5947,65 @@ document.addEventListener('DOMContentLoaded', function () {
           } else if (btn.classList.contains('a8-share-btn--tw')) {
             shareUrl = 'https://twitter.com/intent/tweet?url=' + url + '&text=' + title;
           }
-          if (shareUrl !== '#') window.open(shareUrl, '_blank', 'noopener,width=620,height=440');
-        });
-      });
-    }
-
-
-    /* ════════════════════════════════════════════════════════════
-       6. ANIMATE RESULTS BARS (intersection)
-    ════════════════════════════════════════════════════════════ */
-    function a8AnimateResultBars() {
-      var items = document.querySelectorAll('.a8-result-item__bar');
-      if (!items.length) return;
-
-      var observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            var bar = entry.target;
-            var w   = getComputedStyle(bar).getPropertyValue('--a8-bar-w') || '50%';
-            bar.style.width = w;
-            observer.unobserve(bar);
+          if (shareUrl !== '#') {
+            window.open(shareUrl, '_blank', 'noopener,width=620,height=440');
           }
         });
-      }, { threshold: 0.2 });
-
-      items.forEach(function (bar) {
-        bar.style.width = '0%';
-        observer.observe(bar);
       });
     }
 
 
     /* ════════════════════════════════════════════════════════════
-       7. SCROLL REVEAL
+       7. QUOTES SLIDER
     ════════════════════════════════════════════════════════════ */
-    function a8InitScrollReveal() {
-      var revealEls = document.querySelectorAll(
-        '.a8-chapter, .a8-pull-quote, .a8-scene-card, ' +
-        '.a8-pillar, .a8-results-strip, .a8-full-quote, ' +
-        '.a8-lesson, .a8-now-card, .a8-mid-cta, ' +
-        '.a8-science-card, .a8-conclusion, .a8-author-bio, ' +
-        '#a8-article-reactions, #a8-article-share-bottom, #a8-article-newsletter'
-      );
+    function a8InitQuotesSlider() {
+      var quotes  = document.querySelectorAll('.a8-quotes-band__quote');
+      var dots    = document.querySelectorAll('.a8-q-dot');
+      var btnPrev = document.getElementById('a8-q-prev');
+      var btnNext = document.getElementById('a8-q-next');
+      if (!quotes.length) return;
 
-      var observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity   = '1';
-            entry.target.style.transform = 'translateY(0)';
-            observer.unobserve(entry.target);
-          }
+      var current = 0;
+
+      function goTo(idx) {
+        quotes[current].classList.remove('active');
+        dots[current] && dots[current].classList.remove('active');
+        current = (idx + quotes.length) % quotes.length;
+        quotes[current].classList.add('active');
+        dots[current] && dots[current].classList.add('active');
+      }
+
+      if (btnPrev) btnPrev.addEventListener('click', function () { goTo(current - 1); });
+      if (btnNext) btnNext.addEventListener('click', function () { goTo(current + 1); });
+
+      dots.forEach(function (dot) {
+        dot.addEventListener('click', function () {
+          goTo(parseInt(dot.getAttribute('data-q'), 10));
         });
-      }, { threshold: 0.04 });
-
-      revealEls.forEach(function (el) {
-        el.style.opacity    = '0';
-        el.style.transform  = 'translateY(22px)';
-        el.style.transition = 'opacity 0.65s ease, transform 0.65s ease';
-        observer.observe(el);
       });
+
+      // Auto-advance every 5 seconds
+      var autoSlide = setInterval(function () { goTo(current + 1); }, 5000);
+
+      // Pause on hover
+      var band = document.querySelector('.a8-quotes-band');
+      if (band) {
+        band.addEventListener('mouseenter', function () { clearInterval(autoSlide); });
+        band.addEventListener('mouseleave', function () {
+          autoSlide = setInterval(function () { goTo(current + 1); }, 5000);
+        });
+      }
     }
 
 
     /* ════════════════════════════════════════════════════════════
-       8. STAGGERED CHIP ENTRANCE
-    ════════════════════════════════════════════════════════════ */
-    function a8AnimateChips() {
-      document.querySelectorAll('.a8-chip').forEach(function (chip, i) {
-        chip.style.opacity    = '0';
-        chip.style.transform  = 'translateY(20px) scale(0.90)';
-        chip.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        setTimeout(function () {
-          chip.style.opacity   = '1';
-          chip.style.transform = 'translateY(0) scale(1)';
-        }, 1100 + i * 350);
-      });
-    }
-
-
-    /* ════════════════════════════════════════════════════════════
-       9. REACTIONS
+       8. REACTIONS
     ════════════════════════════════════════════════════════════ */
     function a8InitReactions() {
       var STORAGE_KEY = 'cf_article_reactions_article8';
 
       function getReacted()      { try { return localStorage.getItem(STORAGE_KEY) || ''; } catch (e) { return ''; } }
-      function saveReacted(type) { try { localStorage.setItem(STORAGE_KEY, type); }         catch (e) {} }
+      function saveReacted(type) { try { localStorage.setItem(STORAGE_KEY, type); }        catch (e) {} }
 
       var reacted = getReacted();
 
@@ -6021,7 +6036,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     /* ════════════════════════════════════════════════════════════
-       10. REVIEW SYSTEM
+       9. REVIEW SYSTEM
     ════════════════════════════════════════════════════════════ */
     (function () {
       var ARTICLE_ID       = 'article8';
@@ -6093,12 +6108,24 @@ document.addEventListener('DOMContentLoaded', function () {
       if (btnMore) {
         btnMore.addEventListener('click', function () {
           recordShare();
-          var target = document.getElementById('a8-art-review-form-wrap');
+          var formWrap = document.getElementById('a8-art-review-form-wrap');
+          if (formWrap) formWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      }
+
+      // I feel seen button
+      var btnInspired = document.getElementById('a8-btn-inspired');
+      if (btnInspired) {
+        btnInspired.addEventListener('click', function () {
+          btnInspired.classList.toggle('active');
+          var target = allReviews.length > 0
+            ? document.getElementById('a8-art-reviews-list-wrap')
+            : document.getElementById('a8-art-review-form-wrap');
           if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
       }
 
-      // Avatar
+      // Avatar compression
       var avatarBase64 = '';
 
       function compressAvatar(file) {
@@ -6188,9 +6215,9 @@ document.addEventListener('DOMContentLoaded', function () {
           if (errorEl)   errorEl.style.display   = 'none';
           if (successEl) successEl.style.display = 'none';
 
-          if (!firstName || !lastName)    { showError('Please enter your first and last name.'); return; }
-          if (rating === 0)               { showError('Please select a star rating.'); return; }
-          if (!text || text.length < 10)  { showError('Please write at least 10 characters.'); return; }
+          if (!firstName || !lastName)   { showError('Please enter your first and last name.'); return; }
+          if (rating === 0)              { showError('Please select a star rating.'); return; }
+          if (!text || text.length < 10) { showError('Please write at least 10 characters.'); return; }
 
           submitBtn.disabled = true;
           submitBtn.innerHTML = '<i class="fi fi-rr-spinner"></i> Sending…';
@@ -6223,21 +6250,21 @@ document.addEventListener('DOMContentLoaded', function () {
               if (avatarPlaceh) avatarPlaceh.style.display = 'flex';
               if (charNum)      charNum.textContent = '0';
 
-              submitBtn.innerHTML = '<i class="fi fi-rr-check-circle"></i> Story shared!';
+              submitBtn.innerHTML = '<i class="fi fi-rr-check-circle"></i> Response submitted!';
               setTimeout(function () {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Share My Story';
+                submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
                 if (successEl) successEl.style.display = 'none';
               }, 4000);
             } else {
               showError('Error: ' + (data.error || 'Unknown error'));
               submitBtn.disabled = false;
-              submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Share My Story';
+              submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
             }
           } catch (err) {
             showError('Network error. Please try again.');
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Share My Story';
+            submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
           }
         });
       }
@@ -6272,7 +6299,7 @@ document.addEventListener('DOMContentLoaded', function () {
         card.className = 'art-rv-card';
 
         var avatarHTML = rv.avatar
-          ? '<img class="art-rv-card__avatar" src="' + rv.avatar + '" alt="' + a8EscAttr(rv.firstName) + '" loading="lazy">'
+          ? '<img class="art-rv-card__avatar" src="' + rv.avatar + '" alt="' + a8EscHtml(rv.firstName) + '" loading="lazy">'
           : '<div class="art-rv-card__avatar-placeholder">' + (rv.firstName || '?').charAt(0).toUpperCase() + '</div>';
 
         var rating = parseInt(rv.rating) || 5;
@@ -6294,22 +6321,12 @@ document.addEventListener('DOMContentLoaded', function () {
         return card;
       }
 
-      // "I needed this today" btn — scroll to form
-      var btnInspired = document.getElementById('a8-btn-inspired');
-      if (btnInspired) {
-        btnInspired.addEventListener('click', function () {
-          btnInspired.classList.toggle('active');
-          var target = document.getElementById('a8-art-review-form-wrap');
-          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        });
-      }
-
       loadStats();
     })();
 
 
     /* ════════════════════════════════════════════════════════════
-       11. NEWSLETTER FORMS
+       10. NEWSLETTER FORMS
     ════════════════════════════════════════════════════════════ */
     function a8InitNewsletterForms() {
       var nlForm  = document.getElementById('a8-article-nl-form');
@@ -6332,7 +6349,6 @@ document.addEventListener('DOMContentLoaded', function () {
               body: JSON.stringify({ action: 'newsletter-subscribe', email: val })
             });
             var data = await res.json();
-
             if (data.success) {
               nlEmail.value = '';
               if (btn) {
@@ -6352,18 +6368,15 @@ document.addEventListener('DOMContentLoaded', function () {
       // Footer newsletter
       var footerForm  = document.getElementById('newsletter-form-footer');
       var footerEmail = document.getElementById('newsletter-email-footer');
-
       if (footerForm && footerEmail && !footerForm.dataset.a8Bound) {
         footerForm.dataset.a8Bound = '1';
         footerForm.addEventListener('submit', async function (e) {
           e.preventDefault();
           var val = footerEmail.value.trim();
           if (!val || !val.includes('@')) return;
-
-          var btn  = footerForm.querySelector('button');
-          var orig = btn ? btn.textContent : '';
+          var btn = footerForm.querySelector('button');
+          var originalText = btn ? btn.textContent : '';
           if (btn) { btn.textContent = 'Saving...'; btn.disabled = true; }
-
           try {
             var res  = await fetch('/.netlify/functions/save-account', {
               method: 'POST',
@@ -6374,7 +6387,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.success) { footerEmail.value = ''; a8ShowNewsletterPopup(); }
           } catch (err) { console.error(err); }
           finally {
-            if (btn) { btn.textContent = orig; btn.disabled = false; }
+            if (btn) { btn.textContent = originalText; btn.disabled = false; }
           }
         });
       }
@@ -6392,17 +6405,81 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     /* ════════════════════════════════════════════════════════════
-       UTILITIES
+       11. HERO PARALLAX
+    ════════════════════════════════════════════════════════════ */
+    function a8InitHeroParallax() {
+      var heroBg = document.querySelector('.a8-hero__backdrop img');
+      if (!heroBg || window.innerWidth < 900) return;
+      window.addEventListener('scroll', function () {
+        var scrollY = window.scrollY;
+        if (scrollY > window.innerHeight) return;
+        heroBg.style.transform = 'scale(1.06) translateY(' + (scrollY * 0.12) + 'px)';
+      }, { passive: true });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       12. SCROLL REVEAL
+    ════════════════════════════════════════════════════════════ */
+    function a8InitScrollReveal() {
+      var revealEls = document.querySelectorAll(
+        '.a8-section, .a8-discover, .a8-pullquote, .a8-mid-cta,' +
+        '.a8-author-bio, .a8-ritual-card, .a8-setback-card,' +
+        '.a8-timeline, .a8-quotes-band, .a8-community-visual,' +
+        '.a8-final-message, .a8-story-callout, .a8-figure,' +
+        '#a8-article-reactions, #a8-article-share-bottom, #a8-article-newsletter'
+      );
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity   = '1';
+            entry.target.style.transform = 'translateY(0)';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.06 });
+
+      revealEls.forEach(function (el) {
+        el.style.opacity    = '0';
+        el.style.transform  = 'translateY(28px)';
+        el.style.transition = 'opacity 0.62s ease, transform 0.62s ease';
+        observer.observe(el);
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       13. FLOATING CARDS ENTRANCE
+    ════════════════════════════════════════════════════════════ */
+    function a8AnimateFloatCards() {
+      var cards = document.querySelectorAll('.a8-float-card');
+      cards.forEach(function (card, i) {
+        card.style.opacity    = '0';
+        card.style.transform  = 'translateY(20px) scale(0.92)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        setTimeout(function () {
+          card.style.opacity   = '1';
+          card.style.transform = 'translateY(0) scale(1)';
+        }, 1000 + i * 400);
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       UTILS
     ════════════════════════════════════════════════════════════ */
     function a8setText(id, text) {
+      var els = document.querySelectorAll('#' + id);
+      els.forEach(function (el) { el.textContent = text; });
       var el = document.getElementById(id);
       if (el) el.textContent = text;
     }
 
     function a8Shuffle(arr) {
       for (var i = arr.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+        var j   = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
       }
       return arr;
     }
@@ -6413,25 +6490,24 @@ document.addEventListener('DOMContentLoaded', function () {
         .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    function a8EscAttr(str) {
-      return String(str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    }
-
 
     /* ════════════════════════════════════════════════════════════
-       INIT ALL
+       INIT
     ════════════════════════════════════════════════════════════ */
     a8InitProgressBar();
-    a8InitShareRail();
+    a8InitSidebarShare();
     a8InitShareButtons();
     a8InitReactions();
     a8InitNewsletterForms();
-    a8AnimateChips();
-    a8AnimateResultBars();
+    a8InitHeroParallax();
+    a8InitQuotesSlider();
+    a8AnimateFloatCards();
 
+    // Delayed to allow JSON injection to settle
     setTimeout(function () {
+      a8BuildTOC();
       a8InitScrollReveal();
-    }, 180);
+    }, 200);
 
   }); // end DOMContentLoaded
 
@@ -10422,6 +10498,1602 @@ document.addEventListener('DOMContentLoaded', function () {
       a13BuildTOC();
       a13InitScrollReveal();
     }, 200);
+
+  }); // end DOMContentLoaded
+
+})(); // end IIFE
+
+
+
+
+
+
+
+/* ================================================================
+   ARTICLE 14 — "Pilates for Plus-Size Beginners"
+   ADD THIS BLOCK TO /blog/articles.js
+================================================================ */
+
+(function () {
+
+  // Only run on article14
+  if (!document.body.classList.contains('a14-page')) return;
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    /* ════════════════════════════════════════════════════════════
+       1.  LOAD DATA FROM blog-articles.json — card-14
+    ════════════════════════════════════════════════════════════ */
+    fetch('/blog/blog-articles.json')
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+
+        // Find card-14 in editorsPicks (it lives there in the JSON)
+        var cardData = null;
+
+        // Search editorsPicks first
+        if (data.editorsPicks) {
+          data.editorsPicks.forEach(function (c) {
+            if (c.id === 'card-14') cardData = c;
+          });
+        }
+        // Fallback: search cards array too
+        if (!cardData && data.cards) {
+          data.cards.forEach(function (c) {
+            if (c.id === 'card-14') cardData = c;
+          });
+        }
+
+        if (!cardData) {
+          console.warn('articles.js [a14]: card-14 not found in blog-articles.json');
+          return;
+        }
+
+        // ── Meta tags ──────────────────────────────────────────
+        var pageTitle = document.getElementById('page-title');
+        if (pageTitle) pageTitle.textContent = cardData.title + ' | CurvaFit Journal';
+
+        var metaDesc = document.getElementById('meta-description');
+        if (metaDesc) metaDesc.setAttribute('content', cardData.excerpt);
+
+        var metaOgTitle = document.getElementById('meta-og-title');
+        if (metaOgTitle) metaOgTitle.setAttribute('content', cardData.title + ' — CurvaFit Journal');
+
+        var metaOgDesc = document.getElementById('meta-og-desc');
+        if (metaOgDesc) metaOgDesc.setAttribute('content', cardData.excerpt);
+
+        var metaOgImage = document.getElementById('meta-og-image');
+        if (metaOgImage) metaOgImage.setAttribute('content', cardData.image);
+
+        // ── JSON-LD ────────────────────────────────────────────
+        var jsonLd = document.getElementById('json-ld');
+        if (jsonLd) {
+          jsonLd.textContent = JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            'headline': cardData.title,
+            'description': cardData.excerpt,
+            'image': cardData.image,
+            'author': { '@type': 'Person', 'name': cardData.author ? cardData.author.name || '' : '' },
+            'publisher': {
+              '@type': 'Organization',
+              'name': 'CurvaFit',
+              'logo': { '@type': 'ImageObject', 'url': 'https://www.curva-fit.com/src-images/LogoCurvafit(1).png' }
+            },
+            'datePublished': cardData.date || '',
+            'mainEntityOfPage': { '@type': 'WebPage', '@id': 'https://www.curva-fit.com/blog/article14.html' }
+          });
+        }
+
+        // ── Hero images ────────────────────────────────────────
+        var heroImg = document.getElementById('a14-hero-img');
+        if (heroImg) {
+          heroImg.src = cardData.image;
+          heroImg.alt = cardData.imageAlt || cardData.title;
+        }
+
+        // ── Hero text fields ───────────────────────────────────
+        a14setText('a14-hero-badge',   cardData.badge || cardData.category || '');
+        a14setText('a14-breadcrumb-cat', cardData.badge || cardData.category || '');
+        a14setText('a14-hero-excerpt', cardData.excerpt);
+
+        // Handle author (editorsPicks cards may not have full author obj)
+        var authorName  = '';
+        var authorImage = '';
+        if (cardData.author) {
+          authorName  = cardData.author.name  || '';
+          authorImage = cardData.author.image || '';
+        }
+
+        a14setText('a14-hero-author-name',   authorName);
+        a14setText('a14-hero-readtime',      cardData.readTime || '');
+        a14setText('a14-hero-date',          cardData.date     || '');
+        a14setText('a14-hero-views',         cardData.views    ? cardData.views + ' reads' : '');
+        a14setText('a14-ribbon-readtime',    cardData.readTime || '');
+        a14setText('a14-ribbon-views',       cardData.views    ? cardData.views + ' reads' : '');
+        a14setText('a14-ribbon-date',        cardData.date     || '');
+
+        // Author image in meta chip
+        var metaAuthorImg = document.getElementById('a14-hero-author-img');
+        if (metaAuthorImg && authorImage) {
+          metaAuthorImg.src = authorImage;
+          metaAuthorImg.alt = authorName;
+        }
+
+        // Show/hide New badge
+        var newBadge = document.getElementById('a14-hero-new-badge');
+        if (newBadge) newBadge.style.display = cardData.isNew ? 'inline-flex' : 'none';
+
+        // ── Sidebar ────────────────────────────────────────────
+        a14setText('a14-sidebar-author', authorName);
+
+        // ── Author Bio ─────────────────────────────────────────
+        var bioImg = document.getElementById('a14-bio-img');
+        if (bioImg && authorImage) { bioImg.src = authorImage; bioImg.alt = authorName; }
+        a14setText('a14-bio-name',          authorName);
+        a14setText('a14-conclusion-author', authorName);
+        a14setText('a14-pullquote-author',  authorName);
+
+        // ── Related articles (from all cards) ──────────────────
+        a14InjectRelated(data.cards || [], cardData.category || '', 'card-14');
+
+      })
+      .catch(function (err) {
+        console.error('articles.js [a14]: error loading blog-articles.json:', err);
+      });
+
+
+    /* ════════════════════════════════════════════════════════════
+       2.  RELATED ARTICLES INJECTION
+    ════════════════════════════════════════════════════════════ */
+    function a14InjectRelated(cards, currentCategory, currentId) {
+      var relatedGrid = document.getElementById('a14-related-grid');
+      if (!relatedGrid || !cards || !cards.length) return;
+
+      var sameCategory = cards.filter(function (c) {
+        return c.category === currentCategory && c.id !== currentId;
+      });
+      var others = cards.filter(function (c) {
+        return c.category !== currentCategory && c.id !== currentId;
+      });
+
+      a14Shuffle(sameCategory);
+      a14Shuffle(others);
+
+      var picks = sameCategory.slice(0, 3);
+      if (picks.length < 3) picks = picks.concat(others.slice(0, 3 - picks.length));
+
+      relatedGrid.innerHTML = picks.map(function (card) {
+        return '<a href="' + (card.url || '#') + '" class="related-card">' +
+          '<div class="related-card__img-wrap">' +
+            '<img src="' + card.image + '" alt="' + (card.imageAlt || card.title) + '" loading="lazy">' +
+            '<span class="related-card__badge">' + card.badge + '</span>' +
+          '</div>' +
+          '<div class="related-card__body">' +
+            '<h3 class="related-card__title">' + card.title + '</h3>' +
+            '<p class="related-card__excerpt">' + card.excerpt + '</p>' +
+            '<div class="related-card__meta">' +
+              '<span><i class="fi fi-rr-clock"></i> ' + (card.readTime || '') + '</span>' +
+              '<span><i class="fi fi-rr-eye"></i> ' + (card.views || '') + '</span>' +
+              '<span class="related-card__cta">Read Article →</span>' +
+            '</div>' +
+          '</div>' +
+        '</a>';
+      }).join('');
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       3.  TABLE OF CONTENTS
+    ════════════════════════════════════════════════════════════ */
+    function a14BuildTOC() {
+      var tocNav   = document.getElementById('a14-toc-nav');
+      if (!tocNav) return;
+      var headings = document.querySelectorAll('.a14-content h2');
+      if (!headings.length) return;
+
+      var links = [];
+      headings.forEach(function (h2, i) {
+        if (!h2.id) h2.id = 'a14-toc-h-' + i;
+        var a = document.createElement('a');
+        a.href = '#' + h2.id;
+        a.textContent = h2.textContent;
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var target = document.getElementById(h2.id);
+          if (target) {
+            var top = target.getBoundingClientRect().top + window.scrollY - 100;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+          }
+        });
+        tocNav.appendChild(a);
+        links.push({ el: h2, link: a });
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          var found = links.find(function (l) { return l.el === entry.target; });
+          if (found) found.link.classList.toggle('active', entry.isIntersecting);
+        });
+      }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+      links.forEach(function (l) { observer.observe(l.el); });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       4.  READING PROGRESS BAR
+    ════════════════════════════════════════════════════════════ */
+    function a14InitProgressBar() {
+      var bar = document.getElementById('reading-progress-bar');
+      if (!bar) return;
+      function updateProgress() {
+        var scrollTop  = window.scrollY || document.documentElement.scrollTop;
+        var docHeight  = document.documentElement.scrollHeight - window.innerHeight;
+        var progress   = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+        bar.style.width = progress.toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress();
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       5.  STICKY SIDEBAR SHARE
+    ════════════════════════════════════════════════════════════ */
+    function a14InitSidebarShare() {
+      var stickyShare = document.getElementById('a14-sticky-share');
+      var hero        = document.getElementById('a14-hero');
+      if (!stickyShare || !hero) return;
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          stickyShare.classList.toggle('visible', !entry.isIntersecting);
+        });
+      }, { threshold: 0 });
+
+      observer.observe(hero);
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       6.  SHARE BUTTONS
+    ════════════════════════════════════════════════════════════ */
+    function a14InitShareButtons() {
+      var url   = encodeURIComponent(window.location.href);
+      var title = encodeURIComponent(document.title);
+
+      document.querySelectorAll('.a14-share-pill, .a14-share-pill--lg').forEach(function (btn) {
+
+        // Copy link
+        if (btn.id === 'a14-hero-copy' || btn.id === 'a14-bottom-copy' ||
+            btn.classList.contains('a14-share-pill--copy')) {
+          btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigator.clipboard.writeText(window.location.href).then(function () {
+              btn.classList.add('copied');
+              var icon = btn.querySelector('i');
+              var originalClass = icon ? icon.className : '';
+              if (icon) icon.className = 'fi fi-rr-check';
+              setTimeout(function () {
+                btn.classList.remove('copied');
+                if (icon) icon.className = originalClass;
+              }, 2200);
+            }).catch(function () {
+              var ta = document.createElement('textarea');
+              ta.value = window.location.href;
+              document.body.appendChild(ta);
+              ta.select();
+              document.execCommand('copy');
+              document.body.removeChild(ta);
+            });
+          });
+          return;
+        }
+
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          var shareUrl = '#';
+          if (btn.classList.contains('a14-share-pill--fb')) {
+            shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+          } else if (btn.classList.contains('a14-share-pill--pi')) {
+            var imgEl = document.getElementById('a14-hero-img');
+            var img   = encodeURIComponent(imgEl ? imgEl.src : '');
+            shareUrl  = 'https://pinterest.com/pin/create/button/?url=' + url + '&description=' + title + '&media=' + img;
+          } else if (btn.classList.contains('a14-share-pill--wa')) {
+            shareUrl = 'https://api.whatsapp.com/send?text=' + title + '%20' + url;
+          } else if (btn.classList.contains('a14-share-pill--tw')) {
+            shareUrl = 'https://twitter.com/intent/tweet?url=' + url + '&text=' + title;
+          }
+          if (shareUrl !== '#') {
+            window.open(shareUrl, '_blank', 'noopener,width=620,height=440');
+          }
+        });
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       7.  REACTIONS
+    ════════════════════════════════════════════════════════════ */
+    function a14InitReactions() {
+      var STORAGE_KEY = 'cf_article_reactions_article14';
+
+      function getReacted()      { try { return localStorage.getItem(STORAGE_KEY) || ''; } catch (e) { return ''; } }
+      function saveReacted(type) { try { localStorage.setItem(STORAGE_KEY, type); }        catch (e) {} }
+
+      var reacted = getReacted();
+
+      document.querySelectorAll('#a14-article-reactions .reaction-btn').forEach(function (btn) {
+        var type    = btn.getAttribute('data-reaction');
+        var countEl = btn.querySelector('.reaction-btn__count');
+
+        if (reacted === type) btn.classList.add('active');
+
+        btn.addEventListener('click', function () {
+          if (reacted && reacted !== type) return;
+          var current = parseInt((countEl ? countEl.textContent : '0').replace(/[^0-9]/g, ''), 10) || 0;
+
+          if (btn.classList.contains('active')) {
+            btn.classList.remove('active');
+            if (countEl) countEl.textContent = Math.max(0, current - 1);
+            reacted = ''; saveReacted('');
+          } else {
+            btn.classList.add('active');
+            if (countEl) countEl.textContent = current + 1;
+            reacted = type; saveReacted(type);
+          }
+        });
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       8.  REVIEW SYSTEM
+    ════════════════════════════════════════════════════════════ */
+    (function () {
+      var ARTICLE_ID       = 'article14';
+      var API              = '/.netlify/functions/reviews-article';
+      var REVIEWS_PER_PAGE = 5;
+      var allReviews       = [];
+      var shownCount       = 0;
+      var likeGranted      = false;
+
+      async function loadStats() {
+        try {
+          var res  = await fetch(API + '?articleId=' + encodeURIComponent(ARTICLE_ID));
+          var data = await res.json();
+          if (!data.success) return;
+
+          a14setCount('a14-count-helpful',  data.likes);
+          a14setCount('a14-count-inspired', data.reviewsCount);
+          a14setCount('a14-count-more',     data.shares);
+
+          allReviews = data.reviews || [];
+          renderReviews(true);
+        } catch (e) {
+          console.warn('[a14 reviews] loadStats failed:', e.message);
+        }
+      }
+
+      function a14setCount(id, value) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = value;
+      }
+
+      // Like button
+      var btnHelpful = document.getElementById('a14-btn-helpful');
+      if (btnHelpful) {
+        btnHelpful.addEventListener('click', async function () {
+          if (likeGranted) return;
+          likeGranted = true;
+          btnHelpful.classList.add('active');
+          try {
+            var res  = await fetch(API, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'like', articleId: ARTICLE_ID })
+            });
+            var data = await res.json();
+            if (data.success) a14setCount('a14-count-helpful', data.likes);
+          } catch (e) { console.warn('[a14] like failed:', e.message); }
+        });
+      }
+
+      // Share counter
+      async function recordShare() {
+        try {
+          var res  = await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'share', articleId: ARTICLE_ID })
+          });
+          var data = await res.json();
+          if (data.success) a14setCount('a14-count-more', data.shares);
+        } catch (e) { console.warn('[a14] share failed:', e.message); }
+      }
+
+      document.querySelectorAll('.a14-share-pill').forEach(function (btn) {
+        btn.addEventListener('click', recordShare);
+      });
+
+      var btnMore = document.getElementById('a14-btn-more');
+      if (btnMore) {
+        btnMore.addEventListener('click', function () {
+          recordShare();
+          var formWrap = document.getElementById('a14-art-review-form-wrap');
+          if (formWrap) formWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      }
+
+      var btnInspired = document.getElementById('a14-btn-inspired');
+      if (btnInspired) {
+        btnInspired.addEventListener('click', function () {
+          btnInspired.classList.toggle('active');
+          var target = allReviews.length > 0
+            ? document.getElementById('a14-art-reviews-list-wrap')
+            : document.getElementById('a14-art-review-form-wrap');
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      }
+
+      // Avatar
+      var avatarBase64 = '';
+
+      function compressAvatar(file) {
+        return new Promise(function (resolve) {
+          if (!file) { resolve(''); return; }
+          var url = URL.createObjectURL(file);
+          var img = new Image();
+          img.onload = function () {
+            var MAX = 150, w = img.width, h = img.height;
+            if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+            else        { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+            var canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            URL.revokeObjectURL(url);
+            resolve(canvas.toDataURL('image/jpeg', 0.6));
+          };
+          img.onerror = function () { URL.revokeObjectURL(url); resolve(''); };
+          img.src = url;
+        });
+      }
+
+      var avatarInput  = document.getElementById('a14-rv-avatar-input');
+      var avatarWrap   = document.getElementById('a14-rv-avatar-wrap');
+      var avatarPrev   = document.getElementById('a14-rv-avatar-preview');
+      var avatarPlaceh = document.getElementById('a14-rv-avatar-placeholder');
+
+      if (avatarWrap && avatarInput) {
+        avatarWrap.addEventListener('click', function () { avatarInput.click(); });
+        avatarInput.addEventListener('change', async function () {
+          var file = avatarInput.files[0];
+          if (!file) return;
+          avatarBase64 = await compressAvatar(file);
+          if (avatarBase64 && avatarPrev && avatarPlaceh) {
+            avatarPrev.src = avatarBase64;
+            avatarPrev.style.display = 'block';
+            avatarPlaceh.style.display = 'none';
+          }
+        });
+      }
+
+      // Stars
+      var stars          = document.querySelectorAll('#a14-rv-stars .art-rv-star');
+      var ratingInput    = document.getElementById('a14-rv-rating');
+      var selectedRating = 0;
+
+      function paintStars(upTo) {
+        stars.forEach(function (s, i) {
+          s.classList.toggle('fi-sr-star', i < upTo);
+          s.classList.toggle('fi-rr-star', i >= upTo);
+          s.classList.toggle('selected',   i < upTo);
+        });
+      }
+
+      stars.forEach(function (star) {
+        star.addEventListener('mouseover', function () { paintStars(parseInt(star.dataset.val)); });
+        star.addEventListener('mouseout',  function () { paintStars(selectedRating); });
+        star.addEventListener('click',     function () {
+          selectedRating = parseInt(star.dataset.val);
+          if (ratingInput) ratingInput.value = selectedRating;
+          paintStars(selectedRating);
+        });
+      });
+
+      // Char counter
+      var textarea = document.getElementById('a14-rv-text');
+      var charNum  = document.getElementById('a14-rv-char-num');
+      if (textarea && charNum) {
+        textarea.addEventListener('input', function () { charNum.textContent = textarea.value.length; });
+      }
+
+      // Submit
+      var reviewForm = document.getElementById('a14-art-review-form');
+      var submitBtn  = document.getElementById('a14-rv-submit');
+      var errorEl    = document.getElementById('a14-rv-error');
+      var successEl  = document.getElementById('a14-rv-success');
+
+      if (reviewForm) {
+        reviewForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          var firstName = document.getElementById('a14-rv-firstname').value.trim();
+          var lastName  = document.getElementById('a14-rv-lastname').value.trim();
+          var text      = document.getElementById('a14-rv-text').value.trim();
+          var rating    = parseInt(ratingInput ? ratingInput.value : '0');
+
+          if (errorEl)   errorEl.style.display   = 'none';
+          if (successEl) successEl.style.display = 'none';
+
+          if (!firstName || !lastName)     { showError('Please enter your first and last name.'); return; }
+          if (rating === 0)                { showError('Please select a star rating.'); return; }
+          if (!text || text.length < 10)   { showError('Please write at least 10 characters.'); return; }
+
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fi fi-rr-spinner"></i> Sending…';
+
+          try {
+            var res  = await fetch(API, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                action: 'add-review', articleId: ARTICLE_ID,
+                firstName, lastName, avatar: avatarBase64, text, rating
+              })
+            });
+            var data = await res.json();
+
+            if (data.success) {
+              if (successEl) successEl.style.display = 'flex';
+              a14setCount('a14-count-inspired', data.reviewsCount);
+
+              allReviews.unshift({
+                firstName, lastName, avatar: avatarBase64, text, rating,
+                date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+              });
+              renderReviews(true);
+
+              reviewForm.reset();
+              selectedRating = 0; paintStars(0);
+              avatarBase64 = '';
+              if (avatarPrev)   { avatarPrev.style.display = 'none'; avatarPrev.src = ''; }
+              if (avatarPlaceh) avatarPlaceh.style.display = 'flex';
+              if (charNum)      charNum.textContent = '0';
+
+              submitBtn.innerHTML = '<i class="fi fi-rr-check-circle"></i> Review submitted!';
+              setTimeout(function () {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+                if (successEl) successEl.style.display = 'none';
+              }, 4000);
+            } else {
+              showError('Error: ' + (data.error || 'Unknown error'));
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+            }
+          } catch (err) {
+            showError('Network error. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+          }
+        });
+      }
+
+      function showError(msg) {
+        if (errorEl) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
+      }
+
+      // Reviews list
+      var listWrap    = document.getElementById('a14-art-reviews-list-wrap');
+      var listEl      = document.getElementById('a14-art-reviews-list');
+      var countLabel  = document.getElementById('a14-rv-count-label');
+      var loadMoreBtn = document.getElementById('a14-rv-load-more');
+
+      function renderReviews(reset) {
+        if (!listEl) return;
+        if (reset) { shownCount = 0; listEl.innerHTML = ''; }
+        if (allReviews.length === 0) { if (listWrap) listWrap.style.display = 'none'; return; }
+        if (listWrap) listWrap.style.display = 'block';
+        if (countLabel) countLabel.textContent = allReviews.length + ' review' + (allReviews.length > 1 ? 's' : '');
+
+        var slice = allReviews.slice(shownCount, shownCount + REVIEWS_PER_PAGE);
+        slice.forEach(function (rv) { listEl.appendChild(buildReviewCard(rv)); });
+        shownCount += slice.length;
+        if (loadMoreBtn) loadMoreBtn.style.display = shownCount < allReviews.length ? 'block' : 'none';
+      }
+
+      if (loadMoreBtn) loadMoreBtn.addEventListener('click', function () { renderReviews(false); });
+
+      function buildReviewCard(rv) {
+        var card = document.createElement('div');
+        card.className = 'art-rv-card';
+
+        var avatarHTML = rv.avatar
+          ? '<img class="art-rv-card__avatar" src="' + rv.avatar + '" alt="' + rv.firstName + '" loading="lazy">'
+          : '<div class="art-rv-card__avatar-placeholder">' + (rv.firstName || '?').charAt(0).toUpperCase() + '</div>';
+
+        var rating = parseInt(rv.rating) || 5;
+        var starsHTML = '';
+        for (var i = 1; i <= 5; i++) {
+          starsHTML += '<i class="fi ' + (i <= rating ? 'fi-sr-star' : 'fi-rr-star empty') + '"></i>';
+        }
+
+        card.innerHTML = avatarHTML +
+          '<div class="art-rv-card__body">' +
+            '<div class="art-rv-card__top">' +
+              '<span class="art-rv-card__name">' + a14EscHtml(rv.firstName) + ' ' + a14EscHtml(rv.lastName) + '</span>' +
+              '<span class="art-rv-card__date">' + a14EscHtml(rv.date || '') + '</span>' +
+            '</div>' +
+            '<div class="art-rv-card__stars">' + starsHTML + '</div>' +
+            '<p class="art-rv-card__text">' + a14EscHtml(rv.text) + '</p>' +
+          '</div>';
+
+        return card;
+      }
+
+      loadStats();
+    })();
+
+
+    /* ════════════════════════════════════════════════════════════
+       9.  NEWSLETTER FORMS
+    ════════════════════════════════════════════════════════════ */
+    function a14InitNewsletterForms() {
+      var nlForm  = document.getElementById('a14-article-nl-form');
+      var nlEmail = document.getElementById('a14-article-nl-email');
+
+      if (nlForm && nlEmail) {
+        nlForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var val = nlEmail.value.trim();
+          if (!val || !val.includes('@')) return;
+
+          var btn          = nlForm.querySelector('button');
+          var originalHTML = btn ? btn.innerHTML : '';
+          if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fi fi-rr-spinner"></i> Subscribing...'; }
+
+          try {
+            var res  = await fetch('/.netlify/functions/save-account', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'newsletter-subscribe', email: val })
+            });
+            var data = await res.json();
+
+            if (data.success) {
+              nlEmail.value = '';
+              if (btn) {
+                btn.innerHTML = '<i class="fi fi-rr-check"></i> You\'re subscribed!';
+                setTimeout(function () { btn.disabled = false; btn.innerHTML = originalHTML; }, 4000);
+              }
+              a14ShowNewsletterPopup();
+            } else {
+              if (btn) { btn.disabled = false; btn.innerHTML = originalHTML; }
+            }
+          } catch (err) {
+            if (btn) { btn.disabled = false; btn.innerHTML = originalHTML; }
+          }
+        });
+      }
+
+      // Footer newsletter (bind only once)
+      var footerForm  = document.getElementById('newsletter-form-footer');
+      var footerEmail = document.getElementById('newsletter-email-footer');
+
+      if (footerForm && footerEmail && !footerForm.dataset.a14Bound) {
+        footerForm.dataset.a14Bound = '1';
+        footerForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var val = footerEmail.value.trim();
+          if (!val || !val.includes('@')) return;
+
+          var btn          = footerForm.querySelector('button');
+          var originalText = btn ? btn.textContent : '';
+          if (btn) { btn.textContent = 'Saving...'; btn.disabled = true; }
+
+          try {
+            var res  = await fetch('/.netlify/functions/save-account', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'newsletter-subscribe', email: val })
+            });
+            var data = await res.json();
+            if (data.success) { footerEmail.value = ''; a14ShowNewsletterPopup(); }
+          } catch (err) { console.error(err); }
+          finally {
+            if (btn) { btn.textContent = originalText; btn.disabled = false; }
+          }
+        });
+      }
+    }
+
+    function a14ShowNewsletterPopup() {
+      var popup = document.getElementById('newsletter-popup');
+      if (popup) {
+        popup.classList.add('show');
+        setTimeout(function () { popup.classList.remove('show'); }, 8000);
+        var closeBtn = document.getElementById('popup-close-btn');
+        if (closeBtn) closeBtn.onclick = function () { popup.classList.remove('show'); };
+      }
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       10. SCROLL REVEAL
+    ════════════════════════════════════════════════════════════ */
+    function a14InitScrollReveal() {
+      var revealEls = document.querySelectorAll(
+        '.a14-section, .a14-discover, .a14-pullquote, .a14-mid-cta, ' +
+        '.a14-author-bio, .a14-reason-card, .a14-prep-item, ' +
+        '.a14-move, .a14-schedule-card, .a14-callout, ' +
+        '#a14-article-reactions, #a14-article-share-bottom, #a14-article-newsletter'
+      );
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity   = '1';
+            entry.target.style.transform = 'translateY(0)';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.05 });
+
+      revealEls.forEach(function (el) {
+        el.style.opacity    = '0';
+        el.style.transform  = 'translateY(24px)';
+        el.style.transition = 'opacity 0.60s ease, transform 0.60s ease';
+        observer.observe(el);
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       11. FLOATING CARDS ENTRANCE
+    ════════════════════════════════════════════════════════════ */
+    function a14AnimateFloatCards() {
+      var cards = document.querySelectorAll('.a14-float-card');
+      cards.forEach(function (card, i) {
+        card.style.opacity    = '0';
+        card.style.transform  = 'translateY(18px) scale(0.93)';
+        card.style.transition = 'opacity 0.48s ease, transform 0.48s ease';
+        setTimeout(function () {
+          card.style.opacity   = '1';
+          card.style.transform = 'translateY(0) scale(1)';
+        }, 900 + i * 380);
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       12. READ BUTTON — smooth scroll to content
+    ════════════════════════════════════════════════════════════ */
+    function a14InitReadBtn() {
+      var btn = document.querySelector('.a14-btn-read');
+      if (!btn) return;
+      btn.addEventListener('click', function (e) {
+        var target = document.querySelector('.a14-ribbon');
+        if (target) {
+          e.preventDefault();
+          window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 10, behavior: 'smooth' });
+        }
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       UTILS
+    ════════════════════════════════════════════════════════════ */
+    function a14setText(id, text) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = text;
+      // Also try querySelectorAll for duplicated IDs (rare but safe)
+      document.querySelectorAll('#' + id).forEach(function (el) { el.textContent = text; });
+    }
+
+    function a14Shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j   = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      }
+      return arr;
+    }
+
+    function a14EscHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       INIT
+    ════════════════════════════════════════════════════════════ */
+    a14InitProgressBar();
+    a14InitSidebarShare();
+    a14InitShareButtons();
+    a14InitReactions();
+    a14InitNewsletterForms();
+    a14AnimateFloatCards();
+    a14InitReadBtn();
+
+    // Delayed to allow JSON injection to settle
+    setTimeout(function () {
+      a14BuildTOC();
+      a14InitScrollReveal();
+    }, 200);
+
+  }); // end DOMContentLoaded
+
+})(); // end IIFE
+
+
+
+
+
+
+/* ================================================================
+   ARTICLE 15 — "Intermittent Fasting for Curvy Women"
+   ADD THIS BLOCK TO /blog/articles.js
+   Reads: card-15 from editorsPicks in blog-articles.json
+================================================================ */
+
+(function () {
+
+  // Only run on article15
+  if (!document.body.classList.contains('a15-page')) return;
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    /* ════════════════════════════════════════════════════════════
+       1. LOAD DATA FROM blog-articles.json — card-15
+    ════════════════════════════════════════════════════════════ */
+    fetch('/blog/blog-articles.json')
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+
+        // Find card-15 in editorsPicks first, fallback to cards
+        var cardData = null;
+
+        if (data.editorsPicks) {
+          data.editorsPicks.forEach(function (c) {
+            if (c.id === 'card-15') cardData = c;
+          });
+        }
+        if (!cardData && data.cards) {
+          data.cards.forEach(function (c) {
+            if (c.id === 'card-15') cardData = c;
+          });
+        }
+
+        if (!cardData) {
+          console.warn('articles.js [a15]: card-15 not found in blog-articles.json');
+          return;
+        }
+
+        // ── Meta tags ──────────────────────────────────────────
+        var pageTitle = document.getElementById('page-title');
+        if (pageTitle) pageTitle.textContent = cardData.title + ' | CurvaFit Journal';
+
+        var metaDesc = document.getElementById('meta-description');
+        if (metaDesc) metaDesc.setAttribute('content', cardData.excerpt);
+
+        var metaOgTitle = document.getElementById('meta-og-title');
+        if (metaOgTitle) metaOgTitle.setAttribute('content', cardData.title + ' — CurvaFit Journal');
+
+        var metaOgDesc = document.getElementById('meta-og-desc');
+        if (metaOgDesc) metaOgDesc.setAttribute('content', cardData.excerpt);
+
+        var metaOgImage = document.getElementById('meta-og-image');
+        if (metaOgImage) metaOgImage.setAttribute('content', cardData.image);
+
+        var metaTwTitle = document.getElementById('meta-tw-title');
+        if (metaTwTitle) metaTwTitle.setAttribute('content', cardData.title + ' — CurvaFit Journal');
+
+        var metaTwDesc = document.getElementById('meta-tw-desc');
+        if (metaTwDesc) metaTwDesc.setAttribute('content', cardData.excerpt);
+
+        var metaTwImage = document.getElementById('meta-tw-image');
+        if (metaTwImage) metaTwImage.setAttribute('content', cardData.image);
+
+        // ── JSON-LD ────────────────────────────────────────────
+        var jsonLd = document.getElementById('json-ld');
+        if (jsonLd) {
+          jsonLd.textContent = JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            'headline': cardData.title,
+            'description': cardData.excerpt,
+            'image': cardData.image,
+            'author': { '@type': 'Person', 'name': cardData.author ? (cardData.author.name || '') : '' },
+            'publisher': {
+              '@type': 'Organization',
+              'name': 'CurvaFit',
+              'logo': { '@type': 'ImageObject', 'url': 'https://www.curva-fit.com/src-images/LogoCurvafit(1).png' }
+            },
+            'datePublished': cardData.date || '',
+            'mainEntityOfPage': { '@type': 'WebPage', '@id': 'https://www.curva-fit.com/blog/article15.html' }
+          });
+        }
+
+        // ── Hero background image ──────────────────────────────
+        var heroBg = document.getElementById('a15-hero-bg');
+        if (heroBg) {
+          heroBg.src = cardData.image;
+          heroBg.alt = cardData.imageAlt || cardData.title;
+        }
+
+        // ── Hero text fields ───────────────────────────────────
+        var badge    = cardData.badge || cardData.category || '';
+        var catLabel = badge;
+
+        a15setText('a15-hero-badge',     badge);
+        a15setText('a15-breadcrumb-cat', catLabel);
+        a15setText('a15-hero-title',     cardData.title);
+        a15setText('a15-hero-excerpt',   cardData.excerpt);
+        a15setText('a15-hero-readtime',  cardData.readTime || '');
+        a15setText('a15-hero-date',      cardData.date     || '');
+        a15setText('a15-hero-views',     cardData.views ? cardData.views + ' reads' : '');
+
+        // Ribbon
+        a15setText('a15-ribbon-readtime', cardData.readTime || '');
+        a15setText('a15-ribbon-views',    cardData.views ? cardData.views + ' reads' : '');
+        a15setText('a15-ribbon-date',     cardData.date     || '');
+
+        // Author
+        var authorName  = '';
+        var authorImage = '';
+        if (cardData.author) {
+          authorName  = cardData.author.name  || '';
+          authorImage = cardData.author.image || '';
+        }
+
+        a15setText('a15-hero-author-name', authorName);
+
+        var heroAuthorImg = document.getElementById('a15-hero-author-img');
+        if (heroAuthorImg && authorImage) {
+          heroAuthorImg.src = authorImage;
+          heroAuthorImg.alt = authorName;
+        }
+
+        // Show/hide New badge
+        var newBadge = document.getElementById('a15-hero-new-badge');
+        if (newBadge) newBadge.style.display = cardData.isNew ? 'inline-flex' : 'none';
+
+        // ── Sidebar + body author references ───────────────────
+        a15setText('a15-sidebar-author',   authorName);
+        a15setText('a15-pullquote-author', authorName);
+        a15setText('a15-bio-name',         authorName);
+        a15setText('a15-conclusion-author', authorName);
+
+        var bioImg = document.getElementById('a15-bio-img');
+        if (bioImg && authorImage) { bioImg.src = authorImage; bioImg.alt = authorName; }
+
+        // ── Related articles ───────────────────────────────────
+        a15InjectRelated(
+          (data.cards || []).concat(data.editorsPicks || []),
+          cardData.category || cardData.badge || '',
+          'card-15'
+        );
+
+      })
+      .catch(function (err) {
+        console.error('articles.js [a15]: error loading blog-articles.json:', err);
+      });
+
+
+    /* ════════════════════════════════════════════════════════════
+       2. RELATED ARTICLES
+    ════════════════════════════════════════════════════════════ */
+    function a15InjectRelated(cards, currentCategory, currentId) {
+      var grid = document.getElementById('a15-related-grid');
+      if (!grid || !cards || !cards.length) return;
+
+      var same   = cards.filter(function (c) { return (c.category === currentCategory || c.badge === currentCategory) && c.id !== currentId; });
+      var others = cards.filter(function (c) { return c.category !== currentCategory && c.badge !== currentCategory && c.id !== currentId; });
+
+      a15Shuffle(same);
+      a15Shuffle(others);
+
+      var picks = same.slice(0, 3);
+      if (picks.length < 3) picks = picks.concat(others.slice(0, 3 - picks.length));
+
+      grid.innerHTML = picks.map(function (card) {
+        return '<a href="' + (card.url || '#') + '" class="related-card">' +
+          '<div class="related-card__img-wrap">' +
+            '<img src="' + (card.image || '') + '" alt="' + a15Esc(card.imageAlt || card.title) + '" loading="lazy">' +
+            '<span class="related-card__badge">' + a15Esc(card.badge || card.category || '') + '</span>' +
+          '</div>' +
+          '<div class="related-card__body">' +
+            '<h3 class="related-card__title">' + a15Esc(card.title) + '</h3>' +
+            '<p class="related-card__excerpt">' + a15Esc(card.excerpt || '') + '</p>' +
+            '<div class="related-card__meta">' +
+              '<span><i class="fi fi-rr-clock"></i> ' + a15Esc(card.readTime || '') + '</span>' +
+              '<span><i class="fi fi-rr-eye"></i> ' + a15Esc(card.views || '') + '</span>' +
+              '<span class="related-card__cta">Read Article →</span>' +
+            '</div>' +
+          '</div>' +
+        '</a>';
+      }).join('');
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       3. TABLE OF CONTENTS
+    ════════════════════════════════════════════════════════════ */
+    function a15BuildTOC() {
+      var tocNav   = document.getElementById('a15-toc-nav');
+      if (!tocNav) return;
+      var headings = document.querySelectorAll('.a15-content h2');
+      if (!headings.length) return;
+
+      var links = [];
+      headings.forEach(function (h2, i) {
+        if (!h2.id) h2.id = 'a15-h-' + i;
+        var a = document.createElement('a');
+        a.href = '#' + h2.id;
+        a.textContent = h2.textContent;
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var el = document.getElementById(h2.id);
+          if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 100, behavior: 'smooth' });
+        });
+        tocNav.appendChild(a);
+        links.push({ el: h2, link: a });
+      });
+
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          var found = links.find(function (l) { return l.el === entry.target; });
+          if (found) found.link.classList.toggle('active', entry.isIntersecting);
+        });
+      }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+      links.forEach(function (l) { obs.observe(l.el); });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       4. READING PROGRESS BAR
+    ════════════════════════════════════════════════════════════ */
+    function a15InitProgressBar() {
+      var bar = document.getElementById('reading-progress-bar');
+      if (!bar) return;
+      function update() {
+        var s = window.scrollY || document.documentElement.scrollTop;
+        var d = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = (d > 0 ? Math.min(s / d * 100, 100) : 0).toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', update, { passive: true });
+      update();
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       5. STICKY SIDEBAR SHARE
+    ════════════════════════════════════════════════════════════ */
+    function a15InitStickyShare() {
+      var el   = document.getElementById('a15-sticky-share');
+      var hero = document.getElementById('a15-hero');
+      if (!el || !hero) return;
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { el.classList.toggle('visible', !e.isIntersecting); });
+      }, { threshold: 0 });
+      obs.observe(hero);
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       6. SHARE BUTTONS
+    ════════════════════════════════════════════════════════════ */
+    function a15InitShare() {
+      var url   = encodeURIComponent(window.location.href);
+      var title = encodeURIComponent(document.title);
+
+      document.querySelectorAll('.a15-share-btn').forEach(function (btn) {
+
+        // Copy
+        if (btn.classList.contains('a15-share-btn--copy') || btn.id === 'a15-hero-copy' || btn.id === 'a15-bottom-copy') {
+          btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigator.clipboard.writeText(window.location.href).then(function () {
+              btn.classList.add('copied');
+              var icon = btn.querySelector('i');
+              var orig = icon ? icon.className : '';
+              if (icon) icon.className = 'fi fi-rr-check';
+              setTimeout(function () { btn.classList.remove('copied'); if (icon) icon.className = orig; }, 2200);
+            }).catch(function () {
+              var ta = document.createElement('textarea');
+              ta.value = window.location.href;
+              document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+            });
+          });
+          return;
+        }
+
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          var share = '#';
+          if (btn.classList.contains('a15-share-btn--fb')) {
+            share = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+          } else if (btn.classList.contains('a15-share-btn--pi')) {
+            var img = encodeURIComponent((document.getElementById('a15-hero-bg') || {}).src || '');
+            share = 'https://pinterest.com/pin/create/button/?url=' + url + '&description=' + title + '&media=' + img;
+          } else if (btn.classList.contains('a15-share-btn--wa')) {
+            share = 'https://api.whatsapp.com/send?text=' + title + '%20' + url;
+          } else if (btn.classList.contains('a15-share-btn--tw')) {
+            share = 'https://twitter.com/intent/tweet?url=' + url + '&text=' + title;
+          }
+          if (share !== '#') window.open(share, '_blank', 'noopener,width=620,height=440');
+        });
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       7. REACTIONS
+    ════════════════════════════════════════════════════════════ */
+    function a15InitReactions() {
+      var KEY = 'cf_reactions_article15';
+      function getReacted() { try { return localStorage.getItem(KEY) || ''; } catch (e) { return ''; } }
+      function saveReacted(t){ try { localStorage.setItem(KEY, t); } catch (e) {} }
+
+      var reacted = getReacted();
+
+      document.querySelectorAll('#a15-article-reactions .reaction-btn').forEach(function (btn) {
+        var type    = btn.getAttribute('data-reaction');
+        var countEl = btn.querySelector('.reaction-btn__count');
+        if (reacted === type) btn.classList.add('active');
+
+        btn.addEventListener('click', function () {
+          if (reacted && reacted !== type) return;
+          var cur = parseInt((countEl ? countEl.textContent : '0').replace(/\D/g,''), 10) || 0;
+          if (btn.classList.contains('active')) {
+            btn.classList.remove('active');
+            if (countEl) countEl.textContent = Math.max(0, cur - 1);
+            reacted = ''; saveReacted('');
+          } else {
+            btn.classList.add('active');
+            if (countEl) countEl.textContent = cur + 1;
+            reacted = type; saveReacted(type);
+          }
+        });
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       8. REVIEW SYSTEM
+    ════════════════════════════════════════════════════════════ */
+    (function () {
+      var ARTICLE_ID       = 'article15';
+      var API              = '/.netlify/functions/reviews-article';
+      var PER_PAGE         = 5;
+      var allReviews       = [];
+      var shownCount       = 0;
+      var likeGranted      = false;
+
+      async function loadStats() {
+        try {
+          var res  = await fetch(API + '?articleId=' + encodeURIComponent(ARTICLE_ID));
+          var data = await res.json();
+          if (!data.success) return;
+          a15setCount('a15-count-helpful',  data.likes);
+          a15setCount('a15-count-inspired', data.reviewsCount);
+          a15setCount('a15-count-more',     data.shares);
+          allReviews = data.reviews || [];
+          renderReviews(true);
+        } catch (e) { console.warn('[a15 reviews]', e.message); }
+      }
+
+      function a15setCount(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = val;
+      }
+
+      // Like
+      var btnHelpful = document.getElementById('a15-btn-helpful');
+      if (btnHelpful) {
+        btnHelpful.addEventListener('click', async function () {
+          if (likeGranted) return;
+          likeGranted = true;
+          btnHelpful.classList.add('active');
+          try {
+            var res  = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'like', articleId: ARTICLE_ID }) });
+            var data = await res.json();
+            if (data.success) a15setCount('a15-count-helpful', data.likes);
+          } catch (e) { console.warn('[a15] like failed:', e.message); }
+        });
+      }
+
+      // Share counter
+      async function recordShare() {
+        try {
+          var res  = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'share', articleId: ARTICLE_ID }) });
+          var data = await res.json();
+          if (data.success) a15setCount('a15-count-more', data.shares);
+        } catch (e) { console.warn('[a15] share failed:', e.message); }
+      }
+
+      document.querySelectorAll('.a15-share-btn').forEach(function (btn) { btn.addEventListener('click', recordShare); });
+
+      var btnMore = document.getElementById('a15-btn-more');
+      if (btnMore) {
+        btnMore.addEventListener('click', function () {
+          recordShare();
+          var fw = document.getElementById('a15-art-review-form-wrap');
+          if (fw) fw.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      }
+
+      var btnInspired = document.getElementById('a15-btn-inspired');
+      if (btnInspired) {
+        btnInspired.addEventListener('click', function () {
+          btnInspired.classList.toggle('active');
+          var t = allReviews.length > 0 ? document.getElementById('a15-art-reviews-list-wrap') : document.getElementById('a15-art-review-form-wrap');
+          if (t) t.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      }
+
+      // Avatar
+      var avatarBase64 = '';
+
+      function compressAvatar(file) {
+        return new Promise(function (resolve) {
+          if (!file) { resolve(''); return; }
+          var url = URL.createObjectURL(file);
+          var img = new Image();
+          img.onload = function () {
+            var MAX = 150, w = img.width, h = img.height;
+            if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+            else        { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+            var c = document.createElement('canvas');
+            c.width = w; c.height = h;
+            c.getContext('2d').drawImage(img, 0, 0, w, h);
+            URL.revokeObjectURL(url);
+            resolve(c.toDataURL('image/jpeg', 0.6));
+          };
+          img.onerror = function () { URL.revokeObjectURL(url); resolve(''); };
+          img.src = url;
+        });
+      }
+
+      var avatarInput  = document.getElementById('a15-rv-avatar-input');
+      var avatarWrap   = document.getElementById('a15-rv-avatar-wrap');
+      var avatarPrev   = document.getElementById('a15-rv-avatar-preview');
+      var avatarPlaceh = document.getElementById('a15-rv-avatar-placeholder');
+
+      if (avatarWrap && avatarInput) {
+        avatarWrap.addEventListener('click', function () { avatarInput.click(); });
+        avatarInput.addEventListener('change', async function () {
+          var file = avatarInput.files[0];
+          if (!file) return;
+          avatarBase64 = await compressAvatar(file);
+          if (avatarBase64 && avatarPrev && avatarPlaceh) {
+            avatarPrev.src = avatarBase64; avatarPrev.style.display = 'block';
+            avatarPlaceh.style.display = 'none';
+          }
+        });
+      }
+
+      // Stars
+      var stars          = document.querySelectorAll('#a15-rv-stars .art-rv-star');
+      var ratingInput    = document.getElementById('a15-rv-rating');
+      var selectedRating = 0;
+
+      function paintStars(n) {
+        stars.forEach(function (s, i) {
+          s.classList.toggle('fi-sr-star', i < n);
+          s.classList.toggle('fi-rr-star', i >= n);
+          s.classList.toggle('selected',   i < n);
+        });
+      }
+
+      stars.forEach(function (star) {
+        star.addEventListener('mouseover', function () { paintStars(parseInt(star.dataset.val)); });
+        star.addEventListener('mouseout',  function () { paintStars(selectedRating); });
+        star.addEventListener('click',     function () { selectedRating = parseInt(star.dataset.val); if (ratingInput) ratingInput.value = selectedRating; paintStars(selectedRating); });
+      });
+
+      // Char counter
+      var textarea = document.getElementById('a15-rv-text');
+      var charNum  = document.getElementById('a15-rv-char-num');
+      if (textarea && charNum) { textarea.addEventListener('input', function () { charNum.textContent = textarea.value.length; }); }
+
+      // Submit
+      var reviewForm = document.getElementById('a15-art-review-form');
+      var submitBtn  = document.getElementById('a15-rv-submit');
+      var errorEl    = document.getElementById('a15-rv-error');
+      var successEl  = document.getElementById('a15-rv-success');
+
+      if (reviewForm) {
+        reviewForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var firstName = document.getElementById('a15-rv-firstname').value.trim();
+          var lastName  = document.getElementById('a15-rv-lastname').value.trim();
+          var text      = document.getElementById('a15-rv-text').value.trim();
+          var rating    = parseInt(ratingInput ? ratingInput.value : '0');
+
+          if (errorEl)   errorEl.style.display   = 'none';
+          if (successEl) successEl.style.display = 'none';
+
+          if (!firstName || !lastName)     { showError('Please enter your first and last name.');          return; }
+          if (rating === 0)                { showError('Please select a star rating.');                    return; }
+          if (!text || text.length < 10)   { showError('Please write at least 10 characters.');            return; }
+
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fi fi-rr-spinner"></i> Sending…';
+
+          try {
+            var res  = await fetch(API, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'add-review', articleId: ARTICLE_ID, firstName, lastName, avatar: avatarBase64, text, rating })
+            });
+            var data = await res.json();
+
+            if (data.success) {
+              if (successEl) successEl.style.display = 'flex';
+              a15setCount('a15-count-inspired', data.reviewsCount);
+
+              allReviews.unshift({
+                firstName, lastName, avatar: avatarBase64, text, rating,
+                date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+              });
+              renderReviews(true);
+
+              reviewForm.reset();
+              selectedRating = 0; paintStars(0);
+              avatarBase64 = '';
+              if (avatarPrev)   { avatarPrev.style.display = 'none'; avatarPrev.src = ''; }
+              if (avatarPlaceh) avatarPlaceh.style.display = 'flex';
+              if (charNum)      charNum.textContent = '0';
+
+              submitBtn.innerHTML = '<i class="fi fi-rr-check-circle"></i> Review submitted!';
+              setTimeout(function () {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+                if (successEl) successEl.style.display = 'none';
+              }, 4000);
+            } else {
+              showError('Error: ' + (data.error || 'Unknown error'));
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+            }
+          } catch (err) {
+            showError('Network error. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+          }
+        });
+      }
+
+      function showError(msg) { if (errorEl) { errorEl.textContent = msg; errorEl.style.display = 'block'; } }
+
+      // Reviews list
+      var listWrap    = document.getElementById('a15-art-reviews-list-wrap');
+      var listEl      = document.getElementById('a15-art-reviews-list');
+      var countLabel  = document.getElementById('a15-rv-count-label');
+      var loadMoreBtn = document.getElementById('a15-rv-load-more');
+
+      function renderReviews(reset) {
+        if (!listEl) return;
+        if (reset) { shownCount = 0; listEl.innerHTML = ''; }
+        if (!allReviews.length) { if (listWrap) listWrap.style.display = 'none'; return; }
+        if (listWrap) listWrap.style.display = 'block';
+        if (countLabel) countLabel.textContent = allReviews.length + ' review' + (allReviews.length > 1 ? 's' : '');
+
+        var slice = allReviews.slice(shownCount, shownCount + PER_PAGE);
+        slice.forEach(function (rv) { listEl.appendChild(buildReviewCard(rv)); });
+        shownCount += slice.length;
+        if (loadMoreBtn) loadMoreBtn.style.display = shownCount < allReviews.length ? 'block' : 'none';
+      }
+
+      if (loadMoreBtn) loadMoreBtn.addEventListener('click', function () { renderReviews(false); });
+
+      function buildReviewCard(rv) {
+        var card = document.createElement('div');
+        card.className = 'art-rv-card';
+        var avatarHTML = rv.avatar
+          ? '<img class="art-rv-card__avatar" src="' + rv.avatar + '" alt="' + rv.firstName + '" loading="lazy">'
+          : '<div class="art-rv-card__avatar-placeholder">' + (rv.firstName || '?').charAt(0).toUpperCase() + '</div>';
+        var rating    = parseInt(rv.rating) || 5;
+        var starsHTML = '';
+        for (var i = 1; i <= 5; i++) starsHTML += '<i class="fi ' + (i <= rating ? 'fi-sr-star' : 'fi-rr-star empty') + '"></i>';
+        card.innerHTML = avatarHTML +
+          '<div class="art-rv-card__body">' +
+            '<div class="art-rv-card__top">' +
+              '<span class="art-rv-card__name">' + a15Esc(rv.firstName) + ' ' + a15Esc(rv.lastName) + '</span>' +
+              '<span class="art-rv-card__date">' + a15Esc(rv.date || '') + '</span>' +
+            '</div>' +
+            '<div class="art-rv-card__stars">' + starsHTML + '</div>' +
+            '<p class="art-rv-card__text">' + a15Esc(rv.text) + '</p>' +
+          '</div>';
+        return card;
+      }
+
+      loadStats();
+    })();
+
+
+    /* ════════════════════════════════════════════════════════════
+       9. NEWSLETTER
+    ════════════════════════════════════════════════════════════ */
+    function a15InitNewsletter() {
+      var nlForm  = document.getElementById('a15-article-nl-form');
+      var nlEmail = document.getElementById('a15-article-nl-email');
+
+      if (nlForm && nlEmail) {
+        nlForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var val = nlEmail.value.trim();
+          if (!val || !val.includes('@')) return;
+          var btn = nlForm.querySelector('button');
+          var orig = btn ? btn.innerHTML : '';
+          if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fi fi-rr-spinner"></i> Subscribing…'; }
+          try {
+            var res  = await fetch('/.netlify/functions/save-account', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'newsletter-subscribe', email: val }) });
+            var data = await res.json();
+            if (data.success) {
+              nlEmail.value = '';
+              if (btn) {
+                btn.innerHTML = '<i class="fi fi-rr-check"></i> You\'re subscribed!';
+                setTimeout(function () { btn.disabled = false; btn.innerHTML = orig; }, 4000);
+              }
+              a15ShowNewsletterPopup();
+            } else { if (btn) { btn.disabled = false; btn.innerHTML = orig; } }
+          } catch (err) { if (btn) { btn.disabled = false; btn.innerHTML = orig; } }
+        });
+      }
+
+      // Footer newsletter
+      var footerForm  = document.getElementById('newsletter-form-footer');
+      var footerEmail = document.getElementById('newsletter-email-footer');
+      if (footerForm && footerEmail && !footerForm.dataset.a15Bound) {
+        footerForm.dataset.a15Bound = '1';
+        footerForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var val = footerEmail.value.trim();
+          if (!val || !val.includes('@')) return;
+          var btn = footerForm.querySelector('button');
+          var orig = btn ? btn.textContent : '';
+          if (btn) { btn.textContent = 'Saving…'; btn.disabled = true; }
+          try {
+            var res  = await fetch('/.netlify/functions/save-account', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'newsletter-subscribe', email: val }) });
+            var data = await res.json();
+            if (data.success) { footerEmail.value = ''; a15ShowNewsletterPopup(); }
+          } catch (err) { console.error(err); }
+          finally { if (btn) { btn.textContent = orig; btn.disabled = false; } }
+        });
+      }
+    }
+
+    function a15ShowNewsletterPopup() {
+      var popup = document.getElementById('newsletter-popup');
+      if (popup) {
+        popup.classList.add('show');
+        setTimeout(function () { popup.classList.remove('show'); }, 8000);
+        var close = document.getElementById('popup-close-btn');
+        if (close) close.onclick = function () { popup.classList.remove('show'); };
+      }
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       10. SCROLL REVEAL
+    ════════════════════════════════════════════════════════════ */
+    function a15InitScrollReveal() {
+      var targets = document.querySelectorAll(
+        '.a15-section, .a15-discover, .a15-pullquote, .a15-mid-cta, ' +
+        '.a15-author-bio, .a15-timeline, .a15-hcard, .a15-pcard, ' +
+        '.a15-who-card, .a15-circ-card, .a15-wk, .a15-break-card, .a15-callout, ' +
+        '#a15-article-reactions, #a15-article-share-bottom, #a15-article-newsletter'
+      );
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity   = '1';
+            entry.target.style.transform = 'translateY(0)';
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.05 });
+
+      targets.forEach(function (el) {
+        el.style.opacity    = '0';
+        el.style.transform  = 'translateY(24px)';
+        el.style.transition = 'opacity 0.60s ease, transform 0.60s ease';
+        obs.observe(el);
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       11. CLOCK HAND ANIMATION (SVG)
+    ════════════════════════════════════════════════════════════ */
+    function a15AnimateClock() {
+      var hand = document.querySelector('.a15-hand-sweep-el');
+      if (!hand) return;
+      var angle = 0;
+      function tick() {
+        angle = (angle + 0.5) % 360;
+        hand.setAttribute('transform', 'rotate(' + angle + ' 150 150)');
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       12. FLOATING PILLS ENTRANCE
+    ════════════════════════════════════════════════════════════ */
+    function a15AnimatePills() {
+      document.querySelectorAll('.a15-float-pill').forEach(function (pill, i) {
+        pill.style.opacity    = '0';
+        pill.style.transform  = 'translateY(18px) scale(0.93)';
+        pill.style.transition = 'opacity 0.50s ease, transform 0.50s ease';
+        setTimeout(function () {
+          pill.style.opacity   = '1';
+          pill.style.transform = 'translateY(0) scale(1)';
+        }, 900 + i * 400);
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       READ BUTTON — smooth scroll
+    ════════════════════════════════════════════════════════════ */
+    function a15InitReadBtn() {
+      var btn = document.querySelector('.a15-read-btn');
+      if (!btn) return;
+      btn.addEventListener('click', function (e) {
+        var ribbon = document.querySelector('.a15-ribbon');
+        if (ribbon) { e.preventDefault(); window.scrollTo({ top: ribbon.getBoundingClientRect().top + window.scrollY - 10, behavior: 'smooth' }); }
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       UTILITIES
+    ════════════════════════════════════════════════════════════ */
+    function a15setText(id, text) {
+      document.querySelectorAll('#' + id).forEach(function (el) { el.textContent = text; });
+    }
+
+    function a15Shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+      }
+      return arr;
+    }
+
+    function a15Esc(str) {
+      return String(str || '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       INIT
+    ════════════════════════════════════════════════════════════ */
+    a15InitProgressBar();
+    a15InitStickyShare();
+    a15InitShare();
+    a15InitReactions();
+    a15InitNewsletter();
+    a15AnimatePills();
+    a15InitReadBtn();
+    a15AnimateClock();
+
+    // Delay TOC + scroll reveal to let JSON injection settle
+    setTimeout(function () {
+      a15BuildTOC();
+      a15InitScrollReveal();
+    }, 220);
 
   }); // end DOMContentLoaded
 
