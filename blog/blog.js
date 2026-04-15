@@ -163,6 +163,26 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>`;
         }).join('');
       }
+
+      // ── EDITOR'S PICKS ─────────────────────────────────────────
+      var picksContainer = document.getElementById('editors-picks-container');
+      if (picksContainer && data.editorsPicks) {
+        picksContainer.innerHTML = data.editorsPicks.map(function (pick) {
+          return `
+             <div class="pick-card" id="${pick.id}">
+              <div class="pick-img-wrap">
+                <img src="${pick.image}" alt="${pick.imageAlt}" loading="lazy">
+                <span class="pick-label">Editor's Choice</span>
+              </div>
+              <div class="pick-body">
+                <span class="pick-cat">${pick.category}</span>
+                <h3>${pick.title}</h3>
+                <p>${pick.excerpt}</p>
+                <a href="${pick.url}" class="pick-link">Read Full Article →</a>
+              </div>
+            </div>`;
+        }).join('');
+      }
         // ── STATS BAR ──────────────────────────────────────────────
       var statsContainer = document.getElementById('blog-stats-container');
       if (statsContainer && data.stats) {

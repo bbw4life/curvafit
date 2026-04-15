@@ -240,7 +240,7 @@
       "views": "5.4k",
       "date": "Mar 25, 2026",
       "readTime": "8 min",
-      "url": "/blog/article18.html"
+      "url": "/blog/article11.html"
     },
     {
       "id": "card-12",
@@ -258,7 +258,7 @@
       "views": "8.1k",
       "date": "Apr 1, 2026",
       "readTime": "10 min",
-      "url": "/blog/article19.html"
+      "url": "/blog/article12.html"
     }
   ],
 
@@ -336,5 +336,34 @@
       "instagram": "#",
       "twitter": "#"
     }
-  ]
+  ],
+  "editorsPicks": [
+  {
+    "id": "card-13",
+    "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/article15.png?v=1775497367",
+    "imageAlt": "Cute plus-size workout clothes",
+    "category": "Style & Fitness",
+    "title": "Cute Workout Clothes for Curvy Gals",
+    "excerpt": "Feel confident and comfortable in gear designed for your curves.",
+    "url": "/blog/article13.html"
+  },
+  {
+    "id": "card-14",
+    "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/article16.png?v=1775497365",
+    "imageAlt": "Pilates for plus-size beginners",
+    "category": "Home Workouts",
+    "title": "Pilates for Plus-Size Beginners",
+    "excerpt": "Gentle movements to build core strength and flexibility.",
+    "url": "/blog/article14.html"
+  },
+  {
+    "id": "card-15",
+    "image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/article17.png?v=1775497370",
+    "imageAlt": "Strength training for curvy women",
+    "category": "Strength Training",
+    "title": "Strength Training Essentials for Curvy Women",
+    "excerpt": "Build muscle and boost metabolism safely and confidently.",
+    "url": "/blog/article15.html"
+  }
+]
 }

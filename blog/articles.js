@@ -8073,3 +8073,2359 @@ document.addEventListener('DOMContentLoaded', function () {
 
 })(); // end IIFE
 
+
+
+
+
+
+
+/* ================================================================
+   ARTICLE 11 — "Why Protein and Fiber Are Your Two Most Powerful Allies"
+   Add this block inside articles.js
+================================================================ */
+
+(function () {
+
+  if (!document.body.classList.contains('a11-page')) return;
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    /* ════════════════════════════════════════════════════════════
+       1.  LOAD DATA FROM blog-articles.json — card-11
+    ════════════════════════════════════════════════════════════ */
+    fetch('/blog/blog-articles.json')
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+
+        var cardData = null;
+        if (data.cards) {
+          data.cards.forEach(function (c) {
+            if (c.id === 'card-11') cardData = c;
+          });
+        }
+
+        if (!cardData) {
+          console.warn('articles.js [a11]: card-11 not found in blog-articles.json');
+          return;
+        }
+
+        // ── Meta tags ──────────────────────────────────────────
+        var pageTitle = document.getElementById('page-title');
+        if (pageTitle) pageTitle.textContent = cardData.title + ' | CurvaFit Journal';
+
+        var metaDesc = document.getElementById('meta-description');
+        if (metaDesc) metaDesc.setAttribute('content', cardData.excerpt);
+
+        var metaOgTitle = document.getElementById('meta-og-title');
+        if (metaOgTitle) metaOgTitle.setAttribute('content', cardData.title + ' — CurvaFit Journal');
+
+        var metaOgDesc = document.getElementById('meta-og-desc');
+        if (metaOgDesc) metaOgDesc.setAttribute('content', cardData.excerpt);
+
+        var metaOgImage = document.getElementById('meta-og-image');
+        if (metaOgImage) metaOgImage.setAttribute('content', cardData.image);
+
+        // ── JSON-LD ────────────────────────────────────────────
+        var jsonLd = document.getElementById('json-ld');
+        if (jsonLd) {
+          jsonLd.textContent = JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            'headline': cardData.title,
+            'description': cardData.excerpt,
+            'image': cardData.image,
+            'author': { '@type': 'Person', 'name': cardData.author.name },
+            'publisher': {
+              '@type': 'Organization',
+              'name': 'CurvaFit',
+              'logo': { '@type': 'ImageObject', 'url': 'https://www.curva-fit.com/src-images/LogoCurvafit(1).png' }
+            },
+            'datePublished': cardData.date,
+            'mainEntityOfPage': { '@type': 'WebPage', '@id': 'https://www.curva-fit.com/blog/article11.html' }
+          });
+        }
+
+        // ── Hero fields ────────────────────────────────────────
+        var heroBg = document.getElementById('a11-hero-bg');
+        if (heroBg) { heroBg.src = cardData.image; heroBg.alt = cardData.imageAlt || cardData.title; }
+
+        a11setText('a11-hero-badge',       cardData.badge);
+        a11setText('a11-hero-readtime',    cardData.readTime);
+        a11setText('a11-hero-views',       cardData.views + ' reads');
+        a11setText('a11-hero-date',        cardData.date);
+        a11setText('a11-hero-author-name', cardData.author.name);
+        a11setText('a11-hero-excerpt',     cardData.excerpt);
+        a11setText('a11-breadcrumb-cat',   cardData.badge);
+
+        var newBadge = document.getElementById('a11-hero-new-badge');
+        if (newBadge) newBadge.style.display = cardData.isNew ? 'inline-flex' : 'none';
+
+        var authorImg = document.getElementById('a11-hero-author-img');
+        if (authorImg) { authorImg.src = cardData.author.image; authorImg.alt = cardData.author.name; }
+
+        // ── Sidebar & bio ──────────────────────────────────────
+        a11setText('a11-sidebar-author',    cardData.author.name);
+        a11setText('a11-pullquote-author',  cardData.author.name);
+        a11setText('a11-conclusion-author', cardData.author.name);
+        a11setText('a11-bio-name',          cardData.author.name);
+
+        var bioImg = document.getElementById('a11-bio-img');
+        if (bioImg) { bioImg.src = cardData.author.image; bioImg.alt = cardData.author.name; }
+
+        // ── Ribbon ─────────────────────────────────────────────
+        a11setText('a11-ribbon-readtime', cardData.readTime);
+        a11setText('a11-ribbon-views',    cardData.views + ' reads');
+        a11setText('a11-ribbon-date',     cardData.date);
+
+        // ── Related ────────────────────────────────────────────
+        a11InjectRelated(data.cards, cardData.category, 'card-11');
+
+      })
+      .catch(function (err) {
+        console.error('articles.js [a11]: error loading blog-articles.json:', err);
+      });
+
+
+    /* ════════════════════════════════════════════════════════════
+       2.  RELATED ARTICLES
+    ════════════════════════════════════════════════════════════ */
+    function a11InjectRelated(cards, currentCategory, currentId) {
+      var relatedGrid = document.getElementById('a11-related-grid');
+      if (!relatedGrid || !cards || !cards.length) return;
+
+      var sameCategory = cards.filter(function (c) {
+        return c.category === currentCategory && c.id !== currentId;
+      });
+      var others = cards.filter(function (c) {
+        return c.category !== currentCategory && c.id !== currentId;
+      });
+
+      a11Shuffle(sameCategory);
+      a11Shuffle(others);
+
+      var picks = sameCategory.slice(0, 3);
+      if (picks.length < 3) picks = picks.concat(others.slice(0, 3 - picks.length));
+
+      relatedGrid.innerHTML = picks.map(function (card) {
+        return '<a href="' + card.url + '" class="related-card">' +
+          '<div class="related-card__img-wrap">' +
+            '<img src="' + card.image + '" alt="' + (card.imageAlt || card.title) + '" loading="lazy">' +
+            '<span class="related-card__badge">' + card.badge + '</span>' +
+          '</div>' +
+          '<div class="related-card__body">' +
+            '<h3 class="related-card__title">' + card.title + '</h3>' +
+            '<p class="related-card__excerpt">' + card.excerpt + '</p>' +
+            '<div class="related-card__meta">' +
+              '<span><i class="fi fi-rr-clock"></i> ' + card.readTime + '</span>' +
+              '<span><i class="fi fi-rr-eye"></i> ' + card.views + '</span>' +
+              '<span class="related-card__cta">Read Article →</span>' +
+            '</div>' +
+          '</div>' +
+        '</a>';
+      }).join('');
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       3.  TABLE OF CONTENTS
+    ════════════════════════════════════════════════════════════ */
+    function a11BuildTOC() {
+      var tocNav   = document.getElementById('a11-toc-nav');
+      if (!tocNav) return;
+      var headings = document.querySelectorAll('.a11-content h2');
+      if (!headings.length) return;
+
+      var links = [];
+      headings.forEach(function (h2, i) {
+        if (!h2.id) h2.id = 'a11-toc-h-' + i;
+        var a = document.createElement('a');
+        a.href = '#' + h2.id;
+        a.textContent = h2.textContent;
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var target = document.getElementById(h2.id);
+          if (target) {
+            var top = target.getBoundingClientRect().top + window.scrollY - 100;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+          }
+        });
+        tocNav.appendChild(a);
+        links.push({ el: h2, link: a });
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          var found = links.find(function (l) { return l.el === entry.target; });
+          if (found) found.link.classList.toggle('active', entry.isIntersecting);
+        });
+      }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+      links.forEach(function (l) { observer.observe(l.el); });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       4.  READING PROGRESS BAR
+    ════════════════════════════════════════════════════════════ */
+    function a11InitProgressBar() {
+      var bar = document.getElementById('reading-progress-bar');
+      if (!bar) return;
+      function update() {
+        var s = window.scrollY || document.documentElement.scrollTop;
+        var d = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = (d > 0 ? Math.min((s / d) * 100, 100) : 0).toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', update, { passive: true });
+      update();
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       5.  STICKY SIDEBAR SHARE
+    ════════════════════════════════════════════════════════════ */
+    function a11InitSidebarShare() {
+      var stickyShare = document.getElementById('a11-sticky-share');
+      var hero        = document.getElementById('a11-hero');
+      if (!stickyShare || !hero) return;
+
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { stickyShare.classList.toggle('visible', !e.isIntersecting); });
+      }, { threshold: 0 }).observe(hero);
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       6.  SHARE BUTTONS
+    ════════════════════════════════════════════════════════════ */
+    function a11InitShareButtons() {
+      var url   = encodeURIComponent(window.location.href);
+      var title = encodeURIComponent(document.title);
+
+      document.querySelectorAll('.a11-share-btn').forEach(function (btn) {
+
+        if (btn.classList.contains('a11-share-btn--copy') ||
+            btn.id === 'a11-hero-copy' || btn.id === 'a11-bottom-copy') {
+          btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigator.clipboard.writeText(window.location.href).then(function () {
+              var icon = btn.querySelector('i');
+              var orig = icon ? icon.className : '';
+              if (icon) icon.className = 'fi fi-rr-check';
+              setTimeout(function () { if (icon) icon.className = orig; }, 2200);
+            }).catch(function () {
+              var ta = document.createElement('textarea');
+              ta.value = window.location.href;
+              document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+            });
+          });
+          return;
+        }
+
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          var shareUrl = '#';
+          if (btn.classList.contains('a11-share-btn--fb'))   shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+          else if (btn.classList.contains('a11-share-btn--pi')) {
+            var img = encodeURIComponent((document.getElementById('a11-hero-bg') || {}).src || '');
+            shareUrl = 'https://pinterest.com/pin/create/button/?url=' + url + '&description=' + title + '&media=' + img;
+          }
+          else if (btn.classList.contains('a11-share-btn--wa')) shareUrl = 'https://api.whatsapp.com/send?text=' + title + '%20' + url;
+          else if (btn.classList.contains('a11-share-btn--tw')) shareUrl = 'https://twitter.com/intent/tweet?url=' + url + '&text=' + title;
+          if (shareUrl !== '#') window.open(shareUrl, '_blank', 'noopener,width=620,height=440');
+        });
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       7.  REACTIONS
+    ════════════════════════════════════════════════════════════ */
+    function a11InitReactions() {
+      var STORAGE_KEY = 'cf_article_reactions_article11';
+      function getReacted()      { try { return localStorage.getItem(STORAGE_KEY) || ''; } catch(e) { return ''; } }
+      function saveReacted(type) { try { localStorage.setItem(STORAGE_KEY, type); } catch(e) {} }
+      var reacted = getReacted();
+
+      document.querySelectorAll('#a11-article-reactions .reaction-btn').forEach(function (btn) {
+        var type    = btn.getAttribute('data-reaction');
+        var countEl = btn.querySelector('.reaction-btn__count');
+        if (reacted === type) btn.classList.add('active');
+
+        btn.addEventListener('click', function () {
+          if (reacted && reacted !== type) return;
+          var current = parseInt((countEl ? countEl.textContent : '0').replace(/[^0-9]/g, ''), 10) || 0;
+          if (btn.classList.contains('active')) {
+            btn.classList.remove('active');
+            if (countEl) countEl.textContent = Math.max(0, current - 1);
+            reacted = ''; saveReacted('');
+          } else {
+            btn.classList.add('active');
+            if (countEl) countEl.textContent = current + 1;
+            reacted = type; saveReacted(type);
+          }
+        });
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       8.  REVIEW SYSTEM
+    ════════════════════════════════════════════════════════════ */
+    (function () {
+      var ARTICLE_ID       = 'article11';
+      var API              = '/.netlify/functions/reviews-article';
+      var REVIEWS_PER_PAGE = 5;
+      var allReviews       = [];
+      var shownCount       = 0;
+      var likeGranted      = false;
+
+      async function loadStats() {
+        try {
+          var res  = await fetch(API + '?articleId=' + encodeURIComponent(ARTICLE_ID));
+          var data = await res.json();
+          if (!data.success) return;
+          a11setCount('a11-count-helpful',  data.likes);
+          a11setCount('a11-count-inspired', data.reviewsCount);
+          a11setCount('a11-count-more',     data.shares);
+          allReviews = data.reviews || [];
+          renderReviews(true);
+        } catch (e) { console.warn('[a11 reviews] loadStats failed:', e.message); }
+      }
+
+      function a11setCount(id, value) { var el = document.getElementById(id); if (el) el.textContent = value; }
+
+      var btnHelpful = document.getElementById('a11-btn-helpful');
+      if (btnHelpful) {
+        btnHelpful.addEventListener('click', async function () {
+          if (likeGranted) return;
+          likeGranted = true;
+          btnHelpful.classList.add('active');
+          try {
+            var res  = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'like', articleId: ARTICLE_ID }) });
+            var data = await res.json();
+            if (data.success) a11setCount('a11-count-helpful', data.likes);
+          } catch (e) { console.warn('[a11] like failed:', e.message); }
+        });
+      }
+
+      async function recordShare() {
+        try {
+          var res  = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'share', articleId: ARTICLE_ID }) });
+          var data = await res.json();
+          if (data.success) a11setCount('a11-count-more', data.shares);
+        } catch (e) {}
+      }
+
+      document.querySelectorAll('.a11-share-btn').forEach(function (btn) { btn.addEventListener('click', recordShare); });
+
+      var btnMore = document.getElementById('a11-btn-more');
+      if (btnMore) {
+        btnMore.addEventListener('click', function () {
+          recordShare();
+          var fw = document.getElementById('a11-art-review-form-wrap');
+          if (fw) fw.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      }
+
+      var avatarBase64 = '';
+
+      function compressAvatar(file) {
+        return new Promise(function (resolve) {
+          if (!file) { resolve(''); return; }
+          var url = URL.createObjectURL(file);
+          var img = new Image();
+          img.onload = function () {
+            var MAX = 150, w = img.width, h = img.height;
+            if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+            else        { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+            var canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            URL.revokeObjectURL(url);
+            resolve(canvas.toDataURL('image/jpeg', 0.6));
+          };
+          img.onerror = function () { URL.revokeObjectURL(url); resolve(''); };
+          img.src = url;
+        });
+      }
+
+      var avatarInput  = document.getElementById('a11-rv-avatar-input');
+      var avatarWrap   = document.getElementById('a11-rv-avatar-wrap');
+      var avatarPrev   = document.getElementById('a11-rv-avatar-preview');
+      var avatarPlaceh = document.getElementById('a11-rv-avatar-placeholder');
+
+      if (avatarWrap && avatarInput) {
+        avatarWrap.addEventListener('click', function () { avatarInput.click(); });
+        avatarInput.addEventListener('change', async function () {
+          var file = avatarInput.files[0];
+          if (!file) return;
+          avatarBase64 = await compressAvatar(file);
+          if (avatarBase64 && avatarPrev && avatarPlaceh) {
+            avatarPrev.src = avatarBase64; avatarPrev.style.display = 'block'; avatarPlaceh.style.display = 'none';
+          }
+        });
+      }
+
+      var stars          = document.querySelectorAll('#a11-rv-stars .art-rv-star');
+      var ratingInput    = document.getElementById('a11-rv-rating');
+      var selectedRating = 0;
+
+      function paintStars(upTo) {
+        stars.forEach(function (s, i) {
+          s.classList.toggle('fi-sr-star', i < upTo);
+          s.classList.toggle('fi-rr-star', i >= upTo);
+          s.classList.toggle('selected',   i < upTo);
+        });
+      }
+
+      stars.forEach(function (star) {
+        star.addEventListener('mouseover', function () { paintStars(parseInt(star.dataset.val)); });
+        star.addEventListener('mouseout',  function () { paintStars(selectedRating); });
+        star.addEventListener('click',     function () { selectedRating = parseInt(star.dataset.val); if (ratingInput) ratingInput.value = selectedRating; paintStars(selectedRating); });
+      });
+
+      var textarea = document.getElementById('a11-rv-text');
+      var charNum  = document.getElementById('a11-rv-char-num');
+      if (textarea && charNum) textarea.addEventListener('input', function () { charNum.textContent = textarea.value.length; });
+
+      var reviewForm = document.getElementById('a11-art-review-form');
+      var submitBtn  = document.getElementById('a11-rv-submit');
+      var errorEl    = document.getElementById('a11-rv-error');
+      var successEl  = document.getElementById('a11-rv-success');
+
+      if (reviewForm) {
+        reviewForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var firstName = document.getElementById('a11-rv-firstname').value.trim();
+          var lastName  = document.getElementById('a11-rv-lastname').value.trim();
+          var text      = document.getElementById('a11-rv-text').value.trim();
+          var rating    = parseInt(ratingInput ? ratingInput.value : '0');
+          if (errorEl) errorEl.style.display = 'none';
+          if (successEl) successEl.style.display = 'none';
+          if (!firstName || !lastName)   { showError('Please enter your first and last name.'); return; }
+          if (rating === 0)              { showError('Please select a star rating.'); return; }
+          if (!text || text.length < 10) { showError('Please write at least 10 characters.'); return; }
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fi fi-rr-spinner"></i> Sending…';
+          try {
+            var res  = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'add-review', articleId: ARTICLE_ID, firstName, lastName, avatar: avatarBase64, text, rating }) });
+            var data = await res.json();
+            if (data.success) {
+              if (successEl) successEl.style.display = 'flex';
+              a11setCount('a11-count-inspired', data.reviewsCount);
+              allReviews.unshift({ firstName, lastName, avatar: avatarBase64, text, rating, date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) });
+              renderReviews(true);
+              reviewForm.reset(); selectedRating = 0; paintStars(0); avatarBase64 = '';
+              if (avatarPrev)   { avatarPrev.style.display = 'none'; avatarPrev.src = ''; }
+              if (avatarPlaceh) avatarPlaceh.style.display = 'flex';
+              if (charNum)      charNum.textContent = '0';
+              submitBtn.innerHTML = '<i class="fi fi-rr-check-circle"></i> Review submitted!';
+              setTimeout(function () { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review'; if (successEl) successEl.style.display = 'none'; }, 4000);
+            } else {
+              showError('Error: ' + (data.error || 'Unknown error'));
+              submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+            }
+          } catch (err) {
+            showError('Network error. Please try again.');
+            submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+          }
+        });
+      }
+
+      function showError(msg) { if (errorEl) { errorEl.textContent = msg; errorEl.style.display = 'block'; } }
+
+      var listWrap    = document.getElementById('a11-art-reviews-list-wrap');
+      var listEl      = document.getElementById('a11-art-reviews-list');
+      var countLabel  = document.getElementById('a11-rv-count-label');
+      var loadMoreBtn = document.getElementById('a11-rv-load-more');
+
+      function renderReviews(reset) {
+        if (!listEl) return;
+        if (reset) { shownCount = 0; listEl.innerHTML = ''; }
+        if (allReviews.length === 0) { if (listWrap) listWrap.style.display = 'none'; return; }
+        if (listWrap) listWrap.style.display = 'block';
+        if (countLabel) countLabel.textContent = allReviews.length + ' review' + (allReviews.length > 1 ? 's' : '');
+        var slice = allReviews.slice(shownCount, shownCount + REVIEWS_PER_PAGE);
+        slice.forEach(function (rv) { listEl.appendChild(buildReviewCard(rv)); });
+        shownCount += slice.length;
+        if (loadMoreBtn) loadMoreBtn.style.display = shownCount < allReviews.length ? 'block' : 'none';
+      }
+
+      if (loadMoreBtn) loadMoreBtn.addEventListener('click', function () { renderReviews(false); });
+
+      function buildReviewCard(rv) {
+        var card = document.createElement('div');
+        card.className = 'art-rv-card';
+        var avatarHTML = rv.avatar
+          ? '<img class="art-rv-card__avatar" src="' + rv.avatar + '" alt="' + rv.firstName + '" loading="lazy">'
+          : '<div class="art-rv-card__avatar-placeholder">' + (rv.firstName || '?').charAt(0).toUpperCase() + '</div>';
+        var rating = parseInt(rv.rating) || 5;
+        var starsHTML = '';
+        for (var i = 1; i <= 5; i++) starsHTML += '<i class="fi ' + (i <= rating ? 'fi-sr-star' : 'fi-rr-star empty') + '"></i>';
+        card.innerHTML = avatarHTML + '<div class="art-rv-card__body"><div class="art-rv-card__top"><span class="art-rv-card__name">' + a11EscHtml(rv.firstName) + ' ' + a11EscHtml(rv.lastName) + '</span><span class="art-rv-card__date">' + a11EscHtml(rv.date || '') + '</span></div><div class="art-rv-card__stars">' + starsHTML + '</div><p class="art-rv-card__text">' + a11EscHtml(rv.text) + '</p></div>';
+        return card;
+      }
+
+      var btnInspired = document.getElementById('a11-btn-inspired');
+      if (btnInspired) {
+        btnInspired.addEventListener('click', function () {
+          btnInspired.classList.toggle('active');
+          var target = allReviews.length > 0 ? document.getElementById('a11-art-reviews-list-wrap') : document.getElementById('a11-art-review-form-wrap');
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      }
+
+      loadStats();
+    })();
+
+
+    /* ════════════════════════════════════════════════════════════
+       9.  NEWSLETTER FORMS
+    ════════════════════════════════════════════════════════════ */
+    function a11InitNewsletterForms() {
+      var nlForm  = document.getElementById('a11-article-nl-form');
+      var nlEmail = document.getElementById('a11-article-nl-email');
+
+      if (nlForm && nlEmail) {
+        nlForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var val = nlEmail.value.trim();
+          if (!val || !val.includes('@')) return;
+          var btn = nlForm.querySelector('button');
+          var orig = btn ? btn.innerHTML : '';
+          if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fi fi-rr-spinner"></i> Subscribing...'; }
+          try {
+            var res  = await fetch('/.netlify/functions/save-account', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'newsletter-subscribe', email: val }) });
+            var data = await res.json();
+            if (data.success) {
+              nlEmail.value = '';
+              if (btn) { btn.innerHTML = '<i class="fi fi-rr-check"></i> You\'re subscribed!'; setTimeout(function () { btn.disabled = false; btn.innerHTML = orig; }, 4000); }
+              a11ShowNlPopup();
+            } else { if (btn) { btn.disabled = false; btn.innerHTML = orig; } }
+          } catch (err) { if (btn) { btn.disabled = false; btn.innerHTML = orig; } }
+        });
+      }
+
+      var footerForm  = document.getElementById('newsletter-form-footer');
+      var footerEmail = document.getElementById('newsletter-email-footer');
+      if (footerForm && footerEmail && !footerForm.dataset.a11Bound) {
+        footerForm.dataset.a11Bound = '1';
+        footerForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var val = footerEmail.value.trim();
+          if (!val || !val.includes('@')) return;
+          var btn = footerForm.querySelector('button');
+          var orig = btn ? btn.textContent : '';
+          if (btn) { btn.textContent = 'Saving...'; btn.disabled = true; }
+          try {
+            var res  = await fetch('/.netlify/functions/save-account', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'newsletter-subscribe', email: val }) });
+            var data = await res.json();
+            if (data.success) { footerEmail.value = ''; a11ShowNlPopup(); }
+          } catch (err) {}
+          finally { if (btn) { btn.textContent = orig; btn.disabled = false; } }
+        });
+      }
+    }
+
+    function a11ShowNlPopup() {
+      var popup = document.getElementById('newsletter-popup');
+      if (popup) {
+        popup.classList.add('show');
+        setTimeout(function () { popup.classList.remove('show'); }, 8000);
+        var closeBtn = document.getElementById('popup-close-btn');
+        if (closeBtn) closeBtn.onclick = function () { popup.classList.remove('show'); };
+      }
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       10. HERO BG PARALLAX
+    ════════════════════════════════════════════════════════════ */
+    function a11InitParallax() {
+      var bg = document.querySelector('.a11-hero__bg img');
+      if (!bg || window.innerWidth < 900) return;
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > window.innerHeight) return;
+        bg.style.transform = 'scale(1.06) translateY(' + (window.scrollY * 0.10) + 'px)';
+      }, { passive: true });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       11. SCROLL REVEAL
+    ════════════════════════════════════════════════════════════ */
+    function a11InitScrollReveal() {
+      var els = document.querySelectorAll(
+        '.a11-section, .a11-discover, .a11-pullquote, .a11-mid-cta, ' +
+        '.a11-author-bio, .a11-failure-card, .a11-science-track, ' +
+        '.a11-target-card, .a11-sources-card, .a11-plate-visual, ' +
+        '.a11-meal-card, .a11-callout, .a11-figure, .a11-day-totals, ' +
+        '#a11-article-reactions, #a11-article-share-bottom, #a11-article-newsletter'
+      );
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity   = '1';
+            entry.target.style.transform = 'translateY(0)';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.06 });
+
+      els.forEach(function (el) {
+        el.style.opacity    = '0';
+        el.style.transform  = 'translateY(26px)';
+        el.style.transition = 'opacity 0.62s ease, transform 0.62s ease';
+        observer.observe(el);
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       12. FLOATING SCIENCE CARDS ENTRANCE
+    ════════════════════════════════════════════════════════════ */
+    function a11AnimateSciCards() {
+      document.querySelectorAll('.a11-sci-card').forEach(function (card, i) {
+        card.style.opacity    = '0';
+        card.style.transform  = 'translateY(20px) scale(0.92)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        setTimeout(function () {
+          card.style.opacity   = '1';
+          card.style.transform = 'translateY(0) scale(1)';
+        }, 900 + i * 350);
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       UTILS
+    ════════════════════════════════════════════════════════════ */
+    function a11setText(id, text) {
+      document.querySelectorAll('#' + id).forEach(function (el) { el.textContent = text; });
+      var el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
+
+    function a11Shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+      }
+      return arr;
+    }
+
+    function a11EscHtml(str) {
+      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       INIT
+    ════════════════════════════════════════════════════════════ */
+    a11InitProgressBar();
+    a11InitSidebarShare();
+    a11InitShareButtons();
+    a11InitReactions();
+    a11InitNewsletterForms();
+    a11InitParallax();
+    a11AnimateSciCards();
+
+    setTimeout(function () {
+      a11BuildTOC();
+      a11InitScrollReveal();
+    }, 200);
+
+  }); // end DOMContentLoaded
+
+})(); // end IIFE
+
+
+
+
+
+
+
+/* ================================================================
+   ARTICLE 12 — "Resistance Training for Plus-Size Women"
+   Add this entire block at the end of articles.js
+================================================================ */
+
+(function () {
+
+  // Guard: only run on article12
+  if (!document.body.classList.contains('a12-page')) return;
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    /* ════════════════════════════════════════════════════════════
+       1.  LOAD DATA FROM blog-articles.json — card-12
+    ════════════════════════════════════════════════════════════ */
+    fetch('/blog/blog-articles.json')
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+
+        var cardData = null;
+        if (data.cards) {
+          data.cards.forEach(function (c) {
+            if (c.id === 'card-12') cardData = c;
+          });
+        }
+
+        if (!cardData) {
+          console.warn('articles.js [a12]: card-12 not found in blog-articles.json');
+          return;
+        }
+
+        // ── Meta tags ──────────────────────────────────────────
+        var pageTitle = document.getElementById('page-title');
+        if (pageTitle) pageTitle.textContent = cardData.title + ' | CurvaFit Journal';
+
+        var metaDesc = document.getElementById('meta-description');
+        if (metaDesc) metaDesc.setAttribute('content', cardData.excerpt);
+
+        var metaOgTitle = document.getElementById('meta-og-title');
+        if (metaOgTitle) metaOgTitle.setAttribute('content', cardData.title + ' — CurvaFit Journal');
+
+        var metaOgDesc = document.getElementById('meta-og-desc');
+        if (metaOgDesc) metaOgDesc.setAttribute('content', cardData.excerpt);
+
+        var metaOgImage = document.getElementById('meta-og-image');
+        if (metaOgImage) metaOgImage.setAttribute('content', cardData.image);
+
+        // ── JSON-LD ────────────────────────────────────────────
+        var jsonLd = document.getElementById('json-ld');
+        if (jsonLd) {
+          jsonLd.textContent = JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            'headline': cardData.title,
+            'description': cardData.excerpt,
+            'image': cardData.image,
+            'author': { '@type': 'Person', 'name': cardData.author.name },
+            'publisher': {
+              '@type': 'Organization',
+              'name': 'CurvaFit',
+              'logo': { '@type': 'ImageObject', 'url': 'https://www.curva-fit.com/src-images/LogoCurvafit(1).png' }
+            },
+            'datePublished': cardData.date,
+            'mainEntityOfPage': { '@type': 'WebPage', '@id': 'https://www.curva-fit.com/blog/article12.html' }
+          });
+        }
+
+        // ── Hero fields ────────────────────────────────────────
+        var heroImg = document.getElementById('a12-hero-img');
+        if (heroImg) {
+          heroImg.src = cardData.image;
+          heroImg.alt = cardData.imageAlt || cardData.title;
+        }
+
+        a12setText('a12-hero-badge',       cardData.badge);
+        a12setText('a12-hero-readtime',    cardData.readTime);
+        a12setText('a12-hero-views',       cardData.views + ' reads');
+        a12setText('a12-hero-date',        cardData.date);
+        a12setText('a12-hero-author-name', cardData.author.name);
+        a12setText('a12-hero-excerpt',     cardData.excerpt);
+        a12setText('a12-breadcrumb-cat',   cardData.badge);
+
+        // "New" badge
+        var newBadge = document.getElementById('a12-hero-new-badge');
+        if (newBadge) newBadge.style.display = cardData.isNew ? 'inline-flex' : 'none';
+
+        // Author image
+        var authorImg = document.getElementById('a12-hero-author-img');
+        if (authorImg) {
+          authorImg.src = cardData.author.image;
+          authorImg.alt = cardData.author.name;
+        }
+
+        // ── Sidebar author ─────────────────────────────────────
+        a12setText('a12-sidebar-author', cardData.author.name);
+
+        // ── Bio ────────────────────────────────────────────────
+        var bioImg = document.getElementById('a12-bio-img');
+        if (bioImg) {
+          bioImg.src = cardData.author.image;
+          bioImg.alt = cardData.author.name;
+        }
+        a12setText('a12-bio-name',          cardData.author.name);
+        a12setText('a12-conclusion-author', cardData.author.name);
+        a12setText('a12-pullquote-author',  cardData.author.name);
+
+        // ── Ribbon ─────────────────────────────────────────────
+        a12setText('a12-ribbon-readtime', cardData.readTime);
+        a12setText('a12-ribbon-views',    cardData.views + ' reads');
+        a12setText('a12-ribbon-date',     cardData.date);
+
+        // ── Related articles ───────────────────────────────────
+        a12InjectRelated(data.cards, cardData.category, 'card-12');
+
+      })
+      .catch(function (err) {
+        console.error('articles.js [a12]: error loading blog-articles.json:', err);
+      });
+
+
+    /* ════════════════════════════════════════════════════════════
+       2.  RELATED ARTICLES
+    ════════════════════════════════════════════════════════════ */
+    function a12InjectRelated(cards, currentCategory, currentId) {
+      var relatedGrid = document.getElementById('a12-related-grid');
+      if (!relatedGrid || !cards || !cards.length) return;
+
+      var sameCategory = cards.filter(function (c) {
+        return c.category === currentCategory && c.id !== currentId;
+      });
+      var others = cards.filter(function (c) {
+        return c.category !== currentCategory && c.id !== currentId;
+      });
+
+      a12Shuffle(sameCategory);
+      a12Shuffle(others);
+
+      var picks = sameCategory.slice(0, 3);
+      if (picks.length < 3) picks = picks.concat(others.slice(0, 3 - picks.length));
+
+      relatedGrid.innerHTML = picks.map(function (card) {
+        return '<a href="' + card.url + '" class="related-card">' +
+          '<div class="related-card__img-wrap">' +
+            '<img src="' + card.image + '" alt="' + (card.imageAlt || card.title) + '" loading="lazy">' +
+            '<span class="related-card__badge">' + card.badge + '</span>' +
+          '</div>' +
+          '<div class="related-card__body">' +
+            '<h3 class="related-card__title">' + card.title + '</h3>' +
+            '<p class="related-card__excerpt">' + card.excerpt + '</p>' +
+            '<div class="related-card__meta">' +
+              '<span><i class="fi fi-rr-clock"></i> ' + card.readTime + '</span>' +
+              '<span><i class="fi fi-rr-eye"></i> ' + card.views + '</span>' +
+              '<span class="related-card__cta">Read Article →</span>' +
+            '</div>' +
+          '</div>' +
+        '</a>';
+      }).join('');
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       3.  TABLE OF CONTENTS
+    ════════════════════════════════════════════════════════════ */
+    function a12BuildTOC() {
+      var tocNav = document.getElementById('a12-toc-nav');
+      if (!tocNav) return;
+      var headings = document.querySelectorAll('.a12-content h2');
+      if (!headings.length) return;
+
+      var links = [];
+      headings.forEach(function (h2, i) {
+        if (!h2.id) h2.id = 'a12-toc-h-' + i;
+        var a = document.createElement('a');
+        a.href = '#' + h2.id;
+        a.textContent = h2.textContent;
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var target = document.getElementById(h2.id);
+          if (target) {
+            var top = target.getBoundingClientRect().top + window.scrollY - 100;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+          }
+        });
+        tocNav.appendChild(a);
+        links.push({ el: h2, link: a });
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          var found = links.find(function (l) { return l.el === entry.target; });
+          if (found) found.link.classList.toggle('active', entry.isIntersecting);
+        });
+      }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+      links.forEach(function (l) { observer.observe(l.el); });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       4.  READING PROGRESS BAR
+    ════════════════════════════════════════════════════════════ */
+    function a12InitProgressBar() {
+      var bar = document.getElementById('reading-progress-bar');
+      if (!bar) return;
+      function updateProgress() {
+        var scrollTop  = window.scrollY || document.documentElement.scrollTop;
+        var docHeight  = document.documentElement.scrollHeight - window.innerHeight;
+        var progress   = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+        bar.style.width = progress.toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress();
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       5.  STICKY SIDEBAR SHARE
+    ════════════════════════════════════════════════════════════ */
+    function a12InitSidebarShare() {
+      var stickyShare = document.getElementById('a12-sticky-share');
+      var hero        = document.getElementById('a12-hero');
+      if (!stickyShare || !hero) return;
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          stickyShare.classList.toggle('visible', !entry.isIntersecting);
+        });
+      }, { threshold: 0 });
+
+      observer.observe(hero);
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       6.  SHARE BUTTONS
+    ════════════════════════════════════════════════════════════ */
+    function a12InitShareButtons() {
+      var url   = encodeURIComponent(window.location.href);
+      var title = encodeURIComponent(document.title);
+
+      document.querySelectorAll('.a12-share-btn').forEach(function (btn) {
+
+        if (btn.id === 'a12-hero-copy' || btn.id === 'a12-bottom-copy' ||
+            btn.classList.contains('a12-share-btn--copy')) {
+          btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigator.clipboard.writeText(window.location.href).then(function () {
+              btn.classList.add('copied');
+              var icon = btn.querySelector('i');
+              var orig = icon ? icon.className : '';
+              if (icon) icon.className = 'fi fi-rr-check';
+              setTimeout(function () {
+                btn.classList.remove('copied');
+                if (icon) icon.className = orig;
+              }, 2200);
+            }).catch(function () {
+              var ta = document.createElement('textarea');
+              ta.value = window.location.href;
+              document.body.appendChild(ta);
+              ta.select();
+              document.execCommand('copy');
+              document.body.removeChild(ta);
+            });
+          });
+          return;
+        }
+
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          var shareUrl = '#';
+          if (btn.classList.contains('a12-share-btn--fb')) {
+            shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+          } else if (btn.classList.contains('a12-share-btn--pi')) {
+            var imgEl = document.getElementById('a12-hero-img');
+            var img   = encodeURIComponent(imgEl ? imgEl.src : '');
+            shareUrl  = 'https://pinterest.com/pin/create/button/?url=' + url + '&description=' + title + '&media=' + img;
+          } else if (btn.classList.contains('a12-share-btn--wa')) {
+            shareUrl = 'https://api.whatsapp.com/send?text=' + title + '%20' + url;
+          } else if (btn.classList.contains('a12-share-btn--tw')) {
+            shareUrl = 'https://twitter.com/intent/tweet?url=' + url + '&text=' + title;
+          }
+          if (shareUrl !== '#') {
+            window.open(shareUrl, '_blank', 'noopener,width=620,height=440');
+          }
+        });
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       7.  REACTIONS
+    ════════════════════════════════════════════════════════════ */
+    function a12InitReactions() {
+      var STORAGE_KEY = 'cf_article_reactions_article12';
+
+      function getReacted()      { try { return localStorage.getItem(STORAGE_KEY) || ''; } catch (e) { return ''; } }
+      function saveReacted(type) { try { localStorage.setItem(STORAGE_KEY, type); }        catch (e) {} }
+
+      var reacted = getReacted();
+
+      document.querySelectorAll('#a12-article-reactions .reaction-btn').forEach(function (btn) {
+        var type    = btn.getAttribute('data-reaction');
+        var countEl = btn.querySelector('.reaction-btn__count');
+
+        if (reacted === type) btn.classList.add('active');
+
+        btn.addEventListener('click', function () {
+          if (reacted && reacted !== type) return;
+          var current = parseInt((countEl ? countEl.textContent : '0').replace(/[^0-9]/g, ''), 10) || 0;
+
+          if (btn.classList.contains('active')) {
+            btn.classList.remove('active');
+            if (countEl) countEl.textContent = Math.max(0, current - 1);
+            reacted = '';
+            saveReacted('');
+          } else {
+            btn.classList.add('active');
+            if (countEl) countEl.textContent = current + 1;
+            reacted = type;
+            saveReacted(type);
+          }
+        });
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       8.  REVIEW SYSTEM
+    ════════════════════════════════════════════════════════════ */
+    (function () {
+      var ARTICLE_ID       = 'article12';
+      var API              = '/.netlify/functions/reviews-article';
+      var REVIEWS_PER_PAGE = 5;
+      var allReviews       = [];
+      var shownCount       = 0;
+      var likeGranted      = false;
+
+      async function loadStats() {
+        try {
+          var res  = await fetch(API + '?articleId=' + encodeURIComponent(ARTICLE_ID));
+          var data = await res.json();
+          if (!data.success) return;
+
+          a12setCount('a12-count-helpful',  data.likes);
+          a12setCount('a12-count-inspired', data.reviewsCount);
+          a12setCount('a12-count-more',     data.shares);
+
+          allReviews = data.reviews || [];
+          renderReviews(true);
+        } catch (e) {
+          console.warn('[a12 reviews] loadStats failed:', e.message);
+        }
+      }
+
+      function a12setCount(id, value) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = value;
+      }
+
+      // Like
+      var btnHelpful = document.getElementById('a12-btn-helpful');
+      if (btnHelpful) {
+        btnHelpful.addEventListener('click', async function () {
+          if (likeGranted) return;
+          likeGranted = true;
+          btnHelpful.classList.add('active');
+          try {
+            var res  = await fetch(API, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'like', articleId: ARTICLE_ID })
+            });
+            var data = await res.json();
+            if (data.success) a12setCount('a12-count-helpful', data.likes);
+          } catch (e) { console.warn('[a12] like failed:', e.message); }
+        });
+      }
+
+      // Share counter
+      async function recordShare() {
+        try {
+          var res  = await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'share', articleId: ARTICLE_ID })
+          });
+          var data = await res.json();
+          if (data.success) a12setCount('a12-count-more', data.shares);
+        } catch (e) { console.warn('[a12] share failed:', e.message); }
+      }
+
+      document.querySelectorAll('.a12-share-btn').forEach(function (btn) {
+        btn.addEventListener('click', recordShare);
+      });
+
+      var btnMore = document.getElementById('a12-btn-more');
+      if (btnMore) {
+        btnMore.addEventListener('click', function () {
+          recordShare();
+          var formWrap = document.getElementById('a12-art-review-form-wrap');
+          if (formWrap) formWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      }
+
+      // Avatar
+      var avatarBase64 = '';
+
+      function compressAvatar(file) {
+        return new Promise(function (resolve) {
+          if (!file) { resolve(''); return; }
+          var url = URL.createObjectURL(file);
+          var img = new Image();
+          img.onload = function () {
+            var MAX = 150, w = img.width, h = img.height;
+            if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+            else        { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+            var canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            URL.revokeObjectURL(url);
+            resolve(canvas.toDataURL('image/jpeg', 0.6));
+          };
+          img.onerror = function () { URL.revokeObjectURL(url); resolve(''); };
+          img.src = url;
+        });
+      }
+
+      var avatarInput  = document.getElementById('a12-rv-avatar-input');
+      var avatarWrap   = document.getElementById('a12-rv-avatar-wrap');
+      var avatarPrev   = document.getElementById('a12-rv-avatar-preview');
+      var avatarPlaceh = document.getElementById('a12-rv-avatar-placeholder');
+
+      if (avatarWrap && avatarInput) {
+        avatarWrap.addEventListener('click', function () { avatarInput.click(); });
+        avatarInput.addEventListener('change', async function () {
+          var file = avatarInput.files[0];
+          if (!file) return;
+          avatarBase64 = await compressAvatar(file);
+          if (avatarBase64 && avatarPrev && avatarPlaceh) {
+            avatarPrev.src = avatarBase64;
+            avatarPrev.style.display = 'block';
+            avatarPlaceh.style.display = 'none';
+          }
+        });
+      }
+
+      // Stars
+      var stars          = document.querySelectorAll('#a12-rv-stars .art-rv-star');
+      var ratingInput    = document.getElementById('a12-rv-rating');
+      var selectedRating = 0;
+
+      function paintStars(upTo) {
+        stars.forEach(function (s, i) {
+          s.classList.toggle('fi-sr-star', i < upTo);
+          s.classList.toggle('fi-rr-star', i >= upTo);
+          s.classList.toggle('selected',   i < upTo);
+        });
+      }
+
+      stars.forEach(function (star) {
+        star.addEventListener('mouseover', function () { paintStars(parseInt(star.dataset.val)); });
+        star.addEventListener('mouseout',  function () { paintStars(selectedRating); });
+        star.addEventListener('click',     function () {
+          selectedRating = parseInt(star.dataset.val);
+          if (ratingInput) ratingInput.value = selectedRating;
+          paintStars(selectedRating);
+        });
+      });
+
+      // Char counter
+      var textarea = document.getElementById('a12-rv-text');
+      var charNum  = document.getElementById('a12-rv-char-num');
+      if (textarea && charNum) {
+        textarea.addEventListener('input', function () { charNum.textContent = textarea.value.length; });
+      }
+
+      // Submit
+      var reviewForm = document.getElementById('a12-art-review-form');
+      var submitBtn  = document.getElementById('a12-rv-submit');
+      var errorEl    = document.getElementById('a12-rv-error');
+      var successEl  = document.getElementById('a12-rv-success');
+
+      if (reviewForm) {
+        reviewForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          var firstName = document.getElementById('a12-rv-firstname').value.trim();
+          var lastName  = document.getElementById('a12-rv-lastname').value.trim();
+          var text      = document.getElementById('a12-rv-text').value.trim();
+          var rating    = parseInt(ratingInput ? ratingInput.value : '0');
+
+          if (errorEl)   errorEl.style.display   = 'none';
+          if (successEl) successEl.style.display = 'none';
+
+          if (!firstName || !lastName)   { showError('Please enter your first and last name.'); return; }
+          if (rating === 0)              { showError('Please select a star rating.'); return; }
+          if (!text || text.length < 10) { showError('Please write at least 10 characters.'); return; }
+
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fi fi-rr-spinner"></i> Sending…';
+
+          try {
+            var res  = await fetch(API, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                action: 'add-review', articleId: ARTICLE_ID,
+                firstName, lastName, avatar: avatarBase64, text, rating
+              })
+            });
+            var data = await res.json();
+
+            if (data.success) {
+              if (successEl) successEl.style.display = 'flex';
+              a12setCount('a12-count-inspired', data.reviewsCount);
+
+              allReviews.unshift({
+                firstName, lastName, avatar: avatarBase64, text, rating,
+                date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+              });
+              renderReviews(true);
+
+              reviewForm.reset();
+              selectedRating = 0; paintStars(0);
+              avatarBase64 = '';
+              if (avatarPrev)   { avatarPrev.style.display = 'none'; avatarPrev.src = ''; }
+              if (avatarPlaceh) avatarPlaceh.style.display = 'flex';
+              if (charNum)      charNum.textContent = '0';
+
+              submitBtn.innerHTML = '<i class="fi fi-rr-check-circle"></i> Review submitted!';
+              setTimeout(function () {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+                if (successEl) successEl.style.display = 'none';
+              }, 4000);
+            } else {
+              showError('Error: ' + (data.error || 'Unknown error'));
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+            }
+          } catch (err) {
+            showError('Network error. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+          }
+        });
+      }
+
+      function showError(msg) {
+        if (errorEl) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
+      }
+
+      // Reviews list
+      var listWrap    = document.getElementById('a12-art-reviews-list-wrap');
+      var listEl      = document.getElementById('a12-art-reviews-list');
+      var countLabel  = document.getElementById('a12-rv-count-label');
+      var loadMoreBtn = document.getElementById('a12-rv-load-more');
+
+      function renderReviews(reset) {
+        if (!listEl) return;
+        if (reset) { shownCount = 0; listEl.innerHTML = ''; }
+        if (allReviews.length === 0) { if (listWrap) listWrap.style.display = 'none'; return; }
+        if (listWrap) listWrap.style.display = 'block';
+        if (countLabel) countLabel.textContent = allReviews.length + ' review' + (allReviews.length > 1 ? 's' : '');
+
+        var slice = allReviews.slice(shownCount, shownCount + REVIEWS_PER_PAGE);
+        slice.forEach(function (rv) { listEl.appendChild(buildReviewCard(rv)); });
+        shownCount += slice.length;
+        if (loadMoreBtn) loadMoreBtn.style.display = shownCount < allReviews.length ? 'block' : 'none';
+      }
+
+      if (loadMoreBtn) loadMoreBtn.addEventListener('click', function () { renderReviews(false); });
+
+      function buildReviewCard(rv) {
+        var card = document.createElement('div');
+        card.className = 'art-rv-card';
+
+        var avatarHTML = rv.avatar
+          ? '<img class="art-rv-card__avatar" src="' + rv.avatar + '" alt="' + rv.firstName + '" loading="lazy">'
+          : '<div class="art-rv-card__avatar-placeholder">' + (rv.firstName || '?').charAt(0).toUpperCase() + '</div>';
+
+        var rating = parseInt(rv.rating) || 5;
+        var starsHTML = '';
+        for (var i = 1; i <= 5; i++) {
+          starsHTML += '<i class="fi ' + (i <= rating ? 'fi-sr-star' : 'fi-rr-star empty') + '"></i>';
+        }
+
+        card.innerHTML = avatarHTML +
+          '<div class="art-rv-card__body">' +
+            '<div class="art-rv-card__top">' +
+              '<span class="art-rv-card__name">' + a12EscHtml(rv.firstName) + ' ' + a12EscHtml(rv.lastName) + '</span>' +
+              '<span class="art-rv-card__date">' + a12EscHtml(rv.date || '') + '</span>' +
+            '</div>' +
+            '<div class="art-rv-card__stars">' + starsHTML + '</div>' +
+            '<p class="art-rv-card__text">' + a12EscHtml(rv.text) + '</p>' +
+          '</div>';
+
+        return card;
+      }
+
+      // Inspired btn → scroll to reviews/form
+      var btnInspired = document.getElementById('a12-btn-inspired');
+      if (btnInspired) {
+        btnInspired.addEventListener('click', function () {
+          btnInspired.classList.toggle('active');
+          var target = allReviews.length > 0
+            ? document.getElementById('a12-art-reviews-list-wrap')
+            : document.getElementById('a12-art-review-form-wrap');
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      }
+
+      loadStats();
+    })();
+
+
+    /* ════════════════════════════════════════════════════════════
+       9.  NEWSLETTER FORMS
+    ════════════════════════════════════════════════════════════ */
+    function a12InitNewsletterForms() {
+      var nlForm  = document.getElementById('a12-article-nl-form');
+      var nlEmail = document.getElementById('a12-article-nl-email');
+
+      if (nlForm && nlEmail) {
+        nlForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var val = nlEmail.value.trim();
+          if (!val || !val.includes('@')) return;
+
+          var btn          = nlForm.querySelector('button');
+          var originalHTML = btn ? btn.innerHTML : '';
+          if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fi fi-rr-spinner"></i> Subscribing...'; }
+
+          try {
+            var res  = await fetch('/.netlify/functions/save-account', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'newsletter-subscribe', email: val })
+            });
+            var data = await res.json();
+
+            if (data.success) {
+              nlEmail.value = '';
+              if (btn) {
+                btn.innerHTML = '<i class="fi fi-rr-check"></i> You\'re subscribed!';
+                setTimeout(function () { btn.disabled = false; btn.innerHTML = originalHTML; }, 4000);
+              }
+              a12ShowNewsletterPopup();
+            } else {
+              if (btn) { btn.disabled = false; btn.innerHTML = originalHTML; }
+            }
+          } catch (err) {
+            if (btn) { btn.disabled = false; btn.innerHTML = originalHTML; }
+          }
+        });
+      }
+
+      // Footer newsletter
+      var footerForm  = document.getElementById('newsletter-form-footer');
+      var footerEmail = document.getElementById('newsletter-email-footer');
+
+      if (footerForm && footerEmail && !footerForm.dataset.a12Bound) {
+        footerForm.dataset.a12Bound = '1';
+        footerForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var val = footerEmail.value.trim();
+          if (!val || !val.includes('@')) return;
+
+          var btn          = footerForm.querySelector('button');
+          var originalText = btn ? btn.textContent : '';
+          if (btn) { btn.textContent = 'Saving...'; btn.disabled = true; }
+
+          try {
+            var res  = await fetch('/.netlify/functions/save-account', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'newsletter-subscribe', email: val })
+            });
+            var data = await res.json();
+            if (data.success) { footerEmail.value = ''; a12ShowNewsletterPopup(); }
+          } catch (err) { console.error(err); }
+          finally {
+            if (btn) { btn.textContent = originalText; btn.disabled = false; }
+          }
+        });
+      }
+    }
+
+    function a12ShowNewsletterPopup() {
+      var popup = document.getElementById('newsletter-popup');
+      if (popup) {
+        popup.classList.add('show');
+        setTimeout(function () { popup.classList.remove('show'); }, 8000);
+        var closeBtn = document.getElementById('popup-close-btn');
+        if (closeBtn) closeBtn.onclick = function () { popup.classList.remove('show'); };
+      }
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       10. HERO PARALLAX — title lines on scroll
+    ════════════════════════════════════════════════════════════ */
+    function a12InitHeroParallax() {
+      if (window.innerWidth < 960) return;
+      var heroInner = document.querySelector('.a12-hero__inner');
+      if (!heroInner) return;
+
+      var lines = document.querySelectorAll('.a12-title-line');
+      window.addEventListener('scroll', function () {
+        var scrollY = window.scrollY;
+        if (scrollY > window.innerHeight) return;
+        lines.forEach(function (line, i) {
+          var speed = 0.04 + i * 0.015;
+          line.style.transform = 'translateY(' + (-scrollY * speed) + 'px)';
+        });
+      }, { passive: true });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       11. BAR CHART ANIMATION — triggered on scroll
+    ════════════════════════════════════════════════════════════ */
+    function a12InitBarChart() {
+      var visual = document.querySelector('.a12-compare-visual');
+      if (!visual) return;
+
+      var bars = visual.querySelectorAll('.a12-compare-bar');
+
+      // Initially set width to 0 (CSS handles animation once class is added)
+      bars.forEach(function (bar) {
+        bar.style.width = '0';
+        bar.style.opacity = '0';
+      });
+
+      var triggered = false;
+      var observer = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting && !triggered) {
+          triggered = true;
+          // Stagger the bar animations
+          bars.forEach(function (bar, i) {
+            setTimeout(function () {
+              bar.style.transition = 'width 1.1s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease';
+              bar.style.width = bar.style.getPropertyValue('--w') || getComputedStyle(bar).getPropertyValue('--w') || '50%';
+              bar.style.opacity = '1';
+            }, i * 140);
+          });
+          observer.disconnect();
+        }
+      }, { threshold: 0.25 });
+
+      observer.observe(visual);
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       12. SCROLL REVEAL
+    ════════════════════════════════════════════════════════════ */
+    function a12InitScrollReveal() {
+      var revealEls = document.querySelectorAll(
+        '.a12-section, .a12-discover, .a12-pullquote, .a12-mid-cta, ' +
+        '.a12-author-bio, .a12-safety-card, .a12-exercise-card, ' +
+        '.a12-overload-card, .a12-nutrition-card, .a12-program-phase, ' +
+        '.a12-compare-visual, .a12-callout, ' +
+        '#a12-article-reactions, #a12-article-share-bottom, #a12-article-newsletter'
+      );
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity   = '1';
+            entry.target.style.transform = 'translateY(0)';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.06 });
+
+      revealEls.forEach(function (el) {
+        el.style.opacity    = '0';
+        el.style.transform  = 'translateY(28px)';
+        el.style.transition = 'opacity 0.60s ease, transform 0.60s ease';
+        observer.observe(el);
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       13. STAT CHIPS ENTRANCE
+    ════════════════════════════════════════════════════════════ */
+    function a12AnimateStatChips() {
+      var chips = document.querySelectorAll('.a12-stat-chip');
+      chips.forEach(function (chip, i) {
+        chip.style.opacity    = '0';
+        chip.style.transform  = 'scale(0.85) translateY(12px)';
+        chip.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+        setTimeout(function () {
+          chip.style.opacity   = '1';
+          chip.style.transform = 'scale(1) translateY(0)';
+        }, 1100 + i * 350);
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       UTILS
+    ════════════════════════════════════════════════════════════ */
+    function a12setText(id, text) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
+
+    function a12Shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j   = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      }
+      return arr;
+    }
+
+    function a12EscHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       INIT
+    ════════════════════════════════════════════════════════════ */
+    a12InitProgressBar();
+    a12InitSidebarShare();
+    a12InitShareButtons();
+    a12InitReactions();
+    a12InitNewsletterForms();
+    a12InitHeroParallax();
+    a12AnimateStatChips();
+    a12InitBarChart();
+
+    // Delayed for JSON injection to settle
+    setTimeout(function () {
+      a12BuildTOC();
+      a12InitScrollReveal();
+    }, 200);
+
+  }); // end DOMContentLoaded
+
+})(); // end IIFE
+
+
+
+
+
+
+
+/* ================================================================
+   ARTICLE 13 — "Cute Workout Clothes for Curvy Gals"
+   Add this entire block at the end of articles.js
+================================================================ */
+
+(function () {
+
+  // Guard: only run on article13
+  if (!document.body.classList.contains('a13-page')) return;
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    /* ════════════════════════════════════════════════════════════
+       1.  LOAD DATA FROM blog-articles.json — editorsPicks card-13
+    ════════════════════════════════════════════════════════════ */
+    fetch('/blog/blog-articles.json')
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+
+        var cardData = null;
+
+        // Search in editorsPicks
+        if (data.editorsPicks) {
+          data.editorsPicks.forEach(function (c) {
+            if (c.id === 'card-13') cardData = c;
+          });
+        }
+
+        // Fallback: search in cards array too (just in case)
+        if (!cardData && data.cards) {
+          data.cards.forEach(function (c) {
+            if (c.id === 'card-13') cardData = c;
+          });
+        }
+
+        if (!cardData) {
+          console.warn('articles.js [a13]: card-13 not found in blog-articles.json (editorsPicks)');
+          return;
+        }
+
+        // ── Meta tags ──────────────────────────────────────────
+        var pageTitle = document.getElementById('page-title');
+        if (pageTitle) pageTitle.textContent = cardData.title + ' | CurvaFit Journal';
+
+        var metaDesc = document.getElementById('meta-description');
+        if (metaDesc) metaDesc.setAttribute('content', cardData.excerpt);
+
+        var metaOgTitle = document.getElementById('meta-og-title');
+        if (metaOgTitle) metaOgTitle.setAttribute('content', cardData.title + ' — CurvaFit Journal');
+
+        var metaOgDesc = document.getElementById('meta-og-desc');
+        if (metaOgDesc) metaOgDesc.setAttribute('content', cardData.excerpt);
+
+        var metaOgImage = document.getElementById('meta-og-image');
+        if (metaOgImage) metaOgImage.setAttribute('content', cardData.image);
+
+        // ── JSON-LD ────────────────────────────────────────────
+        var jsonLd = document.getElementById('json-ld');
+        if (jsonLd) {
+          jsonLd.textContent = JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            'headline': cardData.title,
+            'description': cardData.excerpt,
+            'image': cardData.image,
+            'author': { '@type': 'Person', 'name': cardData.author ? cardData.author.name : 'CurvaFit' },
+            'publisher': {
+              '@type': 'Organization',
+              'name': 'CurvaFit',
+              'logo': { '@type': 'ImageObject', 'url': 'https://www.curva-fit.com/src-images/LogoCurvafit(1).png' }
+            },
+            'datePublished': cardData.date || '',
+            'mainEntityOfPage': { '@type': 'WebPage', '@id': 'https://www.curva-fit.com/blog/article13.html' }
+          });
+        }
+
+        // ── Hero fields ────────────────────────────────────────
+        var heroImg = document.getElementById('a13-hero-img');
+        if (heroImg) {
+          heroImg.src = cardData.image;
+          heroImg.alt = cardData.imageAlt || cardData.title;
+        }
+
+        a13setText('a13-hero-badge',    cardData.category || cardData.badge || 'Style & Fitness');
+        a13setText('a13-breadcrumb-cat', cardData.category || cardData.badge || 'Style & Fitness');
+        a13setText('a13-hero-title',    ''); // title is built via HTML spans; only inject if needed
+        a13setText('a13-hero-excerpt',  cardData.excerpt);
+
+        // Date / views / readtime (editorsPicks may not have all fields — fallback gracefully)
+        a13setText('a13-hero-date',     cardData.date     || '');
+        a13setText('a13-hero-readtime', cardData.readTime || '');
+        a13setText('a13-hero-views',    cardData.views    ? cardData.views + ' reads' : '');
+
+        // Ribbon
+        a13setText('a13-ribbon-readtime', cardData.readTime || '—');
+        a13setText('a13-ribbon-views',    cardData.views    ? cardData.views + ' reads' : '—');
+
+        // Author (editorsPicks items may not have author object — use blog authors array or a sensible fallback)
+        var authorName  = '';
+        var authorImage = '';
+        var authorRole  = '';
+
+        if (cardData.author) {
+          authorName  = cardData.author.name  || '';
+          authorImage = cardData.author.image || '';
+        }
+
+        // If editorsPick has no author, look in data.authors for a matching name or use first author
+        if (!authorName && data.authors && data.authors.length > 0) {
+          authorName  = data.authors[0].name;
+          authorImage = data.authors[0].image;
+          authorRole  = data.authors[0].title || '';
+        }
+
+        a13setText('a13-hero-author-name',  authorName);
+        a13setText('a13-sidebar-author',    authorName);
+        a13setText('a13-bio-name',          authorName);
+        a13setText('a13-conclusion-author', authorName);
+        a13setText('a13-pullquote-author',  authorName);
+
+        var heroAuthorImg = document.getElementById('a13-hero-author-img');
+        if (heroAuthorImg && authorImage) {
+          heroAuthorImg.src = authorImage;
+          heroAuthorImg.alt = authorName;
+        }
+
+        var bioImg = document.getElementById('a13-bio-img');
+        if (bioImg && authorImage) {
+          bioImg.src = authorImage;
+          bioImg.alt = authorName;
+        }
+
+        // ── Related articles — pull from cards + editorsPicks ──
+        var allItems = [];
+        if (data.cards)        allItems = allItems.concat(data.cards);
+        if (data.editorsPicks) allItems = allItems.concat(data.editorsPicks);
+
+        a13InjectRelated(allItems, cardData.category || 'Style & Fitness', 'card-13');
+      })
+      .catch(function (err) {
+        console.error('articles.js [a13]: error loading blog-articles.json:', err);
+      });
+
+
+    /* ════════════════════════════════════════════════════════════
+       2.  RELATED ARTICLES
+    ════════════════════════════════════════════════════════════ */
+    function a13InjectRelated(items, currentCategory, currentId) {
+      var relatedGrid = document.getElementById('a13-related-grid');
+      if (!relatedGrid || !items || !items.length) return;
+
+      var sameCategory = items.filter(function (c) {
+        return (c.category === currentCategory || c.badge === currentCategory) && c.id !== currentId;
+      });
+      var others = items.filter(function (c) {
+        return c.category !== currentCategory && c.badge !== currentCategory && c.id !== currentId;
+      });
+
+      a13Shuffle(sameCategory);
+      a13Shuffle(others);
+
+      var picks = sameCategory.slice(0, 3);
+      if (picks.length < 3) picks = picks.concat(others.slice(0, 3 - picks.length));
+
+      relatedGrid.innerHTML = picks.map(function (card) {
+        var badge = card.badge || card.category || '';
+        return '<a href="' + card.url + '" class="related-card">' +
+          '<div class="related-card__img-wrap">' +
+            '<img src="' + card.image + '" alt="' + a13EscHtml(card.imageAlt || card.title) + '" loading="lazy">' +
+            '<span class="related-card__badge">' + a13EscHtml(badge) + '</span>' +
+          '</div>' +
+          '<div class="related-card__body">' +
+            '<h3 class="related-card__title">' + a13EscHtml(card.title) + '</h3>' +
+            '<p class="related-card__excerpt">' + a13EscHtml(card.excerpt) + '</p>' +
+            '<div class="related-card__meta">' +
+              (card.readTime ? '<span><i class="fi fi-rr-clock"></i> ' + a13EscHtml(card.readTime) + '</span>' : '') +
+              (card.views    ? '<span><i class="fi fi-rr-eye"></i> '   + a13EscHtml(card.views)    + '</span>' : '') +
+              '<span class="related-card__cta">Read Article →</span>' +
+            '</div>' +
+          '</div>' +
+        '</a>';
+      }).join('');
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       3.  TABLE OF CONTENTS
+    ════════════════════════════════════════════════════════════ */
+    function a13BuildTOC() {
+      var tocNav = document.getElementById('a13-toc-nav');
+      if (!tocNav) return;
+      var headings = document.querySelectorAll('.a13-content h2');
+      if (!headings.length) return;
+
+      var links = [];
+      headings.forEach(function (h2, i) {
+        if (!h2.id) h2.id = 'a13-toc-h-' + i;
+        var a = document.createElement('a');
+        a.href = '#' + h2.id;
+        a.textContent = h2.textContent;
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var target = document.getElementById(h2.id);
+          if (target) {
+            var top = target.getBoundingClientRect().top + window.scrollY - 100;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+          }
+        });
+        tocNav.appendChild(a);
+        links.push({ el: h2, link: a });
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          var found = links.find(function (l) { return l.el === entry.target; });
+          if (found) found.link.classList.toggle('active', entry.isIntersecting);
+        });
+      }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+      links.forEach(function (l) { observer.observe(l.el); });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       4.  READING PROGRESS BAR
+    ════════════════════════════════════════════════════════════ */
+    function a13InitProgressBar() {
+      var bar = document.getElementById('reading-progress-bar');
+      if (!bar) return;
+      function updateProgress() {
+        var scrollTop = window.scrollY || document.documentElement.scrollTop;
+        var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        var progress  = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+        bar.style.width = progress.toFixed(1) + '%';
+        bar.style.background = 'linear-gradient(90deg, #c0385e, #8e4f72, #f7a08a)';
+      }
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress();
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       5.  STICKY SIDEBAR SHARE
+    ════════════════════════════════════════════════════════════ */
+    function a13InitSidebarShare() {
+      var stickyShare = document.getElementById('a13-sticky-share');
+      var hero        = document.getElementById('a13-hero');
+      if (!stickyShare || !hero) return;
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          stickyShare.classList.toggle('visible', !entry.isIntersecting);
+        });
+      }, { threshold: 0 });
+
+      observer.observe(hero);
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       6.  SHARE BUTTONS
+    ════════════════════════════════════════════════════════════ */
+    function a13InitShareButtons() {
+      var url   = encodeURIComponent(window.location.href);
+      var title = encodeURIComponent(document.title);
+
+      document.querySelectorAll('.a13-share-btn').forEach(function (btn) {
+
+        if (btn.classList.contains('a13-share-btn--copy') ||
+            btn.id === 'a13-hero-copy' ||
+            btn.id === 'a13-bottom-copy') {
+          btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigator.clipboard.writeText(window.location.href).then(function () {
+              btn.classList.add('copied');
+              var icon = btn.querySelector('i');
+              var orig = icon ? icon.className : '';
+              if (icon) icon.className = 'fi fi-rr-check';
+              setTimeout(function () {
+                btn.classList.remove('copied');
+                if (icon) icon.className = orig;
+              }, 2200);
+            }).catch(function () {
+              var ta = document.createElement('textarea');
+              ta.value = window.location.href;
+              document.body.appendChild(ta);
+              ta.select();
+              document.execCommand('copy');
+              document.body.removeChild(ta);
+            });
+          });
+          return;
+        }
+
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          var shareUrl = '#';
+          if (btn.classList.contains('a13-share-btn--fb')) {
+            shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+          } else if (btn.classList.contains('a13-share-btn--pi')) {
+            var imgEl = document.getElementById('a13-hero-img');
+            var img   = encodeURIComponent(imgEl ? imgEl.src : '');
+            shareUrl  = 'https://pinterest.com/pin/create/button/?url=' + url + '&description=' + title + '&media=' + img;
+          } else if (btn.classList.contains('a13-share-btn--wa')) {
+            shareUrl = 'https://api.whatsapp.com/send?text=' + title + '%20' + url;
+          } else if (btn.classList.contains('a13-share-btn--tw')) {
+            shareUrl = 'https://twitter.com/intent/tweet?url=' + url + '&text=' + title;
+          }
+          if (shareUrl !== '#') window.open(shareUrl, '_blank', 'noopener,width=620,height=440');
+        });
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       7.  REACTIONS
+    ════════════════════════════════════════════════════════════ */
+    function a13InitReactions() {
+      var STORAGE_KEY = 'cf_article_reactions_article13';
+
+      function getReacted()      { try { return localStorage.getItem(STORAGE_KEY) || ''; } catch (e) { return ''; } }
+      function saveReacted(type) { try { localStorage.setItem(STORAGE_KEY, type); }        catch (e) {} }
+
+      var reacted = getReacted();
+
+      document.querySelectorAll('#a13-article-reactions .reaction-btn').forEach(function (btn) {
+        var type    = btn.getAttribute('data-reaction');
+        var countEl = btn.querySelector('.reaction-btn__count');
+
+        if (reacted === type) btn.classList.add('active');
+
+        btn.addEventListener('click', function () {
+          if (reacted && reacted !== type) return;
+          var current = parseInt((countEl ? countEl.textContent : '0').replace(/[^0-9]/g, ''), 10) || 0;
+
+          if (btn.classList.contains('active')) {
+            btn.classList.remove('active');
+            if (countEl) countEl.textContent = Math.max(0, current - 1);
+            reacted = '';
+            saveReacted('');
+          } else {
+            btn.classList.add('active');
+            if (countEl) countEl.textContent = current + 1;
+            reacted = type;
+            saveReacted(type);
+          }
+        });
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       8.  REVIEW SYSTEM
+    ════════════════════════════════════════════════════════════ */
+    (function () {
+      var ARTICLE_ID       = 'article13';
+      var API              = '/.netlify/functions/reviews-article';
+      var REVIEWS_PER_PAGE = 5;
+      var allReviews       = [];
+      var shownCount       = 0;
+      var likeGranted      = false;
+
+      async function loadStats() {
+        try {
+          var res  = await fetch(API + '?articleId=' + encodeURIComponent(ARTICLE_ID));
+          var data = await res.json();
+          if (!data.success) return;
+
+          a13setCount('a13-count-helpful',  data.likes);
+          a13setCount('a13-count-inspired', data.reviewsCount);
+          a13setCount('a13-count-more',     data.shares);
+
+          allReviews = data.reviews || [];
+          renderReviews(true);
+        } catch (e) {
+          console.warn('[a13 reviews] loadStats failed:', e.message);
+        }
+      }
+
+      function a13setCount(id, value) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = value;
+      }
+
+      // Like
+      var btnHelpful = document.getElementById('a13-btn-helpful');
+      if (btnHelpful) {
+        btnHelpful.addEventListener('click', async function () {
+          if (likeGranted) return;
+          likeGranted = true;
+          btnHelpful.classList.add('active');
+          try {
+            var res  = await fetch(API, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'like', articleId: ARTICLE_ID })
+            });
+            var data = await res.json();
+            if (data.success) a13setCount('a13-count-helpful', data.likes);
+          } catch (e) { console.warn('[a13] like failed:', e.message); }
+        });
+      }
+
+      // Share counter
+      async function recordShare() {
+        try {
+          var res  = await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'share', articleId: ARTICLE_ID })
+          });
+          var data = await res.json();
+          if (data.success) a13setCount('a13-count-more', data.shares);
+        } catch (e) { console.warn('[a13] share failed:', e.message); }
+      }
+
+      document.querySelectorAll('.a13-share-btn').forEach(function (btn) {
+        btn.addEventListener('click', recordShare);
+      });
+
+      var btnMore = document.getElementById('a13-btn-more');
+      if (btnMore) {
+        btnMore.addEventListener('click', function () {
+          recordShare();
+          var target = allReviews.length > 0
+            ? document.getElementById('a13-art-reviews-list-wrap')
+            : document.getElementById('a13-art-review-form-wrap');
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      }
+
+      // Avatar
+      var avatarBase64 = '';
+
+      function compressAvatar(file) {
+        return new Promise(function (resolve) {
+          if (!file) { resolve(''); return; }
+          var url = URL.createObjectURL(file);
+          var img = new Image();
+          img.onload = function () {
+            var MAX = 150, w = img.width, h = img.height;
+            if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+            else        { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+            var canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            URL.revokeObjectURL(url);
+            resolve(canvas.toDataURL('image/jpeg', 0.6));
+          };
+          img.onerror = function () { URL.revokeObjectURL(url); resolve(''); };
+          img.src = url;
+        });
+      }
+
+      var avatarInput  = document.getElementById('a13-rv-avatar-input');
+      var avatarWrap   = document.getElementById('a13-rv-avatar-wrap');
+      var avatarPrev   = document.getElementById('a13-rv-avatar-preview');
+      var avatarPlaceh = document.getElementById('a13-rv-avatar-placeholder');
+
+      if (avatarWrap && avatarInput) {
+        avatarWrap.addEventListener('click', function () { avatarInput.click(); });
+        avatarInput.addEventListener('change', async function () {
+          var file = avatarInput.files[0];
+          if (!file) return;
+          avatarBase64 = await compressAvatar(file);
+          if (avatarBase64 && avatarPrev && avatarPlaceh) {
+            avatarPrev.src = avatarBase64;
+            avatarPrev.style.display = 'block';
+            avatarPlaceh.style.display = 'none';
+          }
+        });
+      }
+
+      // Stars
+      var stars          = document.querySelectorAll('#a13-rv-stars .art-rv-star');
+      var ratingInput    = document.getElementById('a13-rv-rating');
+      var selectedRating = 0;
+
+      function paintStars(upTo) {
+        stars.forEach(function (s, i) {
+          s.classList.toggle('fi-sr-star', i < upTo);
+          s.classList.toggle('fi-rr-star', i >= upTo);
+          s.classList.toggle('selected',   i < upTo);
+        });
+      }
+
+      stars.forEach(function (star) {
+        star.addEventListener('mouseover', function () { paintStars(parseInt(star.dataset.val)); });
+        star.addEventListener('mouseout',  function () { paintStars(selectedRating); });
+        star.addEventListener('click',     function () {
+          selectedRating = parseInt(star.dataset.val);
+          if (ratingInput) ratingInput.value = selectedRating;
+          paintStars(selectedRating);
+        });
+      });
+
+      // Char counter
+      var textarea = document.getElementById('a13-rv-text');
+      var charNum  = document.getElementById('a13-rv-char-num');
+      if (textarea && charNum) {
+        textarea.addEventListener('input', function () { charNum.textContent = textarea.value.length; });
+      }
+
+      // Submit
+      var reviewForm = document.getElementById('a13-art-review-form');
+      var submitBtn  = document.getElementById('a13-rv-submit');
+      var errorEl    = document.getElementById('a13-rv-error');
+      var successEl  = document.getElementById('a13-rv-success');
+
+      if (reviewForm) {
+        reviewForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          var firstName = document.getElementById('a13-rv-firstname').value.trim();
+          var lastName  = document.getElementById('a13-rv-lastname').value.trim();
+          var text      = document.getElementById('a13-rv-text').value.trim();
+          var rating    = parseInt(ratingInput ? ratingInput.value : '0');
+
+          if (errorEl)   errorEl.style.display   = 'none';
+          if (successEl) successEl.style.display = 'none';
+
+          if (!firstName || !lastName)   { showError('Please enter your first and last name.'); return; }
+          if (rating === 0)              { showError('Please select a star rating.'); return; }
+          if (!text || text.length < 10) { showError('Please write at least 10 characters.'); return; }
+
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fi fi-rr-spinner"></i> Sending…';
+
+          try {
+            var res  = await fetch(API, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                action: 'add-review', articleId: ARTICLE_ID,
+                firstName, lastName, avatar: avatarBase64, text, rating
+              })
+            });
+            var data = await res.json();
+
+            if (data.success) {
+              if (successEl) successEl.style.display = 'flex';
+              a13setCount('a13-count-inspired', data.reviewsCount);
+
+              allReviews.unshift({
+                firstName, lastName, avatar: avatarBase64, text, rating,
+                date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+              });
+              renderReviews(true);
+
+              reviewForm.reset();
+              selectedRating = 0; paintStars(0);
+              avatarBase64 = '';
+              if (avatarPrev)   { avatarPrev.style.display = 'none'; avatarPrev.src = ''; }
+              if (avatarPlaceh) avatarPlaceh.style.display = 'flex';
+              if (charNum)      charNum.textContent = '0';
+
+              submitBtn.innerHTML = '<i class="fi fi-rr-check-circle"></i> Review submitted!';
+              setTimeout(function () {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+                if (successEl) successEl.style.display = 'none';
+              }, 4000);
+            } else {
+              showError('Error: ' + (data.error || 'Unknown error'));
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+            }
+          } catch (err) {
+            showError('Network error. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Submit Review';
+          }
+        });
+      }
+
+      function showError(msg) {
+        if (errorEl) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
+      }
+
+      // Reviews list
+      var listWrap    = document.getElementById('a13-art-reviews-list-wrap');
+      var listEl      = document.getElementById('a13-art-reviews-list');
+      var countLabel  = document.getElementById('a13-rv-count-label');
+      var loadMoreBtn = document.getElementById('a13-rv-load-more');
+
+      function renderReviews(reset) {
+        if (!listEl) return;
+        if (reset) { shownCount = 0; listEl.innerHTML = ''; }
+        if (allReviews.length === 0) { if (listWrap) listWrap.style.display = 'none'; return; }
+        if (listWrap) listWrap.style.display = 'block';
+        if (countLabel) countLabel.textContent = allReviews.length + ' review' + (allReviews.length > 1 ? 's' : '');
+
+        var slice = allReviews.slice(shownCount, shownCount + REVIEWS_PER_PAGE);
+        slice.forEach(function (rv) { listEl.appendChild(buildReviewCard(rv)); });
+        shownCount += slice.length;
+        if (loadMoreBtn) loadMoreBtn.style.display = shownCount < allReviews.length ? 'block' : 'none';
+      }
+
+      if (loadMoreBtn) loadMoreBtn.addEventListener('click', function () { renderReviews(false); });
+
+      function buildReviewCard(rv) {
+        var card = document.createElement('div');
+        card.className = 'art-rv-card';
+
+        var avatarHTML = rv.avatar
+          ? '<img class="art-rv-card__avatar" src="' + rv.avatar + '" alt="' + rv.firstName + '" loading="lazy">'
+          : '<div class="art-rv-card__avatar-placeholder">' + (rv.firstName || '?').charAt(0).toUpperCase() + '</div>';
+
+        var rating = parseInt(rv.rating) || 5;
+        var starsHTML = '';
+        for (var i = 1; i <= 5; i++) {
+          starsHTML += '<i class="fi ' + (i <= rating ? 'fi-sr-star' : 'fi-rr-star empty') + '"></i>';
+        }
+
+        card.innerHTML = avatarHTML +
+          '<div class="art-rv-card__body">' +
+            '<div class="art-rv-card__top">' +
+              '<span class="art-rv-card__name">' + a13EscHtml(rv.firstName) + ' ' + a13EscHtml(rv.lastName) + '</span>' +
+              '<span class="art-rv-card__date">' + a13EscHtml(rv.date || '') + '</span>' +
+            '</div>' +
+            '<div class="art-rv-card__stars">' + starsHTML + '</div>' +
+            '<p class="art-rv-card__text">' + a13EscHtml(rv.text) + '</p>' +
+          '</div>';
+
+        return card;
+      }
+
+      // Inspired btn
+      var btnInspired = document.getElementById('a13-btn-inspired');
+      if (btnInspired) {
+        btnInspired.addEventListener('click', function () {
+          btnInspired.classList.toggle('active');
+          var target = allReviews.length > 0
+            ? document.getElementById('a13-art-reviews-list-wrap')
+            : document.getElementById('a13-art-review-form-wrap');
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      }
+
+      loadStats();
+    })();
+
+
+    /* ════════════════════════════════════════════════════════════
+       9.  NEWSLETTER FORMS
+    ════════════════════════════════════════════════════════════ */
+    function a13InitNewsletterForms() {
+      var nlForm  = document.getElementById('a13-article-nl-form');
+      var nlEmail = document.getElementById('a13-article-nl-email');
+
+      if (nlForm && nlEmail) {
+        nlForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var val = nlEmail.value.trim();
+          if (!val || !val.includes('@')) return;
+
+          var btn  = nlForm.querySelector('button');
+          var orig = btn ? btn.innerHTML : '';
+          if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fi fi-rr-spinner"></i> Subscribing...'; }
+
+          try {
+            var res  = await fetch('/.netlify/functions/save-account', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'newsletter-subscribe', email: val })
+            });
+            var data = await res.json();
+            if (data.success) {
+              nlEmail.value = '';
+              if (btn) {
+                btn.innerHTML = '<i class="fi fi-rr-check"></i> You\'re subscribed!';
+                setTimeout(function () { btn.disabled = false; btn.innerHTML = orig; }, 4000);
+              }
+              a13ShowNewsletterPopup();
+            } else {
+              if (btn) { btn.disabled = false; btn.innerHTML = orig; }
+            }
+          } catch (err) {
+            if (btn) { btn.disabled = false; btn.innerHTML = orig; }
+          }
+        });
+      }
+
+      // Footer newsletter
+      var footerForm  = document.getElementById('newsletter-form-footer');
+      var footerEmail = document.getElementById('newsletter-email-footer');
+
+      if (footerForm && footerEmail && !footerForm.dataset.a13Bound) {
+        footerForm.dataset.a13Bound = '1';
+        footerForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var val = footerEmail.value.trim();
+          if (!val || !val.includes('@')) return;
+          var btn  = footerForm.querySelector('button');
+          var orig = btn ? btn.textContent : '';
+          if (btn) { btn.textContent = 'Saving...'; btn.disabled = true; }
+          try {
+            var res  = await fetch('/.netlify/functions/save-account', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'newsletter-subscribe', email: val })
+            });
+            var data = await res.json();
+            if (data.success) { footerEmail.value = ''; a13ShowNewsletterPopup(); }
+          } catch (err) { console.error(err); }
+          finally { if (btn) { btn.textContent = orig; btn.disabled = false; } }
+        });
+      }
+    }
+
+    function a13ShowNewsletterPopup() {
+      var popup = document.getElementById('newsletter-popup');
+      if (popup) {
+        popup.classList.add('show');
+        setTimeout(function () { popup.classList.remove('show'); }, 8000);
+        var closeBtn = document.getElementById('popup-close-btn');
+        if (closeBtn) closeBtn.onclick = function () { popup.classList.remove('show'); };
+      }
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       10. SCROLL REVEAL
+    ════════════════════════════════════════════════════════════ */
+    function a13InitScrollReveal() {
+      var revealEls = document.querySelectorAll(
+        '.a13-section, .a13-discover, .a13-pullquote, .a13-mid-cta, ' +
+        '.a13-author-bio, .a13-psych-card, .a13-support-card, ' +
+        '.a13-legging-card, .a13-manifesto-card, .a13-pick-card, ' +
+        '.a13-care-item, .a13-callout, ' +
+        '#a13-article-reactions, #a13-article-share-bottom, #a13-article-newsletter'
+      );
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity   = '1';
+            entry.target.style.transform = 'translateY(0)';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.06 });
+
+      revealEls.forEach(function (el) {
+        el.style.opacity    = '0';
+        el.style.transform  = 'translateY(26px)';
+        el.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+        observer.observe(el);
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       11. HERO IMAGE PARALLAX
+    ════════════════════════════════════════════════════════════ */
+    function a13InitHeroParallax() {
+      if (window.innerWidth < 960) return;
+      var heroImg = document.querySelector('.a13-hero__img');
+      if (!heroImg) return;
+
+      window.addEventListener('scroll', function () {
+        var scrollY = window.scrollY;
+        if (scrollY > window.innerHeight) return;
+        heroImg.style.transform = 'scale(1.04) translateY(' + (scrollY * 0.06) + 'px)';
+      }, { passive: true });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       12. FABRIC TABLE ROW HIGHLIGHT
+    ════════════════════════════════════════════════════════════ */
+    function a13InitFabricTable() {
+      var rows = document.querySelectorAll('.a13-fabric-row');
+      rows.forEach(function (row) {
+        row.addEventListener('mouseenter', function () {
+          rows.forEach(function (r) { r.style.opacity = r === row ? '1' : '0.55'; });
+        });
+        row.addEventListener('mouseleave', function () {
+          rows.forEach(function (r) { r.style.opacity = '1'; });
+        });
+      });
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       UTILS
+    ════════════════════════════════════════════════════════════ */
+    function a13setText(id, text) {
+      var el = document.getElementById(id);
+      if (el && text) el.textContent = text;
+    }
+
+    function a13Shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j   = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      }
+      return arr;
+    }
+
+    function a13EscHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       INIT ALL
+    ════════════════════════════════════════════════════════════ */
+    a13InitProgressBar();
+    a13InitSidebarShare();
+    a13InitShareButtons();
+    a13InitReactions();
+    a13InitNewsletterForms();
+    a13InitHeroParallax();
+    a13InitFabricTable();
+
+    // Delayed for JSON data to settle
+    setTimeout(function () {
+      a13BuildTOC();
+      a13InitScrollReveal();
+    }, 200);
+
+  }); // end DOMContentLoaded
+
+})(); // end IIFE
+
+
+
