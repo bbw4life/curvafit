@@ -612,10 +612,6 @@
 }
 
 
-
-
-
-
 /* ================================================================
    ARTICLE 2 — "Nourishing Meals That Honor Your Curves"
 ================================================================ */
@@ -2512,15 +2508,8 @@
 }
 
 
-
-
-
-
-
 /* ================================================================
    ARTICLE 3 — article3 styles
-   "Cultivating Body Confidence Through Daily Affirmations"
-   Append this block to /blog/articles.css
 ================================================================ */
 
 /* ════════════════════════════════════════
@@ -5234,15 +5223,8 @@
 }
 
 
-
-
-
-
-
-
 /* ================================================================
    ARTICLE 5 — "Managing PCOS Symptoms with Gentle Lifestyle Changes"
-   Design: Editorial Split-Hero / Teal-Sage-Gold magazine aesthetic
 ================================================================ */
 
 /* ════════════════════════════════════════
@@ -7252,17 +7234,8 @@
   .a5-discover { padding: 22px 16px; }
 }
 
-
-
-
-
-
-
-
 /* ================================================================
    ARTICLE 6 — "Understanding and Overcoming Emotional Eating Triggers"
-   Design: Immersive Full-Bleed Hero / Warm Amber-Terracotta-Sage editorial
-   Add this block inside articles.css
 ================================================================ */
 
 /* ════════════════════════════════════════
@@ -9251,13 +9224,8 @@
 }
 
 
-
-
-
-
 /* ================================================================
    ARTICLE 7 — "Effective Home Workouts Tailored for Curvy Figures"
-   ADD THIS BLOCK TO: /blog/articles.css
 ================================================================ */
 
 /* ════════════════════════════════════════
@@ -11085,14 +11053,8 @@
 
 
 
-
-
-
-
-
 /* ================================================================
    ARTICLE 8 — "Real Journeys: How One Curvy Woman Found Balance"
-   ADD THIS ENTIRE BLOCK INTO: /blog/articles.css
 ================================================================ */
 
 /* ════════════════════════════════════════
@@ -12988,12 +12950,8 @@
 }
 
 
-
-
-
 /* ================================================================
    ARTICLE 9 — "Creating Routines That Last: Habits for Lifelong Wellness"
-   Add this block to articles.css
 ================================================================ */
 
 /* ════════════════════════════════════════
@@ -14832,16 +14790,8 @@
   .a9-layout { padding: 28px 14px; }
 }
 
-
-
-
-
-
-
 /* ================================================================
    ARTICLE 10 — "Caloric Deficit Without Deprivation"
-   Design: Cinematic Noir-Gold / Dark Editorial Magazine
-   Add this block inside articles.css
 ================================================================ */
 
 /* ════════════════════════════════════════
@@ -16689,14 +16639,8 @@
 }
 
 
-
-
-
-
-
 /* ================================================================
    ARTICLE 11 — "Why Protein and Fiber Are Your Two Most Powerful Allies"
-   Design: Immersive Centered Hero / Amber-Amber-Gold Science Magazine
 ================================================================ */
 
 /* ════════════════════════════════════════
@@ -18632,12 +18576,6 @@
   .a11-layout { padding: 28px 12px; }
   .a11-discover { padding: 22px 16px; }
 }
-
-
-
-
-
-
 
 /* ================================================================
    ARTICLE 12 — "Resistance Training for Plus-Size Women"
@@ -20717,14 +20655,8 @@
 }
 
 
-
-
-
-
-
 /* ================================================================
    ARTICLE 13 — "Cute Workout Clothes for Curvy Gals"
-   Append this entire block at the end of articles.css
 ================================================================ */
 
 /* ════════════════════════════════════════
@@ -22644,14 +22576,8 @@
   .a13-layout { padding: 28px 12px; }
 }
 
-
-
-
-
-
 /* ================================================================
    ARTICLE 14 — "Pilates for Plus-Size Beginners"
-   ADD THIS BLOCK TO /blog/articles.css
 ================================================================ */
 
 /* ════════════════════════════════════════
@@ -24025,16 +23951,51 @@
 }
 
 
+@media (max-width: 960px) {
+  .a14-hero {
+    grid-template-columns: 1fr;
+    min-height: 100svh;
+    position: relative;
+  }
 
+  .a14-hero__right {
+    display: block;        /* ← remplace display:none */
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
 
+  .a14-hero__img-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(28,21,32,0.82) 0%,
+      rgba(28,21,32,0.60) 50%,
+      rgba(28,21,32,0.80) 100%
+    );
+  }
 
+  .a14-hero__left {
+    position: relative;
+    z-index: 5;
+  }
+
+  .a14-hero__left-inner {
+    padding: 100px 24px 60px;
+  }
+
+  .a14-hero__title {
+    font-size: clamp(2.8rem, 12vw, 4rem);
+  }
+
+  .a14-scroll-cue {
+    display: none;
+  }
+}
 
 
 
 /* ================================================================
    ARTICLE 15 — "Intermittent Fasting for Curvy Women"
-   ADD THIS BLOCK TO /blog/articles.css
-   Design: Midnight Indigo · Clock/Time Hero · Circadian Aesthetic
 ================================================================ */
 
 
@@ -25830,6 +25791,33 @@
 .a15-break-card,
 .a15-callout {
   will-change: opacity, transform;
+}
+
+@media (max-width: 600px) {
+  .a15-clock-wrap {
+    display: block !important;
+    width: 340px;
+    height: 340px;
+    opacity: 0.40;
+  }
+
+  .a15-clock-ring--1 { width: 340px; height: 340px; }
+  .a15-clock-ring--2 { width: 244px; height: 244px; }
+  .a15-clock-ring--3 { width: 160px; height: 160px; }
+
+  .a15-hour-ring {
+    width: 330px;
+    height: 330px;
+  }
+
+  .a15-hour-ring span {
+    --r: 152px;
+    font-size: 0.58rem;
+  }
+
+  .a15-hand-sweep-el {
+    transform-origin: 150px 150px;
+  }
 }
 
 

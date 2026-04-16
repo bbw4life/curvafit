@@ -1,8 +1,5 @@
 /* ================================================================
    CURVAFIT — article-featured.js
-   Injects "featured" article data from blog-articles.json
-   Only runs on pages with class "article-featured-page" or
-   on the article-featured.html page directly.
 ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {

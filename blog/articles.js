@@ -809,13 +809,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-
-
-
-
-
-
-
 /* ================================================================
    ARTICLE 2 — "Nourishing Meals That Honor Your Curves"
 ================================================================ */
@@ -1610,14 +1603,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-
-
-
-
 /* ================================================================
-   CURVAFIT — article3 script
-   "Cultivating Body Confidence Through Daily Affirmations"
-   Append this block to /blog/articles.js
+   CURVAFIT — ARTICLE 3 script
 ================================================================ */
 
 (function () {
@@ -2383,13 +2370,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 })();
-
-
-
-
-
-
-
 
 
 /* ================================================================
@@ -3197,14 +3177,8 @@ document.addEventListener('DOMContentLoaded', function () {
 })(); // end IIFE
 
 
-
-
-
-
-
 /* ================================================================
    ARTICLE 5 — "Managing PCOS Symptoms with Gentle Lifestyle Changes"
-   Add this block inside articles.js
 ================================================================ */
 
 (function () {
@@ -4004,15 +3978,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-
-
-
-
-
-
 /* ================================================================
    ARTICLE 6 — "Understanding and Overcoming Emotional Eating Triggers"
-   Add this block inside articles.js
 ================================================================ */
 
 (function () {
@@ -4820,15 +4787,8 @@ document.addEventListener('DOMContentLoaded', function () {
 })(); // end IIFE
 
 
-
-
-
-
-
-
 /* ================================================================
    ARTICLE 7 — "Effective Home Workouts Tailored for Curvy Figures"
-   ADD THIS BLOCK TO: /blog/articles.js
 ================================================================ */
 
 (function () {
@@ -5640,15 +5600,8 @@ document.addEventListener('DOMContentLoaded', function () {
 })(); // end IIFE
 
 
-
-
-
-
-
-
 /* ================================================================
    ARTICLE 8 — "Real Journeys: How One Curvy Woman Found Balance"
-   ADD THIS ENTIRE BLOCK INTO: /blog/articles.js
 ================================================================ */
 
 (function () {
@@ -6513,15 +6466,8 @@ document.addEventListener('DOMContentLoaded', function () {
 })(); // end IIFE
 
 
-
-
-
-
-
-
 /* ================================================================
    ARTICLE 9 — "Creating Routines That Last: Habits for Lifelong Wellness"
-   Add this block to articles.js
 ================================================================ */
 
 (function () {
@@ -7355,15 +7301,8 @@ document.addEventListener('DOMContentLoaded', function () {
 })(); // end IIFE
 
 
-
-
-
-
-
-
 /* ================================================================
    ARTICLE 10 — "Caloric Deficit Without Deprivation"
-   Add this block inside articles.js
 ================================================================ */
 
 (function () {
@@ -8149,14 +8088,8 @@ document.addEventListener('DOMContentLoaded', function () {
 })(); // end IIFE
 
 
-
-
-
-
-
 /* ================================================================
    ARTICLE 11 — "Why Protein and Fiber Are Your Two Most Powerful Allies"
-   Add this block inside articles.js
 ================================================================ */
 
 (function () {
@@ -8815,15 +8748,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 })(); // end IIFE
 
-
-
-
-
-
-
 /* ================================================================
    ARTICLE 12 — "Resistance Training for Plus-Size Women"
-   Add this entire block at the end of articles.js
 ================================================================ */
 
 (function () {
@@ -9669,14 +9595,8 @@ document.addEventListener('DOMContentLoaded', function () {
 })(); // end IIFE
 
 
-
-
-
-
-
 /* ================================================================
    ARTICLE 13 — "Cute Workout Clothes for Curvy Gals"
-   Add this entire block at the end of articles.js
 ================================================================ */
 
 (function () {
@@ -10502,15 +10422,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 })(); // end IIFE
 
-
-
-
-
-
-
 /* ================================================================
    ARTICLE 14 — "Pilates for Plus-Size Beginners"
-   ADD THIS BLOCK TO /blog/articles.js
 ================================================================ */
 
 (function () {
@@ -11327,11 +11240,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }); // end DOMContentLoaded
 
 })(); // end IIFE
-
-
-
-
-
 
 /* ================================================================
    ARTICLE 15 — "Intermittent Fasting for Curvy Women"
