@@ -205,31 +205,67 @@
                     <div class="deficit-visual">
                         <div class="deficit-scale">
                             <div class="deficit-scale-title">What Each Deficit Level Actually Does</div>
-                            <div class="deficit-row">
-                                <div class="deficit-dot deficit-dot--warn"></div>
-                                <div>
+
+                            <!-- Row: Too small -->
+                            <div class="deficit-row deficit-row--warn">
+                                <div class="deficit-indicator">
+                                    <div class="deficit-dot deficit-dot--warn"></div>
+                                    <div class="deficit-glow deficit-glow--warn"></div>
+                                </div>
+                                <div class="deficit-row-body">
                                     <div class="deficit-row-label">Too small: −100 to −200 cal</div>
+                                    <div class="deficit-bar-wrap">
+                                        <div class="deficit-bar deficit-bar--warn" data-width="22%"></div>
+                                        <span class="deficit-bar-pct">22%</span>
+                                    </div>
                                     <div class="deficit-row-val">Very slow progress · easy to maintain long-term</div>
                                 </div>
                             </div>
-                            <div class="deficit-row">
-                                <div class="deficit-dot deficit-dot--sweet"></div>
-                                <div>
+
+                            <!-- Row: Sweet spot -->
+                            <div class="deficit-row deficit-row--sweet">
+                                <div class="deficit-indicator">
+                                    <div class="deficit-dot deficit-dot--sweet"></div>
+                                    <div class="deficit-glow deficit-glow--sweet"></div>
+                                </div>
+                                <div class="deficit-row-body">
                                     <div class="deficit-row-label"><i class="fi fi-rr-check"></i> Sweet spot: −300 to −500 cal</div>
+                                    <div class="deficit-bar-wrap">
+                                        <div class="deficit-bar deficit-bar--sweet" data-width="65%"></div>
+                                        <span class="deficit-bar-pct">Optimal</span>
+                                    </div>
                                     <div class="deficit-row-val">0.5–1 kg/week of fat · safe · sustainable · no muscle loss</div>
                                 </div>
                             </div>
-                            <div class="deficit-row">
-                                <div class="deficit-dot deficit-dot--danger"></div>
-                                <div>
+
+                            <!-- Row: Dangerous -->
+                            <div class="deficit-row deficit-row--danger">
+                                <div class="deficit-indicator">
+                                    <div class="deficit-dot deficit-dot--danger"></div>
+                                    <div class="deficit-glow deficit-glow--danger"></div>
+                                </div>
+                                <div class="deficit-row-body">
                                     <div class="deficit-row-label"><i class="fi fi-rr-exclamation"></i> Dangerous: −800 to −1200 cal</div>
+                                    <div class="deficit-bar-wrap">
+                                        <div class="deficit-bar deficit-bar--danger" data-width="90%"></div>
+                                        <span class="deficit-bar-pct">⚠ Danger</span>
+                                    </div>
                                     <div class="deficit-row-val">Muscle loss · famine mode · hormonal damage · yo-yo guaranteed</div>
                                 </div>
                             </div>
-                            <div class="deficit-row">
-                                <div class="deficit-dot deficit-dot--grey"></div>
-                                <div>
+
+                            <!-- Row: Week 1 -->
+                            <div class="deficit-row deficit-row--grey">
+                                <div class="deficit-indicator">
+                                    <div class="deficit-dot deficit-dot--grey"></div>
+                                    <div class="deficit-glow deficit-glow--grey"></div>
+                                </div>
+                                <div class="deficit-row-body">
                                     <div class="deficit-row-label">Week 1 "weight loss"</div>
+                                    <div class="deficit-bar-wrap">
+                                        <div class="deficit-bar deficit-bar--grey" data-width="40%"></div>
+                                        <span class="deficit-bar-pct">Illusion</span>
+                                    </div>
                                     <div class="deficit-row-val">−1 to 3 kg of water weight · not actual fat · always returns</div>
                                 </div>
                             </div>
@@ -362,69 +398,98 @@
             </div>
         </section>
 
-        <!-- ═══ HIDDEN CALORIES ═══ -->
-        <section id="hidden-calories" class="hidden-calories-section" data-scroll-reveal>
+       <section id="hidden-calories" class="hidden-calories-section" data-scroll-reveal>
+            <div class="hc-noise"></div>
+            <div class="hc-glow-orb hc-glow-1"></div>
+            <div class="hc-glow-orb hc-glow-2"></div>
+
             <div class="container">
                 <div class="section-header">
                     <span class="section-label">The Silent Saboteur</span>
-                    <h2>Hidden Calories That Block Your Progress</h2>
+                    <h2>Hidden Calories That Block<br><em>Your Progress</em></h2>
                     <p class="section-subtitle">You might be eating "healthy" and still not losing weight because of these invisible calorie sources nobody counts.</p>
                 </div>
+
                 <div class="hidden-cal-grid">
-                    <div class="hidden-cal-card">
+
+                    <!-- Card 1 -->
+                    <div class="hidden-cal-card" style="--i:0">
+                        <div class="hc-card-glow"></div>
+                        <div class="hc-bar-track"><div class="hc-bar" style="--pct:58%"></div></div>
                         <div class="hidden-cal-header">
                             <div class="hidden-cal-icon"><i class="fa-solid fa-glass-water"></i></div>
                             <h3>Fruit Juice</h3>
                         </div>
-                        <div class="hidden-cal-amount">~250 cal</div>
+                        <div class="hidden-cal-amount">~250 <span>cal</span></div>
                         <p>A 500ml glass of "natural" juice contains as much sugar as a Coca-Cola. The fiber is gone — only sugar remains. Your body stores it as fat.</p>
                         <div class="hidden-cal-swap"><i class="fa-solid fa-check"></i> Swap: water with lemon, or eat the whole fruit</div>
                     </div>
-                    <div class="hidden-cal-card">
+
+                    <!-- Card 2 -->
+                    <div class="hidden-cal-card" style="--i:1">
+                        <div class="hc-card-glow"></div>
+                        <div class="hc-bar-track"><div class="hc-bar" style="--pct:72%"></div></div>
                         <div class="hidden-cal-header">
                             <div class="hidden-cal-icon"><i class="fa-solid fa-mug-hot"></i></div>
                             <h3>Sweetened Coffee</h3>
                         </div>
-                        <div class="hidden-cal-amount">~300 cal</div>
+                        <div class="hidden-cal-amount">~300 <span>cal</span></div>
                         <p>A flavored latte or iced coffee can hit 300–450 calories — more than a full meal. Most women drink 2 per day without registering them as food.</p>
                         <div class="hidden-cal-swap"><i class="fa-solid fa-check"></i> Swap: black coffee or unsweetened plant milk</div>
                     </div>
-                    <div class="hidden-cal-card">
+
+                    <!-- Card 3 -->
+                    <div class="hidden-cal-card" style="--i:2">
+                        <div class="hc-card-glow"></div>
+                        <div class="hc-bar-track"><div class="hc-bar" style="--pct:90%"></div></div>
                         <div class="hidden-cal-header">
                             <div class="hidden-cal-icon"><i class="fa-solid fa-wine-glass"></i></div>
                             <h3>Alcohol</h3>
                         </div>
-                        <div class="hidden-cal-amount">~500 cal</div>
+                        <div class="hidden-cal-amount">~500 <span>cal</span></div>
                         <p>2 glasses of wine = 300 cal. A cocktail = 200–350 cal. Alcohol also pauses fat burning entirely — your body treats it as a toxin first.</p>
                         <div class="hidden-cal-swap"><i class="fa-solid fa-check"></i> Swap: sparkling water with lime at social events</div>
                     </div>
-                    <div class="hidden-cal-card">
+
+                    <!-- Card 4 -->
+                    <div class="hidden-cal-card" style="--i:3">
+                        <div class="hc-card-glow"></div>
+                        <div class="hc-bar-track"><div class="hc-bar" style="--pct:45%"></div></div>
                         <div class="hidden-cal-header">
                             <div class="hidden-cal-icon"><i class="fa-solid fa-bottle-droplet"></i></div>
                             <h3>Sauces &amp; Dressings</h3>
                         </div>
-                        <div class="hidden-cal-amount">~200 cal</div>
+                        <div class="hidden-cal-amount">~200 <span>cal</span></div>
                         <p>2 tablespoons of mayo or Caesar dressing add 150–250 calories to a meal you thought was light. The salad was fine — the dressing was not.</p>
                         <div class="hidden-cal-swap"><i class="fa-solid fa-check"></i> Swap: lemon juice, vinegar, mustard, or herbs</div>
                     </div>
-                    <div class="hidden-cal-card">
+
+                    <!-- Card 5 -->
+                    <div class="hidden-cal-card" style="--i:4">
+                        <div class="hc-card-glow"></div>
+                        <div class="hc-bar-track"><div class="hc-bar" style="--pct:80%"></div></div>
                         <div class="hidden-cal-header">
                             <div class="hidden-cal-icon"><i class="fa-solid fa-cookie-bite"></i></div>
                             <h3>"Healthy" Snacks</h3>
                         </div>
-                        <div class="hidden-cal-amount">~350 cal</div>
+                        <div class="hidden-cal-amount">~350 <span>cal</span></div>
                         <p>Granola bars, "protein" bars, and dried fruit are often 200–400 cal per portion with minimal real protein. They add calories without filling you.</p>
                         <div class="hidden-cal-swap"><i class="fa-solid fa-check"></i> Swap: boiled egg, plain yogurt, or fresh fruit</div>
                     </div>
-                    <div class="hidden-cal-card">
+
+                    <!-- Card 6 -->
+                    <div class="hidden-cal-card" style="--i:5">
+                        <div class="hc-card-glow"></div>
+                        <div class="hc-bar-track"><div class="hc-bar" style="--pct:30%"></div></div>
                         <div class="hidden-cal-header">
                             <div class="hidden-cal-icon"><i class="fa-solid fa-droplet"></i></div>
                             <h3>Cooking Oil</h3>
                         </div>
-                        <div class="hidden-cal-amount">~120 cal/tbsp</div>
+                        <div class="hidden-cal-amount">~120 <span>cal/tbsp</span></div>
                         <p>1 tablespoon of oil = 120 calories. Pouring freely adds 300–400 invisible calories to an otherwise balanced meal.</p>
                         <div class="hidden-cal-swap"><i class="fa-solid fa-check"></i> Swap: measure with a teaspoon, or use a non-stick pan</div>
                     </div>
+
                 </div>
             </div>
         </section>
@@ -657,120 +722,247 @@
                     <h2>Hydration — The Most Underrated Fat Loss Tool</h2>
                 </div>
                 <div class="hydration-layout">
+
+                    <!-- LEFT: CONTENT -->
                     <div class="hydration-content">
-                        <p>Most women drink too little water and confuse thirst for hunger. A glass of water before a meal can reduce how much you eat by up to 13%. Drinking 2 liters daily boosts metabolic rate by 24–30% for up to 1.5 hours after drinking.</p>
+                        <p>Most women drink too little water and confuse thirst for hunger. A glass of water before a meal can reduce how much you eat by up to <strong>13%</strong>. Drinking 2 liters daily boosts metabolic rate by <strong>24–30%</strong> for up to 1.5 hours after drinking.</p>
                         <p>Water also reduces water retention. When dehydrated, your body holds onto every drop as a survival mechanism. Drink consistently and bloating decreases noticeably within a week.</p>
                         <p>What counts: plain water, sparkling water, unsweetened herbal tea, and broths. What does not: coffee, alcohol, juice, or sweetened drinks.</p>
-                        <p><strong>If you struggle to drink enough:</strong> keep a 1-liter bottle visible, drink 500ml within 30 minutes of waking, and finish your second liter by 7pm. Skin, energy, digestion, and fat loss all improve within 10 days.</p>
-                    </div>
-                    <div class="hydration-visual">
-                        <div class="water-timeline">
-                            <div class="water-timeline-title">Your Daily Water Schedule</div>
-                            <div class="water-time-row">
-                                <span class="water-time">7:00 AM</span>
-                                <span class="water-amount"><i class="fi fi-rr-water"></i></span>
-                                <span class="water-desc">500ml on waking — before coffee, before food. Activates digestion and reduces cortisol.</span>
+
+                        <div class="hydration-tip-box">
+                            <div class="hydration-tip-icon"><i class="fi fi-rr-bulb"></i></div>
+                            <p><strong>If you struggle to drink enough:</strong> keep a 1-liter bottle visible, drink 500ml within 30 minutes of waking, and finish your second liter by 7pm. Skin, energy, digestion, and fat loss all improve within 10 days.</p>
+                        </div>
+
+                        <div class="hydration-stats">
+                            <div class="hydration-stat">
+                                <div class="hstat-bar-track"><div class="hstat-bar" style="--w:78%;--d:0s"></div></div>
+                                <span class="hstat-number">+24%</span>
+                                <span class="hstat-label">metabolic boost</span>
                             </div>
-                            <div class="water-time-row">
-                                <span class="water-time">10:00 AM</span>
-                                <span class="water-amount"><i class="fi fi-rr-water"></i></span>
-                                <span class="water-desc">250ml mid-morning. If you feel a craving, drink first and wait 10 minutes before eating.</span>
+                            <div class="hydration-stat">
+                                <div class="hstat-bar-track"><div class="hstat-bar" style="--w:55%;--d:0.2s"></div></div>
+                                <span class="hstat-number">−13%</span>
+                                <span class="hstat-label">appetite at meals</span>
                             </div>
-                            <div class="water-time-row">
-                                <span class="water-time">12:00 PM</span>
-                                <span class="water-amount"><i class="fi fi-rr-water"></i></span>
-                                <span class="water-desc">250ml before lunch — reduces meal appetite naturally by up to 13%.</span>
-                            </div>
-                            <div class="water-time-row">
-                                <span class="water-time">15:00 PM</span>
-                                <span class="water-amount"><i class="fi fi-rr-water"></i></span>
-                                <span class="water-desc">250ml afternoon. Dehydration causes fatigue — not always lack of sleep.</span>
-                            </div>
-                            <div class="water-time-row">
-                                <span class="water-time">18:30 PM</span>
-                                <span class="water-amount"><i class="fi fi-rr-water"></i></span>
-                                <span class="water-desc">250ml before dinner. Last major intake before evening rest.</span>
-                            </div>
-                            <div class="water-time-row">
-                                <span class="water-time">After 20:00</span>
-                                <span class="water-amount"><i class="fi fi-rr-water"></i></span>
-                                <span class="water-desc">Small sips only. Heavy intake before bed disrupts deep sleep quality.</span>
+                            <div class="hydration-stat">
+                                <div class="hstat-bar-track"><div class="hstat-bar" style="--w:90%;--d:0.4s"></div></div>
+                                <span class="hstat-number">10 days</span>
+                                <span class="hstat-label">to feel the difference</span>
                             </div>
                         </div>
                     </div>
+
+                    <!-- RIGHT: TIMELINE -->
+                    <div class="hydration-visual">
+                        <div class="water-timeline">
+                            <div class="water-timeline-header">
+                                <i class="fi fi-rr-water"></i>
+                                <span>Your Daily Water Schedule</span>
+                            </div>
+
+                            <div class="water-time-row">
+                                <div class="wtr-left">
+                                    <span class="water-time">7:00 AM</span>
+                                    <div class="wtr-dot wtr-dot--rose"></div>
+                                    <div class="wtr-line"></div>
+                                </div>
+                                <div class="wtr-right">
+                                    <span class="wtr-amount">500 ml</span>
+                                    <span class="water-desc">On waking — before coffee, before food. Activates digestion and reduces cortisol.</span>
+                                </div>
+                            </div>
+
+                            <div class="water-time-row">
+                                <div class="wtr-left">
+                                    <span class="water-time">10:00 AM</span>
+                                    <div class="wtr-dot"></div>
+                                    <div class="wtr-line"></div>
+                                </div>
+                                <div class="wtr-right">
+                                    <span class="wtr-amount">250 ml</span>
+                                    <span class="water-desc">Mid-morning. If you feel a craving, drink first and wait 10 minutes before eating.</span>
+                                </div>
+                            </div>
+
+                            <div class="water-time-row">
+                                <div class="wtr-left">
+                                    <span class="water-time">12:00 PM</span>
+                                    <div class="wtr-dot"></div>
+                                    <div class="wtr-line"></div>
+                                </div>
+                                <div class="wtr-right">
+                                    <span class="wtr-amount">250 ml</span>
+                                    <span class="water-desc">Before lunch — reduces meal appetite naturally by up to 13%.</span>
+                                </div>
+                            </div>
+
+                            <div class="water-time-row">
+                                <div class="wtr-left">
+                                    <span class="water-time">3:00 PM</span>
+                                    <div class="wtr-dot"></div>
+                                    <div class="wtr-line"></div>
+                                </div>
+                                <div class="wtr-right">
+                                    <span class="wtr-amount">250 ml</span>
+                                    <span class="water-desc">Afternoon. Dehydration causes fatigue — not always lack of sleep.</span>
+                                </div>
+                            </div>
+
+                            <div class="water-time-row">
+                                <div class="wtr-left">
+                                    <span class="water-time">6:30 PM</span>
+                                    <div class="wtr-dot"></div>
+                                    <div class="wtr-line"></div>
+                                </div>
+                                <div class="wtr-right">
+                                    <span class="wtr-amount">250 ml</span>
+                                    <span class="water-desc">Before dinner. Last major intake before evening rest.</span>
+                                </div>
+                            </div>
+
+                            <div class="water-time-row wtr-last">
+                                <div class="wtr-left">
+                                    <span class="water-time">After 8 PM</span>
+                                    <div class="wtr-dot wtr-dot--mist"></div>
+                                </div>
+                                <div class="wtr-right">
+                                    <span class="wtr-amount wtr-amount--mist">Sips only</span>
+                                    <span class="water-desc">Heavy intake before bed disrupts deep sleep quality.</span>
+                                </div>
+                            </div>
+
+                            <div class="wtr-total">
+                                <div class="wtr-total-bar-track">
+                                    <div class="wtr-total-bar"></div>
+                                    <span class="wtr-total-label">Daily total: 1.5 – 2 L</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
 
-        <!-- ═══ EMOTIONAL EATING ═══ -->
         <section id="emotional-eating" class="emotional-eating-section" data-scroll-reveal>
-            <div class="container">
+            <div class="ee-glow-orb ee-glow-1"></div>
+            <div class="ee-glow-orb ee-glow-2"></div>
+            <div class="ee-noise"></div>
+
+            <div class="container" style="position:relative;z-index:1;">
                 <div class="section-header">
                     <span class="section-label">The Part Nobody Talks About</span>
-                    <h2>Emotional Eating — Biology, Not Weakness</h2>
+                    <h2>Emotional Eating —<br><em>Biology, Not Weakness</em></h2>
                     <p class="section-subtitle">Eating under stress is not a character flaw. It is a hormonal response. Understanding the mechanism is the first step to breaking the cycle.</p>
                 </div>
+
                 <div class="emotional-grid">
+
+                    <!-- LEFT: Explainer + Hunger Test -->
                     <div class="emotional-explainer">
-                        <p>Stress releases cortisol, which tells your body it needs immediate energy — craving sugar and fat as the fastest fuel. This is a survival mechanism that overrides willpower completely.</p>
-                        <p>Restriction makes it worse. The more you tell yourself "I cannot eat that," the more your brain fixates on it — creating the psychological conditions for bingeing.</p>
-                        <p>The solution is structure. Regular, protein-rich meals keep blood sugar stable and hunger hormones balanced, so cortisol-triggered cravings have less power over you.</p>
-                        <p><strong>First step:</strong> learn the difference between real and emotional hunger. Real hunger comes on gradually. Emotional hunger is sudden, specific, and follows something stressful.</p>
+                        <div class="ee-prose-block">
+                            <p>Stress releases <strong>cortisol</strong>, which tells your body it needs immediate energy — craving sugar and fat as the fastest fuel. This is a survival mechanism that overrides willpower completely.</p>
+                            <p>Restriction makes it worse. The more you tell yourself "I cannot eat that," the more your brain fixates on it — creating the psychological conditions for bingeing.</p>
+                            <p>The solution is structure. Regular, protein-rich meals keep blood sugar stable and hunger hormones balanced, so cortisol-triggered cravings have less power over you.</p>
+                            <p><strong>First step:</strong> learn the difference between real and emotional hunger. Real hunger comes on gradually. Emotional hunger is sudden, specific, and follows something stressful.</p>
+                        </div>
+
                         <div class="hunger-test">
+                            <div class="hunger-test-label">Quick Check</div>
                             <div class="hunger-test-title">Real Hunger or Emotional Hunger?</div>
                             <div class="hunger-q">Ask yourself before eating:</div>
+
                             <div class="hunger-answers">
                                 <div class="hunger-ans hunger-ans--real">
-                                    <i class="fi fi-rr-check"></i>
-                                    <span><strong>Real hunger:</strong> Came on gradually · I'd eat anything, including vegetables · it's been 3–4 hours since I ate · I feel it in my stomach</span>
+                                    <div class="hunger-ans-icon hunger-ans-icon--real">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                    <div>
+                                        <div class="hunger-ans-label">Real Hunger</div>
+                                        <ul class="hunger-cues">
+                                            <li>Came on gradually</li>
+                                            <li>I'd eat anything, including vegetables</li>
+                                            <li>It's been 3–4 hours since I ate</li>
+                                            <li>I feel it in my stomach</li>
+                                        </ul>
+                                    </div>
                                 </div>
                                 <div class="hunger-ans hunger-ans--emotional">
-                                    <i class="fi fi-rr-exclamation"></i>
-                                    <span><strong>Emotional hunger:</strong> Appeared suddenly · I only want something specific · it followed stress or boredom · it feels urgent</span>
+                                    <div class="hunger-ans-icon hunger-ans-icon--emotional">
+                                        <i class="fa-solid fa-bolt"></i>
+                                    </div>
+                                    <div>
+                                        <div class="hunger-ans-label">Emotional Hunger</div>
+                                        <ul class="hunger-cues">
+                                            <li>Appeared suddenly</li>
+                                            <li>I only want something specific</li>
+                                            <li>It followed stress or boredom</li>
+                                            <li>It feels urgent</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <div class="section-header" style="text-align:left; margin-bottom:16px;">
+
+                    <!-- RIGHT: 5 Strategies -->
+                    <div class="emotional-right">
+                        <div class="ee-strats-header">
                             <span class="section-label">5 Things to Do Instead</span>
                         </div>
                         <div class="emotional-strats">
-                            <div class="strat-card">
-                                <div class="strat-icon"><i class="fi fi-rr-person-walking"></i></div>
-                                <div>
+
+                            <div class="strat-card" style="--si:0">
+                                <div class="strat-number">01</div>
+                                <div class="strat-icon-wrap"><i class="fa-solid fa-person-walking"></i></div>
+                                <div class="strat-body">
                                     <h4>Walk for 10 minutes</h4>
                                     <p>A short walk reduces cortisol within 7–10 minutes, breaks the thought loop, and often makes the craving disappear entirely.</p>
                                 </div>
+                                <div class="strat-bar"><div class="strat-bar-fill" style="--bw:95%"></div></div>
                             </div>
-                            <div class="strat-card">
-                                <div class="strat-icon"><i class="fi fi-rr-water"></i></div>
-                                <div>
+
+                            <div class="strat-card" style="--si:1">
+                                <div class="strat-number">02</div>
+                                <div class="strat-icon-wrap"><i class="fa-solid fa-droplet"></i></div>
+                                <div class="strat-body">
                                     <h4>Drink a full glass of water first</h4>
                                     <p>Wait 10 minutes after drinking. Many cravings are dehydration or boredom — they often vanish once you hydrate properly.</p>
                                 </div>
+                                <div class="strat-bar"><div class="strat-bar-fill" style="--bw:82%"></div></div>
                             </div>
-                            <div class="strat-card">
-                                <div class="strat-icon"><i class="fi fi-rr-pencil"></i></div>
-                                <div>
+
+                            <div class="strat-card" style="--si:2">
+                                <div class="strat-number">03</div>
+                                <div class="strat-icon-wrap"><i class="fa-solid fa-pencil"></i></div>
+                                <div class="strat-body">
                                     <h4>Name the emotion in writing</h4>
                                     <p>Write down what happened in the last 2 hours. Naming the emotion activates your rational brain and reduces emotional response intensity.</p>
                                 </div>
+                                <div class="strat-bar"><div class="strat-bar-fill" style="--bw:74%"></div></div>
                             </div>
-                            <div class="strat-card">
-                                <div class="strat-icon"><i class="fi fi-rr-egg"></i></div>
-                                <div>
+
+                            <div class="strat-card" style="--si:3">
+                                <div class="strat-number">04</div>
+                                <div class="strat-icon-wrap"><i class="fa-solid fa-egg"></i></div>
+                                <div class="strat-body">
                                     <h4>Choose a protein snack if you do eat</h4>
                                     <p>If you decide to eat, choose: 1 boiled egg, plain yogurt, or 10 unsalted almonds. These satisfy without derailing your deficit.</p>
                                 </div>
+                                <div class="strat-bar"><div class="strat-bar-fill" style="--bw:68%"></div></div>
                             </div>
-                            <div class="strat-card">
-                                <div class="strat-icon"><i class="fi fi-rr-ban"></i></div>
-                                <div>
+
+                            <div class="strat-card" style="--si:4">
+                                <div class="strat-number">05</div>
+                                <div class="strat-icon-wrap strat-icon-wrap--gold"><i class="fa-solid fa-heart"></i></div>
+                                <div class="strat-body">
                                     <h4>Zero guilt — always</h4>
                                     <p>One episode does not ruin a week. Guilt fuels cortisol — making the next episode more likely. Return to structure at the next meal.</p>
                                 </div>
+                                <div class="strat-bar"><div class="strat-bar-fill strat-bar-fill--gold" style="--bw:100%"></div></div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -779,59 +971,126 @@
 
         <!-- ═══ 5 MISTAKES ═══ -->
         <section id="errors" class="nutrition-errors-section" data-scroll-reveal>
-            <div class="container">
+            <div class="ne-mesh"></div>
+            <div class="ne-circle ne-circle-1"></div>
+            <div class="ne-circle ne-circle-2"></div>
+
+            <div class="container" style="position:relative;z-index:1;">
                 <div class="section-header">
                     <span class="section-label">Fix These First</span>
-                    <h2>The 5 Nutrition Mistakes That Stall Weight Loss</h2>
+                    <h2>The 5 Nutrition Mistakes<br><em>That Stall Weight Loss</em></h2>
                     <p class="section-subtitle">These mistakes are responsible for 90% of failed weight loss attempts. Each has a direct, simple fix you can apply today.</p>
                 </div>
+
                 <div class="errors-grid">
-                    <div class="error-card">
-                        <span class="error-num">01</span>
+
+                    <div class="error-card" style="--ei:0">
+                        <div class="ec-shine"></div>
+                        <div class="ec-top">
+                            <span class="error-num">01</span>
+                            <div class="ec-badge">Common</div>
+                        </div>
                         <h3>Skipping Breakfast</h3>
                         <p>Skipping breakfast spikes hunger hormones by mid-morning, making you 40% more likely to overeat at lunch. Your metabolism also runs slower without fuel in the first 2 hours of the day.</p>
-                        <div class="error-fix"><i class="fi fi-rr-check"></i> Eat within 1 hour of waking. 2 eggs and black coffee is enough to activate your metabolism.</div>
+                        <div class="ec-stat"><span class="ec-stat-num">40%</span><span class="ec-stat-label">more likely to overeat</span></div>
+                        <div class="error-fix">
+                            <div class="ef-icon"><i class="fa-solid fa-check"></i></div>
+                            <span>Eat within 1 hour of waking. 2 eggs and black coffee is enough to activate your metabolism.</span>
+                        </div>
                     </div>
-                    <div class="error-card">
-                        <span class="error-num">02</span>
+
+                    <div class="error-card" style="--ei:1">
+                        <div class="ec-shine"></div>
+                        <div class="ec-top">
+                            <span class="error-num">02</span>
+                            <div class="ec-badge ec-badge--high">High Impact</div>
+                        </div>
                         <h3>Drinking Liquid Calories</h3>
                         <p>Juice, sweetened coffee, sodas, and alcohol are the biggest invisible calorie source. Switching to water and black coffee alone can save 350–600 calories per day without changing a single meal.</p>
-                        <div class="error-fix"><i class="fi fi-rr-check"></i> Drink only water, unsweetened tea, or black coffee. This one change can produce 1–2 kg of loss in month 1.</div>
+                        <div class="ec-stat"><span class="ec-stat-num">600</span><span class="ec-stat-label">cal saved per day</span></div>
+                        <div class="error-fix">
+                            <div class="ef-icon"><i class="fa-solid fa-check"></i></div>
+                            <span>Drink only water, unsweetened tea, or black coffee. This one change can produce 1–2 kg of loss in month 1.</span>
+                        </div>
                     </div>
-                    <div class="error-card">
-                        <span class="error-num">03</span>
+
+                    <div class="error-card" style="--ei:2">
+                        <div class="ec-shine"></div>
+                        <div class="ec-top">
+                            <span class="error-num">03</span>
+                            <div class="ec-badge">Critical</div>
+                        </div>
                         <h3>Not Enough Protein</h3>
                         <p>Low-protein diets cause muscle loss alongside fat. After the diet ends, metabolism is permanently slower — which is why weight returns faster each time and every new diet feels harder.</p>
-                        <div class="error-fix"><i class="fi fi-rr-check"></i> Include a protein source at every meal. Chicken, eggs, fish, yogurt, or lentils — always.</div>
+                        <div class="ec-stat"><span class="ec-stat-num">+30%</span><span class="ec-stat-label">faster regain risk</span></div>
+                        <div class="error-fix">
+                            <div class="ef-icon"><i class="fa-solid fa-check"></i></div>
+                            <span>Include a protein source at every meal. Chicken, eggs, fish, yogurt, or lentils — always.</span>
+                        </div>
                     </div>
-                    <div class="error-card">
-                        <span class="error-num">04</span>
+
+                    <div class="error-card" style="--ei:3">
+                        <div class="ec-shine"></div>
+                        <div class="ec-top">
+                            <span class="error-num">04</span>
+                            <div class="ec-badge ec-badge--warn">Marketing Trap</div>
+                        </div>
                         <h3>Buying "Light" Products</h3>
                         <p>"Light," "fat-free," and "zero sugar" labels are marketing, not nutrition. Fat-free products often replace fat with sugar. Zero-sugar products maintain sweet cravings and disrupt gut bacteria.</p>
-                        <div class="error-fix"><i class="fi fi-rr-check"></i> Read the full ingredient list. Choose real food with few ingredients over processed "diet" versions.</div>
+                        <div class="ec-stat"><span class="ec-stat-num">2×</span><span class="ec-stat-label">sugar hidden inside</span></div>
+                        <div class="error-fix">
+                            <div class="ef-icon"><i class="fa-solid fa-check"></i></div>
+                            <span>Read the full ingredient list. Choose real food with few ingredients over processed "diet" versions.</span>
+                        </div>
                     </div>
-                    <div class="error-card">
-                        <span class="error-num">05</span>
+
+                    <div class="error-card" style="--ei:4">
+                        <div class="ec-shine"></div>
+                        <div class="ec-top">
+                            <span class="error-num">05</span>
+                            <div class="ec-badge">Hidden Cost</div>
+                        </div>
                         <h3>Eating Too Fast</h3>
                         <p>Your brain takes 20 minutes to receive the fullness signal. Eating fast means 2–3 servings consumed before your brain registers you've had 1. Fast eaters consume 31% more calories per meal.</p>
-                        <div class="error-fix"><i class="fi fi-rr-check"></i> Put down your fork between bites. Eat without screens. Portion sizes decrease naturally.</div>
+                        <div class="ec-stat"><span class="ec-stat-num">31%</span><span class="ec-stat-label">more calories per meal</span></div>
+                        <div class="error-fix">
+                            <div class="ef-icon"><i class="fa-solid fa-check"></i></div>
+                            <span>Put down your fork between bites. Eat without screens. Portion sizes decrease naturally.</span>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </section>
 
         <!-- ═══ GROCERY STRATEGY ═══ -->
         <section id="grocery-strategy" class="grocery-strategy-section" data-scroll-reveal>
-            <div class="container">
+            <div class="gs-bg-pattern"></div>
+            <div class="gs-orb gs-orb-1"></div>
+            <div class="gs-orb gs-orb-2"></div>
+
+            <div class="container" style="position:relative;z-index:1;">
                 <div class="section-header">
                     <span class="section-label">Shop Smart</span>
-                    <h2>Build Your Weekly Grocery List</h2>
+                    <h2>Build Your Weekly<br><em>Grocery List</em></h2>
                     <p class="section-subtitle">Stock your kitchen with these categories and you'll always have the ingredients for a balanced, fat-loss-friendly meal — without thinking.</p>
                 </div>
+
                 <div class="grocery-categories">
-                    <div class="category">
-                        <div class="category-icon category-icon--protein"><i class="fi fi-rr-meat"></i></div>
-                        <h3>Proteins (35–40% of plate)</h3>
+
+                    <!-- Proteins -->
+                    <div class="category" style="--ci:0; --cat-h:rgba(192,56,94,1); --cat-bg:rgba(192,56,94,0.07); --cat-border:rgba(192,56,94,0.14);">
+                        <div class="cat-header">
+                            <div class="category-icon category-icon--protein">
+                                <i class="fa-solid fa-drumstick-bite"></i>
+                            </div>
+                            <div class="cat-meta">
+                                <div class="cat-pct">35–40%</div>
+                                <div class="cat-pct-label">of your plate</div>
+                            </div>
+                        </div>
+                        <h3>Proteins</h3>
+                        <div class="cat-bar-track"><div class="cat-bar" style="--cp:80%"></div></div>
                         <ul>
                             <li>Chicken breast or thigh</li>
                             <li>Eggs (whole, not just whites)</li>
@@ -842,9 +1101,20 @@
                             <li>Tofu or tempeh (vegetarian)</li>
                         </ul>
                     </div>
-                    <div class="category">
-                        <div class="category-icon category-icon--fiber"><i class="fi fi-rr-leaf"></i></div>
-                        <h3>Vegetables &amp; Fiber (30% of plate)</h3>
+
+                    <!-- Vegetables -->
+                    <div class="category" style="--ci:1; --cat-h:rgba(39,174,96,1); --cat-bg:rgba(39,174,96,0.06); --cat-border:rgba(39,174,96,0.14);">
+                        <div class="cat-header">
+                            <div class="category-icon category-icon--fiber">
+                                <i class="fa-solid fa-leaf"></i>
+                            </div>
+                            <div class="cat-meta">
+                                <div class="cat-pct">30%</div>
+                                <div class="cat-pct-label">of your plate</div>
+                            </div>
+                        </div>
+                        <h3>Vegetables &amp; Fiber</h3>
+                        <div class="cat-bar-track"><div class="cat-bar" style="--cp:60%"></div></div>
                         <ul>
                             <li>Spinach, kale, arugula</li>
                             <li>Broccoli, zucchini, green beans</li>
@@ -854,9 +1124,20 @@
                             <li>Berries (fresh or frozen)</li>
                         </ul>
                     </div>
-                    <div class="category">
-                        <div class="category-icon category-icon--fat"><i class="fi fi-rr-avocado"></i></div>
-                        <h3>Healthy Fats (20% of plate)</h3>
+
+                    <!-- Fats -->
+                    <div class="category" style="--ci:2; --cat-h:rgba(201,150,62,1); --cat-bg:rgba(201,150,62,0.07); --cat-border:rgba(201,150,62,0.16);">
+                        <div class="cat-header">
+                            <div class="category-icon category-icon--fat">
+                                <i class="fa-solid fa-avocado"></i>
+                            </div>
+                            <div class="cat-meta">
+                                <div class="cat-pct">20%</div>
+                                <div class="cat-pct-label">of your plate</div>
+                            </div>
+                        </div>
+                        <h3>Healthy Fats</h3>
+                        <div class="cat-bar-track"><div class="cat-bar" style="--cp:40%"></div></div>
                         <ul>
                             <li>Avocado (½ per meal max)</li>
                             <li>Olive oil (measure: 1 tsp per cooking)</li>
@@ -865,9 +1146,20 @@
                             <li>Pumpkin seeds</li>
                         </ul>
                     </div>
-                    <div class="category">
-                        <div class="category-icon category-icon--carb"><i class="fi fi-rr-bread"></i></div>
-                        <h3>Smart Carbs (10–20% of plate)</h3>
+
+                    <!-- Carbs -->
+                    <div class="category" style="--ci:3; --cat-h:rgba(123,63,110,1); --cat-bg:rgba(123,63,110,0.06); --cat-border:rgba(123,63,110,0.14);">
+                        <div class="cat-header">
+                            <div class="category-icon category-icon--carb">
+                                <i class="fa-solid fa-wheat-awn"></i>
+                            </div>
+                            <div class="cat-meta">
+                                <div class="cat-pct">10–20%</div>
+                                <div class="cat-pct-label">of your plate</div>
+                            </div>
+                        </div>
+                        <h3>Smart Carbs</h3>
+                        <div class="cat-bar-track"><div class="cat-bar" style="--cp:25%"></div></div>
                         <ul>
                             <li>Brown rice or basmati</li>
                             <li>Oats (rolled, not instant)</li>
@@ -877,9 +1169,16 @@
                             <li>Bananas, apples, oranges</li>
                         </ul>
                     </div>
+
                 </div>
-                <div class="transformation-block" style="margin-top:24px;">
-                    <p><i class="fi fi-rr-shopping-cart"></i> <strong>Shopping rule:</strong> Shop the perimeter of the supermarket — that's where real food lives (produce, meat, dairy). The middle aisles are where ultra-processed products hide. If it has more than 5 ingredients or you can't pronounce them, put it back.</p>
+
+                <!-- Shopping rule banner -->
+                <div class="gs-rule-banner">
+                    <div class="gs-rule-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+                    <div class="gs-rule-content">
+                        <div class="gs-rule-title">The Perimeter Rule</div>
+                        <p>Shop the perimeter of the supermarket — that's where real food lives (produce, meat, dairy). The middle aisles are where ultra-processed products hide. If it has more than 5 ingredients or you can't pronounce them, put it back.</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -929,7 +1228,7 @@
             </div>
         </section>
 
-        <!-- ═══ WHAT WE DON'T DO ═══ -->
+       <!-- ═══ WHAT WE DON'T DO ═══ -->
         <section id="what-we-dont-do" class="what-we-dont-do-section" data-scroll-reveal>
             <div class="container">
                 <div class="section-header">
@@ -938,26 +1237,72 @@
                     <p class="section-subtitle">We built this program on one principle: if it would harm your body long-term, we will not recommend it — even if it works short-term.</p>
                 </div>
                 <ul class="dont-do-list">
-                    <li data-scroll-reveal>
-                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
-                        <div class="dont-text"><strong>We will never tell you to eat less than 1,200 calories a day.</strong> Below this threshold, your body cannot obtain the minimum nutrients it needs. You will lose muscle, damage your metabolism, and regain everything rapidly once you stop.</div>
+
+                    <li class="dont-item" data-scroll-reveal>
+                        <div class="dont-number">01</div>
+                        <div class="dont-icon-wrap">
+                            <span class="dont-icon-ring"></span>
+                            <i class="fi fi-rr-ban dont-icon"></i>
+                        </div>
+                        <div class="dont-body">
+                            <div class="dont-text"><strong>We will never tell you to eat less than 1,200 calories a day.</strong> Below this threshold, your body cannot obtain the minimum nutrients it needs. You will lose muscle, damage your metabolism, and regain everything rapidly once you stop.</div>
+                            <div class="dont-tag">Metabolism risk</div>
+                        </div>
+                        <div class="dont-line"></div>
                     </li>
-                    <li data-scroll-reveal>
-                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
-                        <div class="dont-text"><strong>We will never sell you a detox, cleanse, or teatox.</strong> Your liver and kidneys detox your body 24/7. Detox products are laxatives causing temporary water weight loss — always followed by immediate rebound.</div>
+
+                    <li class="dont-item" data-scroll-reveal>
+                        <div class="dont-number">02</div>
+                        <div class="dont-icon-wrap">
+                            <span class="dont-icon-ring"></span>
+                            <i class="fi fi-rr-ban dont-icon"></i>
+                        </div>
+                        <div class="dont-body">
+                            <div class="dont-text"><strong>We will never sell you a detox, cleanse, or teatox.</strong> Your liver and kidneys detox your body 24/7. Detox products are laxatives causing temporary water weight loss — always followed by immediate rebound.</div>
+                            <div class="dont-tag">False science</div>
+                        </div>
+                        <div class="dont-line"></div>
                     </li>
-                    <li data-scroll-reveal>
-                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
-                        <div class="dont-text"><strong>We will never recommend eliminating an entire food group.</strong> No carbs, no fat, no dairy — these extremes cause nutrient deficiencies and hormonal disruption. Real food from all groups belongs in your diet.</div>
+
+                    <li class="dont-item" data-scroll-reveal>
+                        <div class="dont-number">03</div>
+                        <div class="dont-icon-wrap">
+                            <span class="dont-icon-ring"></span>
+                            <i class="fi fi-rr-ban dont-icon"></i>
+                        </div>
+                        <div class="dont-body">
+                            <div class="dont-text"><strong>We will never recommend eliminating an entire food group.</strong> No carbs, no fat, no dairy — these extremes cause nutrient deficiencies and hormonal disruption. Real food from all groups belongs in your diet.</div>
+                            <div class="dont-tag">Hormonal damage</div>
+                        </div>
+                        <div class="dont-line"></div>
                     </li>
-                    <li data-scroll-reveal>
-                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
-                        <div class="dont-text"><strong>We will never recommend diet pills or fat burners.</strong> Most are unregulated and dangerous. Those with any effect are simply high-dose caffeine — available free in black coffee. None substitute for food discipline and consistency.</div>
+
+                    <li class="dont-item" data-scroll-reveal>
+                        <div class="dont-number">04</div>
+                        <div class="dont-icon-wrap">
+                            <span class="dont-icon-ring"></span>
+                            <i class="fi fi-rr-ban dont-icon"></i>
+                        </div>
+                        <div class="dont-body">
+                            <div class="dont-text"><strong>We will never recommend diet pills or fat burners.</strong> Most are unregulated and dangerous. Those with any effect are simply high-dose caffeine — available free in black coffee. None substitute for food discipline and consistency.</div>
+                            <div class="dont-tag">Unregulated danger</div>
+                        </div>
+                        <div class="dont-line"></div>
                     </li>
-                    <li data-scroll-reveal>
-                        <div class="dont-icon"><i class="fi fi-rr-ban"></i></div>
-                        <div class="dont-text"><strong>We will never promise miracle results in unrealistic timelines.</strong> Losing 10 kg in 2 weeks is not fat loss — it is dangerous water and muscle depletion. Safe fat loss is 0.5–1 kg per week. We always tell you the honest truth, even when it is slower than you hoped.</div>
+
+                    <li class="dont-item" data-scroll-reveal>
+                        <div class="dont-number">05</div>
+                        <div class="dont-icon-wrap">
+                            <span class="dont-icon-ring"></span>
+                            <i class="fi fi-rr-ban dont-icon"></i>
+                        </div>
+                        <div class="dont-body">
+                            <div class="dont-text"><strong>We will never promise miracle results in unrealistic timelines.</strong> Losing 10 kg in 2 weeks is not fat loss — it is dangerous water and muscle depletion. Safe fat loss is 0.5–1 kg per week. We always tell you the honest truth, even when it is slower than you hoped.</div>
+                            <div class="dont-tag">No false promises</div>
+                        </div>
+                        <div class="dont-line"></div>
                     </li>
+
                 </ul>
             </div>
         </section>
@@ -1199,15 +1544,43 @@
         </div>
 
         <!-- ═══ FINAL CTA ═══ -->
-        <section class="nutrition-final-cta">
-            <div class="container">
-                <span class="section-label section-label--light">Ready to Start</span>
-                <h2>Now You Know the Truth.<br>The Next Step Is Structure.</h2>
-                <p>Knowledge without a plan stays as knowledge. CurvaFit programs give you the exact meal plans, workout schedule, and weekly tracker to put everything on this page into practice — at home, starting now.</p>
-                <a href="programs.html" class="primary-cta button-3d large">Find My Program →</a>
-                <p class="reassurance"><i class="fi fi-rr-bolt"></i> Safe for all fitness levels · No gym · No pills · Results in 4–8 weeks with consistency</p>
+    <section class="nutrition-final-cta">
+
+        <!-- Orbs décoratifs -->
+        <div class="cta-orb cta-orb--1"></div>
+        <div class="cta-orb cta-orb--2"></div>
+        <div class="cta-orb cta-orb--3"></div>
+
+        <!-- Ligne lumineuse top -->
+        <div class="cta-top-line"></div>
+
+        <div class="container cta-inner">
+            <span class="section-label cta-label">Ready to Start</span>
+            <h2>Now You Know the Truth.<br><em>The Next Step Is Structure.</em></h2>
+            <p>Knowledge without a plan stays as knowledge. CurvaFit programs give you the exact meal plans, workout schedule, and weekly tracker to put everything on this page into practice — at home, starting now.</p>
+
+            <div class="cta-action-row">
+                <a href="programs.html" class="cta-btn">
+                    <span class="cta-btn-shine"></span>
+                    <span class="cta-btn-text">Find My Program</span>
+                    <span class="cta-btn-arrow">→</span>
+                </a>
             </div>
-        </section>
+
+            <p class="cta-reassurance">
+                <span><i class="fi fi-rr-bolt"></i> Safe for all fitness levels</span>
+                <span class="cta-dot">·</span>
+                <span>No gym</span>
+                <span class="cta-dot">·</span>
+                <span>No pills</span>
+                <span class="cta-dot">·</span>
+                <span>Results in 4–8 weeks</span>
+            </p>
+        </div>
+
+        <!-- Ligne lumineuse bottom -->
+        <div class="cta-bottom-line"></div>
+    </section>
 
     </main>
 
@@ -1455,5 +1828,28 @@
 
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://www.paypal.com/sdk/js?client-id=AbHxiQOr022CZ5tf7LtOUlpW-NZxUMfCxankCaZnFJNcN6msJ_eNT3HAptmJhcaQDNltCahOOzi4CoPX&currency=USD&intent=capture"></script>
+
+<script>
+(function() {
+    const bars = document.querySelectorAll('.deficit-bar[data-width]');
+    bars.forEach(bar => {
+        bar.style.setProperty('--bar-target', bar.dataset.width);
+    });
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.querySelectorAll('.deficit-bar').forEach((bar, i) => {
+                    setTimeout(() => bar.classList.add('animated'), i * 180);
+                });
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+
+    const scale = document.querySelector('.deficit-scale');
+    if (scale) observer.observe(scale);
+})();
+</script>
 </body>
 </html>
