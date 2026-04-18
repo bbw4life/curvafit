@@ -1,4 +1,267 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+
+
+  (function () {
+    'use strict';
+
+    // Ne pas tracker la page analytics elle-même
+    if (window.location.pathname.includes('curvafit-analytiques')) return;
+
+    function getBrowser() {
+      const ua = navigator.userAgent;
+      if (ua.includes('Firefox')) return 'Firefox';
+      if (ua.includes('SamsungBrowser')) return 'Samsung';
+      if (ua.includes('OPR') || ua.includes('Opera')) return 'Opera';
+      if (ua.includes('Edg')) return 'Edge';
+      if (ua.includes('Chrome')) return 'Chrome';
+      if (ua.includes('Safari')) return 'Safari';
+      return 'Other';
+    }
+
+    function getDevice() {
+      const ua = navigator.userAgent;
+      if (/tablet|ipad|playbook|silk/i.test(ua)) return 'tablet';
+      if (/mobile|android|iphone|ipod|blackberry|windows phone/i.test(ua)) return 'mobile';
+      return 'desktop';
+    }
+
+    function genId() {
+      return 'sess_' + Math.random().toString(36).slice(2, 10) + '_' + Date.now();
+    }
+
+    let sessionId = sessionStorage.getItem('cf_an_sid');
+    if (!sessionId) { sessionId = genId(); sessionStorage.setItem('cf_an_sid', sessionId); }
+
+    const startTime  = Date.now();
+    let clicks       = 0;
+    let menuClicks   = 0;
+    let actionsCount = 0;
+    let maxScroll    = 0;
+    let sent         = false;
+
+    document.addEventListener('click', function (e) {
+      clicks++; actionsCount++;
+      const target = e.target.closest('a, button, .nav, nav');
+      if (target && (target.tagName === 'A' || target.tagName === 'BUTTON')) menuClicks++;
+    });
+
+    window.addEventListener('scroll', function () {
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      const pct  = docH > 0 ? Math.round((window.scrollY / docH) * 100) : 0;
+      if (pct > maxScroll) maxScroll = pct;
+    });
+
+    function sendData() {
+      if (sent) return;
+      sent = true;
+
+      const timeOnPage = Math.round((Date.now() - startTime) / 1000);
+
+      const payload = {
+        timestamp:    new Date().toISOString(),
+        sessionId,
+        country:      'Unknown',
+        city:         'Unknown',
+        pageUrl:      window.location.href,
+        pageTitle:    document.title,
+        timeOnPage,
+        clicks,
+        menuClicks,
+        scrollDepth:  maxScroll,
+        referrer:     document.referrer || 'direct',
+        device:       getDevice(),
+        browser:      getBrowser(),
+        screenWidth:  window.screen.width,
+        actionsCount
+      };
+
+      fetch('/.netlify/functions/save-analytics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).catch(() => {});
+    }
+
+    window.addEventListener('pagehide', sendData);
+    window.addEventListener('beforeunload', sendData);
+    setTimeout(sendData, 90000);
+  })();
+
+
+
+/* ══════════════════════════════════════════
+   CURVAFIT PRELOADER
+══════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var STYLE_MAP = {
+    style_pulse_logo:   'style-pulse-logo',
+    style_progress_bar: 'style-progress-bar',
+    style_spinner_ring: 'style-spinner-ring',
+    style_dots_wave:    'style-dots-wave',
+    style_morph_text:   'style-morph-text'
+  };
+
+  var MORPH_TEXTS  = ['Loading', 'Preparing your journey', 'Almost there', 'Welcome ✨'];
+  var morphTimer   = null;
+  var barTimer     = null;
+  var morphIdx     = 0;
+  var dismissed    = false;
+  var MIN_SHOW_MS  = 3000;
+  var startedAt    = Date.now();
+  var pageReady    = false;
+  var pl           = null;
+  var barFill      = null;
+  var barPct       = null;
+  var morphEl      = null;
+  var currentPct   = 0;
+
+  fetch('/products.data.json')
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var arr      = Array.isArray(data) ? data : [];
+      var settings = arr.find(function (p) { return p.type === 'settings'; }) || {};
+      var cfg      = settings.preloader || {};
+
+      var show = (cfg.show || 'yes').trim().toLowerCase();
+
+      pl = document.getElementById('cf-preloader');
+      if (!pl) return;
+
+      if (show !== 'yes') {
+        // Masquage instantané — pas de transition, pas de délai
+        pl.style.cssText = 'display:none!important';
+        var st = document.getElementById('cf-pre-style');
+        if (st && st.parentNode) st.parentNode.removeChild(st);
+        return;
+      }
+
+      barFill = document.getElementById('cf-pre-progress-fill');
+      barPct  = document.getElementById('cf-pre-progress-pct');
+      morphEl = document.getElementById('cf-pre-morph-text');
+
+      spawnParticles();
+
+      var activeKey = Object.keys(STYLE_MAP).find(function (k) {
+        return (cfg[k] || 'no').trim().toLowerCase() === 'yes';
+      }) || 'style_dots_wave';
+
+      applyStyle(activeKey);
+
+      if (pageReady) {
+        tryHide();
+      } else {
+        window.addEventListener('load', function () {
+          pageReady = true;
+          tryHide();
+        });
+      }
+    })
+    .catch(function () {});
+
+  if (document.readyState === 'complete') {
+    pageReady = true;
+  } else {
+    window.addEventListener('load', function () { pageReady = true; });
+  }
+
+  function spawnParticles() {
+    var container = document.getElementById('cf-pre-particles');
+    if (!container) return;
+    var colors = [
+      'rgba(192,56,94,0.6)',
+      'rgba(232,188,106,0.5)',
+      'rgba(123,63,110,0.5)',
+      'rgba(255,255,255,0.25)'
+    ];
+    for (var i = 0; i < 22; i++) {
+      var p        = document.createElement('div');
+      p.className  = 'cf-pre-particle';
+      var size     = Math.random() * 5 + 3;
+      var left     = Math.random() * 100;
+      var duration = Math.random() * 6 + 5;
+      var delay    = Math.random() * 8;
+      var color    = colors[Math.floor(Math.random() * colors.length)];
+      p.style.cssText =
+        'width:' + size + 'px;height:' + size + 'px;' +
+        'left:' + left + '%;' +
+        'background:' + color + ';' +
+        'animation-duration:' + duration + 's;' +
+        'animation-delay:' + delay + 's;';
+      container.appendChild(p);
+    }
+  }
+
+  function applyStyle(key) {
+    var cssClass = STYLE_MAP[key] || STYLE_MAP.style_dots_wave;
+    Object.values(STYLE_MAP).forEach(function (cls) { pl.classList.remove(cls); });
+    pl.classList.add(cssClass);
+
+    if (cssClass === 'style-progress-bar' && barFill && barPct) {
+      barTimer = setInterval(function () {
+        var step = currentPct < 70 ? 3 : currentPct < 90 ? 1 : 0.4;
+        currentPct = Math.min(95, currentPct + step);
+        barFill.style.width = currentPct + '%';
+        barPct.textContent  = Math.floor(currentPct) + '%';
+      }, 80);
+    }
+
+    if (cssClass === 'style-morph-text' && morphEl) {
+      morphEl.textContent = MORPH_TEXTS[0];
+      morphEl.className   = 'cf-pre-morph-text cf-morph-active';
+      morphTimer = setInterval(function () {
+        morphIdx = (morphIdx + 1) % MORPH_TEXTS.length;
+        morphEl.className = 'cf-pre-morph-text cf-morph-exit';
+        setTimeout(function () {
+          morphEl.textContent = MORPH_TEXTS[morphIdx];
+          morphEl.className   = 'cf-pre-morph-text cf-morph-enter';
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              morphEl.className = 'cf-pre-morph-text cf-morph-active';
+            });
+          });
+        }, 420);
+      }, 1600);
+    }
+
+    setTimeout(doHide, 8000);
+  }
+
+  function tryHide() {
+    if (dismissed || !pl) return;
+    var elapsed = Date.now() - startedAt;
+    var delay   = Math.max(0, MIN_SHOW_MS - elapsed);
+    setTimeout(doHide, delay);
+  }
+
+  function doHide() {
+    if (dismissed || !pl) return;
+    dismissed = true;
+    clearInterval(barTimer);
+    clearInterval(morphTimer);
+
+    if (barFill) {
+      barFill.style.width = '100%';
+      if (barPct) barPct.textContent = '100%';
+    }
+
+    var isProgress = pl.classList.contains('style-progress-bar');
+    setTimeout(function () {
+      pl.classList.add('cf-pre--hidden');
+      setTimeout(function () {
+        if (pl && pl.parentNode) pl.parentNode.removeChild(pl);
+        var st = document.getElementById('cf-pre-style');
+        if (st && st.parentNode) st.parentNode.removeChild(st);
+      }, 600);
+    }, isProgress ? 350 : 0);
+  }
+
+})();
+
+
  function upgradeShopifyImageUrl(url, size) {
   if (!url || typeof url !== 'string') return url;
   if (!url.includes('cdn.shopify.com')) return url;
@@ -27,7 +290,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.documentElement.classList.add('fonts-loaded');
         });
     }
-
 
 
 (function initDraggables() {
@@ -409,12 +671,95 @@ function applyPromoFreeItems() {
     images[index].classList.add('active');
   }
 
+
+
+  function initAnnouncementBar() {
+  const slider = document.getElementById('paulAnnouncementSlider');
+  if (!slider) return;
+
+  const settings = (products.find(p => p.type === 'settings') || {});
+  const ab = settings.announcement_bar || {};
+
+  const items    = ab.items        || [];
+  const prefix   = ab.promo_prefix || 'Get 20% OFF with code:';
+  const code     = ab.promo_code   || 'paul26';
+  const copiedTx = ab.copied_text  || 'Copied!';
+
+  items.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'paul-announcement-item' + (i === 0 ? ' active' : '');
+    div.innerHTML = `${item.text} <i class="${item.icon}"></i>`;
+    slider.appendChild(div);
+  });
+
+  const promoDiv = document.createElement('div');
+  promoDiv.className = 'paul-announcement-item promo';
+  promoDiv.innerHTML = `
+    ${prefix}
+    <span class="paul-promo-code" id="paulPromoCode">
+      ${code}
+      <i class="fi fi-rr-copy copy-icon" id="copyIcon"></i>
+    </span>
+    <span class="copied-message" id="copiedMessage">${copiedTx}</span>`;
+  slider.appendChild(promoDiv);
+
+  const promoCodeEl = promoDiv.querySelector('#paulPromoCode');
+  const copiedMsgEl = promoDiv.querySelector('#copiedMessage');
+  if (promoCodeEl) {
+    promoCodeEl.addEventListener('click', () => {
+      navigator.clipboard.writeText(code).then(() => {
+        copiedMsgEl.style.display = 'inline';
+        setTimeout(() => { copiedMsgEl.style.display = 'none'; }, 2000);
+      });
+    });
+  }
+
+  const allItems = slider.querySelectorAll('.paul-announcement-item');
+  let current = 0;
+  function showItem(index) {
+    allItems.forEach((el, i) => el.classList.toggle('active', i === index));
+    current = index;
+  }
+  if (allItems.length > 1) {
+    setInterval(() => showItem((current + 1) % allItems.length), 4000);
+  }
+}
+
   // ====================== FETCH PRODUCTS ======================
   fetch('/products.data.json')
     .then(response => response.json())
     .then(data => {
       products = data;
       window.__allProducts = data;
+
+
+      // ══════════════════════════════════════════
+      //  WIDGET VISIBILITY PER PAGE
+      // ══════════════════════════════════════════
+      (function applyWidgetVisibility() {
+        const settings = products.find(p => p.type === 'settings') || {};
+        const wv = settings.widget_visibility;
+        if (!wv) return;
+
+        const currentPath = window.location.pathname;
+        const pages = wv.pages || [];
+
+        // Only apply on listed pages
+        if (!pages.some(p => currentPath.endsWith(p) || currentPath === p)) return;
+
+        const widgetMap = {
+          'cf_chat_toggle': document.getElementById('cf-chat-toggle'),
+          'paul_trigger':   document.querySelector('.paul-indicator-wrapper'),
+          'floating_nav':   document.getElementById('floating-nav'),
+          'audio_player':   document.getElementById('audio-player')
+        };
+
+        Object.entries(widgetMap).forEach(([key, el]) => {
+          if (!el) return;
+          const show = (wv[key] || 'yes').toLowerCase() === 'yes';
+          el.style.setProperty('display', show ? '' : 'none', 'important');
+        });
+      })();
 
       // ── Inject audio src from settings ──
     (function injectAudioSrc() {
@@ -437,28 +782,43 @@ function applyPromoFreeItems() {
   const s = settings.site_stats || {};
   if (!Object.keys(s).length) return;
 
-  function setCounter(selector) {
-    document.querySelectorAll(selector).forEach(el => {
-      const key = el.dataset.statKey;
-      if (key && s[key] !== undefined) {
-        el.setAttribute('data-target', s[key]);
-        el.textContent = '0';
-      }
-    });
-  }
+  // Counters → data-target
+  document.querySelectorAll('[data-stat-counter]').forEach(el => {
+    const key = el.dataset.statKey;
+    if (key && s[key] !== undefined) {
+      el.setAttribute('data-target', s[key]);
+      el.textContent = '0';
+    }
+  });
 
-  function setText(selector) {
-    document.querySelectorAll(selector).forEach(el => {
-      const key = el.dataset.statKey;
-      if (key && s[key] !== undefined) {
-        const suffix = key === 'satisfaction_rate' ? '%' : '';
-        el.textContent = s[key] + suffix;
-      }
-    });
-  }
+  // Text → textContent
+  document.querySelectorAll('[data-stat-text]').forEach(el => {
+    const key = el.dataset.statKey;
+    if (key && s[key] !== undefined) {
+      el.textContent = s[key];
+    }
+  });
 
-  setCounter('[data-stat-counter]');
-  setText('[data-stat-text]');
+  // Bars → data-fill (% calculé depuis data-stat-max)
+  document.querySelectorAll('[data-stat-bar]').forEach(el => {
+    const key = el.dataset.statKey;
+    const max = parseFloat(el.dataset.statMax) || 100;
+    if (key && s[key] !== undefined) {
+      const pct = Math.min((s[key] / max) * 100, 100);
+      el.setAttribute('data-fill', pct.toFixed(1));
+    }
+  });
+
+  // Ring → data-fill (% calculé depuis data-stat-max)
+  document.querySelectorAll('[data-stat-ring]').forEach(el => {
+    const key = el.dataset.statKey;
+    const max = parseFloat(el.dataset.statMax) || 100;
+    if (key && s[key] !== undefined) {
+      const pct = Math.min((s[key] / max) * 100, 100);
+      el.setAttribute('data-fill', pct.toFixed(1));
+    }
+  });
+
 })();
 // ====================== END INJECT SITE STATS ======================
 
@@ -504,95 +864,6 @@ function applyPromoFreeItems() {
 })();
 
 
-// ── PLAN REQUEST POPUP ──
-(function initPlanPopup() {
-  const overlay   = document.getElementById('plan-popup-overlay');
-  const openBtn   = document.getElementById('open-plan-popup');
-  const closeBtn  = document.getElementById('plan-popup-close');
-  const submitBtn = document.getElementById('plan-submit-btn');
-  const errorEl   = document.getElementById('plan-popup-error');
-  const successEl = document.getElementById('plan-popup-success');
-
-  if (!overlay || !openBtn) return;
-
-  function openPopup() {
-    overlay.classList.add('active');
-    overlay.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closePopup() {
-    overlay.classList.remove('active');
-    overlay.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-  }
-
-  openBtn.addEventListener('click', openPopup);
-  closeBtn.addEventListener('click', closePopup);
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopup(); });
-
-  submitBtn.addEventListener('click', async () => {
-    const firstName = document.getElementById('plan-firstname').value.trim();
-    const lastName  = document.getElementById('plan-lastname').value.trim();
-    const email     = document.getElementById('plan-email').value.trim();
-    const phone     = document.getElementById('plan-phone').value.trim();
-    const program   = document.getElementById('plan-program').value;
-    const consent   = document.getElementById('plan-consent').checked;
-
-    errorEl.style.display   = 'none';
-    successEl.style.display = 'none';
-
-    if (!firstName || !lastName || !email || !program) {
-      errorEl.textContent = 'Please fill in all required fields.';
-      errorEl.style.display = 'block';
-      return;
-    }
-    if (!email.includes('@')) {
-      errorEl.textContent = 'Please enter a valid email address.';
-      errorEl.style.display = 'block';
-      return;
-    }
-    if (!consent) {
-      errorEl.textContent = 'Please check the consent box to continue.';
-      errorEl.style.display = 'block';
-      return;
-    }
-
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fi fi-rr-spinner"></i> Sending...';
-
-    try {
-      const res  = await fetch('/.netlify/functions/save-plan-request', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ firstName, lastName, email, phone, program, consent: 'Yes' })
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        successEl.style.display = 'flex';
-        document.getElementById('plan-firstname').value = '';
-        document.getElementById('plan-lastname').value  = '';
-        document.getElementById('plan-email').value     = '';
-        document.getElementById('plan-phone').value     = '';
-        document.getElementById('plan-program').value   = '';
-        document.getElementById('plan-consent').checked = false;
-        submitBtn.innerHTML = '<i class="fi fi-rr-check"></i> Request Sent!';
-        setTimeout(() => { closePopup(); submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Send My Request'; }, 3000);
-      } else {
-        errorEl.textContent = 'An error occurred: ' + (data.error || 'Unknown error');
-        errorEl.style.display = 'block';
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Send My Request';
-      }
-    } catch (err) {
-      errorEl.textContent = 'Network error. Please try again.';
-      errorEl.style.display = 'block';
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fi fi-rr-paper-plane"></i> Send My Request';
-    }
-  });
-})();
 
 
       const settings = products.find(p => p.type === "settings") || {};
@@ -697,10 +968,9 @@ function applyPromoFreeItems() {
 
 
       const plansAvailable = (settings.plans_available || 'no').toLowerCase() === 'yes';
-      const planTriggerWrap = document.querySelector('.plan-request-trigger-wrap');
-      if (planTriggerWrap) {
-        planTriggerWrap.style.display = plansAvailable ? '' : 'none';
-      }
+      document.querySelectorAll('.plan-request-trigger-wrap').forEach(wrap => {
+        wrap.style.display = plansAvailable ? 'none' : '';
+      });
       // Free shipping threshold → risk-reversal section
       const freeShippingThreshold = (settings.cart_drawer && settings.cart_drawer.free_shipping_threshold)
         ? settings.cart_drawer.free_shipping_threshold
@@ -1194,16 +1464,16 @@ function applyPromoFreeItems() {
         if (cells[3]) cells[3].textContent = `$${programMap.maintenance.price}`;
       }
 
-      const finalBtns = document.querySelectorAll('.final-cta-btn');
-      finalBtns.forEach(btn => {
-        if (btn.classList.contains('final-cta-btn--beginner'))
-          btn.innerHTML = `<i class="fa-solid fa-seedling"></i> Start Beginner — $${programMap.beginner.price}`;
-        else if (btn.classList.contains('final-cta-btn--featured'))
-          btn.innerHTML = `<i class="fa-solid fa-fire-flame-curved"></i> Start Intermediate — $${programMap.intermediate.price}`;
-        else if (btn.classList.contains('final-cta-btn--maintenance'))
-          btn.innerHTML = `<i class="fa-solid fa-star"></i> Start Maintenance — $${programMap.maintenance.price}`;
-      });
-
+      const plansOn = (settings.plans_available || 'no').toLowerCase() === 'yes';
+    const finalBtns = document.querySelectorAll('.final-cta-btn');
+    finalBtns.forEach(btn => {
+      if (btn.classList.contains('final-cta-btn--beginner'))
+        btn.innerHTML = `<i class="fa-solid fa-seedling"></i> Start Beginner — $${plansOn ? programMap.beginner.price : '0.00'}`;
+      else if (btn.classList.contains('final-cta-btn--featured'))
+        btn.innerHTML = `<i class="fa-solid fa-fire-flame-curved"></i> Start Intermediate — $${plansOn ? programMap.intermediate.price : '0.00'}`;
+      else if (btn.classList.contains('final-cta-btn--maintenance'))
+        btn.innerHTML = `<i class="fa-solid fa-star"></i> Start Maintenance — $${plansOn ? programMap.maintenance.price : '0.00'}`;
+    });
 
       // ══ INJECT CONTACT EMAILS FROM SETTINGS ══
       (function injectContactEmails() {
@@ -1660,35 +1930,33 @@ function applyPromoFreeItems() {
         }
 
         // Delivery dates
-        if (prod) {
-          const baseStartStr = prod.start_date, baseEndStr = prod.end_date;
-          if (!baseStartStr || !baseEndStr) { showTextDelivery(); return; }
-          const baseStart = new Date(baseStartStr + "T00:00:00");
-          const baseEnd   = new Date(baseEndStr   + "T00:00:00");
-          if (isNaN(baseStart.getTime()) || isNaN(baseEnd.getTime())) { showTextDelivery(); return; }
-          const today = new Date(); today.setHours(0,0,0,0);
-          const cycleDays = Math.max(1, Math.ceil((baseStart - today) / 86400000)) + Math.max(1, Math.ceil((baseEnd - baseStart) / 86400000));
-          let currentStart = new Date(baseStart), currentEnd = new Date(baseEnd);
-          while (currentEnd < today) {
-            currentStart.setDate(currentStart.getDate() + cycleDays);
-            currentEnd.setDate(currentEnd.getDate() + cycleDays);
-          }
-          if (currentEnd <= today) {
-            currentStart.setDate(currentStart.getDate() + cycleDays);
-            currentEnd.setDate(currentEnd.getDate() + cycleDays);
-          }
-          function formatDate(date) {
-            return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getFullYear()).slice(-2)}`;
-          }
-          const startEl = document.getElementById("start-date"), endEl = document.getElementById("end-date");
-          if (startEl && endEl) { startEl.innerText = formatDate(currentStart); endEl.innerText = formatDate(currentEnd); }
-          showTextDelivery();
-          function showTextDelivery() {
-            const textEl = document.getElementById("delivery-text");
-            if (textEl) textEl.style.visibility = "visible";
-          }
+      if (prod) {
+        const today = new Date(); today.setHours(0,0,0,0);
+
+        const cycleStart = parseInt(prod.cycle_days_start);
+        const cycleEnd   = parseInt(prod.cycle_days_end);
+
+        if (!cycleStart || !cycleEnd || cycleStart <= 0 || cycleEnd <= 0) { showTextDelivery(); return; }
+
+        const currentStart = new Date(today);
+        const currentEnd   = new Date(today);
+        currentStart.setDate(today.getDate() + cycleStart);
+        currentEnd.setDate(today.getDate() + cycleEnd);
+
+        function formatDate(date) {
+          return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getFullYear()).slice(-2)}`;
+        }
+
+        const startEl = document.getElementById("start-date"), endEl = document.getElementById("end-date");
+        if (startEl && endEl) { startEl.innerText = formatDate(currentStart); endEl.innerText = formatDate(currentEnd); }
+
+        showTextDelivery();
+        function showTextDelivery() {
+          const textEl = document.getElementById("delivery-text");
+          if (textEl) textEl.style.visibility = "visible";
         }
       }
+     }
 
       // Mini media sliders
       document.querySelectorAll('.mini-media-slider').forEach(slider => {
@@ -1916,8 +2184,797 @@ window.__getCart = () => cart;
 window.__setCart = (c) => { cart = c; };
 window.__getWishlist = () => wishlist;
 window.__setWishlist = (w) => { wishlist = w; };
+initAnnouncementBar();
 
 
+// ── PLANS AVAILABLE — block program CTAs when setting = no ──
+(function applyPlansAvailableSetting() {
+    const settings     = products.find(p => p.type === 'settings') || {};
+    const plansOn      = (settings.plans_available || 'no').toLowerCase() === 'yes';
+
+    // 1. Plan request trigger button — visible quand plans NON disponibles
+    const triggerWrap  = document.querySelector('.plan-request-trigger-wrap');
+    if (triggerWrap) {
+        triggerWrap.style.display = plansOn ? 'none' : '';
+    }
+
+    // 2. Program card CTA buttons + prices
+    document.querySelectorAll('.program-card').forEach(card => {
+        const ctaBtn   = card.querySelector('.prog-cta');
+        const priceEl  = card.querySelector('.prog-price');
+
+        if (!plansOn) {
+            if (ctaBtn) {
+                ctaBtn.disabled = true;
+                ctaBtn.classList.add('prog-cta--disabled');
+                ctaBtn.setAttribute('title', 'Plans temporarily unavailable');
+                const clone = ctaBtn.cloneNode(true);
+                ctaBtn.parentNode.replaceChild(clone, ctaBtn);
+            }
+            if (priceEl) {
+                priceEl.textContent = '$0.00';
+                priceEl.classList.add('prog-price--free');
+                priceEl.style.opacity = '0.4';
+            }
+        }
+    });
+
+    // 3. Comparison table price row
+    if (!plansOn) {
+        const priceRow = document.querySelector('.comparison-table-section .price-row');
+        if (priceRow) {
+            priceRow.querySelectorAll('td:not(:first-child)').forEach(td => {
+                td.textContent = '$0.00';
+                td.style.opacity = '0.4';
+            });
+        }
+
+        document.querySelectorAll('.final-cta-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('prog-cta--disabled');
+            btn.setAttribute('title', 'Plans temporarily unavailable');
+            const clone = btn.cloneNode(true);
+            btn.parentNode.replaceChild(clone, btn);
+        });
+    }
+
+    // 4. Block open-plan-program-popup triggers
+    if (!plansOn) {
+        document.querySelectorAll('.open-plan-program-popup').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('prog-cta--disabled');
+            btn.setAttribute('title', 'Plans temporarily unavailable');
+            const clone = btn.cloneNode(true);
+            btn.parentNode.replaceChild(clone, btn);
+        });
+    }
+})();
+
+
+// ══════════════════════════════════════════════════════
+//   PLAN REQUEST RESERVATION POPUP
+// ══════════════════════════════════════════════════════
+(function initPlanReservationPopup() {
+    'use strict';
+
+    const overlay     = document.getElementById('plan-popup-overlay');
+    const modal       = overlay ? overlay.querySelector('.plan-popup-modal') : null;
+    const closeBtn    = document.getElementById('plan-popup-close');
+    const openBtn     = document.getElementById('open-plan-popup');
+    const stepForm    = document.getElementById('plan-step-form');
+    const stepPayment = document.getElementById('plan-step-payment');
+    const stepThanks  = document.getElementById('plan-step-thanks');
+    const submitBtn   = document.getElementById('plan-submit-btn');
+    const payBtn      = document.getElementById('plan-pay-btn');
+    const backBtn     = document.getElementById('plan-back-btn');
+    const closeThanks = document.getElementById('plan-close-thanks');
+    const spotsCount  = document.getElementById('plan-spots-count');
+
+    if (!overlay || !modal) return;
+
+    let clientData      = {};
+    let selectedProgram = '';
+    let reservationPrice = 10;
+
+    // ── Inject price labels ──
+    function injectPriceLabels(price) {
+        document.querySelectorAll('.plan-reservation-price-label').forEach(el => {
+            el.textContent = '$' + price;
+        });
+    }
+
+    // ── Load price from settings ──
+    function loadReservationPrice() {
+        const s = (window.__allProducts || []).find(p => p.type === 'settings') || {};
+        if (s.reservation_price !== undefined) {
+            reservationPrice = parseFloat(s.reservation_price) || 10;
+            injectPriceLabels(reservationPrice);
+        } else {
+            let tries = 0;
+            const wait = setInterval(() => {
+                tries++;
+                const s2 = (window.__allProducts || []).find(p => p.type === 'settings') || {};
+                if (s2.reservation_price !== undefined) {
+                    clearInterval(wait);
+                    reservationPrice = parseFloat(s2.reservation_price) || 10;
+                    injectPriceLabels(reservationPrice);
+                } else if (tries > 60) {
+                    clearInterval(wait);
+                    injectPriceLabels(reservationPrice);
+                }
+            }, 100);
+        }
+    }
+    loadReservationPrice();
+
+    // ── Spots ──
+    const SPOTS_KEY = 'plan_spots_remaining';
+    let spotsRemaining = parseInt(sessionStorage.getItem(SPOTS_KEY) || '27');
+    if (spotsCount) spotsCount.textContent = spotsRemaining;
+
+    function decreaseSpot() {
+        if (spotsRemaining > 1) {
+            spotsRemaining = Math.max(1, spotsRemaining - 1);
+            sessionStorage.setItem(SPOTS_KEY, spotsRemaining);
+            if (spotsCount) spotsCount.textContent = spotsRemaining;
+        }
+    }
+    setInterval(decreaseSpot, Math.random() * 90000 + 90000);
+
+    // ── Open / Close ──
+    function openPopup() {
+        showStep('form');
+        clearErrors();
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        injectPriceLabels(reservationPrice);
+    }
+    function closePopup() {
+        overlay.classList.remove('active');
+        overlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+    function showStep(step) {
+        if (stepForm)    stepForm.style.display    = step === 'form'    ? '' : 'none';
+        if (stepPayment) stepPayment.style.display = step === 'payment' ? '' : 'none';
+        if (stepThanks)  stepThanks.style.display  = step === 'thanks'  ? '' : 'none';
+    }
+    function showThanksStep(firstName, program) {
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        showStep('thanks');
+        injectPriceLabels(reservationPrice);
+        const thanksName  = document.getElementById('plan-thanks-name');
+        const thanksBadge = document.getElementById('plan-thanks-program-text');
+        if (thanksName)  thanksName.textContent  = 'Welcome, ' + firstName + '!';
+        if (thanksBadge) thanksBadge.textContent = program || '';
+        window.history.replaceState({}, '', window.location.pathname);
+    }
+
+    if (openBtn)     openBtn.addEventListener('click', openPopup);
+    document.querySelectorAll('.open-plan-popup-extra').forEach(btn => {
+      btn.addEventListener('click', openPopup);
+    });
+    if (closeBtn)    closeBtn.addEventListener('click', closePopup);
+    if (closeThanks) closeThanks.addEventListener('click', closePopup);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closePopup(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
+    if (backBtn) backBtn.addEventListener('click', () => showStep('form'));
+
+    // ── Helpers ──
+    function showError(id, msg) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+    function clearErrors() {
+        ['plan-popup-error', 'plan-pay-error'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.textContent = ''; el.style.display = 'none'; }
+        });
+    }
+    function val(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+    }
+    function setBtnLoading(btn, loading) {
+        if (!btn) return;
+        btn.disabled = loading;
+        btn.innerHTML = loading
+            ? '<div class="plan-spinner"></div> Processing...'
+            : '<i class="fi fi-rr-lock"></i> Pay $' + reservationPrice + ' — Reserve My Spot';
+    }
+
+    // ── STEP 1 ──
+    if (submitBtn) {
+        submitBtn.addEventListener('click', () => {
+            clearErrors();
+            const firstName = val('plan-firstname');
+            const lastName  = val('plan-lastname');
+            const email     = val('plan-email');
+            const phone     = val('plan-phone');
+            const program   = val('plan-program');
+            const consent   = document.getElementById('plan-consent') && document.getElementById('plan-consent').checked;
+
+            if (!firstName || !lastName || !email || !program) {
+                showError('plan-popup-error', 'Please fill in all required fields.');
+                return;
+            }
+            if (!email.includes('@') || !email.includes('.')) {
+                showError('plan-popup-error', 'Please enter a valid email address.');
+                return;
+            }
+            if (!consent) {
+                showError('plan-popup-error', 'Please check the consent box to continue.');
+                return;
+            }
+
+            clientData      = { firstName, lastName, email, phone, program, consent: 'Yes' };
+            selectedProgram = program;
+
+            const payProgramName = document.getElementById('plan-pay-program-name');
+            if (payProgramName) payProgramName.textContent = program;
+
+            showStep('payment');
+        });
+    }
+
+    // ── STEP 2 → Pay ──
+    if (payBtn) {
+        payBtn.addEventListener('click', async () => {
+            clearErrors();
+            const method = document.querySelector('input[name="plan-payment"]:checked');
+            if (!method) {
+                showError('plan-pay-error', 'Please choose a payment method.');
+                return;
+            }
+            setBtnLoading(payBtn, true);
+            try {
+                if (method.value === 'stripe') {
+                    await handleStripe();
+                } else {
+                    await handlePaypal();
+                }
+            } catch (err) {
+                showError('plan-pay-error', err.message || 'Payment failed. Please try again.');
+                setBtnLoading(payBtn, false);
+            }
+        });
+    }
+
+    // ── Stripe : crée la session et redirige ──
+    async function handleStripe() {
+        const res  = await fetch('/.netlify/functions/create-reservation-stripe-session', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                action:   'create',
+                amount:   reservationPrice,
+                program:  selectedProgram,
+                customer: clientData,
+            }),
+        });
+        const data = await res.json();
+        if (!data.success || !data.sessionId) throw new Error(data.error || 'Stripe session failed.');
+
+        sessionStorage.setItem('plan_res_client',  JSON.stringify(clientData));
+        sessionStorage.setItem('plan_res_program', selectedProgram);
+
+        const settings  = (window.__allProducts || []).find(p => p.type === 'settings') || {};
+        const stripeKey = window.STRIPE_PUBLIC_KEY || settings.stripe_public_key || '';
+        const stripe    = Stripe(stripeKey);
+        await stripe.redirectToCheckout({ sessionId: data.sessionId });
+    }
+
+    // ── PayPal : crée l'ordre et redirige ──
+    async function handlePaypal() {
+        const res  = await fetch('/.netlify/functions/create-reservation-paypal', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                action:   'create',
+                amount:   reservationPrice,
+                program:  selectedProgram,
+                customer: clientData,
+            }),
+        });
+        const data = await res.json();
+        if (!data.success || !data.approvalUrl) throw new Error(data.error || 'PayPal failed.');
+
+        sessionStorage.setItem('plan_res_client',  JSON.stringify(clientData));
+        sessionStorage.setItem('plan_res_program', selectedProgram);
+
+        window.location.href = data.approvalUrl;
+    }
+
+    // ══════════════════════════════════════════
+    //  RETOUR STRIPE — res_session_id dans l'URL
+    // ══════════════════════════════════════════
+    async function checkReturnFromStripe() {
+        const params    = new URLSearchParams(window.location.search);
+        const sessionId = params.get('res_session_id');
+        if (!sessionId) return false;
+
+        const pendingClient  = JSON.parse(sessionStorage.getItem('plan_res_client')  || 'null');
+        const pendingProgram = sessionStorage.getItem('plan_res_program') || '';
+
+        // Afficher popup remerciements immédiatement
+        const firstName = pendingClient ? pendingClient.firstName : '';
+        showThanksStep(firstName, pendingProgram);
+
+        // Vérifier paiement + sauvegarder dans le sheet (dans la même function)
+        try {
+            const res  = await fetch('/.netlify/functions/create-reservation-stripe-session', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ action: 'verify', sessionId }),
+            });
+            const data = await res.json();
+            if (!data.success) {
+                console.warn('[ReservationPopup] Stripe verify:', data.error);
+            }
+        } catch (err) {
+            console.error('[ReservationPopup] Stripe verify error:', err.message);
+        }
+
+        sessionStorage.removeItem('plan_res_client');
+        sessionStorage.removeItem('plan_res_program');
+        return true;
+    }
+
+    // ══════════════════════════════════════════
+    //  RETOUR PAYPAL — res_paypal=1&token=XXX dans l'URL
+    //  PayPal ajoute automatiquement ?token=ORDERID&PayerID=XXXX
+    // ══════════════════════════════════════════
+    async function checkReturnFromPaypal() {
+        const params    = new URLSearchParams(window.location.search);
+        const resPaypal = params.get('res_paypal');
+        const orderID   = params.get('token'); // PayPal passe l'orderID comme "token"
+
+        if (!resPaypal || !orderID) return false;
+
+        const pendingClient  = JSON.parse(sessionStorage.getItem('plan_res_client')  || 'null');
+        const pendingProgram = sessionStorage.getItem('plan_res_program') || '';
+
+        // Afficher popup remerciements immédiatement
+        const firstName = pendingClient ? pendingClient.firstName : '';
+        showThanksStep(firstName, pendingProgram);
+
+        // Capturer paiement + sauvegarder dans le sheet (dans la même function)
+        try {
+            const res  = await fetch('/.netlify/functions/create-reservation-paypal', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({
+                    action:     'capture',
+                    orderID:    orderID,
+                    clientData: pendingClient,
+                    program:    pendingProgram,
+                    amount:     reservationPrice,
+                }),
+            });
+            const data = await res.json();
+            if (!data.success) {
+                console.warn('[ReservationPopup] PayPal capture:', data.error);
+            }
+        } catch (err) {
+            console.error('[ReservationPopup] PayPal capture error:', err.message);
+        }
+
+        sessionStorage.removeItem('plan_res_client');
+        sessionStorage.removeItem('plan_res_program');
+        return true;
+    }
+
+    // ── Init ──
+    async function init() {
+        const stripeHandled = await checkReturnFromStripe();
+        if (!stripeHandled) await checkReturnFromPaypal();
+    }
+
+    init();
+
+})();
+
+
+// ══ SPOTLIGHT SLIDER — mobile only ══
+if (window.innerWidth <= 768) {
+    const grid = document.querySelector('.spotlight-grid');
+    if (grid) {
+        let current = 0;
+        setInterval(() => {
+            current = (current + 1) % grid.querySelectorAll('img').length;
+            grid.scrollTo({ left: grid.offsetWidth * current, behavior: 'smooth' });
+        }, 4000);
+    }
+}
+
+
+// ══════════════════════════════════════════
+//  CART DRAWER REVIEWS — inject from settings
+// ══════════════════════════════════════════
+(function initCartReviews() {
+  const container = document.getElementById('cart-reviews-carousel');
+  if (!container) return;
+
+  const settings = (products.find(p => p.type === 'settings') || {});
+  const reviews  = settings.cart_reviews || [];
+
+  if (!reviews.length) return;
+
+  const googleSVG = `
+    <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+    </svg>`;
+
+  reviews.forEach(r => {
+    const stars = '★'.repeat(Math.min(5, Math.max(1, r.stars || 5)));
+
+    const item = document.createElement('div');
+    item.className = 'review-item';
+    item.innerHTML = `
+      <div class="review-item-inner">
+        <div class="review-top">
+          <img src="${r.avatar}" alt="${r.name}" class="review-avatar">
+          <div class="review-meta">
+            <h4>${r.name}</h4>
+            <div class="review-stars">${stars}</div>
+          </div>
+          <span class="verified-badge">${googleSVG}</span>
+        </div>
+        <p class="review-text">"${r.text}"</p>
+        <span class="review-date">${r.date}</span>
+      </div>`;
+
+    container.appendChild(item);
+  });
+
+  // Carousel auto-rotation
+  const items = container.querySelectorAll('.review-item');
+  if (items.length > 1) {
+    let current = 0;
+    items[current].classList.add('active');
+    setInterval(() => {
+      items[current].classList.remove('active');
+      current = (current + 1) % items.length;
+      items[current].classList.add('active');
+    }, 5000);
+  } else if (items.length === 1) {
+    items[0].classList.add('active');
+  }
+})();
+
+
+
+// ═══════════════════════════════════════
+//  SNOW / FALLING EFFECT
+// ═══════════════════════════════════════
+(function initSnowEffect() {
+  const settings = (products.find(p => p.type === 'settings') || {});
+  const se = settings.snow_effect || {};
+
+  if ((se.show || 'yes').toLowerCase() !== 'yes') return;
+
+  const container = document.getElementById('snow-container');
+  if (!container) return;
+
+  // ── Quel effet est actif (premier "yes" trouvé)
+  const effectMap = {
+    'effect_none':    null,
+    'effect_dots':    '•',
+    'effect_stars':   '★',
+    'effect_snow':    '❄',
+    'effect_sparkle': '✶',
+    'effect_twinkle': '⋆',
+    'effect_hearts':  '❤',
+    'effect_petals':  '🌸',
+    'effect_gifts':   '🎁',
+    'effect_bubbles': '○'
+  };
+
+  let activeSymbol = '•'; // fallback
+  let foundEffect  = false;
+  for (const [key, symbol] of Object.entries(effectMap)) {
+    if ((se[key] || 'no').toLowerCase() === 'yes') {
+      if (symbol === null) return; // effect_none = désactivé
+      activeSymbol = symbol;
+      foundEffect  = true;
+      break;
+    }
+  }
+  if (!foundEffect) return;
+
+  // ── Paramètres
+  const color       = se.color         || '#e91e8c';
+  const sizeMin     = parseInt(se.size_min)      || 10;
+  const sizeMax     = parseInt(se.size_max)      || 22;
+  const durMin      = parseFloat(se.duration_min) || 3;
+  const durMax      = parseFloat(se.duration_max) || 7;
+  const maxCount    = parseInt(se.element_count)  || 35;
+
+  // ── Crée un élément tombant
+  function createEl() {
+    if (container.children.length >= maxCount) return;
+
+    const el = document.createElement('span');
+    el.className   = 'snow-el';
+    el.textContent = activeSymbol;
+
+    const size     = Math.random() * (sizeMax - sizeMin) + sizeMin;
+    const left     = Math.random() * 100;
+    const duration = Math.random() * (durMax - durMin) + durMin;
+    const delay    = Math.random() * durMax;
+    const drift    = (Math.random() - 0.5) * 80;
+    const opacity  = Math.random() * 0.5 + 0.5;
+
+    el.style.cssText = `
+      left: ${left}vw;
+      font-size: ${size}px;
+      color: ${color};
+      opacity: ${opacity};
+      animation-duration: ${duration}s;
+      animation-delay: ${delay}s;
+      --snow-drift: ${drift}px;
+    `;
+
+    container.appendChild(el);
+
+    // Supprime l'élément après son animation
+    setTimeout(() => {
+      el.remove();
+    }, (duration + delay) * 1000 + 500);
+  }
+
+  // ── Lance la création en boucle
+  function spawnLoop() {
+    createEl();
+    const next = Math.random() * 600 + 200;
+    setTimeout(spawnLoop, next);
+  }
+
+  // ── Démarrage initial : crée plusieurs éléments d'un coup
+  for (let i = 0; i < Math.floor(maxCount / 2); i++) {
+    setTimeout(createEl, Math.random() * 3000);
+  }
+
+  // ── Boucle continue
+  setTimeout(spawnLoop, 1000);
+
+})();
+
+// ═══════════════════════════════════════
+//  BREADCRUMBS
+// ═══════════════════════════════════════
+(function initBreadcrumbs() {
+  const settings = (products.find(p => p.type === 'settings') || {});
+  const bc = settings.breadcrumbs || {};
+
+  if ((bc.show || 'yes').toLowerCase() !== 'yes') return;
+
+  const nav  = document.getElementById('bc-nav');
+  const list = document.getElementById('bc-list');
+  if (!nav || !list) return;
+
+  // ── Séparateur : lit les 7 clés, active celle qui a "yes"
+  const separatorMap = {
+    'separator_arrow':        '">"',
+    'separator_slash':        '"/"',
+    'separator_dash':         '"-"',
+    'separator_dot':          '"•"',
+    'separator_chevron':      '"»"',
+    'separator_pipe':         '"|"',
+    'separator_double_arrow': '">>"'
+  };
+
+  let activeSep = '"/"';
+  for (const [key, val] of Object.entries(separatorMap)) {
+    if ((bc[key] || 'no').toLowerCase() === 'yes') {
+      activeSep = val;
+      break;
+    }
+  }
+  document.documentElement.style.setProperty('--bc-sep', activeSep);
+
+  // ── Page courante
+  const currentPath  = window.location.pathname;
+  const currentTitle = document.title.split('|')[0].trim() || document.title;
+
+  // ── Historique localStorage (6 dernières pages)
+  const BC_KEY = 'bc_visited';
+  const BC_MAX = 6;
+
+  let visited = [];
+  try { visited = JSON.parse(localStorage.getItem(BC_KEY) || '[]'); } catch(e) {}
+
+  visited = visited.filter(p => p.url !== currentPath);
+
+  if (currentPath !== '/' && currentPath !== '/index.html') {
+    visited.unshift({ url: currentPath, title: currentTitle });
+  }
+
+  if (visited.length > BC_MAX) visited = visited.slice(0, BC_MAX);
+
+  try { localStorage.setItem(BC_KEY, JSON.stringify(visited)); } catch(e) {}
+
+  // ── Construire la liste
+  list.innerHTML = `
+    <li class="bc-item">
+      <a href="/index.html">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 21V12h6v9"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Home
+      </a>
+    </li>`;
+
+  visited.forEach(page => {
+    const isActive = page.url === currentPath;
+    const li = document.createElement('li');
+    li.className = 'bc-item' + (isActive ? ' bc-active' : '');
+    li.innerHTML = `<a href="${page.url}">${page.title}</a>`;
+    list.appendChild(li);
+  });
+
+  nav.style.display = 'block';
+
+})();
+
+(function initRememberCartPopup() {
+  const settings = (products.find(p => p.type === 'settings') || {});
+  const rc = settings.remember_cart_popup || {}; 
+
+  if ((rc.show || 'yes').toLowerCase() !== 'yes') return;
+
+  const container  = document.getElementById('rc-popup-container');
+  const popup      = document.getElementById('rc-popup');
+  const closeBtn   = document.getElementById('rc-close');
+  const avatarImg  = document.getElementById('rc-avatar-img');
+  const avatarVid  = document.getElementById('rc-avatar-video');
+  const subtitleEl = document.getElementById('rc-subtitle');
+  const titleEl    = document.getElementById('rc-title');
+  const descEl     = document.getElementById('rc-description');
+  const btnText    = document.getElementById('rc-btn-text');
+  const countText  = document.getElementById('rc-count-text');
+  const fill       = document.getElementById('rc-urgency-fill');
+
+  if (!container || !popup) return;
+
+  // ── Position : lit les 4 clés, active celle qui a "yes"
+  const positionMap = {
+    'position_bottom_right': 'rc-pos-bottom-right',
+    'position_bottom_left':  'rc-pos-bottom-left',
+    'position_top_right':    'rc-pos-top-right',
+    'position_top_left':     'rc-pos-top-left'
+  };
+
+  let activePos = 'rc-pos-bottom-right';
+  for (const [key, cls] of Object.entries(positionMap)) {
+    if ((rc[key] || 'no').toLowerCase() === 'yes') {
+      activePos = cls;
+      break;
+    }
+  }
+  container.classList.add(activePos);
+
+  // ── Avatar
+  if (rc.avatar_video_url) {
+    const src = document.createElement('source');
+    src.src = rc.avatar_video_url;
+    avatarVid.appendChild(src);
+    avatarVid.load();
+    avatarVid.style.display = 'block';
+    avatarImg.style.display = 'none';
+  } else if (rc.avatar_image) {
+    avatarImg.src = rc.avatar_image;
+    avatarImg.style.display = 'block';
+    avatarVid.style.display = 'none';
+  }
+
+  // ── Texts fixes
+  subtitleEl.textContent = rc.subtitle_text    || "Don't forget!";
+  descEl.textContent     = rc.description_text || "Complete your order before it's gone!";
+  btnText.textContent    = rc.button_text      || "Complete My Purchase";
+
+  const initialDelay = parseInt(rc.initial_delay_ms)    || 8000;
+  const displayTime  = parseInt(rc.display_duration_ms) || 6000;
+  const interval     = parseInt(rc.interval_ms)         || 30000;
+
+  let hideTimer  = null;
+  let cycleTimer = null;
+  let visible    = false;
+
+  // ── Calcule la quantité totale dans le cart (free inclus)
+  function getCartQty() {
+    return cart.reduce((sum, i) => sum + i.quantity, 0);
+  }
+
+  // ── Met à jour le titre + badge + barre urgence
+  function updateTitle() {
+    const qty = getCartQty();
+    const raw = rc.title_text || 'You have [COUNT] item(s) in your cart';
+    const label = qty > 1 ? 'items' : 'item';
+    titleEl.textContent = raw
+      .replace('[COUNT]', qty)
+      .replace('item(s)', label);
+
+    // Badge count
+    if (countText) {
+      countText.textContent = qty + (qty > 1 ? ' items waiting' : ' item waiting');
+    }
+
+    // Barre urgence — repart à 100% à chaque affichage
+    if (fill) {
+      fill.style.animation = 'none';
+      fill.offsetHeight; // force reflow
+      fill.style.animationDuration = displayTime + 'ms';
+      fill.style.animation = `rc-urgency-drain ${displayTime}ms linear forwards`;
+    }
+  }
+
+  function showPopup() {
+    const qty = getCartQty();
+    if (qty === 0) return;
+
+    updateTitle();
+    container.style.display = 'block';
+    popup.classList.remove('rc-hiding');
+    visible = true;
+
+    if (hideTimer) clearTimeout(hideTimer);
+    hideTimer = setTimeout(hidePopup, displayTime);
+  }
+
+  function hidePopup() {
+    if (!visible) return;
+    popup.classList.add('rc-hiding');
+    setTimeout(() => {
+      container.style.display = 'none';
+      popup.classList.remove('rc-hiding');
+      visible = false;
+    }, 380);
+  }
+
+  function scheduleCycle() {
+    clearInterval(cycleTimer);
+    cycleTimer = setInterval(() => {
+      if (!visible && getCartQty() > 0) showPopup();
+    }, interval);
+  }
+
+  // ── Fermeture manuelle
+  closeBtn.addEventListener('click', () => {
+    if (hideTimer) clearTimeout(hideTimer);
+    hidePopup();
+  });
+
+  // ── Premier affichage après le délai initial
+  setTimeout(() => {
+    if (getCartQty() > 0) showPopup();
+    scheduleCycle();
+  }, initialDelay);
+
+  // ── Fonction globale appelée par saveCart() à chaque changement
+  window.__rcRefresh = function() {
+    const qty = getCartQty();
+    updateTitle();
+    if (qty === 0) {
+      hidePopup();
+    } else if (!visible) {
+      if (hideTimer) clearTimeout(hideTimer);
+      showPopup();
+    }
+  };
+
+})();
 
 // ====================== FILTER BAR ======================
 (function initFilterBar() {
@@ -2637,6 +3694,32 @@ window.__setWishlist = (w) => { wishlist = w; };
   // ====================== SCROLL REVEAL ======================
   document.querySelectorAll('section').forEach(sec => { if (!sec.hasAttribute('data-scroll-reveal')) sec.setAttribute('data-scroll-reveal', ''); });
 
+
+
+
+  // ── INJECT ACCOUNT ICON IN HEADER ──
+(function injectAccountIcon() {
+  const accountIcon = document.createElement('div');
+  accountIcon.className = 'account-icon-wrapper';
+  accountIcon.id = 'header-account-trigger';
+  accountIcon.innerHTML = `<i class="fi fi-rr-user"></i>`;
+
+  accountIcon.addEventListener('click', () => {
+    const trigger = document.getElementById('paulTrigger');
+    if (trigger) trigger.click();
+  });
+
+  const headerContainer = document.querySelector('.header-container');
+  if (!headerContainer) return;
+
+  // Desktop : insérer APRÈS .search-icon
+  const searchIcon = headerContainer.querySelector('.search-icon');
+  if (searchIcon) {
+    searchIcon.insertAdjacentElement('afterend', accountIcon);
+  }
+})();
+
+
   // ====================== HAMBURGER ======================
   const hamburger = document.querySelector('.hamburger-menu');
   const nav = document.querySelector('.main-nav');
@@ -2710,15 +3793,102 @@ window.__setWishlist = (w) => { wishlist = w; };
   window.addEventListener('scroll', revealOnScroll);
   revealOnScroll();
 
+
+
+
+
   // ====================== COUNTERS ======================
-  document.querySelectorAll('.counter').forEach(counter => {
-    const updateCount = () => {
-      const target = +counter.getAttribute('data-target'), count = +counter.innerText, increment = target / 200;
-      if (count < target) { counter.innerText = Math.ceil(count + increment); setTimeout(updateCount, 10); }
-      else counter.innerText = target;
-    };
-    new IntersectionObserver(entries => { if (entries[0].isIntersecting) updateCount(); }).observe(counter);
-  });
+document.querySelectorAll('.counter').forEach(counter => {
+  const updateCount = () => {
+    const target = +counter.getAttribute('data-target'), count = +counter.innerText, increment = target / 200;
+    if (count < target) { counter.innerText = Math.ceil(count + increment); setTimeout(updateCount, 10); }
+    else counter.innerText = target;
+  };
+  new IntersectionObserver(entries => { if (entries[0].isIntersecting) updateCount(); }).observe(counter);
+});
+
+// ====================== INJECT SITE STATS ======================
+(function injectSiteStats() {
+  // Attendre que products soit chargé
+  function run() {
+    const settings = (window.__allProducts || []).find(p => p.type === 'settings') || {};
+    const s = settings.site_stats || {};
+    if (!Object.keys(s).length) return;
+
+    // Counters → data-target
+    document.querySelectorAll('[data-stat-counter]').forEach(el => {
+      const key = el.dataset.statKey;
+      if (key && s[key] !== undefined) {
+        el.setAttribute('data-target', s[key]);
+        el.textContent = '0';
+      }
+    });
+
+    // Bars
+    document.querySelectorAll('[data-stat-bar]').forEach(el => {
+      const key = el.dataset.statKey;
+      const max = parseFloat(el.dataset.statMax) || null;
+      if (key && s[key] !== undefined && max !== null) {
+        const pct = Math.min((s[key] / max) * 100, 100);
+        el.setAttribute('data-fill', pct.toFixed(1));
+      }
+      el.style.width = '0%';
+
+      const trackEl = el.closest('.stat-bar-track') || el.parentElement || el;
+      const obs = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting) {
+          const fill = parseFloat(el.getAttribute('data-fill')) || 0;
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            el.style.width = fill + '%';
+          }));
+          obs.disconnect();
+        }
+      }, { threshold: 0.1 });
+      obs.observe(trackEl);
+    });
+
+    // Ring
+    const CIRCUMFERENCE = 2 * Math.PI * 50; // 314.159
+    document.querySelectorAll('[data-stat-ring]').forEach(el => {
+      const key = el.dataset.statKey;
+      const max = parseFloat(el.dataset.statMax) || null;
+      if (key && s[key] !== undefined && max !== null) {
+        const pct = Math.min((s[key] / max) * 100, 100);
+        el.setAttribute('data-fill', pct.toFixed(1));
+      }
+      el.style.strokeDasharray  = CIRCUMFERENCE.toFixed(2);
+      el.style.strokeDashoffset = CIRCUMFERENCE.toFixed(2);
+
+      const svgEl = el.closest('svg') || el.closest('.highlight-ring') || el;
+      const obs = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting) {
+          const fill   = parseFloat(el.getAttribute('data-fill')) || 0;
+          const offset = CIRCUMFERENCE - (fill / 100) * CIRCUMFERENCE;
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            el.style.strokeDashoffset = offset.toFixed(2);
+          }));
+          obs.disconnect();
+        }
+      }, { threshold: 0.1 });
+      obs.observe(svgEl);
+    });
+  }
+
+  // Si products déjà chargé, run immédiatement ; sinon attendre
+  if (window.__allProducts && window.__allProducts.length) {
+    run();
+  } else {
+    let tries = 0;
+    const wait = setInterval(() => {
+      if (window.__allProducts && window.__allProducts.length) {
+        clearInterval(wait);
+        run();
+      } else if (++tries > 50) clearInterval(wait);
+    }, 100);
+  }
+})();
+// ====================== END INJECT SITE STATS ======================
+
 
   // ====================== TESTIMONIAL CAROUSEL ======================
 const carousel = document.querySelector('.testimonial-carousel');
@@ -2999,8 +4169,11 @@ if (carousel) {
   const wishlistBadge = document.querySelector('.wishlist-badge');
   const cartIcon = document.querySelector('.cart-icon');
 
-  function saveCart() { localStorage.setItem('cart', JSON.stringify(cart)); }
-  function saveWishlist() { localStorage.setItem('wishlist', JSON.stringify(wishlist)); }
+  function saveCart() { 
+  localStorage.setItem('cart', JSON.stringify(cart));
+  if (typeof window.__rcRefresh === 'function') window.__rcRefresh();
+}
+function saveWishlist() { localStorage.setItem('wishlist', JSON.stringify(wishlist)); }
 
   function updateBadges() {
     const cartQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -3211,11 +4384,13 @@ if (carousel) {
         const comparePriceHTML = product.compare_price && product.compare_price > product.price
           ? `<p class="compare-price">$${parseFloat(product.compare_price).toFixed(2)}</p>` : '';
         wishlistItem.innerHTML = `
-          <img src="${upgradeShopifyImageUrl(product.image)}" alt="${product.title}" class="wishlist-img">
-          <h4 class="wishlist-title">${product.title}</h4>
-          <p>$${parseFloat(product.price).toFixed(2)}</p>
-          ${comparePriceHTML}
-          <button class="remove-wishlist">Remove</button>`;
+        <img src="${upgradeShopifyImageUrl(product.image)}" alt="${product.title}" class="wishlist-img">
+        <h4 class="wishlist-title">${product.title}</h4>
+        <p>$${parseFloat(product.price).toFixed(2)}</p>
+        ${comparePriceHTML}
+        <button class="remove-wishlist" data-id="${id}">
+          <i class="fi fi-rr-trash"></i>
+        </button>`;
         const img = wishlistItem.querySelector('.wishlist-img');
         const titleEl = wishlistItem.querySelector('.wishlist-title');
         if (img && titleEl && typeof window.getProductUrl === 'function') {
@@ -3634,6 +4809,173 @@ const cartWrapper = document.querySelector('.icon-wrapper:has(.cart-icon)');
 
   document.addEventListener('wishlist:change', () => { updateBadges(); updateWishlistIcons(); renderWishlist(); });
 
+
+// ================================================================
+//   WISHLIST SHARE SYSTEM
+// ================================================================
+(function initWishlistShare() {
+
+    // ── Génère le lien de partage avec tous les IDs de la wishlist ──
+    function buildShareUrl() {
+        if (!wishlist || wishlist.length === 0) return null;
+        const base = window.location.origin;
+        const ids  = wishlist.join(',');
+        return `${base}/collection.html?wishlist_share=${encodeURIComponent(ids)}`;
+    }
+
+    // ── Génère le message marketing pour chaque plateforme ──
+    function buildShareMessage(platform) {
+        if (!wishlist || !wishlist.length || !products || !products.length) return null;
+
+        const shareUrl = buildShareUrl();
+        const items = wishlist.map(id => {
+            const p = products.find(pr => pr.id === id);
+            if (!p) return null;
+            const productUrl = typeof window.getProductUrl === 'function'
+                ? window.location.origin + '/' + window.getProductUrl(id)
+                : window.location.origin + '/shop.html';
+            return { title: p.title, price: p.price, url: productUrl };
+        }).filter(Boolean);
+
+        if (!items.length) return null;
+
+        const itemLines = items.map(i =>
+            `✨ ${i.title} — $${i.price.toFixed(2)}\n🔗 ${i.url}`
+        ).join('\n\n');
+
+        const messages = {
+            whatsapp: `👋 Hey! I've been shopping on *CurvaFit* and I can't stop adding things to my wishlist 😍\n\nHere are the products I'm absolutely OBSESSED with:\n\n${itemLines}\n\n💫 Click any link to view — they'll be saved in your wishlist automatically!\n\n🛍️ Shop all: ${shareUrl}`,
+            twitter:  `I just found my new favourite fitness picks on @CurvaFit 🔥\n\nCheck out my wishlist — these items are 🤌\n\n${shareUrl}\n\n#CurvaFit #FitnessStyle #WishlistGoals`,
+            facebook: `💕 Ladies, I found some AMAZING pieces on CurvaFit that I need you to see!\n\nI've added them to my wishlist — tap the link to discover them all (they'll be saved for you automatically!) 👇\n\n${shareUrl}`,
+            pinterest:`✨ My CurvaFit Wishlist — save these gorgeous fitness picks before they're gone! 🛍️\n\n${shareUrl}`,
+            copy:     shareUrl
+        };
+
+        return messages[platform] || shareUrl;
+    }
+
+    // ── Toast notification ──
+    function showShareToast(msg) {
+        let toast = document.querySelector('.wishlist-share-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'wishlist-share-toast';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ── Handler principal de partage ──
+    function handleWishlistShare(platform) {
+        if (!wishlist || wishlist.length === 0) {
+            showShareToast('Your wishlist is empty!');
+            return;
+        }
+
+        const shareUrl = buildShareUrl();
+        const message  = buildShareMessage(platform);
+
+        const urls = {
+            whatsapp: `https://wa.me/?text=${encodeURIComponent(message)}`,
+            twitter:  `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`,
+            facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(message)}`,
+            pinterest:`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&description=${encodeURIComponent(message)}`,
+            instagram: null // Instagram n'a pas d'API de partage directe → copie le lien
+        };
+
+        if (platform === 'copy' || platform === 'instagram') {
+            navigator.clipboard.writeText(platform === 'instagram' ? shareUrl : message)
+                .then(() => showShareToast(platform === 'instagram' ? '🔗 Link copied! Paste it on Instagram.' : '✅ Link copied to clipboard!'))
+                .catch(() => showShareToast('Could not copy. Please copy manually.'));
+            return;
+        }
+
+        if (urls[platform]) {
+            window.open(urls[platform], '_blank', 'noopener,noreferrer,width=600,height=500');
+            showShareToast('Opening share window...');
+        }
+    }
+
+    // ── Expose globalement pour les boutons HTML ──
+    window.handleWishlistShare = handleWishlistShare;
+
+    // ── Écoute les clics sur les boutons de partage ──
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('[data-wishlist-share]');
+        if (!btn) return;
+        e.preventDefault();
+        handleWishlistShare(btn.dataset.wishlistShare);
+    });
+
+})();
+
+// ================================================================
+//   WISHLIST SHARE RECEIVER — lit l'URL et ajoute les produits
+// ================================================================
+(function initWishlistShareReceiver() {
+    const params = new URLSearchParams(window.location.search);
+    const sharedIds = params.get('wishlist_share');
+    if (!sharedIds) return;
+
+    const ids = decodeURIComponent(sharedIds).split(',').filter(Boolean);
+    if (!ids.length) return;
+
+    // Attendre que products soit chargé
+    function addSharedToWishlist() {
+        ids.forEach(id => {
+            const exists = products.find(p => p.id === id);
+            if (!exists) return;
+            if (!wishlist.includes(id)) {
+                wishlist.push(id);
+            }
+        });
+        saveWishlist();
+        updateBadges();
+        updateWishlistIcons();
+
+        // Notification visuelle
+        const count = ids.length;
+        setTimeout(() => {
+            let toast = document.querySelector('.wishlist-share-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.className = 'wishlist-share-toast';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = `💕 ${count} item${count > 1 ? 's' : ''} added to your wishlist!`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+
+            // Ouvrir la wishlist automatiquement
+            setTimeout(() => {
+                if (typeof openWishlistModal === 'function') openWishlistModal();
+            }, 800);
+        }, 1200);
+
+        // Nettoyer l'URL
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, '', cleanUrl);
+    }
+
+    // Si products déjà chargé → immédiatement, sinon attendre
+    if (products && products.length > 0) {
+        addSharedToWishlist();
+    } else {
+        let tries = 0;
+        const wait = setInterval(() => {
+            if (products && products.length > 0) {
+                clearInterval(wait);
+                addSharedToWishlist();
+            } else if (++tries > 60) {
+                clearInterval(wait);
+            }
+        }, 100);
+    }
+})();
+
+
   // Reviews carousel in cart
   const reviewsCarouselCart = document.querySelector('.reviews-carousel');
   if (reviewsCarouselCart) {
@@ -3777,18 +5119,6 @@ const cartWrapper = document.querySelector('.icon-wrapper:has(.cart-icon)');
     announcementCurrent = index;
   }
   if (announcementItems.length > 0) setInterval(() => showAnnouncementItem((announcementCurrent + 1) % announcementItems.length), 4000);
-
-  // ====================== PROMO CODE ======================
-  const promoCode = document.getElementById("paulPromoCode");
-  const copiedMessage = document.getElementById("copiedMessage");
-  if (promoCode) {
-    promoCode.addEventListener("click", function() {
-      navigator.clipboard.writeText("paul26").then(function() {
-        copiedMessage.style.display = "inline";
-        setTimeout(() => { copiedMessage.style.display = "none"; }, 2000);
-      });
-    });
-  }
 
   // ====================== AUTO OPEN CART ======================
   if (window.location.pathname.toLowerCase().includes('shop.html') && localStorage.getItem('autoOpenCart') === 'true') {
@@ -5658,6 +6988,435 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
 })();
+
+
+/* ══════════════════════════════════════════════════════
+   PLAN PROGRAM POPUP  —  plan-popup.js.
+══════════════════════════════════════════════════════ */
+
+(function initPlanProgramPopup() {
+    'use strict';
+    const PLAN_CONFIG = {
+        beginner: {
+            label:    'Beginner — Soft Start',
+            badge:    'Beginner Program',
+            icon:     'fi fi-rr-seedling',
+            priceKey: 'program_price_beginner',        // key in settings JSON
+            priceFallback: '$99',
+            stripePriceId:  '',   // fill after creating in Stripe dashboard
+            paypalPlanId:   '',   // fill after creating in PayPal dashboard
+        },
+        intermediate: {
+            label:    'Intermediate — Deeper Refiner',
+            badge:    'Intermediate Program',
+            icon:     'fi fi-sr-dumbbell-ray',
+            priceKey: 'program_price_intermediate',
+            priceFallback: '$149',
+            stripePriceId:  '',
+            paypalPlanId:   '',
+        },
+        maintenance: {
+            label:    'Maintenance — Forever Fit',
+            badge:    'Maintenance Program',
+            icon:     'fi fi-rr-shield-check',
+            priceKey: 'program_price_maintenance',
+            priceFallback: '$79',
+            stripePriceId:  '',
+            paypalPlanId:   '',
+        },
+    };
+
+    /* cached settings */
+    let _settings = null;
+
+    async function getSettings() {
+        if (_settings) return _settings;
+        try {
+            const r = await fetch('/products.data.json');
+            const data = await r.json();
+            _settings = (Array.isArray(data) ? data : []).find(p => p.type === 'settings') || {};
+        } catch (e) {
+            _settings = {};
+        }
+        return _settings;
+    }
+
+    function getPriceFromSettings(settings, key, fallback) {
+        if (settings[key]) return settings[key];
+        if (settings.programs && settings.programs[key.replace('program_price_', '')] && settings.programs[key.replace('program_price_', '')].price) {
+            return settings.programs[key.replace('program_price_', '')].price;
+        }
+        return fallback;
+    }
+
+    /* ── DOM refs ── */
+    const overlay       = document.getElementById('plan-program-overlay');
+    const modal         = overlay ? overlay.querySelector('.pp-modal') : null;
+    const closeBtn      = document.getElementById('pp-close');
+    const stepForm      = document.getElementById('pp-step-form');
+    const stepPayment   = document.getElementById('pp-step-payment');
+    const stepThanks    = document.getElementById('pp-step-thanks');
+    const continueBtn   = document.getElementById('pp-continue-btn');
+    const payBtn        = document.getElementById('pp-pay-btn');
+    const backBtn       = document.getElementById('pp-back-btn');
+    const closeThanks   = document.getElementById('pp-close-thanks');
+
+    if (!overlay || !modal) return;
+
+    /* ── State ── */
+    let currentPlanKey  = '';
+    let currentPlanData = null;
+    let clientData      = {};
+
+    /* ──────────────────────────────────────────────────
+       OPEN POPUP
+    ────────────────────────────────────────────────── */
+    async function openPopup(planKey) {
+        currentPlanKey  = planKey;
+        currentPlanData = PLAN_CONFIG[planKey];
+        if (!currentPlanData) return;
+
+        const settings  = await getSettings();
+        const price     = getPriceFromSettings(settings, currentPlanData.priceKey, currentPlanData.priceFallback);
+        const priceLabel = price.toString().startsWith('$') ? price + ' / month' : '$' + price + ' / month';
+
+        // Update badge & labels
+        setText('pp-badge-text',          currentPlanData.badge);
+        setText('pp-plan-name-display',   currentPlanData.label);
+        setText('pp-plan-price-display',  priceLabel);
+        setText('pp-pay-plan-name',       currentPlanData.label);
+        setText('pp-pay-plan-price',      priceLabel);
+        setText('pp-thanks-plan-text',    currentPlanData.label);
+
+        // Update badge icon
+        const badgeIcon = overlay.querySelector('.pp-badge > i');
+        if (badgeIcon) { badgeIcon.className = currentPlanData.icon; }
+
+        // Reset to step 1
+        showStep('form');
+        clearErrors();
+        clearFields();
+
+        // Show
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePopup() {
+        overlay.classList.remove('active');
+        overlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    /* ──────────────────────────────────────────────────
+       STEP NAVIGATION
+    ────────────────────────────────────────────────── */
+    function showStep(step) {
+        stepForm.style.display    = step === 'form'    ? '' : 'none';
+        stepPayment.style.display = step === 'payment' ? '' : 'none';
+        stepThanks.style.display  = step === 'thanks'  ? '' : 'none';
+    }
+
+    /* ──────────────────────────────────────────────────
+       STEP 1 → validate form → go to payment
+    ────────────────────────────────────────────────── */
+    continueBtn.addEventListener('click', () => {
+        clearErrors();
+
+        const firstName = val('pp-firstname');
+        const lastName  = val('pp-lastname');
+        const email     = val('pp-email');
+        const phone     = val('pp-phone');
+        const consent   = document.getElementById('pp-consent').checked;
+
+        if (!firstName || !lastName || !email) {
+            showError('pp-error', 'Please fill in all required fields.');
+            return;
+        }
+        if (!email.includes('@') || !email.includes('.')) {
+            showError('pp-error', 'Please enter a valid email address.');
+            return;
+        }
+        if (!consent) {
+            showError('pp-error', 'Please check the consent box to continue.');
+            return;
+        }
+
+        // Save for later
+        clientData = { firstName, lastName, email, phone, consent: 'Yes' };
+
+        showStep('payment');
+    });
+
+    /* ──────────────────────────────────────────────────
+       BACK BUTTON
+    ────────────────────────────────────────────────── */
+    backBtn.addEventListener('click', () => showStep('form'));
+
+    /* ──────────────────────────────────────────────────
+       STEP 2 → Pay Now
+    ────────────────────────────────────────────────── */
+    payBtn.addEventListener('click', async () => {
+        clearErrors();
+
+        const method = document.querySelector('input[name="pp-payment"]:checked')?.value;
+        if (!method) {
+            showError('pp-pay-error', 'Please choose a payment method.');
+            return;
+        }
+
+        const settings = await getSettings();
+
+        // Get subscription IDs (from settings or PLAN_CONFIG)
+        const progSettings  = settings.programs?.[currentPlanKey] || {};
+        const stripePriceId = progSettings.stripe_price_id || currentPlanData.stripePriceId;
+        const paypalPlanId  = progSettings.paypal_plan_id  || currentPlanData.paypalPlanId;
+
+        setBtnLoading(payBtn, true);
+
+        try {
+            if (method === 'stripe') {
+                await handleStripe(stripePriceId, settings);
+            } else {
+                await handlePayPal(paypalPlanId, settings);
+            }
+        } catch (err) {
+            showError('pp-pay-error', err.message || 'Payment failed. Please try again.');
+            setBtnLoading(payBtn, false);
+        }
+    });
+
+    /* ──────────────────────────────────────────────────
+       STRIPE — redirect to Stripe Checkout (subscription)
+    ────────────────────────────────────────────────── */
+    async function handleStripe(priceId, settings) {
+        if (!priceId) {
+            // No subscription ID yet → alert developer
+            throw new Error('Stripe subscription price ID not configured yet. Please set it in your dashboard.');
+        }
+
+        const res  = await fetch('/.netlify/functions/create-plan-stripe-session', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                priceId,
+                planKey:   currentPlanKey,
+                planLabel: currentPlanData.label,
+                customer:  clientData,
+            }),
+        });
+        const data = await res.json();
+        if (!data.success || !data.sessionId) {
+            throw new Error(data.error || 'Stripe session failed.');
+        }
+
+        // Save pending info in sessionStorage so thankyou step can pick it up
+        sessionStorage.setItem('pp_pending_client',   JSON.stringify(clientData));
+        sessionStorage.setItem('pp_pending_plan_key', currentPlanKey);
+        sessionStorage.setItem('pp_pending_plan',     currentPlanData.label);
+
+        const STRIPE_PUBLIC_KEY = window.STRIPE_PUBLIC_KEY || settings.stripe_public_key || '';
+        const stripe = Stripe(STRIPE_PUBLIC_KEY);
+        await stripe.redirectToCheckout({ sessionId: data.sessionId });
+        // After redirect back, thankyou.html handles the rest.
+        // But we also handle inline below for PayPal which stays in popup.
+    }
+
+    /* ──────────────────────────────────────────────────
+       PAYPAL — redirect to PayPal subscription approval
+    ────────────────────────────────────────────────── */
+    async function handlePayPal(planId, settings) {
+        if (!planId) {
+            throw new Error('PayPal plan ID not configured yet. Please set it in your dashboard.');
+        }
+
+        const res  = await fetch('/.netlify/functions/create-plan-paypal-subscription', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                planId,
+                planKey:   currentPlanKey,
+                planLabel: currentPlanData.label,
+                customer:  clientData,
+            }),
+        });
+        const data = await res.json();
+        if (!data.success || !data.approvalUrl) {
+            throw new Error(data.error || 'PayPal subscription failed.');
+        }
+
+        sessionStorage.setItem('pp_pending_client',   JSON.stringify(clientData));
+        sessionStorage.setItem('pp_pending_plan_key', currentPlanKey);
+        sessionStorage.setItem('pp_pending_plan',     currentPlanData.label);
+
+        window.location.href = data.approvalUrl;
+    }
+
+    /* ──────────────────────────────────────────────────
+       AFTER REDIRECT BACK — check URL params
+       Called on page load if returning from Stripe/PayPal
+    ────────────────────────────────────────────────── */
+    async function checkReturnFromPayment() {
+        const params      = new URLSearchParams(window.location.search);
+        const sessionId   = params.get('pp_session_id');   // Stripe subscription
+        const subId       = params.get('subscription_id'); // PayPal subscription
+        const ppToken     = params.get('token');            // PayPal approval token
+
+        if (!sessionId && !subId && !ppToken) return;
+
+        const pendingClient  = JSON.parse(sessionStorage.getItem('pp_pending_client')  || 'null');
+        const pendingPlanKey = sessionStorage.getItem('pp_pending_plan_key');
+        const pendingPlan    = sessionStorage.getItem('pp_pending_plan');
+
+        if (!pendingClient || !pendingPlanKey) return;
+
+        // Re-open the popup in thanks step immediately (good UX)
+        currentPlanKey  = pendingPlanKey;
+        currentPlanData = PLAN_CONFIG[pendingPlanKey];
+
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        showStep('thanks');
+        setText('pp-thanks-name',      `Welcome, ${pendingClient.firstName}!`);
+        setText('pp-thanks-plan-text', pendingPlan || '');
+
+        // Verify payment server-side THEN save to sheet
+        try {
+            const provider = sessionId ? 'stripe' : 'paypal';
+            const paymentId = sessionId || subId || ppToken;
+
+            const verifyRes  = await fetch('/.netlify/functions/verify-plan-payment', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ provider, paymentId, planKey: pendingPlanKey }),
+            });
+            const verifyData = await verifyRes.json();
+
+            if (!verifyData.success) {
+                // Payment failed — hide thanks, show error in payment step
+                showStep('payment');
+                showError('pp-pay-error', verifyData.error || 'Payment verification failed. Please contact support.');
+                return;
+            }
+
+            // Payment verified → save to sheet
+            await savePlanRequest({
+                ...pendingClient,
+                program: pendingPlan,
+                planKey: pendingPlanKey,
+            });
+
+            // Clear session
+            sessionStorage.removeItem('pp_pending_client');
+            sessionStorage.removeItem('pp_pending_plan_key');
+            sessionStorage.removeItem('pp_pending_plan');
+
+            // Clean URL
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, '', cleanUrl);
+
+        } catch (err) {
+            console.error('[PlanPopup] Verification error:', err.message);
+        }
+    }
+
+    /* ──────────────────────────────────────────────────
+       SAVE TO SHEET via save-plan-request.js
+    ────────────────────────────────────────────────── */
+    async function savePlanRequest(payload) {
+        try {
+            await fetch('/.netlify/functions/save-plan-request', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({
+                    firstName: payload.firstName,
+                    lastName:  payload.lastName,
+                    email:     payload.email,
+                    phone:     payload.phone || '',
+                    program:   payload.program,
+                    consent:   payload.consent || 'Yes',
+                }),
+            });
+        } catch (e) {
+            console.warn('[PlanPopup] savePlanRequest failed:', e.message);
+        }
+    }
+
+    /* ──────────────────────────────────────────────────
+       CLOSE ACTIONS
+    ────────────────────────────────────────────────── */
+    closeBtn.addEventListener('click', closePopup);
+    closeThanks.addEventListener('click', closePopup);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closePopup(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
+
+    /* ──────────────────────────────────────────────────
+       BIND OPEN BUTTONS on program cards
+    ────────────────────────────────────────────────── */
+    document.querySelectorAll('.open-plan-program-popup').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const planKey = btn.dataset.planKey;
+            if (planKey) openPopup(planKey);
+        });
+    });
+
+    /* ──────────────────────────────────────────────────
+       HELPERS
+    ────────────────────────────────────────────────── */
+    function val(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+    }
+    function setText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+    }
+    function showError(id, msg) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+    function clearErrors() {
+        ['pp-error', 'pp-pay-error'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.textContent = ''; el.style.display = 'none'; }
+        });
+    }
+    function clearFields() {
+        ['pp-firstname','pp-lastname','pp-email','pp-phone'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        const cb = document.getElementById('pp-consent');
+        if (cb) cb.checked = false;
+        // Reset payment radio to stripe
+        const stripeRadio = document.querySelector('input[name="pp-payment"][value="stripe"]');
+        if (stripeRadio) stripeRadio.checked = true;
+    }
+    function setBtnLoading(btn, loading) {
+        if (loading) {
+            btn.disabled = true;
+            btn.innerHTML = '<div class="pp-spinner"></div> Processing...';
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fi fi-rr-lock"></i> Pay Now';
+        }
+    }
+
+    /* ──────────────────────────────────────────────────
+       ON PAGE LOAD — check if returning from payment
+    ────────────────────────────────────────────────── */
+    checkReturnFromPayment();
+
+})();
+
+
+
+
+
 
 
 

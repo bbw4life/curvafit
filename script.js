@@ -1091,7 +1091,20 @@ function applyPromoFreeItems() {
         const countEl = section.querySelector('.fs-count');
         const rating = prod.rating || 4.8;
         const reviewsCount = prod.reviews_count || 0;
-        if (starsEl) starsEl.textContent = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
+
+        if (starsEl) {
+          starsEl.innerHTML = '';
+          for (let i = 1; i <= 5; i++) {
+            const star = document.createElement('span');
+            star.className = 'unique-star';
+            if (i <= Math.floor(rating)) {
+              star.classList.add('full');
+            } else if (i - rating < 1 && i - rating > 0) {
+              star.classList.add('half');
+            }
+            starsEl.appendChild(star);
+          }
+        }
         if (countEl) countEl.textContent = `${rating.toFixed(1)} · ${reviewsCount.toLocaleString()} reviews`;
 
         // Badge depuis le produit
@@ -1558,6 +1571,9 @@ function applyPromoFreeItems() {
         const id = card.dataset.id;
         const product = products.find(p => p.id === id);
         if (product) {
+          if (product.url) {
+            card.href = product.url;
+          }
           card.querySelector('h3').textContent = product.title;
           card.querySelector('.current-price').textContent = `$${product.price.toFixed(2)}`;
           card.querySelector('.compare-price').textContent = `$${product.compare_price.toFixed(2)}`;
@@ -1606,23 +1622,46 @@ function applyPromoFreeItems() {
       });
 
 
-      // Mini product slider
+      // ── Mini product slider ──
       const miniSliderEl = document.getElementById('mini-product-slider');
       if (miniSliderEl) {
+
+        // SVG wishlist définis une seule fois
+        const WISHLIST_SVG = `
+          <svg class="wishlist-icon-empty" width="30px" height="30px" viewBox="0 0 24 24" fill="none" stroke="#c0385e" stroke-width="2">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+          <svg class="wishlist-icon-filled" width="30px" height="30px" viewBox="0 0 24 24" fill="#c0385e" stroke="#c0385e" stroke-width="2">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>`;
+
         const sliderTrack = miniSliderEl.querySelector('.product-slider');
 
         document.querySelectorAll('#mini-product-slider .product-item').forEach(item => {
-          const id = item.querySelector('.mini-wishlist-icon')?.dataset.id;
-          const product = products.find(p => p.id === id);
-          if (product) {
+          const pid  = item.dataset.productId;
+          const prod = products.find(p => p.id === pid);
+
+          // Injecter SVG wishlist
+          const wishlistIcon = item.querySelector('.mini-wishlist-icon');
+          if (wishlistIcon) {
+            wishlistIcon.dataset.id = pid;
+            wishlistIcon.innerHTML  = WISHLIST_SVG;
+          }
+
+          // URL depuis JSON
+          const link = item.querySelector('.mini-product-link');
+          if (link && prod && prod.url) link.href = prod.url;
+
+          // Prix + badge
+          if (prod) {
             const currentPriceEl = item.querySelector('.current-price');
             const comparePriceEl = item.querySelector('.compare-price');
             const discountBadge  = item.querySelector('.mini-discount-badge');
-            if (currentPriceEl) currentPriceEl.textContent = `$${product.price.toFixed(2)}`;
-            if (comparePriceEl) comparePriceEl.textContent = `$${product.compare_price.toFixed(2)}`;
-            if (discountBadge && product.compare_price > product.price) {
-              const discountPercent = Math.round(((product.compare_price - product.price) / product.compare_price) * 100);
-              discountBadge.textContent = `${discountPercent}% OFF`;
+            if (currentPriceEl) currentPriceEl.textContent = `$${prod.price.toFixed(2)}`;
+            if (comparePriceEl) comparePriceEl.textContent = `$${prod.compare_price.toFixed(2)}`;
+            if (discountBadge && prod.compare_price > prod.price) {
+              const pct = Math.round(((prod.compare_price - prod.price) / prod.compare_price) * 100);
+              discountBadge.textContent   = `${pct}% OFF`;
               discountBadge.style.display = 'block';
             } else if (discountBadge) {
               discountBadge.style.display = 'none';
@@ -1630,43 +1669,28 @@ function applyPromoFreeItems() {
           }
         });
 
-        // ── Auto-slide des PRODUITS (toutes les 7 secondes) ──
+        // Auto-slide toutes les 7 secondes
         if (sliderTrack) {
           const items = sliderTrack.querySelectorAll('.product-item');
           if (items.length > 1) {
-            let currentSlide = 0;
-            let isHovered    = false;
-            let isPaused     = false;  // pause après interaction manuelle
-            let pauseTimer   = null;
+            let currentSlide = 0, isHovered = false, isPaused = false, pauseTimer = null;
 
             const resumeAfterDelay = () => {
               clearTimeout(pauseTimer);
               isPaused = true;
-              pauseTimer = setTimeout(() => { isPaused = false; }, 4000); // reprend après 4s d'inactivité
+              pauseTimer = setTimeout(() => { isPaused = false; }, 4000);
             };
 
-            // Pause au hover
             miniSliderEl.addEventListener('mouseenter', () => { isHovered = true;  });
             miniSliderEl.addEventListener('mouseleave', () => { isHovered = false; });
-
-            // Pause lors du scroll/glissement manuel sur le track
-            sliderTrack.addEventListener('scroll', () => {
-              resumeAfterDelay();
-            }, { passive: true });
-
-            // Pause lors du touch (mobile swipe)
-            sliderTrack.addEventListener('touchstart', () => {
-              resumeAfterDelay();
-            }, { passive: true });
+            sliderTrack.addEventListener('scroll',     resumeAfterDelay, { passive: true });
+            sliderTrack.addEventListener('touchstart', resumeAfterDelay, { passive: true });
 
             setInterval(() => {
               if (isHovered || isPaused) return;
               currentSlide = (currentSlide + 1) % items.length;
               const itemWidth = items[0].offsetWidth + parseInt(getComputedStyle(sliderTrack).gap || 0);
-              sliderTrack.scrollTo({
-                left:     currentSlide * itemWidth,
-                behavior: 'smooth'
-              });
+              sliderTrack.scrollTo({ left: currentSlide * itemWidth, behavior: 'smooth' });
             }, 7000);
           }
         }
@@ -1676,22 +1700,20 @@ function applyPromoFreeItems() {
         if (!slider || !media) return;
         slider.innerHTML = '';
         media.forEach((src, i) => {
-          const img = document.createElement('img');
-          img.src = upgradeShopifyImageUrl(src);
+          const img     = document.createElement('img');
+          img.src       = upgradeShopifyImageUrl(src);
           img.className = `mini-media-image ${i === 0 ? 'active' : ''}`;
-          img.loading = 'lazy';
+          img.loading   = 'lazy';
           slider.appendChild(img);
         });
         const prev = document.createElement('div');
-        prev.className = 'mini-media-slider-prev';
         const next = document.createElement('div');
+        prev.className = 'mini-media-slider-prev';
         next.className = 'mini-media-slider-next';
         prev.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); slideMini(slider, 'prev'); });
         next.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); slideMini(slider, 'next'); });
         slider.appendChild(prev);
         slider.appendChild(next);
-
-        // ── Auto-rotation des IMAGES (toutes les 4 secondes) ──
         if (media.length > 1) {
           setInterval(() => slideMini(slider, 'next'), 4000);
         }
@@ -4810,8 +4832,6 @@ const cartWrapper = document.querySelector('.icon-wrapper:has(.cart-icon)');
   document.addEventListener('wishlist:change', () => { updateBadges(); updateWishlistIcons(); renderWishlist(); });
 
 
-
-
 // ================================================================
 //   WISHLIST SHARE SYSTEM
 // ================================================================
@@ -4976,8 +4996,6 @@ const cartWrapper = document.querySelector('.icon-wrapper:has(.cart-icon)');
         }, 100);
     }
 })();
-
-
 
 
   // Reviews carousel in cart
@@ -7416,7 +7434,3 @@ document.addEventListener('DOMContentLoaded', function () {
     checkReturnFromPayment();
 
 })();
-
-
-
-
