@@ -7361,7 +7361,7 @@ body:has(.product-section) footer.footer {
 
 @media (max-width: 768px) {
     body:has(.product-section) footer.footer {
-        margin-bottom: 300px !important;
+        margin-bottom: 180px !important;
     }
 }
 
