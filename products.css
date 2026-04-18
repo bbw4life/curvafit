@@ -7355,6 +7355,15 @@ body:has(.paul-announcement-bar) {
     .sticky-atc__img { width: 40px; height: 40px; }
 }
 
+body:has(.product-section) footer.footer {
+    margin-bottom: 40px;
+}
+
+@media (max-width: 640px) {
+    body:has(.product-section) footer.footer {
+        margin-bottom: 160px;
+    }
+}
 
 
 
@@ -9076,6 +9085,3 @@ body::-webkit-scrollbar {
     margin: 0 10px 10px;
   }
 }
-
-
-
