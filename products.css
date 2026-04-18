@@ -7356,12 +7356,12 @@ body:has(.paul-announcement-bar) {
 }
 
 body:has(.product-section) footer.footer {
-    margin-bottom: 40px !important;
+    margin-bottom: 60px !important;
 }
 
 @media (max-width: 768px) {
     body:has(.product-section) footer.footer {
-        margin-bottom: 200px !important;
+        margin-bottom: 210px !important;
     }
 }
 
