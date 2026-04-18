@@ -1688,6 +1688,7 @@ button.buy-now.cta:hover {
     padding: 9px 8px;
     color: rgba(255,255,255,0.75);
     transition: background 0.3s ease, color 0.3s ease;
+    background: #1b1717 !important;
 }
 .modal-paul-guide-detailed-text table td strong {
     color: var(--rose-light);
@@ -1696,14 +1697,15 @@ button.buy-now.cta:hover {
     transition: all 0.25s ease;
 }
 .modal-paul-guide-detailed-text table tbody tr:nth-child(even) {
-    background-color: rgba(192,56,94,0.06);
+    background-color: rgba(192,56,94,0.06) !important;
 }
+
 .modal-paul-guide-detailed-text table tbody tr:hover {
     background: linear-gradient(90deg, rgba(192,56,94,0.15), rgba(123,63,110,0.12));
     box-shadow: inset 0 0 12px rgba(192,56,94,0.1);
 }
 .modal-paul-guide-detailed-text table tbody tr:hover td {
-    color: #fff;
+    color: #dfdbdb;
 }
 
 /* Animated bar accent on each h3 inside detailed-text */
