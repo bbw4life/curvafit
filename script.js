@@ -4902,19 +4902,19 @@ const cartWrapper = document.querySelector('.icon-wrapper:has(.cart-icon)');
         const message  = buildShareMessage(platform);
 
         const urls = {
-            whatsapp: `https://wa.me/?text=${encodeURIComponent(message)}`,
-            twitter:  `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`,
-            facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(message)}`,
-            pinterest:`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&description=${encodeURIComponent(message)}`,
-            instagram: null // Instagram n'a pas d'API de partage directe → copie le lien
-        };
+          whatsapp:  `https://wa.me/?text=${encodeURIComponent(message)}`,
+         twitter: `https://x.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent('Check out my CurvaFit wishlist! 🛍️')}`,
+          facebook:  `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(message)}`,
+          pinterest: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&description=${encodeURIComponent('My CurvaFit wishlist')}`,
+          instagram: null
+      };
 
         if (platform === 'copy' || platform === 'instagram') {
-            navigator.clipboard.writeText(platform === 'instagram' ? shareUrl : message)
-                .then(() => showShareToast(platform === 'instagram' ? '🔗 Link copied! Paste it on Instagram.' : '✅ Link copied to clipboard!'))
-                .catch(() => showShareToast('Could not copy. Please copy manually.'));
-            return;
-        }
+        navigator.clipboard.writeText(platform === 'instagram' ? shareUrl : message)
+            .then(() => showShareToast(platform === 'instagram' ? '🔗 Link copied! Paste it on Instagram.' : '✅ Link copied to clipboard!'))
+            .catch(() => showShareToast('Could not copy. Please copy manually.'));
+        return;
+    }
 
         if (urls[platform]) {
             window.open(urls[platform], '_blank', 'noopener,noreferrer,width=600,height=500');

@@ -1214,7 +1214,7 @@ button.add-to-cart.cta {
     background: linear-gradient(135deg, var(--rose) 0%, #ad1457 50%, var(--plum) 100%) !important;
     background-size: 200% auto !important;
     font-size: 14px !important;
-    padding: 11px 18px !important;
+    padding: 110px 18px !important;
     cursor: pointer; flex-shrink: 0 !important;
     width: auto !important; min-width: fit-content !important;
     border-radius: 100px !important;
