@@ -4384,11 +4384,13 @@ function saveWishlist() { localStorage.setItem('wishlist', JSON.stringify(wishli
         const comparePriceHTML = product.compare_price && product.compare_price > product.price
           ? `<p class="compare-price">$${parseFloat(product.compare_price).toFixed(2)}</p>` : '';
         wishlistItem.innerHTML = `
-          <img src="${upgradeShopifyImageUrl(product.image)}" alt="${product.title}" class="wishlist-img">
-          <h4 class="wishlist-title">${product.title}</h4>
-          <p>$${parseFloat(product.price).toFixed(2)}</p>
-          ${comparePriceHTML}
-          <button class="remove-wishlist">Remove</button>`;
+        <img src="${upgradeShopifyImageUrl(product.image)}" alt="${product.title}" class="wishlist-img">
+        <h4 class="wishlist-title">${product.title}</h4>
+        <p>$${parseFloat(product.price).toFixed(2)}</p>
+        ${comparePriceHTML}
+        <button class="remove-wishlist" data-id="${id}">
+          <i class="fi fi-rr-trash"></i>
+        </button>`;
         const img = wishlistItem.querySelector('.wishlist-img');
         const titleEl = wishlistItem.querySelector('.wishlist-title');
         if (img && titleEl && typeof window.getProductUrl === 'function') {
@@ -4806,6 +4808,177 @@ const cartWrapper = document.querySelector('.icon-wrapper:has(.cart-icon)');
   if (addAllBtn) addAllBtn.addEventListener('click', addAllToCart);
 
   document.addEventListener('wishlist:change', () => { updateBadges(); updateWishlistIcons(); renderWishlist(); });
+
+
+
+
+// ================================================================
+//   WISHLIST SHARE SYSTEM
+// ================================================================
+(function initWishlistShare() {
+
+    // ── Génère le lien de partage avec tous les IDs de la wishlist ──
+    function buildShareUrl() {
+        if (!wishlist || wishlist.length === 0) return null;
+        const base = window.location.origin;
+        const ids  = wishlist.join(',');
+        return `${base}/collection.html?wishlist_share=${encodeURIComponent(ids)}`;
+    }
+
+    // ── Génère le message marketing pour chaque plateforme ──
+    function buildShareMessage(platform) {
+        if (!wishlist || !wishlist.length || !products || !products.length) return null;
+
+        const shareUrl = buildShareUrl();
+        const items = wishlist.map(id => {
+            const p = products.find(pr => pr.id === id);
+            if (!p) return null;
+            const productUrl = typeof window.getProductUrl === 'function'
+                ? window.location.origin + '/' + window.getProductUrl(id)
+                : window.location.origin + '/shop.html';
+            return { title: p.title, price: p.price, url: productUrl };
+        }).filter(Boolean);
+
+        if (!items.length) return null;
+
+        const itemLines = items.map(i =>
+            `✨ ${i.title} — $${i.price.toFixed(2)}\n🔗 ${i.url}`
+        ).join('\n\n');
+
+        const messages = {
+            whatsapp: `👋 Hey! I've been shopping on *CurvaFit* and I can't stop adding things to my wishlist 😍\n\nHere are the products I'm absolutely OBSESSED with:\n\n${itemLines}\n\n💫 Click any link to view — they'll be saved in your wishlist automatically!\n\n🛍️ Shop all: ${shareUrl}`,
+            twitter:  `I just found my new favourite fitness picks on @CurvaFit 🔥\n\nCheck out my wishlist — these items are 🤌\n\n${shareUrl}\n\n#CurvaFit #FitnessStyle #WishlistGoals`,
+            facebook: `💕 Ladies, I found some AMAZING pieces on CurvaFit that I need you to see!\n\nI've added them to my wishlist — tap the link to discover them all (they'll be saved for you automatically!) 👇\n\n${shareUrl}`,
+            pinterest:`✨ My CurvaFit Wishlist — save these gorgeous fitness picks before they're gone! 🛍️\n\n${shareUrl}`,
+            copy:     shareUrl
+        };
+
+        return messages[platform] || shareUrl;
+    }
+
+    // ── Toast notification ──
+    function showShareToast(msg) {
+        let toast = document.querySelector('.wishlist-share-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'wishlist-share-toast';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ── Handler principal de partage ──
+    function handleWishlistShare(platform) {
+        if (!wishlist || wishlist.length === 0) {
+            showShareToast('Your wishlist is empty!');
+            return;
+        }
+
+        const shareUrl = buildShareUrl();
+        const message  = buildShareMessage(platform);
+
+        const urls = {
+            whatsapp: `https://wa.me/?text=${encodeURIComponent(message)}`,
+            twitter:  `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`,
+            facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(message)}`,
+            pinterest:`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&description=${encodeURIComponent(message)}`,
+            instagram: null // Instagram n'a pas d'API de partage directe → copie le lien
+        };
+
+        if (platform === 'copy' || platform === 'instagram') {
+            navigator.clipboard.writeText(platform === 'instagram' ? shareUrl : message)
+                .then(() => showShareToast(platform === 'instagram' ? '🔗 Link copied! Paste it on Instagram.' : '✅ Link copied to clipboard!'))
+                .catch(() => showShareToast('Could not copy. Please copy manually.'));
+            return;
+        }
+
+        if (urls[platform]) {
+            window.open(urls[platform], '_blank', 'noopener,noreferrer,width=600,height=500');
+            showShareToast('Opening share window...');
+        }
+    }
+
+    // ── Expose globalement pour les boutons HTML ──
+    window.handleWishlistShare = handleWishlistShare;
+
+    // ── Écoute les clics sur les boutons de partage ──
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('[data-wishlist-share]');
+        if (!btn) return;
+        e.preventDefault();
+        handleWishlistShare(btn.dataset.wishlistShare);
+    });
+
+})();
+
+// ================================================================
+//   WISHLIST SHARE RECEIVER — lit l'URL et ajoute les produits
+// ================================================================
+(function initWishlistShareReceiver() {
+    const params = new URLSearchParams(window.location.search);
+    const sharedIds = params.get('wishlist_share');
+    if (!sharedIds) return;
+
+    const ids = decodeURIComponent(sharedIds).split(',').filter(Boolean);
+    if (!ids.length) return;
+
+    // Attendre que products soit chargé
+    function addSharedToWishlist() {
+        ids.forEach(id => {
+            const exists = products.find(p => p.id === id);
+            if (!exists) return;
+            if (!wishlist.includes(id)) {
+                wishlist.push(id);
+            }
+        });
+        saveWishlist();
+        updateBadges();
+        updateWishlistIcons();
+
+        // Notification visuelle
+        const count = ids.length;
+        setTimeout(() => {
+            let toast = document.querySelector('.wishlist-share-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.className = 'wishlist-share-toast';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = `💕 ${count} item${count > 1 ? 's' : ''} added to your wishlist!`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+
+            // Ouvrir la wishlist automatiquement
+            setTimeout(() => {
+                if (typeof openWishlistModal === 'function') openWishlistModal();
+            }, 800);
+        }, 1200);
+
+        // Nettoyer l'URL
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, '', cleanUrl);
+    }
+
+    // Si products déjà chargé → immédiatement, sinon attendre
+    if (products && products.length > 0) {
+        addSharedToWishlist();
+    } else {
+        let tries = 0;
+        const wait = setInterval(() => {
+            if (products && products.length > 0) {
+                clearInterval(wait);
+                addSharedToWishlist();
+            } else if (++tries > 60) {
+                clearInterval(wait);
+            }
+        }, 100);
+    }
+})();
+
+
+
 
   // Reviews carousel in cart
   const reviewsCarouselCart = document.querySelector('.reviews-carousel');
