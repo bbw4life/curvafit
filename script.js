@@ -3543,29 +3543,31 @@ if (window.innerWidth <= 768) {
         const addToCartMainBtn = document.querySelector('.product-content .add-to-cart');
 
         function checkStickyVisibility() {
-            if (!footer) return;
+        if (!footer) return;
 
-            const footerTop    = footer.getBoundingClientRect().top;
-            const windowHeight = window.innerHeight;
+        const footerTop      = footer.getBoundingClientRect().top;
+        const footerHeight   = footer.offsetHeight;
+        const windowHeight   = window.innerHeight;
 
-            // Afficher quand le footer est visible (à 200px de la limite basse)
-            const nearFooter = footerTop < windowHeight + 200;
+        // Afficher seulement quand on est à 50% dans le footer
+        const footerMidpoint = footerTop + (footerHeight * 0.5);
+        const atFooterMid    = footerMidpoint < windowHeight;
 
-            // Cacher si le bouton principal ATC est visible à l'écran
-            let mainBtnVisible = false;
-            if (addToCartMainBtn) {
-                const rect = addToCartMainBtn.getBoundingClientRect();
-                mainBtnVisible = rect.top >= 0 && rect.bottom <= windowHeight;
-            }
-
-            if (nearFooter && !mainBtnVisible) {
-                bar.classList.add('visible');
-                bar.setAttribute('aria-hidden', 'false');
-            } else {
-                bar.classList.remove('visible');
-                bar.setAttribute('aria-hidden', 'true');
-            }
+        // Cacher si le bouton principal ATC est visible à l'écran
+        let mainBtnVisible = false;
+        if (addToCartMainBtn) {
+            const rect = addToCartMainBtn.getBoundingClientRect();
+            mainBtnVisible = rect.top >= 0 && rect.bottom <= windowHeight;
         }
+
+        if (atFooterMid && !mainBtnVisible) {
+            bar.classList.add('visible');
+            bar.setAttribute('aria-hidden', 'false');
+        } else {
+            bar.classList.remove('visible');
+            bar.setAttribute('aria-hidden', 'true');
+        }
+    }
 
         window.addEventListener('scroll', checkStickyVisibility, { passive: true });
         checkStickyVisibility();
