@@ -25066,3 +25066,7 @@ details p {
     background-color: #e91e8c;
     color: #ffffff;
 }
+
+section + section { 
+  margin-top: 0 !important; 
+}
