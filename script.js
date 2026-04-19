@@ -5338,6 +5338,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const firstName = localStorage.getItem('userFirstName') || '';
     document.getElementById('user-name').textContent = firstName.charAt(0).toUpperCase() + firstName.slice(1);
     document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
+    // ── Charger la photo de profil
+     loadProfilePhoto();
     loadAccountStats();
   }
 
@@ -5371,6 +5373,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const pointsEl = document.getElementById('membership-points');
       if (levelEl) levelEl.textContent = levelText;
       if (pointsEl) pointsEl.textContent = `${points} pts`;
+      // ── Afficher la photo de profil si présente
+      if (data.profilePhoto) {
+        localStorage.setItem('userProfilePhoto', data.profilePhoto);
+        loadProfilePhoto();
+      }
       console.log(`✅ Stats loaded - Reviews Written = ${data.reviewsCount}`);
 
       const statValues = document.querySelectorAll('.membership-stats-grid .stat-value');
@@ -5598,6 +5605,71 @@ document.addEventListener('DOMContentLoaded', () => {
     result.textContent = `✅ Order ${num} tracked - Estimated arrival: 3-5 days`;
     setTimeout(() => closeAccountPopup('track-popup'), 4000);
   };
+
+  // ── PROFILE PHOTO ──
+function loadProfilePhoto() {
+  const photo    = localStorage.getItem('userProfilePhoto') || '';
+  const firstName = localStorage.getItem('userFirstName') || '';
+  const lastName  = localStorage.getItem('userLastName') || '';
+  const img       = document.getElementById('profile-photo-img');
+  const initials  = document.getElementById('profile-photo-initials');
+  if (!img || !initials) return;
+
+  if (photo) {
+    img.src = photo;
+    img.style.display = 'block';
+    initials.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    initials.style.display = 'flex';
+    initials.textContent = (
+      (firstName.charAt(0) || '') + (lastName.charAt(0) || '')
+    ).toUpperCase() || '?';
+  }
+}
+
+(function initProfilePhotoUpload() {
+  const input = document.getElementById('profile-photo-input');
+  if (!input) return;
+  input.addEventListener('change', async function () {
+    const file = this.files[0];
+    if (!file) return;
+    const MAX_PX = 300, QUALITY = 0.75;
+    const base64 = await new Promise(resolve => {
+      const url = URL.createObjectURL(file);
+      const i   = new Image();
+      i.onload  = () => {
+        let w = i.width, h = i.height;
+        if (w > h) { if (w > MAX_PX) { h = Math.round(h * MAX_PX / w); w = MAX_PX; } }
+        else        { if (h > MAX_PX) { w = Math.round(w * MAX_PX / h); h = MAX_PX; } }
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(i, 0, 0, w, h);
+        URL.revokeObjectURL(url);
+        resolve(c.toDataURL('image/jpeg', QUALITY));
+      };
+      i.onerror = () => { URL.revokeObjectURL(url); resolve(''); };
+      i.src = url;
+    });
+    if (!base64) return;
+
+    localStorage.setItem('userProfilePhoto', base64);
+    loadProfilePhoto();
+
+    const email = localStorage.getItem('userEmail');
+    if (!email) return;
+    try {
+      await fetch('/.netlify/functions/save-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update-profile-photo', email, photoBase64: base64 })
+      });
+      window.showToast && window.showToast('Profile photo updated!');
+    } catch (e) {
+      window.showToast && window.showToast('Could not save photo. Try again.');
+    }
+  });
+})();
 
   window.logout = () => {
     localStorage.clear();

@@ -54,6 +54,19 @@ exports.handler = async (event) => {
       return { statusCode: 200, body: JSON.stringify({ success: true }) };
     }
 
+    // ==================== UPDATE PROFILE PHOTO ====================
+    if (action === 'update-profile-photo') {
+      if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
+      const { photoBase64 } = body;
+      await sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range: `Feuille 1!R${rowNum}`,
+        valueInputOption: "RAW",
+        resource: { values: [[photoBase64 || ""]] }
+      });
+      return { statusCode: 200, body: JSON.stringify({ success: true }) };
+    }
+
     // ==================== UPDATE ADDRESS ====================
     if (action === 'update-address') {
       if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
@@ -121,7 +134,8 @@ exports.handler = async (event) => {
           history: history,
           memberSince: currentRow[15] || "January 2026",
           points: parseInt(currentRow[6] || 0) * 10,
-          reviewsCount: parseInt(currentRow[8] || 0)   // Colonne I = Reviews Written
+          reviewsCount: parseInt(currentRow[8] || 0),
+          profilePhoto: currentRow[17] || ""
         })
       };
     }
