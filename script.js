@@ -3551,7 +3551,7 @@ if (window.innerWidth <= 768) {
         const windowHeight   = window.innerHeight;
 
         // Afficher seulement quand on est à 50% dans le footer
-        const footerMidpoint = footerTop + (footerHeight * 0.5);
+        const footerMidpoint = footerTop + (footerHeight * 0.7);
         const atFooterMid    = footerMidpoint < windowHeight;
 
         // Cacher si le bouton principal ATC est visible à l'écran
