@@ -1961,9 +1961,10 @@ function applyPromoFreeItems() {
         if (!cycleStart || !cycleEnd || cycleStart <= 0 || cycleEnd <= 0) { showTextDelivery(); return; }
 
         const currentStart = new Date(today);
-        const currentEnd   = new Date(today);
         currentStart.setDate(today.getDate() + cycleStart);
-        currentEnd.setDate(today.getDate() + cycleEnd);
+
+        const currentEnd = new Date(currentStart);
+        currentEnd.setDate(currentStart.getDate() + cycleEnd);
 
         function formatDate(date) {
           return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getFullYear()).slice(-2)}`;

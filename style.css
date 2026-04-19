@@ -15537,61 +15537,154 @@ tbody tr:hover { background: var(--rose-ultra); }
 }
 
 
+
+
+
 /* ================================================================
-   PAUL INDICATOR & POPUP — Premium CurvaFit Edition
+   PAUL INDICATOR & POPUP — Ultra Premium CurvaFit Edition
 ================================================================ */
+
+/* ── Animated shimmer keyframes ── */
+@keyframes paulPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 18px rgba(192, 56, 94, 0.50),
+                    0 4px 14px rgba(123, 63, 110, 0.35);
+    }
+    50% {
+        transform: scale(1.13);
+        box-shadow: 0 0 42px rgba(192, 56, 94, 0.80),
+                    0 6px 28px rgba(123, 63, 110, 0.60),
+                    0 0 60px rgba(201, 150, 62, 0.25);
+    }
+}
+
+@keyframes shimmerBar {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+}
+
+@keyframes borderGlow {
+    0%, 100% { opacity: 0.4; }
+    50%       { opacity: 1; }
+}
+
+@keyframes popupSlideIn {
+    from { opacity: 0; transform: scale(0.88) translateY(20px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+@keyframes particleDrift {
+    0%   { transform: translateY(0px)   rotate(0deg);   opacity: 0.6; }
+    50%  { transform: translateY(-12px) rotate(180deg); opacity: 1; }
+    100% { transform: translateY(0px)   rotate(360deg); opacity: 0.6; }
+}
+
+@keyframes accentSlide {
+    0%   { width: 0%; opacity: 0; }
+    100% { width: 60%; opacity: 1; }
+}
+
+@keyframes pulseRing {
+    0%   { transform: scale(1);    opacity: 0.7; }
+    100% { transform: scale(1.65); opacity: 0; }
+}
+
+@keyframes popupFade {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+}
+
+/* ── Indicator wrapper ── */
 .paul-indicator-wrapper {
     position: fixed;
     z-index: 999;
     bottom: 20px;
     right: 5px;
-    transition: all 0.3s;
+    transition: var(--transition);
 }
 
 @media (max-width: 768px) {
     .paul-indicator-wrapper { bottom: 15px; right: 5px; }
 }
 
+/* ── Pulse ring ── */
+.paul-indicator-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid rgba(192, 56, 94, 0.55);
+    animation: pulseRing 2s ease-out infinite;
+    pointer-events: none;
+}
+
+.paul-indicator-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(201, 150, 62, 0.30);
+    animation: pulseRing 2s ease-out infinite 0.6s;
+    pointer-events: none;
+}
+
+/* ── Indicator button ── */
 .paul-indicator {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px; height: 40px;
-    background: linear-gradient(135deg, #b83058, #6b3460);
-    border: 2.5px solid rgba(232, 188, 106, 0.70);
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(145deg, #c0385e 0%, #7b3f6e 60%, #1e1a1c 100%);
+    border: 2px solid transparent;
+    background-clip: padding-box;
     border-radius: 50%;
-    color: #e8bc6a;
+    color: var(--gold-light);
     font-size: 22px;
-    box-shadow: 0 0 22px rgba(184, 48, 88, 0.55),
-                0 4px 16px rgba(107, 52, 96, 0.40);
+    box-shadow:
+        0 0 22px rgba(192, 56, 94, 0.55),
+        0 4px 16px rgba(123, 63, 110, 0.40),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
     animation: paulPulse 2.2s infinite ease-in-out;
     cursor: pointer;
     text-decoration: none;
 }
 
-@keyframes paulPulse {
-    0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 0 18px rgba(184, 48, 88, 0.50),
-                    0 4px 14px rgba(107, 52, 96, 0.35);
-    }
-    50% {
-        transform: scale(1.13);
-        box-shadow: 0 0 36px rgba(184, 48, 88, 0.70),
-                    0 6px 24px rgba(107, 52, 96, 0.50);
-    }
+/* Gold shimmer sweep on indicator */
+.paul-indicator::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        120deg,
+        transparent 20%,
+        rgba(240, 192, 96, 0.22) 50%,
+        transparent 80%
+    );
+    animation: shimmerBar 3s ease-in-out infinite;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;   /* ← ajouter */
 }
 
+/* ── Tooltip ── */
 .paul-tooltip {
     position: absolute;
-    right: 54px; top: 50%;
+    right: 56px;
+    top: 50%;
     transform: translateY(-50%);
-    background: linear-gradient(135deg, #1a1618, #2e1828);
-    color: #e8bc6a;
-    padding: 7px 16px;
+    background: linear-gradient(135deg, #1a1618 0%, #2e1828 100%);
+    color: var(--gold-light);
+    padding: 7px 18px;
     border-radius: 50px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-weight: 600;
     font-size: 0.82rem;
     letter-spacing: 0.03em;
@@ -15599,8 +15692,26 @@ tbody tr:hover { background: var(--rose-ultra); }
     opacity: 0;
     visibility: hidden;
     transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1.5px solid rgba(232, 188, 106, 0.40);
-    box-shadow: 0 4px 18px rgba(107, 52, 96, 0.30);
+    border: 1.5px solid rgba(201, 150, 62, 0.40);
+    box-shadow:
+        0 4px 18px rgba(123, 63, 110, 0.30),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+}
+
+/* Shimmer on tooltip */
+.paul-tooltip::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(240, 192, 96, 0.14) 50%,
+        transparent 100%
+    );
+    animation: shimmerBar 2.5s ease-in-out infinite;
+    pointer-events: none;
 }
 
 .paul-indicator:hover .paul-tooltip {
@@ -15608,46 +15719,109 @@ tbody tr:hover { background: var(--rose-ultra); }
     visibility: visible;
 }
 
-/* ── Overlay ── */
+/* ================================================================
+   POPUP OVERLAY
+================================================================ */
 .paul-popup-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(10, 4, 8, 0.82);
+    background: rgba(10, 4, 8, 0.88);
     z-index: 10000;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 }
 
 .paul-popup-overlay.active { display: flex; }
 
-/* ── Popup Box ── */
+/* ================================================================
+   POPUP BOX
+================================================================ */
 .paul-popup {
-    background: linear-gradient(160deg, #1e1218 0%, #2a1422 60%, #1a1020 100%);
+    background:
+        linear-gradient(160deg, #1e1218 0%, #2a1422 55%, #1a1020 100%);
     padding: 36px 28px 28px;
-    border-radius: 22px;
-    border: 1.5px solid rgba(232, 188, 106, 0.28);
+    border-radius: 24px;
+    border: 1.5px solid transparent;
     max-width: 420px;
     width: 92%;
     max-height: 90vh;
     overflow-y: auto;
     text-align: center;
     position: relative;
-    box-shadow: 0 24px 60px rgba(107, 52, 96, 0.45),
-                0 0 0 1px rgba(184, 48, 88, 0.12),
-                inset 0 1px 0 rgba(255,255,255,0.04);
+    box-shadow:
+        0 32px 80px rgba(123, 63, 110, 0.50),
+        0 0 0 1px rgba(192, 56, 94, 0.14),
+        0 0 60px rgba(192, 56, 94, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
     scrollbar-width: none;
     animation: popupSlideIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+    outline: 1.5px solid rgba(201, 150, 62, 0.18);
 }
 
-@keyframes popupSlideIn {
-    from { opacity: 0; transform: scale(0.88) translateY(16px); }
-    to   { opacity: 1; transform: scale(1) translateY(0); }
+/* Animated top border bar */
+.paul-popup::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--rose) 20%,
+        var(--gold-light) 50%,
+        var(--plum-light) 80%,
+        transparent 100%
+    );
+    border-radius: 24px 24px 0 0;
+    animation: borderGlow 2.5s ease-in-out infinite;
+}
+
+/* Animated bottom glow bar */
+.paul-popup::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(201, 150, 62, 0.40),
+        transparent
+    );
+    border-radius: 0 0 24px 24px;
+    animation: borderGlow 3s ease-in-out infinite 1s;
 }
 
 .paul-popup::-webkit-scrollbar { display: none; }
+
+/* Floating particle dots */
+.paul-popup .paul-particle {
+    position: absolute;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.paul-popup .paul-particle:nth-child(1) {
+    top: 18%; left: 8%;
+    background: rgba(192, 56, 94, 0.55);
+    animation: particleDrift 4s ease-in-out infinite;
+}
+
+.paul-popup .paul-particle:nth-child(2) {
+    top: 35%; right: 7%;
+    background: rgba(201, 150, 62, 0.45);
+    animation: particleDrift 5s ease-in-out infinite 1s;
+}
+
+.paul-popup .paul-particle:nth-child(3) {
+    bottom: 22%; left: 12%;
+    background: rgba(123, 63, 110, 0.50);
+    animation: particleDrift 4.5s ease-in-out infinite 0.5s;
+}
 
 /* ── Close button ── */
 .paul-close,
@@ -15656,81 +15830,147 @@ tbody tr:hover { background: var(--rose-ultra); }
     top: 14px !important;
     right: 18px !important;
     font-size: 26px !important;
-    color: rgba(232, 188, 106, 0.45) !important;
+    color: rgba(201, 150, 62, 0.40) !important;
     cursor: pointer !important;
     line-height: 1 !important;
     z-index: 10;
-    transition: color 0.2s !important;
+    transition: color 0.25s, transform 0.25s !important;
     background: none;
     border: none;
 }
 
 .paul-close:hover,
 .popup-close:hover {
-    color: #e8bc6a !important;
+    color: var(--gold-light) !important;
+    transform: rotate(90deg) scale(1.15);
 }
 
 /* ── Offer title ── */
 .paul-offer-title {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--font-display);
     font-size: 2rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #e8bc6a, #f0d080);
+    background: linear-gradient(135deg, #e8bc6a 0%, #f0d080 50%, #c9963e 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin: 0 0 8px;
+    margin: 0 0 6px;
     letter-spacing: -0.01em;
     line-height: 1.15;
+    position: relative;
+    display: inline-block;
+}
+
+/* Gold underline bar under title */
+.paul-offer-title::after {
+    content: '';
+    display: block;
+    margin: 6px auto 0;
+    height: 2px;
+    width: 0%;
+    background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+    border-radius: 2px;
+    animation: accentSlide 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
 }
 
 .paul-offer-subtitle {
     font-size: 0.92rem;
-    color: rgba(255, 255, 255, 0.65);
+    color: rgba(255, 255, 255, 0.55);
     margin-bottom: 22px;
     font-weight: 300;
     letter-spacing: 0.02em;
 }
 
-/* ── Auth Form ── */
+/* ── Divider bar ── */
+.paul-popup hr,
+.paul-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(201, 150, 62, 0.35) 30%,
+        rgba(192, 56, 94, 0.35) 70%,
+        transparent
+    );
+    margin: 18px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.paul-popup hr::after,
+.paul-divider::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(240, 192, 96, 0.55) 50%,
+        transparent 100%
+    );
+    animation: shimmerBar 2.8s ease-in-out infinite;
+}
+
+/* ================================================================
+   AUTH FORM
+================================================================ */
 .auth-form { margin-top: 14px; }
 
 .auth-form h3 {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--font-display);
     font-size: 1.45rem;
     font-weight: 600;
-    color: #e8bc6a;
+    background: linear-gradient(135deg, #e8bc6a, #f0d080);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin-bottom: 16px;
     letter-spacing: -0.01em;
+    position: relative;
+    display: inline-block;
+}
+
+.auth-form h3::after {
+    content: '';
+    display: block;
+    margin: 4px auto 0;
+    height: 1.5px;
+    width: 0%;
+    background: linear-gradient(90deg, transparent, rgba(201, 150, 62, 0.60), transparent);
+    border-radius: 2px;
+    animation: accentSlide 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
 }
 
 .auth-form input {
     width: 100%;
     padding: 13px 16px;
     margin: 5px 0;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1.5px solid rgba(255, 255, 255, 0.10);
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid rgba(255, 255, 255, 0.09);
+    border-radius: 12px;
     color: #fff;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.92rem;
     box-sizing: border-box;
-    transition: border-color 0.22s, background 0.22s, box-shadow 0.22s;
+    transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+    position: relative;
 }
 
-.auth-form input::placeholder {
-    color: rgba(255, 255, 255, 0.32);
-}
+.auth-form input::placeholder { color: rgba(255, 255, 255, 0.28); }
 
 .auth-form input:focus {
     outline: none;
-    border-color: rgba(184, 48, 88, 0.60);
-    background: rgba(255, 255, 255, 0.09);
-    box-shadow: 0 0 0 3px rgba(184, 48, 88, 0.12);
+    border-color: rgba(192, 56, 94, 0.65);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 0 0 3px rgba(192, 56, 94, 0.12),
+        0 0 18px rgba(192, 56, 94, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .auth-form label {
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.50);
     font-size: 0.82rem;
     display: flex;
     align-items: center;
@@ -15744,19 +15984,41 @@ tbody tr:hover { background: var(--rose-ultra); }
     width: auto !important;
     margin: 0;
     flex-shrink: 0;
-    accent-color: #b83058;
+    accent-color: var(--rose);
 }
 
-/* ── Buttons ── */
+/* ── Password toggle wrapper ── */
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input { padding-right: 44px; }
+
+.password-toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.35);
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 16px;
+}
+
+.password-toggle:hover { color: var(--gold-light); }
+
+/* ================================================================
+   BUTTONS
+================================================================ */
 .paul-btn {
     width: 100%;
     padding: 13px 20px;
     border: none;
     border-radius: 50px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.94rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     margin: 10px 0 6px;
     cursor: pointer;
     transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
@@ -15764,96 +16026,202 @@ tbody tr:hover { background: var(--rose-ultra); }
     overflow: hidden;
 }
 
+/* Universal shimmer sweep */
 .paul-btn::before {
     content: '';
     position: absolute;
     top: 0; left: -100%;
     width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-    transition: left 0.48s ease;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.15),
+        transparent
+    );
+    transition: left 0.50s ease;
 }
 
 .paul-btn:hover::before { left: 100%; }
 
+/* Side glow bars */
+.paul-btn::after {
+    content: '';
+    position: absolute;
+    top: 20%; bottom: 20%;
+    left: 0; width: 2px;
+    background: rgba(255, 255, 255, 0.30);
+    border-radius: 0 2px 2px 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.paul-btn:hover::after { opacity: 1; }
+
+/* Login button */
 .paul-btn-login {
-    background: linear-gradient(135deg, #e8bc6a, #c4943a);
+    background: linear-gradient(135deg, #e8bc6a 0%, #c4943a 60%, #a07830 100%);
     color: #1a1618;
-    box-shadow: 0 4px 18px rgba(196, 148, 58, 0.38);
+    box-shadow:
+        0 4px 20px rgba(196, 148, 58, 0.40),
+        0 0 0 1px rgba(201, 150, 62, 0.20),
+        inset 0 1px 0 rgba(255, 255, 255, 0.20);
 }
 
 .paul-btn-login:hover {
     transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 26px rgba(196, 148, 58, 0.52);
+    box-shadow:
+        0 10px 30px rgba(196, 148, 58, 0.55),
+        0 0 40px rgba(201, 150, 62, 0.25),
+        0 0 0 1px rgba(201, 150, 62, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
+/* Register button */
 .paul-btn-register {
-    background: linear-gradient(135deg, #b83058, #6b3460);
+    background: linear-gradient(135deg, #c0385e 0%, #7b3f6e 60%, #5a2a56 100%);
     color: #fff;
-    box-shadow: 0 4px 18px rgba(184, 48, 88, 0.35);
+    box-shadow:
+        0 4px 20px rgba(192, 56, 94, 0.38),
+        0 0 0 1px rgba(192, 56, 94, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10);
 }
 
 .paul-btn-register:hover {
     transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 26px rgba(184, 48, 88, 0.50);
-    background: linear-gradient(135deg, #d4506e, #7b3f6e);
+    box-shadow:
+        0 10px 30px rgba(192, 56, 94, 0.55),
+        0 0 40px rgba(192, 56, 94, 0.22),
+        0 0 0 1px rgba(192, 56, 94, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    background: linear-gradient(135deg, #d4506e 0%, #8b4a7e 60%, #6b3460 100%);
 }
 
 .paul-btn:active,
 .popup-form button:active,
 .quick-card:active {
     transform: scale(0.97) !important;
-    box-shadow: inset 0 3px 10px rgba(0,0,0,0.25) !important;
+    box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.30) !important;
 }
 
 /* ── Switch link ── */
 .switch-link {
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.40);
     margin-top: 14px;
     font-size: 0.84rem;
 }
 
 .switch-link span {
-    color: #e8bc6a;
+    color: var(--gold-light);
     cursor: pointer;
     font-weight: 600;
-    transition: color 0.2s;
-    border-bottom: 1px solid rgba(232, 188, 106, 0.30);
+    transition: color 0.2s, border-color 0.2s;
+    border-bottom: 1px solid rgba(240, 192, 96, 0.35);
     padding-bottom: 1px;
 }
 
 .switch-link span:hover {
-    color: #f0d080;
-    border-color: #f0d080;
+    color: #f8e090;
+    border-color: #f8e090;
 }
 
-
+/* ================================================================
+   TOAST
+================================================================ */
 .toast {
     position: fixed;
-    bottom: 30px; left: 50%;
+    bottom: 30px;
+    left: 50%;
     transform: translateX(-50%);
-    background: #1a1a1a;
-    color: #f0b90b;
-    padding: 14px 24px;
+    background: linear-gradient(135deg, #1e1218, #2a1422);
+    color: var(--gold-light);
+    padding: 14px 28px;
     border-radius: 50px;
-    border: 2px solid #f0b90b;
-    box-shadow: 0 0 30px rgba(240,185,11,0.5);
+    border: 1.5px solid rgba(201, 150, 62, 0.45);
+    box-shadow:
+        0 0 30px rgba(192, 56, 94, 0.35),
+        0 8px 24px rgba(123, 63, 110, 0.40),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
     z-index: 10001;
     opacity: 0;
     visibility: hidden;
     transition: all 0.4s ease;
     font-weight: 700;
+    font-family: var(--font-body);
     white-space: nowrap;
     max-width: 90vw;
     overflow: hidden;
     text-overflow: ellipsis;
+    letter-spacing: 0.02em;
+    position: relative;
 }
 
-.toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(-10px); }
+.toast::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(240, 192, 96, 0.12) 50%,
+        transparent 100%
+    );
+    animation: shimmerBar 2.5s ease-in-out infinite;
+    border-radius: 50px;
+    pointer-events: none;
+}
 
+.toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-10px);
+    animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ================================================================
+   LEGACY / COMPAT
+================================================================ */
 .popup-overlay { display: none !important; }
 .popup-overlay.open { display: flex !important; }
 .popup { animation: popupFade 0.4s ease; }
-@keyframes popupFade { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+/* ── Policy link ── */
+.paul-policy-link {
+    text-align: left;
+    margin-top: 10px;
+}
+
+.paul-policy-link a {
+    color: rgba(201, 150, 62, 0.55);
+    font-size: 0.82rem;
+    font-family: var(--font-body);
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.22s;
+    border-bottom: 1px solid transparent;
+}
+
+.paul-policy-link a:hover {
+    color: var(--gold-light);
+    border-bottom-color: rgba(201, 150, 62, 0.40);
+}
+
+.paul-policy-link--small a {
+    font-size: 0.76rem;
+    color: rgba(201, 150, 62, 0.40);
+}
+
+.paul-policy-link--small a:hover {
+    color: rgba(201, 150, 62, 0.75);
+}
+
+.paul-policy-link i,
+.paul-policy-link--small i {
+    font-size: 11px;
+    opacity: 0.80;
+}
 
 
 
