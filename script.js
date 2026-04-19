@@ -5335,7 +5335,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     document.getElementById('user-full-name').textContent = `${localStorage.getItem('userFirstName') || ''} ${localStorage.getItem('userLastName') || ''}`;
     document.getElementById('user-email').textContent = localStorage.getItem('userEmail') || '';
-    document.getElementById('user-name').textContent = localStorage.getItem('userFirstName') || '';
+    const firstName = localStorage.getItem('userFirstName') || '';
+    document.getElementById('user-name').textContent = firstName.charAt(0).toUpperCase() + firstName.slice(1);
     document.getElementById('user-address').textContent = localStorage.getItem('userAddress') || 'No default address set';
     loadAccountStats();
   }
