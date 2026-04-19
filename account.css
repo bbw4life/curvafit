@@ -112,9 +112,9 @@
    ACCOUNT CONTAINER — FIX MARGIN
 ══════════════════════════════════════════ */
 .customer.account {
-  max-width: 1300px;
+  max-width: 1500px !important;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 10px !important;
   background: transparent;
   border-radius: 0;
   box-shadow: none;
