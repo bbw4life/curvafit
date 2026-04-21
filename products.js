@@ -1591,216 +1591,513 @@ document.addEventListener('DOMContentLoaded', function () {
 })();
 
 
-
-
-
-
-
-(function(){
-
-  /* ── Data ── */
-  var QUESTIONS = 4;
-  var answers = {};
-  var current = 0;
-
-  /* Personalized result data matrix
-     [goal][level][time] → { title, desc, cal, weeks, min, proofStrong, proofSub }
-  */
-  var RESULTS = {
-    burnfat: {
-      beginner:  { cal:220, weeks:8,  min:10, title:'The <em>Gentle Burn</em> Starter Plan',    desc:'Perfect for beginners. Starting with just 10 minutes a day, your Smart Jump Rope will burn <strong style="color:var(--rose-light);">220 calories per session</strong> — and you\'ll be doing 500 consecutive jumps within 2 weeks.' },
-      casual:    { cal:300, weeks:7,  min:15, title:'The <em>Morning Melt</em> Routine',         desc:'15 minutes every morning before work. Your rope will burn <strong style="color:var(--rose-light);">300 calories per session</strong> — that\'s a full dessert gone before breakfast ends.' },
-      active:    { cal:380, weeks:6,  min:20, title:'The <em>Fat-Burn Sprint</em> Protocol',     desc:'20 minutes of structured intervals. You\'ll hit <strong style="color:var(--rose-light);">380 calories per session</strong> and see visible waist reduction in just 3–4 weeks.' },
-      athlete:   { cal:520, weeks:4,  min:30, title:'The <em>High-Intensity Shred</em> Plan',   desc:'30-minute HIIT sessions with the rope. You\'ll burn <strong style="color:var(--rose-light);">520+ calories per session</strong> — equivalent to a 5km run but in half the time.' }
-    },
-    tone: {
-      beginner:  { cal:200, weeks:10, min:10, title:'The <em>Gentle Sculpt</em> Foundation',    desc:'Start light, build strong. 10 minutes a day to awaken your muscles and begin shaping your silhouette with <strong style="color:var(--rose-light);">200 calories burned daily</strong>.' },
-      casual:    { cal:270, weeks:8,  min:15, title:'The <em>Daily Sculpt</em> Routine',         desc:'15 consistent minutes per day. Your rope builds coordination and leanness simultaneously — burning <strong style="color:var(--rose-light);">270 calories</strong> while sculpting your legs and core.' },
-      active:    { cal:360, weeks:6,  min:20, title:'The <em>Lean &amp; Defined</em> Program',  desc:'Combine 20-minute rope sessions with bodyweight training for the ultimate lean body. Burns <strong style="color:var(--rose-light);">360 calories</strong> and tones every muscle group.' },
-      athlete:   { cal:480, weeks:5,  min:30, title:'The <em>Athletic Physique</em> Protocol',  desc:'Advanced 30-minute routines including double-unders and alternating footwork. <strong style="color:var(--rose-light);">480 calories</strong> burned with serious muscle definition results.' }
-    },
-    cardio: {
-      beginner:  { cal:190, weeks:8,  min:8,  title:'The <em>Heart Starter</em> Plan',           desc:'Start with short 8-minute sessions and build week by week. Your jump rope will transform your cardiovascular system — burning <strong style="color:var(--rose-light);">190 calories</strong> and improving stamina fast.' },
-      casual:    { cal:260, weeks:7,  min:12, title:'The <em>Cardio Boost</em> Routine',          desc:'12 minutes of steady rhythm jumping. Your heart rate rises, your stamina grows, and you burn <strong style="color:var(--rose-light);">260 calories</strong> in a session shorter than most TV ads.' },
-      active:    { cal:340, weeks:5,  min:20, title:'The <em>Endurance Builder</em> Protocol',   desc:'20-minute progressive sessions that make your cardio engine unstoppable. Burns <strong style="color:var(--rose-light);">340 calories</strong> and you\'ll feel the difference in just 2 weeks.' },
-      athlete:   { cal:500, weeks:4,  min:35, title:'The <em>Peak Performance</em> Plan',        desc:'35-minute advanced cardio circuits with the rope as anchor exercise. <strong style="color:var(--rose-light);">500 calories</strong> per session and elite cardiovascular conditioning.' }
-    },
-    fun: {
-      beginner:  { cal:210, weeks:6,  min:10, title:'The <em>Challenge Starter</em> Pack',       desc:'Set daily jump goals on the digital display and beat them every week. 10 minutes of fun burns <strong style="color:var(--rose-light);">210 calories</strong> and you\'ll be hooked after day 3.' },
-      casual:    { cal:280, weeks:5,  min:15, title:'The <em>Personal Best</em> Tracker',        desc:'15 minutes of daily record-breaking. Your Smart Rope counter becomes your scoreboard — burning <strong style="color:var(--rose-light);">280 calories</strong> while you chase your own best times.' },
-      active:    { cal:390, weeks:4,  min:20, title:'The <em>Champion Habit</em> Routine',       desc:'20-minute sessions with personal record tracking. Your digital counter becomes addictive — <strong style="color:var(--rose-light);">390 calories</strong> burned while you chase 10,000-jump milestones.' },
-      athlete:   { cal:540, weeks:3,  min:40, title:'The <em>Elite Jump</em> Challenger Plan',  desc:'40-minute competition-style sessions targeting speed and volume records. The counter makes every session a game — <strong style="color:var(--rose-light);">540+ calories</strong> burned per round.' }
-    }
-  };
-
-  var PROOF = {
-    burnfat: { strong: '187 women with your fat-loss goal use this exact plan', sub: 'Average result: −5.8 kg in 7 weeks · 4.9★ satisfaction' },
-    tone:    { strong: '134 women focused on toning are using this plan now',  sub: 'Average result: −2 sizes in 6 weeks · 4.8★ satisfaction' },
-    cardio:  { strong: '96 women improving their cardio follow this exact plan', sub: 'Average result: −28% resting heart rate · 4.9★ satisfaction' },
-    fun:     { strong: '112 women tracking records are using this plan daily', sub: 'Average personal best: 4,200 jumps in 30 min · 5.0★ satisfaction' }
-  };
-
-  /* ── DOM refs ── */
-  var bar       = document.getElementById('jrq-bar');
-  var progressL = document.getElementById('jrq-progress-label');
-  var btnNext   = document.getElementById('jrq-btn-next');
-  var btnLabel  = document.getElementById('jrq-btn-label');
-  var navHint   = document.getElementById('jrq-nav-hint');
-  var resultEl  = document.getElementById('jrq-result');
-  var navEl     = document.getElementById('jrq-nav');
-
-  /* ── Option click handler ── */
-  document.querySelectorAll('.jrq-option').forEach(function(opt){
-    opt.addEventListener('click', function(){
-      var q = parseInt(opt.dataset.q);
-      var v = opt.dataset.v;
-
-      /* Deselect siblings */
-      opt.closest('.jrq-options').querySelectorAll('.jrq-option').forEach(function(o){
-        o.classList.remove('selected');
-      });
-      opt.classList.add('selected');
-      answers[q] = v;
-
-      /* Enable next button */
-      btnNext.disabled = false;
-      btnNext.classList.add('enabled');
-      navHint.textContent = 'Great choice!';
-    });
-  });
-
-  /* ── Next button ── */
-  btnNext.addEventListener('click', function(){
-    if(current < QUESTIONS - 1){
-      advanceQuestion();
-    } else {
-      showResult();
-    }
-  });
-
-  function advanceQuestion(){
-    /* Hide current */
-    document.getElementById('jrq-q' + current).classList.remove('active');
-    /* Mark dot done */
-    document.getElementById('jrq-dot-' + current).classList.remove('active');
-    document.getElementById('jrq-dot-' + current).classList.add('done');
-
-    current++;
-
-    /* Activate next */
-    document.getElementById('jrq-q' + current).classList.add('active');
-    document.getElementById('jrq-dot-' + current).classList.add('active');
-
-    /* Update progress */
-    var pct = Math.round((current / QUESTIONS) * 100);
-    bar.style.width = pct + '%';
-    progressL.textContent = 'Question ' + (current + 1) + ' of ' + QUESTIONS;
-
-    /* Disable next until answer selected */
-    btnNext.disabled = true;
-    btnNext.classList.remove('enabled');
-    navHint.textContent = 'Select an answer to continue';
-
-    /* Change button label on last Q */
-    if(current === QUESTIONS - 1){
-      btnLabel.textContent = 'See my results';
-    }
-  }
-
-  function showResult(){
-    /* Build personalized result */
-    var goal  = answers[0] || 'burnfat';
-    var level = answers[1] || 'casual';
-    var time  = answers[2] || '15min';
-
-    /* Time → level mapping for results */
-    var levelMap = { '5min':'beginner', '15min':'casual', '30min':'active', '45min':'athlete' };
-    var timeLevel = levelMap[time] || 'casual';
-
-    /* Pick result data — combine goal + fitness level */
-    var data = (RESULTS[goal] && RESULTS[goal][level]) ? RESULTS[goal][level] : RESULTS['burnfat']['casual'];
-
-    /* Adjust minutesbased on time commitment */
-    var minMap = { '5min':5, '15min':15, '30min':25, '45min':40 };
-    var chosenMin = minMap[time] || 15;
-
-    /* Recalculate cal based on chosen minutes (MET 12.3, 65kg avg) */
-    var calAdjusted = Math.round(12.3 * 3.5 * 65 / 200 * chosenMin);
-
-    /* Proof text */
-    var proof = PROOF[goal] || PROOF['burnfat'];
-
-    /* Inject result */
-    document.getElementById('jrq-result-title').innerHTML = data.title;
-    document.getElementById('jrq-result-desc').innerHTML = data.desc;
-    document.getElementById('jrq-rc-cal').textContent = calAdjusted;
-    document.getElementById('jrq-rc-weeks').textContent = data.weeks;
-    document.getElementById('jrq-rc-min').textContent = chosenMin;
-    document.getElementById('jrq-proof-strong').textContent = proof.strong;
-    document.getElementById('jrq-proof-sub').textContent = proof.sub;
-
-    /* Goal-specific urgency */
-    var urgencyMap = {
-      burnfat: 'Only <strong>9 units</strong> left at this price — fat-loss plan fills fastest',
-      tone:    'Only <strong>14 units</strong> left — toning plan is in high demand right now',
-      cardio:  'Only <strong>11 units</strong> left — cardio seekers are ordering quickly today',
-      fun:     'Only <strong>7 units</strong> left — challenge trackers are grabbing their rope now'
-    };
-    document.getElementById('jrq-urgency-text').innerHTML = urgencyMap[goal] || urgencyMap['burnfat'];
-
-    /* Mark final dot done */
-    document.getElementById('jrq-dot-' + current).classList.remove('active');
-    document.getElementById('jrq-dot-' + current).classList.add('done');
-    bar.style.width = '100%';
-
-    /* Hide quiz body + nav, show result */
-    document.querySelector('.jrq-quiz-body').style.display = 'none';
-    navEl.style.display = 'none';
-    progressL.textContent = 'Your plan is ready!';
-
-    resultEl.classList.add('active');
-
-    /* Smooth scroll to result */
-    setTimeout(function(){
-      document.getElementById('jrq-quiz-card').scrollIntoView({ behavior:'smooth', block:'center' });
-    }, 100);
-  }
-
-  /* ── Restart ── */
-  document.getElementById('jrq-restart-btn').addEventListener('click', function(){
-    answers = {};
-    current = 0;
-
-    /* Reset questions */
-    document.querySelectorAll('.jrq-question-slide').forEach(function(el, i){
-      el.classList.toggle('active', i === 0);
-    });
-
-    /* Reset dots */
-    for(var i = 0; i < QUESTIONS; i++){
-      var dot = document.getElementById('jrq-dot-' + i);
-      dot.classList.remove('active','done');
-      if(i === 0) dot.classList.add('active');
-    }
-
-    /* Reset options */
-    document.querySelectorAll('.jrq-option').forEach(function(o){ o.classList.remove('selected'); });
-
-    /* Reset UI */
-    bar.style.width = '0%';
-    progressL.textContent = 'Question 1 of 4';
-    btnNext.disabled = true;
-    btnNext.classList.remove('enabled');
-    btnLabel.textContent = 'Next';
-    navHint.textContent = 'Select an answer to continue';
-
-    document.querySelector('.jrq-quiz-body').style.display = '';
-    navEl.style.display = '';
-    resultEl.classList.remove('active');
-  });
-
-})();
-
 });
 /* ── END PRODUCT 3 JS ── */
+
+
+
+
+
+
+
+
+
+
+
+
+/* ═══════════════════════════════════════════════════════════
+   JUMP ROPE GALLERY + QUIZ — JavaScript
+   Ajouter dans products.js à la fin du bloc Product 3
+   ou dans un script séparé après le DOM
+═══════════════════════════════════════════════════════════ */
+
+(function () {
+  'use strict';
+
+  /* ── Wait for DOM ── */
+  function jrgqInit() {
+    const section = document.getElementById('jrgq-section');
+    if (!section) return;
+
+    /* ════════════════════════════════
+       1. PARTICLES
+    ════════════════════════════════ */
+    const particlesContainer = document.getElementById('jrgq-particles');
+    if (particlesContainer) {
+      const colors = [
+        'rgba(192,56,94,0.7)',
+        'rgba(201,150,62,0.6)',
+        'rgba(123,63,110,0.6)',
+        'rgba(232,96,126,0.5)',
+        'rgba(240,192,96,0.5)',
+      ];
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'jrgq-ptcl';
+        const size = Math.random() * 4 + 2;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const left  = Math.random() * 100;
+        const delay = Math.random() * 12;
+        const dur   = Math.random() * 8 + 6;
+        const px    = (Math.random() - 0.5) * 80;
+        p.style.cssText = [
+          `width:${size}px`,
+          `height:${size}px`,
+          `background:${color}`,
+          `left:${left}%`,
+          `bottom:${Math.random() * 20}%`,
+          `animation-duration:${dur}s`,
+          `animation-delay:${delay}s`,
+          `--px:${px}px`,
+          `border-radius:50%`,
+        ].join(';');
+        particlesContainer.appendChild(p);
+      }
+    }
+
+    /* ════════════════════════════════
+       2. QUIZ STATE
+    ════════════════════════════════ */
+    const quizAnswers = {};  // { level, goal, time, life }
+    const totalSteps  = 4;
+    let   currentStep = 1;
+
+    /* ── DOM refs ── */
+    const progressFill  = document.getElementById('jrgq-progress-fill');
+    const progressLabel = document.getElementById('jrgq-progress-label');
+    const retakeBtn     = document.getElementById('jrgq-retake');
+
+    /* ── Update progress bar ── */
+    function updateProgress(step) {
+      const pct = step > totalSteps
+        ? 100
+        : Math.round(((step - 1) / totalSteps) * 100);
+      if (progressFill) progressFill.style.width = pct + '%';
+      if (progressLabel) {
+        progressLabel.textContent = step > totalSteps
+          ? 'Your plan is ready!'
+          : `Question ${step} of ${totalSteps}`;
+      }
+    }
+
+    /* ── Show step ── */
+    function showStep(stepNum) {
+      const all = document.querySelectorAll('.jrgq-step');
+      all.forEach(function (el) {
+        if (el.classList.contains('active')) {
+          el.classList.add('leaving');
+          el.classList.remove('active');
+          setTimeout(function () { el.classList.remove('leaving'); }, 300);
+        }
+      });
+
+      const target = stepNum === 'result'
+        ? document.getElementById('jrgq-result')
+        : document.getElementById('jrgq-step-' + stepNum);
+
+      if (!target) return;
+
+      setTimeout(function () {
+        target.classList.add('active');
+        updateProgress(stepNum === 'result' ? totalSteps + 1 : stepNum);
+        // Smooth scroll to quiz header
+        const quizHeader = document.querySelector('.jrgq-quiz-header');
+        if (quizHeader) {
+          quizHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 60);
+    }
+
+    /* ── Handle option click ── */
+    function handleOptionClick(btn) {
+      const step = parseInt(btn.dataset.step);
+      const key  = btn.dataset.key;
+      const val  = btn.dataset.val;
+
+      /* Deselect siblings */
+      const siblings = document.querySelectorAll(
+        '#jrgq-step-' + step + ' .jrgq-opt'
+      );
+      siblings.forEach(function (s) { s.classList.remove('selected'); });
+
+      /* Select this */
+      btn.classList.add('selected');
+      quizAnswers[key] = val;
+
+      /* Auto-advance after short delay */
+      setTimeout(function () {
+        if (step < totalSteps) {
+          currentStep = step + 1;
+          showStep(currentStep);
+        } else {
+          showResult();
+        }
+      }, 380);
+    }
+
+    /* Attach listeners to all option buttons */
+    document.querySelectorAll('.jrgq-opt').forEach(function (btn) {
+      btn.addEventListener('click', function () { handleOptionClick(this); });
+    });
+
+    /* ════════════════════════════════
+       3. RESULT ENGINE
+    ════════════════════════════════ */
+
+    /* Calorie calculation (MET 12.3 for jump rope, 65kg baseline) */
+    function calcCal(minutes) {
+      const kg  = 65;
+      const met = 12.3;
+      return Math.round((met * 3.5 * kg / 200) * parseInt(minutes));
+    }
+
+    /* Jump target based on time */
+    function calcJumps(minutes) {
+      const perMin = { '5':350, '10':650, '20':1200, '30':1800 };
+      return perMin[minutes] || 1000;
+    }
+
+    /* Monthly loss estimate (1 lb = 3500 cal, daily sessions) */
+    function calcLoss(cal) {
+      const monthly = cal * 30;
+      return (monthly / 7700).toFixed(1); // kg
+    }
+
+    /* Profile label + title */
+    const profiles = {
+      beginner: {
+        label: '🌱 Beginner Burner',
+        title: 'Your journey starts NOW!',
+        sub:   'Perfect. The Smart Jump Rope counts every rep so you never lose track — even at 50 jumps a day.',
+      },
+      casual: {
+        label: '🔥 Casual Transformer',
+        title: 'You\'re closer than you think.',
+        sub:   'Women with your profile average −3.5 kg in their first 30 days. Your rope is waiting.',
+      },
+      active: {
+        label: '⚡ Active Achiever',
+        title: 'Level up your cardio game.',
+        sub:   'Add jump rope to your routine and double your calorie burn per hour. No extra time needed.',
+      },
+      athlete: {
+        label: '🏅 Elite Performer',
+        title: 'Push your limits further.',
+        sub:   'Your aerobic base will supercharge jump rope results. Expect 800+ cal/hr at peak intensity.',
+      },
+    };
+
+    /* Plan list by goal */
+    const planItems = {
+      fat: [
+        { icon: 'fas fa-check', text: 'Morning session (fasted) — maximum fat oxidation' },
+        { icon: 'fas fa-check', text: 'Alternate speed intervals every 30 seconds' },
+        { icon: 'fas fa-check', text: 'Track calories live on the digital display' },
+        { icon: 'fas fa-check', text: 'Aim for 500+ jumps per session by Week 2' },
+        { icon: 'fas fa-check', text: 'Weekly check-in — compare your counter numbers' },
+      ],
+      tone: [
+        { icon: 'fas fa-check', text: 'Jump rope + 10 squats combo every 2 minutes' },
+        { icon: 'fas fa-check', text: 'Steady rhythm for 5 min, sprint 30 sec, repeat' },
+        { icon: 'fas fa-check', text: 'Focus on landing softly — core engagement key' },
+        { icon: 'fas fa-check', text: 'Build to 1,000 continuous jumps by Week 3' },
+        { icon: 'fas fa-check', text: 'Rest 1 day per week — let muscles recover & grow' },
+      ],
+      health: [
+        { icon: 'fas fa-check', text: 'Start slow: 3 sets of 50 jumps, grow weekly' },
+        { icon: 'fas fa-check', text: 'Jump at the same time each day — build the habit' },
+        { icon: 'fas fa-check', text: 'Use the counter as a daily step goal substitute' },
+        { icon: 'fas fa-check', text: 'Pair with 8 glasses of water — hydration amplifies results' },
+        { icon: 'fas fa-check', text: 'Track your mood & energy after each session' },
+      ],
+    };
+
+    /* Fix for typo in plan items */
+    if (planItems.tone && planItems.tone[1]) {
+      planItems.tone[1] = { icon: 'fas fa-check', text: 'Steady rhythm for 5 min, sprint 30 sec, repeat' };
+    }
+
+    /* Urgency stock number */
+    function getStockNum() {
+      const stored = sessionStorage.getItem('jrgq_stock');
+      if (stored) return stored;
+      const n = Math.floor(Math.random() * 6) + 5; // 5–10
+      sessionStorage.setItem('jrgq_stock', n);
+      return n;
+    }
+
+    /* Animated counter */
+    function animateNum(el, target, suffix, duration) {
+      let start = 0;
+      const step = target / (duration / 16);
+      const timer = setInterval(function () {
+        start = Math.min(start + step, target);
+        el.textContent = Math.floor(start).toLocaleString() + (suffix || '');
+        if (start >= target) clearInterval(timer);
+      }, 16);
+    }
+
+    /* Animated bar */
+    function animateBar(el, pct, delay) {
+      setTimeout(function () {
+        el.style.transition = 'width 1.4s cubic-bezier(0.22,1,0.36,1)';
+        el.style.width = pct + '%';
+      }, delay || 300);
+    }
+
+    /* ── SHOW RESULT ── */
+    function showResult() {
+      const level = quizAnswers.level || 'active';
+      const goal  = quizAnswers.goal  || 'fat';
+      const time  = quizAnswers.time  || '20';
+
+      const cal    = calcCal(time);
+      const jumps  = calcJumps(time);
+      const lossKg = calcLoss(cal);
+
+      const profile = profiles[level];
+      const plan    = planItems[goal] || planItems.fat;
+
+      /* Inject profile badge + text */
+      const badgeEl    = document.getElementById('jrgq-profile-badge');
+      const titleEl    = document.getElementById('jrgq-result-title');
+      const subtitleEl = document.getElementById('jrgq-result-subtitle');
+      if (badgeEl)    badgeEl.textContent    = profile.label;
+      if (titleEl)    titleEl.textContent    = profile.title;
+      if (subtitleEl) subtitleEl.textContent = profile.sub;
+
+      /* Inject stats (will animate) */
+      const calEl   = document.getElementById('jrgq-res-cal');
+      const jumpsEl = document.getElementById('jrgq-res-jumps');
+      const lossEl  = document.getElementById('jrgq-res-loss');
+
+      /* Inject plan list */
+      const planListEl = document.getElementById('jrgq-plan-list');
+      if (planListEl) {
+        planListEl.innerHTML = '';
+        plan.forEach(function (item) {
+          const li = document.createElement('li');
+          li.innerHTML = '<i class="' + item.icon + '"></i><span>' + item.text + '</span>';
+          planListEl.appendChild(li);
+        });
+      }
+
+      /* Stock count */
+      const stockEl = document.getElementById('jrgq-stock-count');
+      if (stockEl) stockEl.textContent = getStockNum();
+
+      /* Show the result step */
+      showStep('result');
+
+      /* Trigger animations after DOM paint */
+      setTimeout(function () {
+        /* Count-up stats */
+        if (calEl)   animateNum(calEl,   cal,   ' cal', 1400);
+        if (jumpsEl) animateNum(jumpsEl, jumps, '',     1200);
+        if (lossEl) {
+          // Animate decimal
+          lossEl.textContent = '0.0 kg';
+          let v = 0;
+          const target = parseFloat(lossKg);
+          const steps  = 60;
+          const inc    = target / steps;
+          let   i      = 0;
+          const t = setInterval(function () {
+            v += inc;
+            i++;
+            lossEl.textContent = Math.min(v, target).toFixed(1) + ' kg';
+            if (i >= steps) { lossEl.textContent = target + ' kg'; clearInterval(t); }
+          }, 22);
+        }
+
+        /* Animate bars */
+        const calBar   = document.getElementById('jrgq-res-cal-bar');
+        const jumpsBar = document.getElementById('jrgq-res-jumps-bar');
+        const lossBar  = document.getElementById('jrgq-res-loss-bar');
+        const calPct   = Math.min(Math.round((cal / 450) * 100), 97);
+        const jPct     = Math.min(Math.round((jumps / 2000) * 100), 97);
+        const lPct     = Math.min(Math.round((parseFloat(lossKg) / 5) * 100), 97);
+        if (calBar)   animateBar(calBar,   calPct, 400);
+        if (jumpsBar) animateBar(jumpsBar, jPct,   600);
+        if (lossBar)  animateBar(lossBar,  lPct,   800);
+
+        /* Confetti burst */
+        spawnConfetti();
+
+      }, 180);
+    }
+
+    /* ════════════════════════════════
+       4. CONFETTI
+    ════════════════════════════════ */
+    function spawnConfetti() {
+      const wrap = document.getElementById('jrgq-confetti');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+
+      const colors = ['#c0385e','#f0c060','#7b3f6e','#e8607e','#22c55e','#f97316','#fff'];
+      for (let i = 0; i < 55; i++) {
+        const c   = document.createElement('div');
+        c.className = 'jrgq-confetti-piece';
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const left  = Math.random() * 100;
+        const delay = Math.random() * 0.8;
+        const dur   = Math.random() * 0.8 + 1.0;
+        const size  = Math.random() * 8 + 5;
+        const rot   = Math.random() * 360;
+        c.style.cssText = [
+          `background:${color}`,
+          `left:${left}%`,
+          `width:${size}px`,
+          `height:${size * (Math.random() > 0.5 ? 1 : 0.4)}px`,
+          `animation-delay:${delay}s`,
+          `animation-duration:${dur}s`,
+          `transform:rotate(${rot}deg)`,
+          `border-radius:${Math.random() > 0.5 ? '50%' : '2px'}`,
+        ].join(';');
+        wrap.appendChild(c);
+      }
+
+      /* Clean up */
+      setTimeout(function () { wrap.innerHTML = ''; }, 3000);
+    }
+
+    /* ════════════════════════════════
+       5. RETAKE
+    ════════════════════════════════ */
+    if (retakeBtn) {
+      retakeBtn.addEventListener('click', function () {
+        /* Reset answers */
+        Object.keys(quizAnswers).forEach(function (k) { delete quizAnswers[k]; });
+
+        /* Deselect all options */
+        document.querySelectorAll('.jrgq-opt').forEach(function (b) {
+          b.classList.remove('selected');
+        });
+
+        currentStep = 1;
+        showStep(1);
+        updateProgress(1);
+      });
+    }
+
+    /* ════════════════════════════════
+       6. GALLERY — Intersection Observer
+       Reveal gallery items on scroll
+    ════════════════════════════════ */
+    const galItems = document.querySelectorAll('.jrgq-gal-item');
+    if ('IntersectionObserver' in window && galItems.length) {
+      const galObs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.style.opacity = '1';
+            e.target.style.transform = 'translateY(0) scale(1)';
+            galObs.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      galItems.forEach(function (item, idx) {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(30px) scale(0.95)';
+        item.style.transition = 'opacity 0.65s ease ' + (idx * 0.08) + 's, transform 0.65s cubic-bezier(0.34,1.2,0.64,1) ' + (idx * 0.08) + 's';
+        galObs.observe(item);
+      });
+    }
+
+    /* ════════════════════════════════
+       7. QUIZ — Intersection Observer
+       Animate quiz in when scrolled to
+    ════════════════════════════════ */
+    const quizBlock = document.querySelector('.jrgq-quiz-block');
+    if ('IntersectionObserver' in window && quizBlock) {
+      const quizObs = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) {
+          quizBlock.style.opacity = '1';
+          quizBlock.style.transform = 'translateY(0)';
+          quizObs.disconnect();
+        }
+      }, { threshold: 0.10 });
+
+      quizBlock.style.opacity = '0';
+      quizBlock.style.transform = 'translateY(40px)';
+      quizBlock.style.transition = 'opacity 0.7s ease, transform 0.7s cubic-bezier(0.34,1.2,0.64,1)';
+      quizObs.observe(quizBlock);
+    }
+
+    /* ════════════════════════════════
+       8. GALLERY STATS STRIP — count-up
+    ════════════════════════════════ */
+    const statsStrip = document.querySelector('.jrgq-gallery-stats-strip');
+    if ('IntersectionObserver' in window && statsStrip) {
+      const stripObs = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) {
+          /* Animate the numbers once */
+          const nums = statsStrip.querySelectorAll('.jrgq-gstat-num');
+          const targets = [12400, 4.7, 4.2, 30];
+          const suffixes = ['+', ' / 5', ' kg', ' days'];
+          nums.forEach(function (el, i) {
+            if (i === 1) {
+              /* 4.7 decimal */
+              let v = 0;
+              const step = targets[i] / 60;
+              const t = setInterval(function () {
+                v = Math.min(v + step, targets[i]);
+                el.textContent = v.toFixed(1) + suffixes[i];
+                if (v >= targets[i]) { el.textContent = targets[i] + suffixes[i]; clearInterval(t); }
+              }, 18);
+            } else if (i === 2) {
+              let v = 0;
+              const step = targets[i] / 60;
+              const t = setInterval(function () {
+                v = Math.min(v + step, targets[i]);
+                el.textContent = '−' + v.toFixed(1) + suffixes[i];
+                if (v >= targets[i]) { el.textContent = '−' + targets[i] + suffixes[i]; clearInterval(t); }
+              }, 18);
+            } else {
+              animateNum(el, targets[i], suffixes[i], 1400);
+            }
+          });
+          stripObs.disconnect();
+        }
+      }, { threshold: 0.3 });
+      stripObs.observe(statsStrip);
+    }
+
+    /* ════════════════════════════════
+       9. URGENCY STOCK COUNTDOWN
+       (subtle live ticking down)
+    ════════════════════════════════ */
+    const stockEl = document.getElementById('jrgq-stock-count');
+    if (stockEl) {
+      let stock = parseInt(getStockNum());
+      /* Randomly drop by 1 every 2–5 min */
+      function maybeDropStock() {
+        if (stock > 3 && Math.random() > 0.5) {
+          stock--;
+          sessionStorage.setItem('jrgq_stock', stock);
+          stockEl.textContent = stock;
+          /* Flash animation */
+          stockEl.style.color = '#f97316';
+          setTimeout(function () { stockEl.style.color = ''; }, 600);
+        }
+        /* Schedule next check: 2–5 minutes */
+        const next = (Math.random() * 180 + 120) * 1000;
+        setTimeout(maybeDropStock, next);
+      }
+      setTimeout(maybeDropStock, (Math.random() * 120 + 60) * 1000);
+    }
+
+    /* ── Initial progress state ── */
+    updateProgress(1);
+  }
+
+  /* ── Boot ── */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', jrgqInit);
+  } else {
+    jrgqInit();
+  }
+
+})();
 
