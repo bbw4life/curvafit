@@ -2202,11 +2202,192 @@ window.renderWishlist = renderWishlist;
 window.updateBadges = updateBadges;
 window.updateWishlistIcons = updateWishlistIcons;
 
+
+
+// ══════════════════════════════════════════
+//  PRODUCT UPSELL — injecté depuis settings
+//  Fonctionne sur n'importe quelle page produit
+// ══════════════════════════════════════════
+(function initProductUpsell() {
+
+  const upsellItemsContainer = document.getElementById('p2-upsell-items');
+  const upsellAddBtn         = document.getElementById('p2-upsell-add-btn');
+  const upsellTotalEl        = document.getElementById('p2-upsell-total');
+  const upsellBadgeEl        = document.getElementById('p2-upsell-save-badge');
+
+  if (!upsellItemsContainer || !upsellAddBtn) return;
+
+  function run() {
+    const settings  = (window.__allProducts || []).find(function(p) { return p.type === 'settings'; }) || {};
+
+    // Détecte automatiquement la page courante (product1, product2, etc.)
+    var pageMatch  = window.location.pathname.match(/product(\d+)\.html/);
+    var pageKey    = pageMatch ? 'product' + pageMatch[1] : '';
+    var upsellCfg  = (settings.product_upsell || {})[pageKey] || {};
+
+    var discountPct = parseFloat(upsellCfg.discount_percent) || 0;
+    var itemsCfg    = upsellCfg.items || [];
+
+    if (!itemsCfg.length) return;
+
+    var upsellProducts = itemsCfg.map(function(cfg) {
+      return (window.__allProducts || []).find(function(p) { return p.id === cfg.product_id; });
+    }).filter(Boolean);
+
+    if (!upsellProducts.length) return;
+
+    upsellProducts.forEach(function(prod) {
+      var firstVariant    = prod.variants && prod.variants.length ? prod.variants[0] : null;
+      var originalPrice   = firstVariant ? parseFloat(firstVariant.price) : parseFloat(prod.price);
+      var comparePrice    = parseFloat(prod.compare_price) || originalPrice;
+      var discountedPrice = parseFloat((originalPrice * (1 - discountPct / 100)).toFixed(2));
+
+      var item = document.createElement('div');
+      item.className          = 'p2-upsell-item';
+      item.dataset.id         = prod.id;
+      item.dataset.original   = originalPrice;
+      item.dataset.discounted = discountedPrice;
+      item.dataset.compare    = comparePrice;
+
+      var imgSrc = upgradeShopifyImageUrl(prod.image, 120);
+
+      item.innerHTML =
+        '<div class="p2-upsell-check-wrap">' +
+          '<input type="checkbox" id="check-upsell-' + prod.id + '" class="p2-upsell-check" data-id="' + prod.id + '">' +
+          '<label for="check-upsell-' + prod.id + '" class="p2-upsell-check-label"></label>' +
+        '</div>' +
+        '<div class="p2-upsell-img-wrap">' +
+          '<img src="' + imgSrc + '" alt="' + prod.title + '" loading="lazy">' +
+        '</div>' +
+        '<div class="p2-upsell-info">' +
+          '<strong>' + prod.title + '</strong>' +
+          '<span>' + (prod.description ? prod.description.substring(0, 55) + '…' : '') + '</span>' +
+        '</div>' +
+        '<div class="p2-upsell-price-col">' +
+          '<span class="p2-upsell-old">$' + comparePrice.toFixed(2) + '</span>' +
+          '<span class="p2-upsell-new">+$' + discountedPrice.toFixed(2) + '</span>' +
+        '</div>';
+
+      upsellItemsContainer.appendChild(item);
+
+      var checkbox = item.querySelector('.p2-upsell-check');
+      checkbox.addEventListener('change', updateUpsellTotal);
+    });
+
+    function updateUpsellTotal() {
+      var total      = 0;
+      var anyChecked = false;
+
+      upsellItemsContainer.querySelectorAll('.p2-upsell-check').forEach(function(cb) {
+        if (cb.checked) {
+          anyChecked = true;
+          var itemEl = cb.closest('.p2-upsell-item');
+          total += parseFloat(itemEl.dataset.discounted || 0);
+        }
+      });
+
+      upsellTotalEl.textContent = anyChecked ? '+ $' + total.toFixed(2) : '+ $0.00';
+      upsellAddBtn.disabled     = !anyChecked;
+    }
+
+    upsellAddBtn.addEventListener('click', function() {
+      var added = 0;
+
+      upsellItemsContainer.querySelectorAll('.p2-upsell-check').forEach(function(cb) {
+        if (!cb.checked) return;
+
+        var prodId = cb.dataset.id;
+        var prod   = (window.__allProducts || []).find(function(p) { return p.id === prodId; });
+        if (!prod) return;
+
+        var firstVariant = prod.variants && prod.variants.length ? prod.variants[0] : null;
+        var itemEl       = cb.closest('.p2-upsell-item');
+        var price        = parseFloat(itemEl.dataset.discounted || prod.price);
+        var comparePrice = parseFloat(itemEl.dataset.compare   || prod.compare_price);
+        var color        = firstVariant ? (firstVariant.color || null) : null;
+        var size         = firstVariant ? (firstVariant.size  || null) : null;
+        var cjVariantId  = firstVariant ? firstVariant.vid : null;
+
+        var colorObj = (color && prod.colors)
+          ? prod.colors.find(function(c) { return c.name === color; })
+          : null;
+        var image = upgradeShopifyImageUrl(colorObj ? (colorObj.image || prod.image) : prod.image);
+
+        var existing = cart.find(function(i) {
+          return i.id === prodId && i.color === color && i.size === size;
+        });
+
+        if (existing) {
+          existing.quantity += 1;
+        } else {
+          cart.push({
+            id:            prodId,
+            title:         prod.title,
+            price:         price,
+            compare_price: comparePrice,
+            image:         image,
+            size:          size  || null,
+            color:         color || null,
+            quantity:      1,
+            fromUpsell:    true,
+            cj_product_id: prod.cj_id,
+            cj_variant_id: cjVariantId
+          });
+        }
+        added++;
+      });
+
+      if (added > 0) {
+        saveCart();
+        updateCartQuantityInSheet();
+        if (typeof applyPromoFreeItems === 'function') applyPromoFreeItems();
+        saveCart();
+        updateBadges();
+        renderCart();
+        openCartDrawer();
+
+        upsellAddBtn.classList.add('added');
+        upsellAddBtn.innerHTML = '<i class="fas fa-check"></i> Added to Cart!';
+        setTimeout(function() {
+          upsellAddBtn.classList.remove('added');
+          upsellAddBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Add Selected to Cart';
+        }, 2500);
+      }
+    });
+  }
+
+  if (window.__allProducts && window.__allProducts.length) {
+    run();
+  } else {
+    var tries = 0;
+    var wait = setInterval(function() {
+      if (window.__allProducts && window.__allProducts.length) {
+        clearInterval(wait);
+        run();
+      } else if (++tries > 60) {
+        clearInterval(wait);
+      }
+    }, 100);
+  }
+
+})();
+
+
 // Ces 4 lignes sont NOUVELLES — à ajouter
 window.__getCart = () => cart;
 window.__setCart = (c) => { cart = c; };
 window.__getWishlist = () => wishlist;
 window.__setWishlist = (w) => { wishlist = w; };
+
+(function() {
+  var badge = document.getElementById('p2-upsell-badge');
+  if (!badge) return;
+  var pageMatch   = window.location.pathname.match(/product(\d+)\.html/);
+  var pageKey     = pageMatch ? 'product' + pageMatch[1] : '';
+  var upsellCfg   = (settings.product_upsell || {})[pageKey] || {};
+  var discountPct = parseFloat(upsellCfg.discount_percent) || 0;
+  if (discountPct > 0) badge.textContent = 'Save ' + discountPct + '%';
+})();
 initAnnouncementBar();
 
 

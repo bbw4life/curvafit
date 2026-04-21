@@ -2490,3 +2490,194 @@ select:focus {
     font-size: 11px;
     opacity: 0.80;
 }
+
+
+
+
+/* ================================================================
+   MARQUEE TRUST BAR — Ultra Premium
+================================================================ */
+
+@keyframes marqueeScroll {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes marqueeSweep {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+@keyframes marqueeGlowPulse {
+  0%, 100% { opacity: 0.75; }
+  50%       { opacity: 1; }
+}
+
+/* ── Outer wrapper ── */
+.marquee-trust-bar {
+  position: relative;
+  width: 100%;
+  background: #0a0509;
+  border-top: 1px solid rgba(196, 148, 58, 0.22);
+  border-bottom: 1px solid rgba(196, 148, 58, 0.22);
+  overflow: hidden;
+  padding: 0;
+  z-index: 2;
+}
+
+/* Shimmer overlay across the full bar */
+.marquee-trust-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(196, 148, 58, 0.04) 30%,
+    rgba(184, 48, 88, 0.05) 50%,
+    rgba(196, 148, 58, 0.04) 70%,
+    transparent 100%
+  );
+  background-size: 600px 100%;
+  animation: marqueeSweep 4s linear infinite;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Top gold hairline */
+.marquee-trust-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(196, 148, 58, 0.55) 25%,
+    rgba(240, 192, 96, 0.90) 50%,
+    rgba(196, 148, 58, 0.55) 75%,
+    transparent 100%
+  );
+  animation: marqueeGlowPulse 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* ── Left & right fade masks ── */
+.marquee-glow-left,
+.marquee-glow-right {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 100px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.marquee-glow-left {
+  left: 0;
+  background: linear-gradient(to right, #0a0509 0%, transparent 100%);
+}
+
+.marquee-glow-right {
+  right: 0;
+  background: linear-gradient(to left, #0a0509 0%, transparent 100%);
+}
+
+/* ── Scroll track ── */
+.marquee-track {
+  overflow: hidden;
+  padding: 11px 0;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Moving inner strip ── */
+.marquee-inner {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: max-content;
+  animation: marqueeScroll 40s linear infinite;
+  will-change: transform;
+}
+
+.marquee-inner:hover {
+  animation-play-state: paused;
+}
+
+/* ── Individual items ── */
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 28px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.90rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.62);
+  white-space: nowrap;
+  transition: color 0.25s ease;
+}
+
+.marquee-item i {
+  font-size: 0.80rem;
+  color: rgba(196, 148, 58, 0.70);
+  flex-shrink: 0;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.marquee-inner:hover .marquee-item:hover {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.marquee-inner:hover .marquee-item:hover i {
+  color: #f0c060;
+  transform: scale(1.18);
+}
+
+/* ── Gold variant ── */
+.marquee-item--gold {
+  color: rgba(232, 188, 106, 0.80);
+}
+
+.marquee-item--gold i {
+  color: #e8bc6a;
+}
+
+/* ── Warning variant ── */
+.marquee-item--warn {
+  color: rgba(255, 200, 120, 0.72);
+}
+
+.marquee-item--warn i {
+  color: rgba(255, 180, 80, 0.85);
+}
+
+/* ── Separator diamonds ── */
+.marquee-sep {
+  font-size: 0.55rem;
+  color: rgba(196, 148, 58, 0.35);
+  flex-shrink: 0;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .marquee-item {
+    font-size: 0.85rem;
+    padding: 0 20px;
+    gap: 6px;
+  }
+
+  .marquee-glow-left,
+  .marquee-glow-right {
+    width: 60px;
+  }
+
+  .marquee-inner {
+    animation-duration: 35s;
+  }
+}
+

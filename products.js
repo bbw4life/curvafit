@@ -985,3 +985,121 @@ document.addEventListener('DOMContentLoaded', () => {
 
     bars.forEach(function(bar) { observer.observe(bar); });
 })(); 
+
+
+
+
+
+
+/* ================================================================
+   PRODUCT 2 — SPECIFIC JS
+   Animated results bars + scroll reveals
+================================================================ */
+document.addEventListener('DOMContentLoaded', function () {
+
+  /* ── 1. Animate result bars on scroll ── */
+  var resultBars = document.querySelectorAll('.wt-result-bar-fill');
+  if (resultBars.length) {
+    var barObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animated');
+          barObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    resultBars.forEach(function(bar) { barObserver.observe(bar); });
+  }
+
+  /* ── 2. Scroll reveal for new product-2 blocks ── */
+  var p2Blocks = document.querySelectorAll(
+    '.wt-transform-block, .wt-science-block, ' +
+    '.wt-howtowear, .wt-results-block, .wt-material-block, ' +
+    '.wt-guarantee-banner, .p2-why-card, ' +
+    '.p2-testimonial-card, .p2-compare-table'
+  );
+
+  if (p2Blocks.length) {
+    var p2Observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0) scale(1)';
+          p2Observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+
+    p2Blocks.forEach(function(el, i) {
+      el.style.opacity      = '0';
+      el.style.transform    = 'translateY(22px) scale(0.98)';
+      el.style.transition   = 'opacity 0.55s cubic-bezier(0.4,0,0.2,1) ' + (i * 0.06) + 's, transform 0.55s cubic-bezier(0.4,0,0.2,1) ' + (i * 0.06) + 's';
+      p2Observer.observe(el);
+    });
+  }
+
+  /* ── 3. Comparison table row hover ── */
+  var tableRows = document.querySelectorAll('.p2-compare-table tbody tr');
+  tableRows.forEach(function(row) {
+    row.addEventListener('mouseenter', function() {
+      this.style.background = 'rgba(184,48,88,0.06)';
+    });
+    row.addEventListener('mouseleave', function() {
+      this.style.background = '';
+    });
+  });
+
+  /* ── 4. Why cards stagger delay ── */
+  var whyCards = document.querySelectorAll('.p2-why-card');
+  whyCards.forEach(function(card, i) {
+    card.style.animationDelay = (i * 0.12) + 's';
+  });
+
+});
+
+/* ── 5. Testimonials mobile auto-slider ── */
+(function () {
+  var track = document.querySelector('.p2-testimonials-track');
+  var dots  = document.querySelectorAll('.p2-testimonials-dot');
+  if (!track || !dots.length) return;
+
+  var current = 0;
+  var total   = dots.length;
+  var timer   = null;
+
+  function goTo(index) {
+    current = (index + total) % total;
+    if (window.innerWidth <= 768) {
+      track.style.transform = 'translateX(-' + (current * 100) + '%)';
+    }
+    dots.forEach(function (d, i) {
+      d.classList.toggle('active', i === current);
+    });
+  }
+
+  function startAuto() {
+    clearInterval(timer);
+    timer = setInterval(function () { goTo(current + 1); }, 5000);
+  }
+
+  dots.forEach(function (dot) {
+    dot.addEventListener('click', function () {
+      goTo(parseInt(this.dataset.index, 10));
+      startAuto();
+    });
+  });
+
+  /* Réinitialiser si redimensionnement */
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 768) {
+      track.style.transform = '';
+    } else {
+      goTo(current);
+    }
+  });
+
+  startAuto();
+})();
+
+
+

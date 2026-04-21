@@ -87,11 +87,13 @@
     "stock_managed_by": "eprolo",
     "currency": "USD",
     "last_updated": "2026-03-21",
-    "start_date": "2026-02-24",
-    "end_date": "2026-02-28",
-    "single_discount": 0,
-    "duo_discount": 0,
-    "trio_discount": 0,
+    "cycle_days_start": 10,
+    "cycle_days_end": 5,
+    "start_date": "2026-04-29",
+    "end_date": "2026-05-04",
+    "single_discount": 5,
+    "duo_discount": 10,
+    "trio_discount": 20, 
     "rating": 4.7,
     "reviews_count": 73,
     "badge": { "icon": "fi-rr-flame", "text": "In Promotion" },
@@ -1244,6 +1246,24 @@
         "paul_trigger": "no",
         "floating_nav": "yes",
         "audio_player": "yes"
+      },
+      "product_upsell": {
+      "product2": {
+        "discount_percent": 40,
+        "items": [
+          { "product_id": "Pdg-Francenel-product4" },
+          { "product_id": "Pdg-Francenel-product7" },
+          { "product_id": "Pdg-Francenel-product11" }
+        ]
+      },
+      "product1": {
+        "discount_percent": 25,
+        "items": [
+          { "product_id": "Pdg-Francenel-product2" },
+          { "product_id": "Pdg-Francenel-product3" },
+          { "product_id": "Pdg-Francenel-product6" }
+        ]
       }
+    }
   }
 ]
