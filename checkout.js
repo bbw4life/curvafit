@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let appliedPromo = null;
     let discountAmount = 0;
     let _promoFreeApplying = false;
+    let upsellDiscountAmount = 0;
+    let upsellDiscountApplied = false;
+
 
     // ====================== POPUP ======================
     function showErrorPopup(message) {
@@ -176,6 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cartItemsContainer.appendChild(savingsDiv);
         }
         updatePromoDisplay();
+        applyUpsellDiscount();
         updateTotals();
     }
 
@@ -716,6 +720,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const showPromo = (cd.show_promo_message || 'Yes').toLowerCase() === 'yes';
         if (!showPromo) {
             cart = cart.filter(i => !i.isFreePromo);
+            applyUpsellDiscount();
             localStorage.setItem('cart', JSON.stringify(cart));
             return;
         }
@@ -777,6 +782,75 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('cart', JSON.stringify(cart));
     }
 
+    // ====================== UPSELL DISCOUNT AUTO-APPLY ======================
+function applyUpsellDiscount() {
+    upsellDiscountAmount  = 0;
+    upsellDiscountApplied = false;
+
+    const settings  = productsData.find(i => i.type === 'settings');
+    const upsellCfg = (settings?.product_upsell) || {};
+    const autoApply = (upsellCfg.auto_apply_to_checkout || 'no').toLowerCase() === 'yes';
+
+    if (!autoApply) { renderUpsellDiscountLine(); return; }
+
+    const hasFreePromo = cart.some(i => i.isFreePromo);
+    const hasPromoCode = appliedPromo !== null && discountAmount > 0;
+
+    if (hasFreePromo || hasPromoCode) { renderUpsellDiscountLine(); return; }
+
+    cart.forEach(function(item) {
+        if (!item.fromUpsell || !item.upsellDiscount) return;
+
+        // discountPct vient directement du setting sauvegardé dans l'item
+        var discountPct = parseFloat(item.upsellDiscount) || 0;
+        if (discountPct <= 0) return;
+
+        // Prix ORIGINAL avant remise = price / (1 - discount%)
+        var currentPrice  = parseFloat(item.price) || 0;
+        var originalPrice = currentPrice / (1 - discountPct / 100);
+
+        // Saving réel = original - discounted
+        var saving = (originalPrice - currentPrice) * item.quantity;
+        upsellDiscountAmount += saving;
+        upsellDiscountApplied = true;
+    });
+
+    renderUpsellDiscountLine();
+}
+// ====================== END UPSELL DISCOUNT ======================
+
+function renderUpsellDiscountLine() {
+    let line = document.getElementById('upsell-discount-line');
+
+    if (upsellDiscountAmount > 0 && upsellDiscountApplied) {
+        if (!line) {
+            // Créer la ligne dynamiquement dans le résumé
+            const promoLine   = document.getElementById('promo-line');
+            const totalRow    = document.getElementById('total')?.closest('.total-row, .order-row, p, div');
+
+            line = document.createElement('div');
+            line.id = 'upsell-discount-line';
+            line.style.cssText = 'display:flex;justify-content:space-between;color:#22a06b;font-size:0.88rem;margin:4px 0;font-weight:600;';
+            line.innerHTML = `
+                <span>🎁 Kit Discount Applied</span>
+                <span id="upsell-discount-amount">-$${upsellDiscountAmount.toFixed(2)}</span>`;
+
+            if (promoLine && promoLine.parentNode) {
+                promoLine.parentNode.insertBefore(line, promoLine.nextSibling);
+            } else if (totalRow && totalRow.parentNode) {
+                totalRow.parentNode.insertBefore(line, totalRow);
+            }
+        } else {
+            line.style.display = 'flex';
+            const amountEl = document.getElementById('upsell-discount-amount');
+            if (amountEl) amountEl.textContent = `-$${upsellDiscountAmount.toFixed(2)}`;
+        }
+    } else {
+        if (line) line.style.display = 'none';
+    }
+}
+// ====================== END UPSELL DISCOUNT ======================
+
     document.getElementById('copy-suggested')?.addEventListener('click', () => {
         const code = document.getElementById('suggested-code').textContent;
         navigator.clipboard.writeText(code).then(() => showErrorPopup('Code copied: ' + code));
@@ -794,6 +868,13 @@ document.addEventListener('DOMContentLoaded', () => {
             : cart.filter(i => !i.isFreePromo).reduce((sum, item) => sum + item.quantity, 0);
         const hasFreePromo = cart.some(item => item.isFreePromo);
         if (hasBundle) { promoMessage.textContent = "Promo codes cannot be used with bundles."; promoMessage.style.color = 'red'; return; }
+        // Bloquer promo code si items upsell dans le cart
+        const hasUpsell = cart.some(i => i.fromUpsell);
+        if (hasUpsell) {
+            promoMessage.textContent = "Promo codes cannot be combined with Kit discounts.";
+            promoMessage.style.color = 'red';
+            return;
+        }
         if (hasFreePromo) { promoMessage.textContent = "Promo codes cannot be used with free promotional items."; promoMessage.style.color = 'red'; return; }
         if (!input) { promoMessage.textContent = "Please enter a code."; promoMessage.style.color = 'red'; return; }
         const promo = promos.find(p => p.code.toUpperCase() === input);

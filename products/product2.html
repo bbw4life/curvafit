@@ -943,41 +943,392 @@
   </section>
 
 
-  <section class="p2-why-section">
-    <div class="container" style="position:relative;z-index:1;">
-      <div style="text-align:center;">
-        <span class="p2-section-eyebrow">✦ Why Women Love It</span>
-        <h2 class="p2-section-title">You Put It On.<br>Your Confidence Goes Up Instantly.</h2>
-      </div>
-      <div class="p2-why-grid">
-        <div class="p2-why-card">
-          <div class="p2-why-icon"><i class="fas fa-hourglass-half"></i></div>
-          <h3>Instant Silhouette</h3>
-          <p>One zip and you have an hourglass figure. No waiting. No effort. Your waist shrinks by 2–3 cm the moment you put it on.</p>
+  <!-- ═══ PROFILE SELECTOR — Who are you? ═══ -->
+<section class="p2-profile-section">
+  <div class="container">
+    <div style="text-align:center;">
+      <span class="p2-section-eyebrow">✦ Built for your body, your life</span>
+      <h2 class="p2-section-title">Which woman are you?</h2>
+      <p class="p2-profile-subtitle">Select your profile — see exactly what the trainer does for <em>you</em>.</p>
+    </div>
+
+    <div class="p2-profiles-grid">
+      <button class="p2-profile-btn active" data-profile="0">
+        <div class="p2-profile-btn-icon"><i class="fas fa-briefcase"></i></div>
+        <strong>Office worker</strong>
+        <span>Sits 8h/day</span>
+      </button>
+      <button class="p2-profile-btn" data-profile="1">
+        <div class="p2-profile-btn-icon"><i class="fas fa-dumbbell"></i></div>
+        <strong>Active woman</strong>
+        <span>Gym &amp; sport</span>
+      </button>
+      <button class="p2-profile-btn" data-profile="2">
+        <div class="p2-profile-btn-icon"><i class="fas fa-baby"></i></div>
+        <strong>New mom</strong>
+        <span>Postpartum</span>
+      </button>
+      <button class="p2-profile-btn" data-profile="3">
+        <div class="p2-profile-btn-icon"><i class="fas fa-star"></i></div>
+        <strong>Event ahead</strong>
+        <span>Wedding, party</span>
+      </button>
+    </div>
+
+    <!-- Panel 0: Office -->
+    <div class="p2-profile-panel active" id="p2-panel-0">
+      <div class="p2-panel-inner">
+        <div class="p2-panel-head">
+          <div class="p2-panel-avatar"><i class="fas fa-briefcase"></i></div>
+          <div>
+            <h3>For the office woman who sits all day</h3>
+            <p>Lower back pain, poor posture, no time to exercise — this was made for you.</p>
+          </div>
         </div>
-        <div class="p2-why-card">
-          <div class="p2-why-icon"><i class="fas fa-users"></i></div>
-          <h3>Inclusive Sizing</h3>
-          <p>S to 6XL because every woman deserves a trainer built for her body. Not an afterthought — engineered from the ground up for curves.</p>
-        </div>
-        <div class="p2-why-card">
-          <div class="p2-why-icon"><i class="fas fa-fire-alt"></i></div>
-          <h3>Fat-Burning Heat</h3>
-          <p>Premium neoprene creates a thermal zone at your waist, increasing sweating 3× during every activity — even sitting at your desk.</p>
-        </div>
-        <div class="p2-why-card">
-          <div class="p2-why-icon"><i class="fas fa-child-reaching"></i></div>
-          <h3>Back Pain Gone</h3>
-          <p>Reinforced lumbar panel corrects posture and relieves lower back pain from day one. Thousands of women report chronic pain disappearing within a week.</p>
-        </div>
-        <div class="p2-why-card">
-          <div class="p2-why-icon"><i class="fas fa-eye-slash"></i></div>
-          <h3>Invisible Secret</h3>
-          <p>Ultra-slim profile fits under any clothing. Nobody knows you're wearing it — they just wonder why you look so good.</p>
+        <ul class="p2-panel-list">
+          <li><i class="fas fa-check-circle"></i> Invisible under any work outfit — blazer, dress, jeans</li>
+          <li><i class="fas fa-check-circle"></i> Lumbar panel stops back pain within the first day</li>
+          <li><i class="fas fa-check-circle"></i> Neoprene burns waist fat even while sitting at your desk</li>
+          <li><i class="fas fa-check-circle"></i> Comfortable 8–10h without irritation or rolling</li>
+        </ul>
+        <div class="p2-panel-result">
+          <i class="fas fa-chart-line"></i>
+          Women like you report: <strong>−4 cm waist in 4 weeks</strong>, back pain gone in 7 days
         </div>
       </div>
     </div>
-  </section>
+
+    <!-- Panel 1: Active -->
+    <div class="p2-profile-panel" id="p2-panel-1">
+      <div class="p2-panel-inner">
+        <div class="p2-panel-head">
+          <div class="p2-panel-avatar"><i class="fas fa-dumbbell"></i></div>
+          <div>
+            <h3>For the active woman who already trains</h3>
+            <p>You work hard. This amplifies every session.</p>
+          </div>
+        </div>
+        <ul class="p2-panel-list">
+          <li><i class="fas fa-check-circle"></i> 3× more sweat at the waist — your workouts become fat-burning sessions</li>
+          <li><i class="fas fa-check-circle"></i> Core compression improves your lifting posture and form</li>
+          <li><i class="fas fa-check-circle"></i> Stays in place through HIIT, running, and heavy lifting</li>
+          <li><i class="fas fa-check-circle"></i> Machine washable — train daily, wash easily</li>
+        </ul>
+        <div class="p2-panel-result">
+          <i class="fas fa-chart-line"></i>
+          Women like you report: <strong>waist results 2× faster</strong> vs training without it
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 2: New mom -->
+    <div class="p2-profile-panel" id="p2-panel-2">
+      <div class="p2-panel-inner">
+        <div class="p2-panel-head">
+          <div class="p2-panel-avatar"><i class="fas fa-baby"></i></div>
+          <div>
+            <h3>For the new mom reclaiming her waist</h3>
+            <p>Safe, gentle, effective — designed for your postpartum recovery.</p>
+          </div>
+        </div>
+        <ul class="p2-panel-list">
+          <li><i class="fas fa-check-circle"></i> Gentle compression helps uterus return to position faster</li>
+          <li><i class="fas fa-check-circle"></i> Back support carries the weight you carry every day</li>
+          <li><i class="fas fa-check-circle"></i> Latex-free, skin-safe certified — safe for sensitive postpartum skin</li>
+          <li><i class="fas fa-check-circle"></i> S to 6XL — fits your changing body at every stage</li>
+        </ul>
+        <div class="p2-panel-result">
+          <i class="fas fa-chart-line"></i>
+          Women like you report: <strong>pre-baby waist back in 6–8 weeks</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 3: Event -->
+    <div class="p2-profile-panel" id="p2-panel-3">
+      <div class="p2-panel-inner">
+        <div class="p2-panel-head">
+          <div class="p2-panel-avatar"><i class="fas fa-star"></i></div>
+          <div>
+            <h3>For the woman with a big event coming up</h3>
+            <p>Wedding, vacation, reunion — you want to look incredible. Right now.</p>
+          </div>
+        </div>
+        <ul class="p2-panel-list">
+          <li><i class="fas fa-check-circle"></i> Instant −2 to −3 cm waist the moment you put it on</li>
+          <li><i class="fas fa-check-circle"></i> Invisible under fitted dresses, gowns, and bodycon looks</li>
+          <li><i class="fas fa-check-circle"></i> Comfortable enough to wear 10+ hours — from ceremony to dance floor</li>
+          <li><i class="fas fa-check-circle"></i> Posture correction makes you look taller in every photo</li>
+        </ul>
+        <div class="p2-panel-result">
+          <i class="fas fa-chart-line"></i>
+          Women like you say: <strong>"everyone asked if I'd lost weight overnight"</strong>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+     BEFORE / AFTER — POWER WAIST TRAINER
+     À insérer dans product2.html après .p2-compare-section
+     ou avant .p2-testimonials-section
+══════════════════════════════════════════════════════════════ -->
+
+<section class="wt-ba-section">
+  <div class="container" style="position:relative;z-index:2;">
+
+    <!-- HEADER -->
+    <div class="wt-ba-header wt-ba-animate">
+      <div class="wt-ba-eyebrow">
+        <i class="fas fa-hourglass-half"></i>
+        Real Transformation
+      </div>
+      <h2 class="wt-ba-title">
+        The Only Difference?<br>
+        <span>You Wore the Trainer.</span>
+      </h2>
+      <p class="wt-ba-subtitle">
+        Same woman. Same day. Just 5 seconds between these two silhouettes — and the Power Waist Trainer.
+      </p>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="wt-ba-grid">
+
+      <!-- ══ BEFORE PANEL ══ -->
+      <div class="wt-ba-panel wt-ba-panel--before wt-ba-animate wt-ba-animate-left">
+
+        <div class="wt-ba-panel-head">
+          <span class="wt-ba-label wt-ba-label--before">WITHOUT</span>
+          <div class="wt-ba-panel-icon wt-ba-panel-icon--before">
+            <i class="fas fa-times"></i>
+          </div>
+        </div>
+
+        <div class="wt-ba-img-wrap">
+          <img
+            class="wt-ba-img"
+            src="https://cdn.shopify.com/s/files/1/0978/0353/4627/files/waist_prod.png?v=1775265881"
+            alt="Before — without waist trainer"
+            loading="lazy">
+          <div class="wt-ba-img-overlay"></div>
+          <div class="wt-ba-img-stat">
+            <div class="stat-main">Original silhouette</div>
+            <div class="stat-sub">No support · No shape</div>
+          </div>
+        </div>
+
+        <div class="wt-ba-panel-body">
+
+          <div class="wt-ba-metrics">
+            <div>
+              <div class="wt-ba-metric">
+                <span class="wt-ba-metric-label">Waist Definition</span>
+                <span class="wt-ba-metric-val">18%</span>
+              </div>
+              <div class="wt-ba-metric-bar-track">
+                <div class="wt-ba-metric-bar" style="--ba-bar-w:18%;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="wt-ba-metric">
+                <span class="wt-ba-metric-label">Back Support</span>
+                <span class="wt-ba-metric-val">0%</span>
+              </div>
+              <div class="wt-ba-metric-bar-track">
+                <div class="wt-ba-metric-bar" style="--ba-bar-w:0%;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="wt-ba-metric">
+                <span class="wt-ba-metric-label">Posture Correction</span>
+                <span class="wt-ba-metric-val">12%</span>
+              </div>
+              <div class="wt-ba-metric-bar-track">
+                <div class="wt-ba-metric-bar" style="--ba-bar-w:12%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <ul class="wt-ba-features">
+            <li>
+              <div class="wt-ba-feat-icon"><i class="fas fa-times"></i></div>
+              No waist definition — natural silhouette
+            </li>
+            <li>
+              <div class="wt-ba-feat-icon"><i class="fas fa-times"></i></div>
+              Lower back unsupported all day
+            </li>
+            <li>
+              <div class="wt-ba-feat-icon"><i class="fas fa-times"></i></div>
+              Posture slouches under clothing
+            </li>
+            <li>
+              <div class="wt-ba-feat-icon"><i class="fas fa-times"></i></div>
+              No thermal activation — zero fat burn
+            </li>
+            <li>
+              <div class="wt-ba-feat-icon"><i class="fas fa-times"></i></div>
+              Confidence stays low
+            </li>
+          </ul>
+
+          <div class="wt-ba-score-row">
+            <span class="wt-ba-score-label">Confidence Score</span>
+            <div class="wt-ba-score-bar">
+              <div class="wt-ba-score-fill"></div>
+            </div>
+            <span class="wt-ba-score-num">2 / 10</span>
+          </div>
+
+        </div>
+      </div><!-- /BEFORE -->
+
+
+      <!-- ══ CENTRAL DIVIDER ══ -->
+      <div class="wt-ba-divider">
+        <div class="wt-ba-divider-line"></div>
+        <div class="wt-ba-vs-circle">
+          <span class="wt-ba-vs-text">VS</span>
+        </div>
+        <span class="wt-ba-arrow"><i class="fas fa-chevron-right"></i></span>
+        <div class="wt-ba-divider-line"></div>
+      </div>
+
+
+      <!-- ══ AFTER PANEL ══ -->
+      <div class="wt-ba-panel wt-ba-panel--after wt-ba-animate wt-ba-animate-right">
+
+        <div class="wt-ba-panel-head">
+          <span class="wt-ba-label wt-ba-label--after">WITH TRAINER</span>
+          <div class="wt-ba-panel-icon wt-ba-panel-icon--after">
+            <i class="fas fa-fire-alt"></i>
+          </div>
+        </div>
+
+        <div class="wt-ba-img-wrap">
+          <img
+            class="wt-ba-img"
+            src="https://cdn.shopify.com/s/files/1/0978/0353/4627/files/waist_1.png?v=1775265881"
+            alt="After — with Power Waist Trainer"
+            loading="lazy">
+          <div class="wt-ba-img-overlay"></div>
+
+          <!-- Floating badge -->
+          <div class="wt-ba-measure-badge">
+            <span class="badge-num">−3cm</span>
+            <span class="badge-unit">waist instantly</span>
+          </div>
+
+          <div class="wt-ba-img-stat">
+            <div class="stat-main">✨ Hourglass Figure</div>
+            <div class="stat-sub">Sculpted · Supported · Confident</div>
+          </div>
+        </div>
+
+        <div class="wt-ba-panel-body">
+
+          <div class="wt-ba-metrics">
+            <div>
+              <div class="wt-ba-metric">
+                <span class="wt-ba-metric-label">Waist Definition</span>
+                <span class="wt-ba-metric-val">96%</span>
+              </div>
+              <div class="wt-ba-metric-bar-track">
+                <div class="wt-ba-metric-bar" style="--ba-bar-w:96%;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="wt-ba-metric">
+                <span class="wt-ba-metric-label">Back Support</span>
+                <span class="wt-ba-metric-val">100%</span>
+              </div>
+              <div class="wt-ba-metric-bar-track">
+                <div class="wt-ba-metric-bar" style="--ba-bar-w:100%;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="wt-ba-metric">
+                <span class="wt-ba-metric-label">Posture Correction</span>
+                <span class="wt-ba-metric-val">92%</span>
+              </div>
+              <div class="wt-ba-metric-bar-track">
+                <div class="wt-ba-metric-bar" style="--ba-bar-w:92%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <ul class="wt-ba-features">
+            <li>
+              <div class="wt-ba-feat-icon"><i class="fas fa-check"></i></div>
+              Instant hourglass — 2–3 cm cinched in 5 seconds
+            </li>
+            <li>
+              <div class="wt-ba-feat-icon"><i class="fas fa-check"></i></div>
+              Full lumbar support — back pain gone same day
+            </li>
+            <li>
+              <div class="wt-ba-feat-icon"><i class="fas fa-check"></i></div>
+              Posture straightens automatically under any outfit
+            </li>
+            <li>
+              <div class="wt-ba-feat-icon"><i class="fas fa-check"></i></div>
+              Neoprene heat burns 3× more waist fat per hour
+            </li>
+            <li>
+              <div class="wt-ba-feat-icon"><i class="fas fa-check"></i></div>
+              Confidence at 100% — all day, every day
+            </li>
+          </ul>
+
+          <div class="wt-ba-score-row">
+            <span class="wt-ba-score-label">Confidence Score</span>
+            <div class="wt-ba-score-bar">
+              <div class="wt-ba-score-fill"></div>
+            </div>
+            <span class="wt-ba-score-num">9.5 / 10</span>
+          </div>
+
+        </div>
+      </div><!-- /AFTER -->
+
+    </div><!-- /wt-ba-grid -->
+
+
+    <!-- ── BOTTOM STATS + CTA ── -->
+    <div class="wt-ba-cta-strip wt-ba-animate" style="transition-delay:.3s;">
+
+      <div class="wt-ba-cta-stat">
+        <span class="wt-ba-cta-stat-num" id="ba-count-1">0</span>
+        <span class="wt-ba-cta-stat-label">Women transformed</span>
+      </div>
+
+      <div class="wt-ba-cta-stat">
+        <span class="wt-ba-cta-stat-num">−3 cm</span>
+        <span class="wt-ba-cta-stat-label">Average waist loss</span>
+      </div>
+
+      <div class="wt-ba-cta-stat">
+        <span class="wt-ba-cta-stat-num">5 sec</span>
+        <span class="wt-ba-cta-stat-label">To see results</span>
+      </div>
+
+      <a href="#" class="wt-ba-cta-btn" onclick="window.scrollTo({top:document.querySelector('.product-section').offsetTop,behavior:'smooth'});return false;">
+        <span>Get My Hourglass Figure</span>
+        <i class="fas fa-arrow-right"></i>
+      </a>
+
+    </div>
+
+  </div><!-- /container -->
+</section>
+
+
+
 
 <div class="p2-marquee-trust-bar">
   <div class="p2-marquee-glow-left"></div>
@@ -1122,56 +1473,167 @@
   </div>
 </div>
 
-  <section class="p2-testimonials-section">
-  <div class="container" style="position:relative;z-index:1;">
-    <div style="text-align:center;margin-bottom:36px;">
-      <span class="p2-section-eyebrow">✦ Real Women. Real Results.</span>
-      <h2 class="p2-section-title">They Tried It. They Never Looked Back.</h2>
+  
+
+<!-- ── TRANSFORMATION TRACKER + SOCIAL PROOF WALL — ULTRA PREMIUM ── -->
+<section class="wt-tracker-proof-section">
+  <div class="wt-ambient-orb wt-orb-1"></div>
+  <div class="wt-ambient-orb wt-orb-2"></div>
+  <div class="container">
+
+    <!-- Header -->
+    <div class="wt-tp-header">
+      <span class="wt-tp-eyebrow">
+        <span class="wt-eyebrow-dot"></span>
+        Proven Results
+        <span class="wt-eyebrow-line"></span>
+      </span>
+      <h2 class="wt-tp-title">Calculate Your <em>30-Day</em> Transformation</h2>
+      <p class="wt-tp-sub">Enter your waist size — see exactly what the Power Waist Trainer can do for you, then discover results from women with the same profile.</p>
     </div>
-    <div class="p2-testimonials-grid">
-      <div class="p2-testimonials-track">
-        <div class="p2-testimonial-card">
-          <div class="p2-testimonial-header">
-            <div class="p2-testimonial-avatar">M</div>
-            <div class="p2-testimonial-meta">
-              <h4>Maria L.</h4>
-              <span>Size XXL · Dominican Republic</span>
-            </div>
+
+    <!-- Tracker Card -->
+    <div class="wt-tracker-card">
+      <div class="wt-card-shimmer"></div>
+
+      <div class="wt-tracker-inputs">
+        <div class="wt-field">
+          <label>Your waist size</label>
+          <div class="wt-range-wrap">
+            <input type="range" id="wt-waist" min="60" max="150" value="90" step="1">
+            <div class="wt-range-track-fill" id="waist-fill"></div>
+            <div class="wt-range-glow" id="waist-glow"></div>
           </div>
-          <div class="p2-testimonial-stars">★★★★★</div>
-          <p class="p2-testimonial-text">"I was skeptical because nothing ever fit my waist properly at my size. This trainer not only fits perfectly in 4XL, but my back pain disappeared in the first week. I wear it to work every single day now."</p>
-          <span class="p2-testimonial-result"><i class="fa-solid fa-ruler-horizontal"></i> Lost 6 cm in 3 weeks</span>
+          <div class="wt-field-val"><span id="wt-waist-val">90</span><span class="wt-field-unit"> cm</span></div>
         </div>
-        <div class="p2-testimonial-card">
-          <div class="p2-testimonial-header">
-            <div class="p2-testimonial-avatar">S</div>
-            <div class="p2-testimonial-meta">
-              <h4>Sophia R.</h4>
-              <span>Size L · United States</span>
-            </div>
+        <div class="wt-field">
+          <label>Daily wear</label>
+          <div class="wt-range-wrap">
+            <input type="range" id="wt-hours" min="4" max="10" value="7" step="1">
+            <div class="wt-range-track-fill" id="hours-fill"></div>
+            <div class="wt-range-glow" id="hours-glow"></div>
           </div>
-          <div class="p2-testimonial-stars">★★★★★</div>
-          <p class="p2-testimonial-text">"Wore it under my work dress for a whole day — not once did it roll up or become uncomfortable. My coworkers kept asking if I'd lost weight. I just smiled. Best purchase this year."</p>
-          <span class="p2-testimonial-result"><i class="fa-solid fa-venus"></i> Instant hourglass figure</span>
+          <div class="wt-field-val"><span id="wt-hours-val">7</span><span class="wt-field-unit"> h / day</span></div>
         </div>
-        <div class="p2-testimonial-card">
-          <div class="p2-testimonial-header">
-            <div class="p2-testimonial-avatar">A</div>
-            <div class="p2-testimonial-meta">
-              <h4>Amara K.</h4>
-              <span>Size 3XL · France</span>
-            </div>
-          </div>
-          <div class="p2-testimonial-stars">★★★★★</div>
-          <p class="p2-testimonial-text">"I had a baby 4 months ago and this has been incredible for postpartum recovery. My doctor approved it. My waist is almost back to pre-pregnancy and I feel SO much more supported."</p>
-          <span class="p2-testimonial-result"><i class="fa-solid fa-star"></i> Postpartum transformation</span>
+      </div>
+
+      <!-- Result box -->
+      <div class="wt-result-box">
+        <div class="wt-res-item">
+          <div class="wt-res-sparkle"></div>
+          <div class="wt-res-num" id="res-day1">−2 cm</div>
+          <div class="wt-res-bar-wrap"><div class="wt-res-bar" id="bar-day1" style="--bar-w:30%"></div></div>
+          <div class="wt-res-label">Day 1</div>
+          <div class="wt-res-note">immediate effect</div>
+        </div>
+        <div class="wt-res-item wt-res-center">
+          <div class="wt-res-sparkle"></div>
+          <div class="wt-res-num" id="res-week2">−4 cm</div>
+          <div class="wt-res-bar-wrap"><div class="wt-res-bar" id="bar-week2" style="--bar-w:57%"></div></div>
+          <div class="wt-res-label">Week 2</div>
+          <div class="wt-res-note">visible result</div>
+        </div>
+        <div class="wt-res-item">
+          <div class="wt-res-sparkle"></div>
+          <div class="wt-res-num" id="res-month1">−7 cm</div>
+          <div class="wt-res-bar-wrap"><div class="wt-res-bar wt-res-bar-hero" id="bar-month1" style="--bar-w:100%"></div></div>
+          <div class="wt-res-label">30 Days</div>
+          <div class="wt-res-note">transformation</div>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="wt-timeline">
+        <div class="wt-tl-connector"></div>
+        <div class="wt-tl-step">
+          <div class="wt-tl-dot"><span>D1</span></div>
+          <div class="wt-tl-day">Day 1</div>
+          <div class="wt-tl-val" id="tl-0">−2 cm</div>
+        </div>
+        <div class="wt-tl-step">
+          <div class="wt-tl-dot"><span>W1</span></div>
+          <div class="wt-tl-day">Week 1</div>
+          <div class="wt-tl-val" id="tl-1">−3 cm</div>
+        </div>
+        <div class="wt-tl-step">
+          <div class="wt-tl-dot"><span>W2</span></div>
+          <div class="wt-tl-day">Week 2</div>
+          <div class="wt-tl-val" id="tl-2">−4 cm</div>
+        </div>
+        <div class="wt-tl-step">
+          <div class="wt-tl-dot"><span>W4</span></div>
+          <div class="wt-tl-day">Week 4</div>
+          <div class="wt-tl-val" id="tl-3">−6 cm</div>
+        </div>
+        <div class="wt-tl-step">
+          <div class="wt-tl-dot wt-tl-dot-hero"><span>M1</span></div>
+          <div class="wt-tl-day">30 Days</div>
+          <div class="wt-tl-val" id="tl-4">−7 cm</div>
         </div>
       </div>
     </div>
-    <div class="p2-testimonials-dots">
-      <button class="p2-testimonials-dot active" data-index="0"></button>
-      <button class="p2-testimonials-dot" data-index="1"></button>
-      <button class="p2-testimonials-dot" data-index="2"></button>
+
+    <!-- Wall intro -->
+    <div class="wt-wall-intro">
+      <h3 class="wt-wall-title">Women with a similar profile — <em>their real results</em></h3>
+      <p class="wt-wall-sub" id="wall-sub">Customers between 85–95 cm waist size · verified results</p>
+    </div>
+
+    <!-- Proof wall -->
+    <div class="wt-wall" id="wt-wall">
+
+      <div class="wt-wall-card">
+        <div class="wt-card-glow-ring"></div>
+        <div class="wt-wall-img-wrap">
+          <img src="https://cdn.shopify.com/s/files/1/0978/0353/4627/files/waist_1.png?v=1775265881" alt="Customer result" loading="lazy">
+          <div class="wt-img-sheen"></div>
+        </div>
+        <div class="wt-wall-body">
+          <div class="wt-wall-name" id="c1-name">Maria L.</div>
+          <div class="wt-wall-loc" id="c1-loc">Size XXL · Dominican Republic</div>
+          <span class="wt-wall-result" id="c1-res">
+            <span class="wt-result-dot"></span>−6 cm in 3 weeks
+          </span>
+          <div class="wt-wall-stars">★★★★★</div>
+          <p class="wt-wall-quote" id="c1-q">"My back pain disappeared within a week. I wear it every single day."</p>
+        </div>
+      </div>
+
+      <div class="wt-wall-card wt-wall-card-featured">
+        <div class="wt-card-glow-ring"></div>
+        <div class="wt-featured-badge">Most Popular</div>
+        <div class="wt-wall-img-wrap">
+          <img src="https://cdn.shopify.com/s/files/1/0978/0353/4627/files/waist_prod.png?v=1775265881" alt="Customer result" loading="lazy">
+          <div class="wt-img-sheen"></div>
+        </div>
+        <div class="wt-wall-body">
+          <div class="wt-wall-name" id="c2-name">Sophia R.</div>
+          <div class="wt-wall-loc" id="c2-loc">Size L · United States</div>
+          <span class="wt-wall-result" id="c2-res">
+            <span class="wt-result-dot"></span>Instant hourglass figure
+          </span>
+          <div class="wt-wall-stars">★★★★★</div>
+          <p class="wt-wall-quote" id="c2-q">"My coworkers asked if I had lost weight. I just smiled."</p>
+        </div>
+      </div>
+
+      <div class="wt-wall-card">
+        <div class="wt-card-glow-ring"></div>
+        <div class="wt-wall-img-wrap">
+          <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow4_a9227abc-e102-4a7b-98f6-099ddcb7d64e.webp?v=1771884540" alt="Customer result" loading="lazy">
+          <div class="wt-img-sheen"></div>
+        </div>
+        <div class="wt-wall-body">
+          <div class="wt-wall-name" id="c3-name">Amara K.</div>
+          <div class="wt-wall-loc" id="c3-loc">Size 3XL · France</div>
+          <span class="wt-wall-result" id="c3-res">
+            <span class="wt-result-dot"></span>−5 cm postpartum
+          </span>
+          <div class="wt-wall-stars">★★★★★</div>
+          <p class="wt-wall-quote" id="c3-q">"My doctor approved it. My waist is almost back to pre-pregnancy."</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>

@@ -2321,18 +2321,19 @@ window.updateWishlistIcons = updateWishlistIcons;
           existing.quantity += 1;
         } else {
           cart.push({
-            id:            prodId,
-            title:         prod.title,
-            price:         price,
-            compare_price: comparePrice,
-            image:         image,
-            size:          size  || null,
-            color:         color || null,
-            quantity:      1,
-            fromUpsell:    true,
-            cj_product_id: prod.cj_id,
-            cj_variant_id: cjVariantId
-          });
+          id:            prodId,
+          title:         prod.title,
+          price:         price,
+          compare_price: comparePrice,
+          image:         image,
+          size:          size  || null,
+          color:         color || null,
+          quantity:      1,
+          fromUpsell:    true,
+          upsellDiscount: discountPct,
+          cj_product_id: prod.cj_id,
+          cj_variant_id: cjVariantId
+      });
         }
         added++;
       });
