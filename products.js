@@ -2101,3 +2101,193 @@ document.addEventListener('DOMContentLoaded', function () {
 
 })();
 
+
+
+
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   CF WAVE INJECTOR v5 — Colle parfaitement entre les blocs
+   Annule padding-bottom du bloc précédent
+   et padding-top du bloc suivant
+═══════════════════════════════════════════════════════════════ */
+
+(function () {
+  'use strict';
+
+  var FILL = '#fcb8db73';
+
+  var PATHS_A = [
+    [
+      'M0,18 C240,22 480,8 720,18 C960,22 1200,8 1440,18 L1440,22 L0,22 Z',
+      'M0,12 C200,20 420,4 680,16 C920,22 1160,6 1440,14 L1440,22 L0,22 Z',
+      'M0,18 C180,6 400,22 640,14 C880,2 1100,20 1440,16 L1440,22 L0,22 Z',
+      'M0,18 C240,22 480,8 720,18 C960,22 1200,8 1440,18 L1440,22 L0,22 Z',
+    ],
+    [
+      'M0,10 C300,22 600,4 900,16 C1100,22 1300,6 1440,12 L1440,22 L0,22 Z',
+      'M0,16 C260,8 520,22 780,12 C1040,0 1260,18 1440,14 L1440,22 L0,22 Z',
+      'M0,12 C200,20 440,2 700,14 C960,22 1180,8 1440,12 L1440,22 L0,22 Z',
+      'M0,10 C300,22 600,4 900,16 C1100,22 1300,6 1440,12 L1440,22 L0,22 Z',
+    ],
+    [
+      'M0,18 C120,10 280,22 520,14 C760,4 980,20 1200,12 C1320,8 1390,18 1440,16 L1440,22 L0,22 Z',
+      'M0,12 C100,20 240,6 480,16 C720,22 940,8 1160,16 C1300,20 1380,12 1440,14 L1440,22 L0,22 Z',
+      'M0,16 C80,8 220,20 460,10 C700,2 940,18 1160,12 C1300,6 1390,16 1440,14 L1440,22 L0,22 Z',
+      'M0,18 C120,10 280,22 520,14 C760,4 980,20 1200,12 C1320,8 1390,18 1440,16 L1440,22 L0,22 Z',
+    ],
+  ];
+
+  var PATHS_B = [
+    [
+      'M0,6 C220,18 460,2 700,10 C940,18 1160,4 1440,8 L1440,22 L0,22 Z',
+      'M0,12 C200,6 440,18 680,8 C920,0 1160,16 1440,10 L1440,22 L0,22 Z',
+      'M0,4 C240,16 480,0 720,10 C960,18 1200,4 1440,6 L1440,22 L0,22 Z',
+      'M0,6 C220,18 460,2 700,10 C940,18 1160,4 1440,8 L1440,22 L0,22 Z',
+    ],
+    [
+      'M0,10 C280,4 540,18 800,8 C1060,0 1260,16 1440,10 L1440,22 L0,22 Z',
+      'M0,16 C260,10 500,20 740,12 C980,4 1200,18 1440,14 L1440,22 L0,22 Z',
+      'M0,8 C300,18 560,4 800,14 C1040,20 1240,8 1440,10 L1440,22 L0,22 Z',
+      'M0,10 C280,4 540,18 800,8 C1060,0 1260,16 1440,10 L1440,22 L0,22 Z',
+    ],
+    [
+      'M0,16 C100,8 240,20 480,12 C720,4 960,18 1200,10 C1340,6 1410,16 1440,14 L1440,22 L0,22 Z',
+      'M0,10 C120,18 260,4 500,14 C740,20 980,6 1220,16 C1350,20 1410,10 1440,12 L1440,22 L0,22 Z',
+      'M0,14 C80,6 220,18 460,8 C700,2 940,16 1160,10 C1300,6 1390,16 1440,12 L1440,22 L0,22 Z',
+      'M0,16 C100,8 240,20 480,12 C720,4 960,18 1200,10 C1340,6 1410,16 1440,14 L1440,22 L0,22 Z',
+    ],
+  ];
+
+  var DUR_A = ['7s', '9s', '6s'];
+  var DUR_B = ['5s', '7s', '4.5s'];
+  var waveIdx = 0;
+
+  function makeWave() {
+    var i  = waveIdx % 3;
+    var pA = PATHS_A[i].join(';');
+    var pB = PATHS_B[i].join(';');
+    waveIdx++;
+
+    var div = document.createElement('div');
+    div.className = 'cf-wave-divider';
+    div.setAttribute('aria-hidden', 'true');
+    div.innerHTML =
+      '<svg viewBox="0 0 1440 22" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' +
+        '<path fill="' + FILL + '" fill-opacity="0.18">' +
+          '<animate attributeName="d" dur="' + DUR_B[i] + '" repeatCount="indefinite" ' +
+            'calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" ' +
+            'values="' + pB + '"/>' +
+        '</path>' +
+        '<path fill="' + FILL + '" fill-opacity="1">' +
+          '<animate attributeName="d" dur="' + DUR_A[i] + '" repeatCount="indefinite" ' +
+            'calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" ' +
+            'values="' + pA + '"/>' +
+        '</path>' +
+      '</svg>';
+
+    return div;
+  }
+
+  var TARGETS = new Set([
+    'paul-title-block',
+    'unique-star-rating-container',
+    'fc-block',
+    'pp-trust-strip',
+    'pp-marquee-wrap',
+    'product-price-wrapper',
+    'pp-urgency-bar',
+    'pp-stock-block',
+    'bundle-save-container',
+    'p2-upsell-block',
+    'live-viewers',
+    'delivery-info',
+    'product-options',
+    'quantity-add-wrapper',
+    'pp-benefits-block',
+    'size-chart-paul-guide-wrapper',
+    'paul_story_bloc__wrapper',
+    'paul-details-accordion',
+    'paul-images-block',
+    'paul-faq-block',
+    'wt-transform-block',
+    'wt-howtowear',
+    'wt-science-block',
+    'wt-results-block',
+    'wt-material-block',
+    'wt-guarantee-banner',
+    'jr-stats-block',
+    'jr-challenge-block',
+  ]);
+
+  function isTarget(el) {
+    return Array.from(el.classList).some(function (c) { return TARGETS.has(c); });
+  }
+
+  function stripSpacing(el) {
+    /* Annule le padding/margin bas du bloc précédent le wave */
+    el.style.setProperty('padding-bottom', '0', 'important');
+    el.style.setProperty('margin-bottom',  '0', 'important');
+  }
+
+  function stripSpacingTop(el) {
+    /* Annule le padding/margin haut du bloc suivant le wave */
+    el.style.setProperty('padding-top', '0', 'important');
+    el.style.setProperty('margin-top',  '0', 'important');
+  }
+
+  function inject() {
+    var container = document.querySelector('.product-content');
+    if (!container) return;
+
+    var blocks = Array.from(container.children).filter(function (el) {
+      if (el.classList.contains('cf-wave-divider')) return false;
+      if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return false;
+      return isTarget(el);
+    });
+
+    if (blocks.length < 2) return;
+
+    blocks.forEach(function (block, i) {
+      if (i === 0) return;
+      var prev    = blocks[i - 1];
+      var between = prev.nextElementSibling;
+      if (between && between.classList.contains('cf-wave-divider')) return;
+
+      /* Colle les blocs adjacents */
+      stripSpacing(prev);
+      stripSpacingTop(block);
+
+      var wave = makeWave();
+      container.insertBefore(wave, block);
+    });
+  }
+
+  function boot() {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        setTimeout(inject, 220);
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  var tries = 0;
+  var poll = setInterval(function () {
+    tries++;
+    var hasBlocks = document.querySelector('.product-content .pp-urgency-bar, .product-content .bundle-save-container');
+    var hasWaves  = document.querySelector('.cf-wave-divider');
+    if (hasBlocks && !hasWaves) { waveIdx = 0; inject(); }
+    if (tries >= 30) clearInterval(poll);
+  }, 300);
+
+})();
+
+
+
