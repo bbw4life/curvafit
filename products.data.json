@@ -105,8 +105,8 @@
     "image_hover": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/waist_prod.png?v=1775265881",
     "sizes": ["S","M","L","XL","XXL","XXXL","4XL","5XL","6XL"],
     "colors": [
-      {"name": "Fuchsia","hex": "#FF00FF","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_12_3eda61ad-07b1-49f1-882c-220e14a421fc.webp?v=1754486479","active": true},
-      {"name": "Black","hex": "#000000","image": "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Memory_Foam_9_1a5d96a4-6cc8-43e2-9bf6-9f130ea40742.webp?v=1754486478","active": true}
+      {"name": "Fuchsia","hex": "#FF00FF","image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_pink.png?v=1776820869","active": true},
+      {"name": "Black","hex": "#000000","image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_black.png?v=1776820871","active": true}
     ],
     "variants": [
       {"vid": "710072492","color": "Fuchsia","size": "6XL","price": 34.99,"active": true},
@@ -129,15 +129,20 @@
       {"vid": "710072475","color": "Black","size": "S","price": 34.99,"active": true}
     ],
     "media": [
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow4_a9227abc-e102-4a7b-98f6-099ddcb7d64e.webp?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_7_34cbe5a0-ea02-44e1-9021-6fc9a0f59e47.webp?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_9_fd535894-2578-4b8a-84a2-a7c29f33289a.webp?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_1_ca309500-70b6-4522-ab42-b7e8f8ba2e35.jpg?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_10_c2cd7523-2b38-43db-800d-1add343d16b6.jpg?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_6_eecf21aa-e517-4bb3-8a8f-acba192c2ee5.jpg?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_8_a061f9a0-813c-4cf1-8bc4-2e953051174a.jpg?v=1771884540",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_2_2931fd8b-047d-465b-8043-b7d7126b39f7.jpg?v=1771884541",
-      "https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Support_Pillow_3_6f466031-c570-4b5a-a705-f3df71589a31.png?v=1771884541"
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/waist_1_d7768175-7bc1-42c0-986e-47a64ba2e2bd.png?v=1776823755",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_1.png?v=1776820872",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_2.png?v=1776820870",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_3.png?v=1776820872",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_4.png?v=1776820875",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_5.png?v=1776820870",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_6.png?v=1776820875",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_7.png?v=1776820875",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_8.png?v=1776820875",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_9.png?v=1776820875",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_10.png?v=1776820871",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_11.png?v=1776820875",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_12.png?v=1776820865",
+      "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/prod_waist_1.png?v=1776820872"
     ]
   },
   {
