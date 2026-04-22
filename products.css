@@ -841,7 +841,7 @@
     font-size: 13px !important;
     color: var(--rose) !important;
     font-weight: 800;
-    margin-bottom: 10px; margin-top: 2px;
+    margin-bottom: 10px; margin-top: 10px;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     display: flex;
@@ -14337,50 +14337,5 @@ body {
   .jrgq-opt { flex-direction: row; text-align: left; padding: 14px 16px; gap: 14px; }
   .jrgq-opt-icon-wrap { margin-bottom: 0; flex-shrink: 0; width: 48px; height: 48px; }
   .jrgq-opt--large { flex-direction: column; align-items: center; text-align: center; }
-}
-
-
-/* ═══════════════════════════════════════
-   CF WAVE DIVIDER — v5 — ZÉRO ESPACE
-═══════════════════════════════════════ */
-
-.cf-wave-divider {
-  display: block;
-  position: relative;
-  width: 100%;
-  height: 20px;
-  overflow: hidden;
-  margin: 0 !important;
-  padding: 0 !important;
-  line-height: 0;
-  font-size: 0;
-  pointer-events: none;
-  z-index: 2;
-  /* Colle parfaitement au bloc précédent et suivant */
-  margin-top: 0px !important;
-  margin-bottom: 0px !important;
-}
-
-.cf-wave-divider svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-/* Force les blocs adjacents au wave à zéro margin/padding bas/haut */
-.cf-wave-divider + * {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-
-* + .cf-wave-divider {
-  margin-top: 0 !important;
-}
-
-@media (max-width: 768px) {
-  .cf-wave-divider { height: 14px; }
 }
 
