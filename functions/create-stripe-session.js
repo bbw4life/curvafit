@@ -48,11 +48,26 @@ export async function onRequestPost(context) {
 
     const cart = sanitizedCart;
 
+    const siteBaseUrl = getSiteBaseUrl(request, env);
+
+    // Stripe requires absolute image URLs. Product and ebook images in the
+    // catalog are commonly site-relative paths such as `/img/cover.png`.
+    const getStripeImageUrl = (image) => {
+      if (!image) return null;
+      try {
+        const url = new URL(String(image).trim(), `${siteBaseUrl}/`);
+        return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null;
+      } catch {
+        return null;
+      }
+    };
+
     // ── Build Stripe line items ──
     const lineItems = cart.map(item => {
       const price = parseFloat(item.price);
       const qty   = parseInt(item.quantity);
       if (price < 0 || !qty) throw new Error("Invalid item");
+      const imageUrl = getStripeImageUrl(item.image);
 
       // Free promo items: Stripe requires unit_amount >= 0
       // Use $0.01 minimum only if Stripe rejects 0 — here we pass 0 for free items
@@ -61,7 +76,7 @@ export async function onRequestPost(context) {
           currency: 'usd',
           product_data: {
             name:   item.isFreePromo ? `🎁 FREE: ${item.title}` : item.title,
-            images: item.image ? [item.image] : []
+            images: imageUrl ? [imageUrl] : []
           },
           unit_amount: Math.round(price * 100) // 0 for free promo items
         },
@@ -105,7 +120,6 @@ export async function onRequestPost(context) {
       discounts.push({ coupon: coupon.id });
     }
 
-    const siteBaseUrl = getSiteBaseUrl(request, env);
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
