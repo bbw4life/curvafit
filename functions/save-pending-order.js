@@ -104,18 +104,20 @@ export async function onRequestPost(context) {
     if (!success) throw new Error("Aucun onglet n'a fonctionné");
 
     // ── Notification Telegram ──────────────────────────────────────
-    await notifyTelegram(
-      `🛍️ <b>Pdg Francenel, une nouvelle commande vient de passer!</b>\n\n` +
-      `🆔 <b>Order ID:</b> ${internalOrderId}\n` +
-      `👤 <b>Client:</b> ${shipping.fullName}\n` +
-      `📧 <b>Email:</b> ${shipping.email}\n` +
-      `💳 <b>Paiement:</b> ${payment_provider}\n` +
-      `💰 <b>Montant vérifié:</b> $${(parseFloat(orderTotal) || 0).toFixed(2)}\n` +
-      `📦 <b>Quantité:</b> ${item.quantity || 1}\n` +
-      `🌍 <b>Pays:</b> ${shipping.country}\n` +
-      `🚚 <b>Fulfillment:</b> ${fulfillment_method.toUpperCase()}`,
-      env
-    );
+    if (fulfillment_method !== 'digital') {
+      await notifyTelegram(
+        `🛍️ <b>Pdg Francenel, une nouvelle commande vient de passer!</b>\n\n` +
+        `🆔 <b>Order ID:</b> ${internalOrderId}\n` +
+        `👤 <b>Client:</b> ${shipping.fullName}\n` +
+        `📧 <b>Email:</b> ${shipping.email}\n` +
+        `💳 <b>Paiement:</b> ${payment_provider}\n` +
+        `💰 <b>Montant vérifié:</b> $${(parseFloat(orderTotal) || 0).toFixed(2)}\n` +
+        `📦 <b>Quantité:</b> ${item.quantity || 1}\n` +
+        `🌍 <b>Pays:</b> ${shipping.country}\n` +
+        `🚚 <b>Fulfillment:</b> ${fulfillment_method.toUpperCase()}`,
+        env
+      );
+    }
 
     return response(200, { success: true });
 

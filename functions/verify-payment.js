@@ -6,7 +6,21 @@ const {
 } = require('./_lib/temp-orders-store');
 const { getAllProductsData } = require('./_lib/pricing');
 const { notifyCustomerTelegram } = require('./_lib/telegram-broadcast');
+const { notifyTelegram } = require('./_lib/notify-telegram');
 const { getNextOrderNumber } = require('./_lib/order-number');
+const { EBOOK_TITLES, getEbookSelection } = require('./_lib/ebook-downloads');
+const { getSiteBaseUrl } = require('./_lib/site-url');
+
+const DIGITAL_EBOOK_IDS = new Set([
+  'Pdg-Francenel-product1',
+  'Pdg-Francenel-product2',
+  'Pdg-Francenel-product3',
+  'Pdg-Francenel-product15'
+]);
+
+function escapeTelegramHtml(value) {
+  return String(value || '').replace(/[&<>]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[char]);
+}
 
 // PayPal ne renvoie aucun identifiant produit interne dans ses items — on le
 // retrouve après coup via le variant id (sku), pour que l'historique de
@@ -25,7 +39,7 @@ function response(statusCode, body) {
 
 async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, status = "pending_stock", fulfillment_method = "eprolo", orderTotal = 0, orderNumber = "") {
   try {
-    await fetch(`${BASE_URL}/save-pending-order`, {
+    const result = await fetch(`${BASE_URL}/save-pending-order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -39,8 +53,11 @@ async function saveAsPending(item, shipping, BASE_URL, provider, paymentId, stat
         orderNumber          // ← NOUVEAU : numéro de commande propre envoyé au client (colonne X)
       })
     });
+    if (!result.ok) throw new Error(`HTTP ${result.status}: ${(await result.text()).slice(0, 250)}`);
+    return true;
   } catch (e) {
-    console.error("saveAsPending failed:", e.message);
+    console.error(`[VERIFY PAYMENT] saveAsPending failed (${fulfillment_method}):`, e.message);
+    return false;
   }
 }
 
@@ -80,7 +97,7 @@ export async function onRequestPost(context) {
     let paymentVerified = false;
     let session;
     let purchaseUnit;
-    const BASE_URL = env.BASE_URL || env.URL || new URL(request.url).origin;
+    const BASE_URL = getSiteBaseUrl(request, env);
     console.log(`🔗 BASE_URL utilisée : ${BASE_URL}`);
 
     // ====================== STRIPE ======================
@@ -240,6 +257,15 @@ export async function onRequestPost(context) {
 
     if (!paymentVerified || cart.length === 0) throw new Error("Payment verification failed or cart empty");
 
+    const ebookSelections = cart.map(item => getEbookSelection({
+      id: item.id,
+      variantsid: item.variantsid,
+      color: item.color
+    }));
+    const isDigitalEbookOrder = cart.length > 0 && ebookSelections.every(selection =>
+      selection && DIGITAL_EBOOK_IDS.has(selection.productId)
+    );
+
     // ── Déduire le solde du code promo affilié — SEULEMENT maintenant que
     //    le paiement est réellement confirmé (jamais au clic "Apply" côté
     //    client, pour ne pas brûler le solde d'un client sur un paiement
@@ -300,6 +326,37 @@ export async function onRequestPost(context) {
       variantsid:    item.variantsid    || ''
     }));
 
+    const ebookOrderItems = isDigitalEbookOrder
+      ? orderItems.map((item, index) => ({
+          ...item,
+          product_id: ebookSelections[index].productId,
+          title: EBOOK_TITLES[ebookSelections[index].productId] || item.title,
+          language: ebookSelections[index].language
+        }))
+      : orderItems;
+    const ebookDownloadUrl = provider === 'stripe'
+      ? `${BASE_URL}/thankyou.html?session_id=${encodeURIComponent(paymentId)}`
+      : provider === 'paypal'
+        ? `${BASE_URL}/thankyou.html?token=${encodeURIComponent(paymentId)}`
+        : `${BASE_URL}/thankyou.html?provider=nowpayments&orderId=${encodeURIComponent(paymentId)}`;
+
+    // Ebooks still need paid order rows for secure R2 downloads, but must not
+    // enter the physical Eprolo/CJ fulfillment queue.
+    if (isDigitalEbookOrder) {
+      let ebookRowsSaved = true;
+      for (let index = 0; index < cart.length; index++) {
+        const selection = ebookSelections[index];
+        const saved = await saveAsPending({
+          ...cart[index],
+          id: selection.productId,
+          variantsid: selection.variantId,
+          color: selection.language
+        }, shipping, BASE_URL, provider, paymentId, 'successful', 'digital', totalAmount, orderNumber);
+        if (!saved) ebookRowsSaved = false;
+      }
+      console.log(`[VERIFY PAYMENT] Digital ebook rows saved: ${ebookRowsSaved} (${cart.length} item(s)); physical fulfillment skipped`);
+    }
+
     if (shipping.email) {
       await fetch(`${BASE_URL}/save-account`, {
         method: "POST",
@@ -325,13 +382,14 @@ export async function onRequestPost(context) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            trigger:    'order_confirm',
+            trigger:    isDigitalEbookOrder ? 'ebook_order_confirm' : 'order_confirm',
             email:      shipping.email,
             firstName:  shipping.firstName || '',
             lastName:   shipping.lastName  || '',
             orderId:    orderNumber,
-            items:      orderItems,
+            items:      isDigitalEbookOrder ? ebookOrderItems : orderItems,
             total:      totalAmount,
+            ...(isDigitalEbookOrder ? { downloadUrl: ebookDownloadUrl } : {}),
             shippingAddress: [
               shipping.address,
               shipping.city,
@@ -339,13 +397,30 @@ export async function onRequestPost(context) {
               shipping.country
             ].filter(Boolean).join(', ')
           })
-        }).catch(e => console.warn('[Email] order_confirm failed:', e.message))
+        }).then(async response => {
+          if (!response.ok) console.warn(`[Email] ${isDigitalEbookOrder ? 'ebook_order_confirm' : 'order_confirm'} returned HTTP ${response.status}: ${(await response.text()).slice(0, 250)}`);
+        }).catch(e => console.warn(`[Email] ${isDigitalEbookOrder ? 'ebook_order_confirm' : 'order_confirm'} failed:`, e.message))
       );
     }
 
     // ── Telegram : confirmation de commande au client lié (best effort,
     //    ne bloque jamais le reste si l'envoi échoue) ──
-    if (shipping.email) {
+    if (shipping.email && isDigitalEbookOrder) {
+      const itemLines = ebookOrderItems.map(item =>
+        `• <b>${escapeTelegramHtml(item.title)}</b> — ${escapeTelegramHtml(({ en: 'English', fr: 'French', es: 'Spanish' })[item.language] || item.language)} × ${item.quantity}`
+      ).join('\n');
+      context.waitUntil(
+        notifyCustomerTelegram(
+          shipping.email,
+          firstName => `${escapeTelegramHtml(firstName)}, your Curvafit digital order is confirmed! 🎉\n\n` +
+            `<b>Order:</b> ${escapeTelegramHtml(orderNumber)}\n${itemLines}\n\n` +
+            `<b>Total:</b> $${totalAmount.toFixed(2)}\n\n` +
+            `<a href="${escapeTelegramHtml(ebookDownloadUrl)}">Open your secure ebook downloads</a>`,
+          undefined,
+          env
+        ).catch(e => console.warn('[Telegram] ebook customer confirmation failed:', e.message))
+      );
+    } else if (shipping.email) {
       const itemsList = orderItems.map(it => `• ${it.title}${it.size ? ` (${it.size})` : ''} × ${it.quantity}`).join('\n');
       context.waitUntil(
         notifyCustomerTelegram(
@@ -360,6 +435,23 @@ export async function onRequestPost(context) {
           undefined,
           env
         ).catch(e => console.warn('[Telegram] order_confirm failed:', e.message))
+      );
+    }
+
+    if (isDigitalEbookOrder) {
+      const itemLines = ebookOrderItems.map(item =>
+        `• ${escapeTelegramHtml(item.title)} (${escapeTelegramHtml(item.language)}) × ${item.quantity}`
+      ).join('\n');
+      context.waitUntil(
+        notifyTelegram(
+          `📘 <b>Nouvelle commande Curvafit — ebook confirmé</b>\n\n` +
+          `<b>Commande :</b> ${escapeTelegramHtml(orderNumber)}\n` +
+          `<b>Client :</b> ${escapeTelegramHtml(`${shipping.firstName || ''} ${shipping.lastName || ''}`.trim())}\n` +
+          `<b>Email :</b> ${escapeTelegramHtml(shipping.email)}\n` +
+          `<b>Paiement :</b> ${escapeTelegramHtml(provider)}\n` +
+          `<b>Montant :</b> $${totalAmount.toFixed(2)}\n\n${itemLines}`,
+          env
+        ).catch(e => console.warn('[Telegram] ebook owner notification failed:', e.message))
       );
     }
 
@@ -411,6 +503,10 @@ export async function onRequestPost(context) {
     }
 
     console.log("=== DÉBUT FULFILLMENT SÉQUENTIEL ===");
+    if (isDigitalEbookOrder) {
+      console.log('[VERIFY PAYMENT] Ebook order complete; no supplier fulfillment required');
+      return response(200, { success: true, fulfillmentStatus: 'digital', orderNumber });
+    }
     const cartMap = {};
     cart.forEach(item => {
       const vid = item.variantsid || null;

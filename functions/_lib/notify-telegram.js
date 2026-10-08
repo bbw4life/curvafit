@@ -1,6 +1,6 @@
 async function notifyTelegram(message, env) {
   try {
-    await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    const response = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -9,6 +9,9 @@ async function notifyTelegram(message, env) {
         parse_mode: 'HTML'
       })
     });
+    if (!response.ok) {
+      console.warn('[Telegram] Notification rejected:', response.status, (await response.text()).slice(0, 250));
+    }
   } catch (e) {
     console.warn('[Telegram] Notification failed:', e.message);
   }

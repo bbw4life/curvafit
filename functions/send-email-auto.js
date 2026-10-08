@@ -25,6 +25,7 @@ function getFromEmail(env) { return env.FROM_EMAIL || 'BBW4LIFE <bbw4life@bbw4li
 const T = {
   WELCOME:            'welcome',
   ORDER_CONFIRM:      'order_confirm',
+  EBOOK_ORDER_CONFIRM:'ebook_order_confirm',
   ORDER_TRACKING:     'order_tracking',
   NEWSLETTER_1:       'newsletter_1',
   NEWSLETTER_2:       'newsletter_2',
@@ -449,6 +450,7 @@ async function runTrackingChecker(sheets, settings, env) {
     // internalOrderId pour les commandes créées avant l'ajout de ce champ.
     const customerOrderId    = row[23] || internalOrderId;
 
+    if (fulfillmentMethod === 'digital') continue;
     if (trackingCol)                   continue;
     if (status !== 'successful')       continue;
     if (!email || !email.includes('@')) continue;
@@ -1522,6 +1524,57 @@ async function composeOrderConfirm(data, settings, env) {
   };
 }
 
+// Curvafit digital orders use a dedicated receipt and a secure return link.
+// Physical-order confirmation remains on composeOrderConfirm unchanged.
+function composeEbookOrderConfirm(data, settings, env) {
+  const escapeHtml = value => String(value == null ? '' : value).replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char]);
+  const baseUrl = env.BASE_URL || 'https://curvafit.com';
+  const firstName = escapeHtml(data.firstName || 'there');
+  const orderId = escapeHtml(data.orderId || 'Curvafit');
+  const downloadUrl = escapeHtml(data.downloadUrl || `${baseUrl}/thankyou.html`);
+  const languageNames = { en: 'English', fr: 'French', es: 'Spanish' };
+  const items = (Array.isArray(data.items) ? data.items : []).map(item => `
+    <tr>
+      <td style="padding:14px 0;border-bottom:1px solid #eee5ef;color:#382444;font:600 15px Arial,sans-serif;">
+        ${escapeHtml(item.title)}<br>
+        <span style="color:#887b91;font:12px Arial,sans-serif;">${escapeHtml(languageNames[item.language] || item.language || '')} · Qty ${escapeHtml(item.quantity || 1)}</span>
+      </td>
+      <td align="right" style="padding:14px 0;border-bottom:1px solid #eee5ef;color:#382444;font:600 14px Arial,sans-serif;">
+        $${(Number(item.lineTotal) || (Number(item.price) || 0) * (Number(item.quantity) || 1)).toFixed(2)}
+      </td>
+    </tr>`).join('');
+  const total = (Number(data.total) || 0).toFixed(2);
+
+  return {
+    subject: `Your Curvafit digital order is confirmed · #${orderId}`,
+    html: `<!doctype html><html><body style="margin:0;background:#f8f3f8;padding:28px 12px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td align="center">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#fff;border:1px solid #eee5ef;border-radius:18px;overflow:hidden;font-family:Arial,sans-serif;">
+          <tr><td style="padding:28px;text-align:center;background:linear-gradient(120deg,#7138a5,#d84d91);color:#fff;">
+            <div style="font-size:23px;font-weight:700;letter-spacing:.12em;">CURVAFIT</div>
+            <div style="margin-top:8px;font-size:12px;letter-spacing:.1em;">GENTLE GUIDANCE. STEADY HABITS. YOUR PACE.</div>
+          </td></tr>
+          <tr><td style="padding:30px;color:#382444;">
+            <h1 style="margin:0 0 12px;font-size:25px;">Your digital order is confirmed</h1>
+            <p style="margin:0 0 22px;color:#776b80;line-height:1.65;">Hi ${firstName}, thank you for choosing Curvafit. Your payment is confirmed and your guides are ready to access.</p>
+            <p style="margin:0 0 8px;font-size:13px;color:#776b80;">ORDER <strong style="color:#382444;">#${orderId}</strong></p>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">${items}
+              <tr><td style="padding:18px 0;font-weight:700;">Total</td><td align="right" style="padding:18px 0;color:#7138a5;font-size:18px;font-weight:700;">$${total}</td></tr>
+            </table>
+            <div style="padding:12px 0 20px;text-align:center;">
+              <a href="${downloadUrl}" style="display:inline-block;padding:15px 24px;border-radius:999px;background:#612a91;color:#fff;text-decoration:none;font-weight:700;">Access my digital guides</a>
+            </div>
+            <p style="margin:0;color:#776b80;font-size:13px;line-height:1.65;">This secure link opens your Curvafit confirmation page and prepares your downloads. If you need help, visit <a href="${escapeHtml(baseUrl)}/page/contact.html" style="color:#7138a5;">Curvafit support</a>.</p>
+          </td></tr>
+          <tr><td style="padding:18px;text-align:center;background:#fbf8fc;color:#887b91;font-size:11px;">Curvafit · Gentle guidance, at your pace.</td></tr>
+        </table>
+      </td></tr></table>
+    </body></html>`
+  };
+}
+
 // ── 3. Order Tracking ─────────────────────────────────────────
 async function composeOrderTracking(data, settings, env) {
   const BASE_URL = getBaseUrl(env);
@@ -2189,6 +2242,13 @@ export async function onRequestPost(context) {
       const dedupeType = `${T.ORDER_CONFIRM}_${body.orderId || Date.now()}`;
       await trySend(email, dedupeType,
         () => composeOrderConfirm(body, settings, env),
+        sheets, sentLog, results, env);
+    }
+
+    if (trigger === T.EBOOK_ORDER_CONFIRM) {
+      const dedupeType = `${T.EBOOK_ORDER_CONFIRM}_${body.orderId || Date.now()}`;
+      await trySend(email, dedupeType,
+        () => composeEbookOrderConfirm(body, settings, env),
         sheets, sentLog, results, env);
     }
 
