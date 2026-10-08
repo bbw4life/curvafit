@@ -1,10 +1,10 @@
-name = "curvafit-cron-worker"
+name = "bbw4life-cron-worker"
 main = "index.js"
 compatibility_date = "2026-09-01"
 compatibility_flags = ["nodejs_compat"]
 
 # ─────────────────────────────────────────────────────────────
-# CURVAFIT — Cron Worker
+# Shared BBW4LIFE and Curvafit Cron Worker
 #
 # Cloudflare Pages Functions (le dossier functions/ à la racine du
 # projet, déployé comme Cloudflare Pages) ne supporte PAS les Cron
@@ -12,7 +12,7 @@ compatibility_flags = ["nodejs_compat"]
 # "purs". Ce Worker séparé n'a qu'un rôle : se réveiller aux mêmes
 # fréquences que les [functions.X] schedule = "..." de netlify.toml,
 # et appeler par fetch() l'endpoint HTTP correspondant déjà migré
-# dans functions/ (ex: https://curvafit.pages.dev/retry-pending-order).
+# dans functions/ sur les deux sites (même chemin, domaine propre à chaque site).
 #
 # Toute la LOGIQUE des tâches reste dans les Pages Functions — ce
 # Worker est un simple déclencheur, jamais une réimplémentation.
@@ -20,12 +20,13 @@ compatibility_flags = ["nodejs_compat"]
 # Déploiement : `wrangler deploy` depuis ce dossier (cron-worker/),
 # séparément du déploiement Cloudflare Pages du reste du site.
 #
-# BASE_URL cible le déploiement Pages Curvafit.
-# Le Worker appelle les endpoints Pages Functions aux heures configurées ci-dessous.
+# BASE_URL cible BBW4LIFE; CURVAFIT_BASE_URL cible Curvafit.
+# Le Worker appelle les mêmes chemins sur les deux domaines aux horaires configurés ci-dessous.
 # ─────────────────────────────────────────────────────────────
 
 [vars]
-BASE_URL = "https://curvafit.pages.dev"
+BASE_URL = "https://bbw4life.com"
+CURVAFIT_BASE_URL = "https://curvafit.com"
 
 # Chaque entrée reproduit exactement une fréquence de netlify.toml.
 # Format cron standard 5 champs, UTC uniquement (pas de fuseau horaire

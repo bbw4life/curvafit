@@ -23,7 +23,7 @@
     },
     "title": "Gentle Walking - 4-Week Walking Guide",
     "description": "A gentle 4-week walking PDF with gradual weekly plans, optional short walks, progress tracking, Sunday reflections, and a kind plan for missed days. Choose English, French, or Spanish.",
-    "price": 28.93,
+    "price": 1.00,
     "compare_price": 39.99,
     "image": "/img/Curvafit%20-%20Gentle%20Walking%20ENG.png",
     "image_hover": "/img/Gentle%20Walking-hover.png",
@@ -33,9 +33,9 @@
       { "name": "Spanish", "image": "/img/Curvafit%20%E2%80%93%20Caminata%20Suave%20ES.png", "active": true }
     ],
     "variants": [
-      { "vid": "348860196", "color": "English", "price": 28.93, "active": true },
-      { "vid": "730214313", "color": "French", "price": 28.93, "active": true },
-      { "vid": "954315224", "color": "Spanish", "price": 28.93, "active": true }
+      { "vid": "348860196", "color": "English", "price": 1.00, "active": true },
+      { "vid": "730214313", "color": "French", "price": 1.00, "active": true },
+      { "vid": "954315224", "color": "Spanish", "price": 1.00, "active": true }
     ],
     "media": [
       "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Gentle-Walking-Francenel-1.png?v=1791307497",

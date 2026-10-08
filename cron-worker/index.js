@@ -37,19 +37,21 @@ export default {
       return;
     }
 
-    const baseUrl = env.BASE_URL || "https://curvafit.pages.dev";
+    const baseUrls = [
+      env.BASE_URL || "https://bbw4life.com",
+      env.CURVAFIT_BASE_URL || "https://curvafit.com",
+    ].map((url) => url.replace(/\/+$/, ""));
 
-    const calls = endpoints.map(async (path) => {
+    const calls = baseUrls.flatMap((baseUrl) => endpoints.map(async (path) => {
       const url = `${baseUrl}${path}`;
       try {
         const res = await fetch(url, { method: "GET" });
         const text = await res.text().catch(() => "");
-        console.log(`[cron-worker] ${path} -> ${res.status}: ${text.slice(0, 300)}`);
+        console.log(`[cron-worker] ${url} -> ${res.status}: ${text.slice(0, 300)}`);
       } catch (err) {
-        console.error(`[cron-worker] ${path} FAILED:`, err.message);
+        console.error(`[cron-worker] ${url} FAILED:`, err.message);
       }
-    });
-
+    }));
     // waitUntil garantit que le Worker reste actif jusqu'à la fin des
     // appels fetch, même après la fin logique de scheduled().
     ctx.waitUntil(Promise.all(calls));
@@ -58,6 +60,6 @@ export default {
   // Pas de trafic HTTP normal attendu sur ce Worker — répond simplement
   // pour confirmer qu'il est déployé et vivant si quelqu'un visite son URL.
   async fetch() {
-    return new Response("CURVAFIT cron worker is running.", { status: 200 });
+    return new Response("Shared BBW4LIFE and Curvafit cron worker is running.", { status: 200 });
   },
 };
