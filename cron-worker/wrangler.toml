@@ -26,7 +26,7 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 BASE_URL = "https://bbw4life.com"
-CURVAFIT_BASE_URL = "https://curvafit.com"
+CURVAFIT_BASE_URL = "https://curvafit.pages.dev"
 
 # Chaque entrée reproduit exactement une fréquence de netlify.toml.
 # Format cron standard 5 champs, UTC uniquement (pas de fuseau horaire
