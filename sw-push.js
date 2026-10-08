@@ -10,7 +10,7 @@ self.addEventListener('push', function (event) {
   let data = {};
   try { data = event.data ? event.data.json() : {}; } catch (e) {}
 
-  const title   = data.title || 'BBW4LIFE';
+  const title   = data.title || 'Curvafit';
   const hasCart = data.hasCart === true;
 
   // Un seul bouton d'action (pas de "Dismiss") : avec 2+ actions, certains
@@ -27,8 +27,8 @@ self.addEventListener('push', function (event) {
 
   const options = {
     body: data.body || 'You have items waiting in your cart 🛍️',
-    icon: data.icon || 'https://bbw4life.com/public/bbw4life-favicon.png',
-    badge: data.badge || 'https://bbw4life.com/public/bbw4life-favicon.png',
+    icon: data.icon || '/public/Logo-Curvafit.png',
+    badge: data.badge || '/public/Logo-Curvafit.png',
     image: data.image || undefined,
     tag: 'bbw4life-cart-reminder',
     renotify: true,

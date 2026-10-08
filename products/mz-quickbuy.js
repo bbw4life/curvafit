@@ -35,6 +35,14 @@
 
     if (!quickbuy) return;
 
+    const productId = (document.querySelector('.product-section') || {}).dataset?.productId || '';
+    const isDigitalEbook = [
+      'Pdg-Francenel-product1',
+      'Pdg-Francenel-product2',
+      'Pdg-Francenel-product3',
+      'Pdg-Francenel-product15'
+    ].includes(productId);
+
     const realQtyInput   = document.querySelector('.quantity-add-wrapper .quantity input');
     const realSizeSelect = document.getElementById('size-select');
     const realAddBtn     = document.querySelector('.quantity-add-wrapper .add-to-cart');
@@ -44,9 +52,16 @@
     const mzQtyMinus    = document.getElementById('mzQtyMinus');
     const mzQtyPlus     = document.getElementById('mzQtyPlus');
     const mzAddBtn      = document.getElementById('mzAddToCart');
+    const mzBuyNowBtn   = document.getElementById('mzBuyNow');
     const mzSizeSelect  = document.getElementById('mzSizeSelect');
     const mzColorSelect = document.getElementById('mzColorSelect');
     const mzColorPreview= document.getElementById('mzColorPreview');
+
+    if (mzBuyNowBtn) mzBuyNowBtn.hidden = !isDigitalEbook;
+    if (isDigitalEbook && mzSizeSelect) {
+      const sizeField = mzSizeSelect.closest('.mz-quickbuy__field');
+      if (sizeField) sizeField.style.display = 'none';
+    }
 
     /* ── Quantité : reflète et pilote le vrai champ ── */
     function syncQtyFromReal() {
@@ -87,6 +102,10 @@
     function syncSizeOptionsFromReal() {
       if (!realSizeSelect || !mzSizeSelect) return;
       const mzSizeField = mzSizeSelect.closest('.mz-quickbuy__field');
+      if (isDigitalEbook) {
+        if (mzSizeField) mzSizeField.style.display = 'none';
+        return;
+      }
       if (!realSizeSelect.options.length) {
         if (mzSizeField) mzSizeField.style.display = 'none';
         return;
@@ -171,6 +190,25 @@
         e.preventDefault();
         e.stopPropagation();
         if (realAddBtn) realAddBtn.click();
+      });
+    }
+
+    /* Pour les ebooks, le quick-buy mobile réutilise le Buy Now principal :
+       le choix de langue actif et la quantité passent ainsi par le même
+       popup et la même construction de variante que les autres boutons. */
+    if (isDigitalEbook && mzBuyNowBtn) {
+      mzBuyNowBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        pushQtyToReal(mzQtyInput ? mzQtyInput.value : 1);
+        if (mzColorSelect) {
+          mzColorSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        const realBuyNowBtn = document.querySelector('.product-section .buy-now');
+        if (realBuyNowBtn) realBuyNowBtn.click();
+        else if (typeof window.showErrorPopup === 'function') {
+          window.showErrorPopup('Secure checkout is not ready yet. Please try again in a moment.');
+        }
       });
     }
 

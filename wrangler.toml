@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────
-# BBW4LIFE — Cloudflare Pages configuration
+# Curvafit — Cloudflare Pages configuration
 #
 # Ce fichier configure le déploiement Cloudflare Pages du site
 # (fichiers statiques à la racine + Pages Functions dans functions/).
@@ -16,7 +16,7 @@
 # directory: "/").
 # ─────────────────────────────────────────────────────────────
 
-name = "bbw4life"
+name = "curvafit"
 pages_build_output_dir = "."
 compatibility_date = "2026-09-01"
 
@@ -27,3 +27,9 @@ compatibility_date = "2026-09-01"
 # verify-payment.js, save-account.js, send-email-auto.js, et la quasi-
 # totalité des ~48 functions migrées qui utilisent googleapis.
 compatibility_flags = ["nodejs_compat"]
+
+# Private R2 storage for Curvafit ebook PDFs. Create this bucket in the
+# Cloudflare account before deploying Pages with this binding.
+[[r2_buckets]]
+binding = "EBOOKS_BUCKET"
+bucket_name = "curvafit-ebooks"

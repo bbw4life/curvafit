@@ -13,6 +13,20 @@
 (function () {
   'use strict';
 
+  var DIGITAL_PRODUCT_IDS = new Set([
+    'Pdg-Francenel-product1',
+    'Pdg-Francenel-product2',
+    'Pdg-Francenel-product3',
+    'Pdg-Francenel-product15'
+  ]);
+  var DIGITAL_PRODUCT_NOTES = {
+    'Pdg-Francenel-product1': 'No shortcuts or extreme routines. Use your guide at home to plan gentle walks, build a steady rhythm, and take one step at a time.',
+    'Pdg-Francenel-product2': 'No strict food rules or perfect weeks required. Use simple meal grids and shopping lists, then choose your next practical meal without judgment.',
+    'Pdg-Francenel-product3': 'No equipment or pressure to perform. Choose your level, use the chair option, and move at your own pace with rest built in.',
+    'Pdg-Francenel-product15': 'A missed day is not a failure. Skip punishment and catch-up plans; restart with one small step, without guilt.'
+  };
+  var EBOOK_CART_STORAGE_KEY = 'curvafit_ebook_order_cart';
+
   var HTML = `
 <div class="ppsm-overlay" id="ppsmOverlay">
   <div class="ppsm-modal">
@@ -121,19 +135,181 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     if (!document.querySelector('.buy-paypal')) return; // pas de bouton PayPal sur cette page
+    var productSection = document.querySelector('.product-section');
+    var productId = productSection ? productSection.dataset.productId : '';
+    var isDigitalProduct = DIGITAL_PRODUCT_IDS.has(productId);
     var container = document.createElement('div');
     container.innerHTML = HTML;
     document.body.appendChild(container);
-    initModal();
+    if (isDigitalProduct) configureDigitalProductModal(container, productId);
+    initModal(isDigitalProduct);
   });
 
-  function initModal() {
+  function configureDigitalProductModal(container, productId) {
+    var modal = container.querySelector('.ppsm-modal');
+    var overlay = container.querySelector('.ppsm-overlay');
+    var form = container.querySelector('#ppsm-shipping-form');
+    if (!modal || !form) return;
+
+    modal.classList.add('ppsm-modal--digital');
+    if (overlay) overlay.classList.add('ppsm-overlay--digital');
+    var title = modal.querySelector('.ppsm-title');
+    var subtitle = modal.querySelector('.ppsm-subtitle');
+    if (title) title.textContent = 'Complete Your Purchase';
+    if (subtitle) subtitle.textContent = 'Enter your contact details and choose a payment method.';
+
+    var orderSummary = document.createElement('section');
+    orderSummary.className = 'ppsm-ebook-order';
+    orderSummary.setAttribute('aria-label', 'Ebook order summary');
+    orderSummary.innerHTML = '<div class="ppsm-ebook-order__top"><div class="ppsm-ebook-order__heading"><span class="ppsm-ebook-order__icon" aria-hidden="true"><i class="fas fa-shopping-cart"></i></span><div><strong>Your ebooks</strong><span class="ppsm-ebook-order__count" id="ppsm-ebook-item-count">0 items</span></div></div><div class="ppsm-ebook-add"><div class="ppsm-ebook-add__selects"><label>Choose another ebook<select id="ppsm-ebook-product"><option value="">Choose an ebook</option></select></label><label>Choose your language<select id="ppsm-ebook-language" disabled><option value="">Choose a language</option></select></label></div><div class="ppsm-ebook-add__actions"><label>Quantity<span class="ppsm-ebook-quantity-control"><button type="button" class="ppsm-ebook-quantity-step" data-step="-1" aria-label="Decrease quantity">−</button><input id="ppsm-ebook-quantity" type="number" min="1" step="1" value="1" inputmode="numeric" aria-label="Quantity"><button type="button" class="ppsm-ebook-quantity-step" data-step="1" aria-label="Increase quantity">+</button></span></label><button type="button" id="ppsm-ebook-add-button">Add it</button></div></div><button type="button" class="ppsm-ebook-order__toggle" id="ppsm-ebook-order-toggle" aria-expanded="true" aria-controls="ppsm-ebook-order-items" aria-label="Collapse ebook summary"><i class="fas fa-chevron-up" aria-hidden="true"></i></button></div><div class="ppsm-ebook-order__items" id="ppsm-ebook-order-items"></div>';
+    subtitle && subtitle.insertAdjacentElement('afterend', orderSummary);
+    configureEbookAddControls(orderSummary);
+
+    var promoBlock = form.querySelector('#ppsm-promo-input');
+    promoBlock = promoBlock && promoBlock.closest('.ppsm-full');
+    if (promoBlock && DIGITAL_PRODUCT_NOTES[productId]) {
+      var encouragement = document.createElement('p');
+      encouragement.className = 'ppsm-digital-ebook-note';
+      encouragement.textContent = DIGITAL_PRODUCT_NOTES[productId];
+      promoBlock.appendChild(encouragement);
+    }
+
+    var paymentMarkup = `
+      <div class="ppsm-full ppsm-payment-method">
+        <label>Payment Method</label>
+        <div class="ppsm-payment-options">
+          <label class="ppsm-payment-card" data-method="stripe">
+            <input type="radio" name="ppsm-payment" value="stripe" checked>
+            <span class="ppsm-payment-card__title">Pay with Credit Card</span>
+            <span class="ppsm-payment-card__detail">Secured by Stripe</span>
+            <span class="ppsm-payment-card__icons">
+              <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Visa.png?v=1771670819" alt="Visa">
+              <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/mastercard.png?v=1771670819" alt="Mastercard">
+              <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Apple_Pay_3ff29ddb-d1e6-4391-97c1-e6ce3c11e29d.png?v=1771724676" alt="Apple Pay">
+              <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/pay_google.png?v=1771724676" alt="Google Pay">
+            </span>
+          </label>
+          <label class="ppsm-payment-card" data-method="paypal">
+            <input type="radio" name="ppsm-payment" value="paypal">
+            <span class="ppsm-payment-card__title">Pay with PayPal</span>
+            <span class="ppsm-payment-card__detail">Buyer Protection</span>
+            <span class="ppsm-payment-card__icons">
+              <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/paypal_logo.png?v=1773850289" alt="PayPal">
+              <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/Visa.png?v=1771670819" alt="Visa">
+              <img src="https://cdn.shopify.com/s/files/1/0643/8263/2041/files/mastercard.png?v=1771670819" alt="Mastercard">
+            </span>
+          </label>
+          <label class="ppsm-payment-card ppsm-payment-card--crypto" data-method="nowpayments">
+            <input type="radio" name="ppsm-payment" value="nowpayments">
+            <span class="ppsm-payment-card__title">Pay with Crypto</span>
+            <span class="ppsm-payment-card__detail">Powered by NOWPayments</span>
+            <span class="ppsm-payment-card__icons">
+              <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/btc.png?v=1783466134" alt="Bitcoin">
+              <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/eth.png?v=1783466134" alt="Ethereum">
+              <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/usdt.png?v=1783466260" alt="Tether USDT">
+            </span>
+          </label>
+        </div>
+      </div>`;
+    var emailField = form.querySelector('#ppsm-email');
+    if (emailField) emailField.closest('.ppsm-full').insertAdjacentHTML('afterend', paymentMarkup);
+
+    [
+      '#ppsm-phone', '#ppsm-country-wrapper', '#ppsm-city-wrapper',
+      '#ppsm-state', '#ppsm-postal-code', '#ppsm-address', '#ppsm-shipping-options'
+    ].forEach(function (selector) {
+      var field = form.querySelector(selector);
+      if (!field) return;
+      var wrapper = field.closest('.ppsm-full') ||
+        (field.classList.contains('ppsm-select-wrapper') ? field.parentElement : field.parentElement);
+      if (wrapper && wrapper !== form) wrapper.remove();
+    });
+
+    ['#ppsm-subtotal', '#ppsm-taxes', '#ppsm-shipping'].forEach(function (selector) {
+      var value = modal.querySelector(selector);
+      var row = value && value.closest('p');
+      if (row) row.remove();
+    });
+  }
+
+  function readSavedEbookCart() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(EBOOK_CART_STORAGE_KEY));
+      return Array.isArray(saved) ? saved.filter(function (item) { return item && DIGITAL_PRODUCT_IDS.has(item.id); }) : [];
+    } catch (e) { return []; }
+  }
+
+  function saveEbookCart(cart) {
+    try { localStorage.setItem(EBOOK_CART_STORAGE_KEY, JSON.stringify(cart)); } catch (e) { /* storage may be unavailable */ }
+  }
+
+  function mergeEbookCarts(existing, additions) {
+    var merged = existing.map(function (item) { return Object.assign({}, item); });
+    additions.forEach(function (item) {
+      if (!item || !DIGITAL_PRODUCT_IDS.has(item.id)) return;
+      var match = merged.find(function (saved) {
+        return saved.id === item.id && (saved.color || saved.language || '') === (item.color || item.language || '') && (saved.size || '') === (item.size || '');
+      });
+      if (match) match.quantity = (Number(match.quantity) || 0) + (Number(item.quantity) || 1);
+      else merged.push(Object.assign({}, item, { quantity: Math.max(1, Number(item.quantity) || 1) }));
+    });
+    return merged;
+  }
+
+  function configureEbookAddControls(summary) {
+    var productSelect = summary.querySelector('#ppsm-ebook-product');
+    var languageSelect = summary.querySelector('#ppsm-ebook-language');
+    if (!productSelect || !languageSelect) return;
+
+    fetch('/products.data.json')
+      .then(function (response) { if (!response.ok) throw new Error('Product list unavailable'); return response.json(); })
+      .then(function (data) {
+        var ebooks = data.filter(function (product) { return product && DIGITAL_PRODUCT_IDS.has(product.id); });
+        ebooks.forEach(function (product) {
+          var option = document.createElement('option');
+          option.value = product.id;
+          option.textContent = product.title;
+          productSelect.appendChild(option);
+        });
+        productSelect.addEventListener('change', function () {
+          languageSelect.replaceChildren(new Option('Choose a language', ''));
+          var selected = ebooks.find(function (product) { return product.id === productSelect.value; });
+          var languages = selected ? (selected.colors || []).filter(function (color) { return color.active !== false; }) : [];
+          languages.forEach(function (language) { languageSelect.add(new Option(language.name, language.name)); });
+          languageSelect.disabled = !languages.length;
+        });
+        summary.dataset.ebookProductsReady = 'yes';
+        summary._ebookProducts = ebooks;
+      })
+      .catch(function (error) { console.warn('[EBOOK CART]', error.message); });
+  }
+
+  function initModal(isDigitalProduct) {
     var overlay      = document.getElementById('ppsmOverlay');
     var closeBtn      = document.getElementById('ppsmClose');
     var continueBtn   = document.getElementById('ppsm-continue-btn');
 
     closeBtn.addEventListener('click', closeModal);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+
+    var digitalPaymentOptions = document.querySelectorAll('input[name="ppsm-payment"]');
+    function getDigitalPaymentMethod() {
+      var selected = document.querySelector('input[name="ppsm-payment"]:checked');
+      return selected ? selected.value : 'stripe';
+    }
+    function updateDigitalPaymentButton() {
+      if (!isDigitalProduct || !continueBtn) return;
+      var labels = { stripe: 'Pay with Card', paypal: 'Pay with PayPal', nowpayments: 'Pay with Crypto' };
+      var method = getDigitalPaymentMethod();
+      continueBtn.textContent = labels[method] || 'Pay Now';
+      continueBtn.dataset.paymentMethod = method;
+    }
+    if (isDigitalProduct) {
+      digitalPaymentOptions.forEach(function (option) {
+        option.addEventListener('change', updateDigitalPaymentButton);
+      });
+      updateDigitalPaymentButton();
+    }
 
     // Verrouille le scroll du body tant que le popup est ouvert — sans ça,
     // sur mobile, scroller à l'intérieur du popup peut aussi faire défiler
@@ -161,7 +337,12 @@
     function closeModal() {
       overlay.classList.remove('active');
       unlockBodyScroll();
-      if (continueBtn) { continueBtn.disabled = false; continueBtn.textContent = 'Continue with PayPal'; }
+      if (isDigitalProduct) window.__curvafitDirectPurchaseCart = null;
+      if (continueBtn) {
+        continueBtn.disabled = false;
+        if (isDigitalProduct) updateDigitalPaymentButton();
+        else continueBtn.textContent = 'Continue with PayPal';
+      }
     }
 
     // ── Shipping method selection ──
@@ -193,9 +374,21 @@
           var method = el.dataset.delayFor;
           if (delayMap[method]) el.textContent = delayMap[method];
         });
+        if (isDigitalProduct) {
+          var cryptoOption = document.querySelector('.ppsm-payment-card--crypto');
+          var cryptoEnabled = (settings.show_nowpayments || 'yes').toLowerCase().trim() === 'yes';
+          if (cryptoOption) cryptoOption.style.display = cryptoEnabled ? '' : 'none';
+          if (!cryptoEnabled) {
+            var selectedCrypto = document.querySelector('input[name="ppsm-payment"][value="nowpayments"]');
+            var stripeOption = document.querySelector('input[name="ppsm-payment"][value="stripe"]');
+            if (selectedCrypto && selectedCrypto.checked && stripeOption) {
+              stripeOption.checked = true;
+              updateDigitalPaymentButton();
+            }
+          }
+        }
 
-        var cart = [];
-        try { cart = JSON.parse(localStorage.getItem('cart')) || []; } catch (e) { cart = []; }
+        var cart = getCart();
         var cd = settings.cart_drawer || {};
         var countFreeForPromo = (cd.promo_count_free_items || 'No').toLowerCase() === 'yes';
         var totalQuantity = countFreeForPromo
@@ -257,9 +450,152 @@
     // (paypal-create-order.js → computeServerTotal) au clic final. ──
     var appliedDiscountAmount = 0;
     function getCart() {
+      if (Array.isArray(window.__curvafitDirectPurchaseCart)) {
+        return window.__curvafitDirectPurchaseCart;
+      }
       var cart = [];
       try { cart = JSON.parse(localStorage.getItem('cart')) || []; } catch (e) { cart = []; }
       return cart;
+    }
+    function updateEbookOrderSummary() {
+      if (!isDigitalProduct) return;
+      var itemsEl = document.getElementById('ppsm-ebook-order-items');
+      var countEl = document.getElementById('ppsm-ebook-item-count');
+      if (!itemsEl || !countEl) return;
+
+      // Ce mini-récapitulatif lit uniquement le panier direct des ebooks.
+      // Il ne consulte ni ne modifie le panier global stocké dans localStorage.
+      var ebookCart = Array.isArray(window.__curvafitDirectPurchaseCart)
+        ? window.__curvafitDirectPurchaseCart
+        : [];
+      var itemCount = ebookCart.reduce(function (sum, item) {
+        return sum + Math.max(0, Number(item.quantity) || 0);
+      }, 0);
+      countEl.textContent = itemCount + (itemCount === 1 ? ' item' : ' items');
+      itemsEl.replaceChildren();
+
+      ebookCart.forEach(function (item, index) {
+        var quantity = Math.max(0, Number(item.quantity) || 0);
+        if (!quantity) return;
+        var row = document.createElement('div');
+        row.className = 'ppsm-ebook-order__item';
+        var details = document.createElement('div');
+        details.className = 'ppsm-ebook-order__details';
+        var name = document.createElement('strong');
+        name.textContent = item.title || 'Curvafit ebook';
+        var meta = document.createElement('span');
+        var language = item.color || item.language || '';
+        meta.textContent = [language, 'Qty ' + quantity].filter(Boolean).join(' · ');
+        var amount = document.createElement('span');
+        amount.className = 'ppsm-ebook-order__price';
+        amount.textContent = '$' + ((Number(item.price) || 0) * quantity).toFixed(2);
+        var removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'ppsm-ebook-order__remove';
+        removeButton.dataset.ebookIndex = String(index);
+        removeButton.setAttribute('aria-label', 'Remove ' + (item.title || 'ebook') + ' (' + language + ')');
+        removeButton.innerHTML = '<i class="fas fa-trash-alt" aria-hidden="true"></i>';
+        details.append(name, meta);
+        var actions = document.createElement('div');
+        actions.className = 'ppsm-ebook-order__actions';
+        actions.append(amount, removeButton);
+        row.append(details, actions);
+        itemsEl.appendChild(row);
+      });
+      if (!itemCount) {
+        var empty = document.createElement('span');
+        empty.className = 'ppsm-ebook-order__empty';
+        empty.textContent = 'Your selected ebooks will appear here.';
+        itemsEl.appendChild(empty);
+      }
+    }
+    if (isDigitalProduct) {
+      var orderPanel = document.querySelector('.ppsm-ebook-order');
+      var orderToggle = document.getElementById('ppsm-ebook-order-toggle');
+      var addEbookButton = document.getElementById('ppsm-ebook-add-button');
+      if (orderToggle && orderPanel) {
+        orderToggle.addEventListener('click', function () {
+          var collapsed = orderPanel.classList.toggle('is-collapsed');
+          orderToggle.setAttribute('aria-expanded', String(!collapsed));
+          orderToggle.setAttribute('aria-label', collapsed ? 'Expand ebook summary' : 'Collapse ebook summary');
+          var icon = orderToggle.querySelector('i');
+          if (icon) icon.className = collapsed ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
+        });
+      }
+      if (addEbookButton && orderPanel) {
+        addEbookButton.addEventListener('click', function () {
+          var productSelect = orderPanel.querySelector('#ppsm-ebook-product');
+          var languageSelect = orderPanel.querySelector('#ppsm-ebook-language');
+          var quantityInput = orderPanel.querySelector('#ppsm-ebook-quantity');
+          var product = (orderPanel._ebookProducts || []).find(function (item) { return item.id === (productSelect && productSelect.value); });
+          var language = languageSelect && languageSelect.value;
+          var quantity = Math.max(1, parseInt(quantityInput && quantityInput.value, 10) || 1);
+          if (!product || !language) {
+            if (typeof window.showErrorPopup === 'function') window.showErrorPopup('Choose an ebook and its language first.');
+            return;
+          }
+          var selectedColor = (product.colors || []).find(function (color) { return color.name === language; });
+          var variant = (product.variants || []).find(function (item) { return item.color === language && item.active !== false; });
+          if (!variant) {
+            if (typeof window.showErrorPopup === 'function') window.showErrorPopup('This ebook language is currently unavailable.');
+            return;
+          }
+          var cart = Array.isArray(window.__curvafitDirectPurchaseCart)
+            ? window.__curvafitDirectPurchaseCart.map(function (item) { return Object.assign({}, item); })
+            : readSavedEbookCart();
+          cart = mergeEbookCarts(cart, [{
+            id: product.id,
+            title: product.title,
+            price: Number(variant.price) || Number(product.price) || 0,
+            compare_price: Number(product.compare_price) || Number(variant.price) || 0,
+            image: selectedColor && selectedColor.image ? selectedColor.image : product.image || '',
+            color: language,
+            size: null,
+            quantity: quantity,
+            cj_product_id: product.cj_product_id || product.eprolo_id || null,
+            cj_variant_id: variant.vid
+          }]);
+          window.__curvafitDirectPurchaseCart = cart;
+          saveEbookCart(cart);
+          updateEbookOrderSummary();
+          updateSummary();
+          refreshPromoAndDelays();
+          if (productSelect) productSelect.value = '';
+          if (languageSelect) {
+            languageSelect.replaceChildren(new Option('Choose a language', ''));
+            languageSelect.disabled = true;
+          }
+          if (quantityInput) quantityInput.value = '1';
+        });
+      }
+      if (orderPanel) {
+        orderPanel.querySelectorAll('.ppsm-ebook-quantity-step').forEach(function (button) {
+          button.addEventListener('click', function () {
+            var input = orderPanel.querySelector('#ppsm-ebook-quantity');
+            var current = Math.max(1, parseInt(input && input.value, 10) || 1);
+            var next = Math.max(1, current + Number(button.dataset.step || 0));
+            if (input) input.value = String(next);
+          });
+        });
+        var ebookItems = orderPanel.querySelector('#ppsm-ebook-order-items');
+        if (ebookItems) {
+          ebookItems.addEventListener('click', function (event) {
+            var removeButton = event.target.closest('.ppsm-ebook-order__remove');
+            if (!removeButton) return;
+            var index = Number(removeButton.dataset.ebookIndex);
+            var cart = Array.isArray(window.__curvafitDirectPurchaseCart)
+              ? window.__curvafitDirectPurchaseCart.map(function (item) { return Object.assign({}, item); })
+              : readSavedEbookCart();
+            if (!Number.isInteger(index) || index < 0 || index >= cart.length) return;
+            cart.splice(index, 1);
+            window.__curvafitDirectPurchaseCart = cart;
+            saveEbookCart(cart);
+            updateEbookOrderSummary();
+            updateSummary();
+            refreshPromoAndDelays();
+          });
+        }
+      }
     }
     function getSubtotal() {
       return getCart().reduce(function (sum, item) { return sum + (Number(item.price) || 0) * (Number(item.quantity) || 0); }, 0);
@@ -289,7 +625,7 @@
       if (shippingEl) shippingEl.textContent = effectiveShipping === 0 ? 'FREE' : '$' + effectiveShipping.toFixed(2);
       if (totalEl) totalEl.textContent = '$' + finalTotal.toFixed(2);
       if (promoLineEl && discountEl) {
-        if (appliedDiscountAmount > 0) {
+        if (isDigitalProduct || appliedDiscountAmount > 0) {
           promoLineEl.style.display = 'flex';
           discountEl.textContent = '-$' + appliedDiscountAmount.toFixed(2);
         } else {
@@ -519,6 +855,28 @@
 
     // ── Form validation (même logique que validateForm() de checkout.js) ──
     function validateForm() {
+      if (isDigitalProduct) {
+        var requiredDigitalIds = ['ppsm-first-name', 'ppsm-last-name', 'ppsm-email'];
+        var digitalValid = true;
+        requiredDigitalIds.forEach(function (id) {
+          var field = document.getElementById(id);
+          if (!field || !field.value.trim()) {
+            digitalValid = false;
+            if (field) field.style.borderColor = 'red';
+          } else {
+            field.style.borderColor = '';
+          }
+        });
+        var digitalEmail = document.getElementById('ppsm-email');
+        if (digitalEmail && digitalEmail.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(digitalEmail.value.trim())) {
+          digitalValid = false;
+          digitalEmail.style.borderColor = 'red';
+        }
+        if (!digitalValid && typeof window.showErrorPopup === 'function') {
+          window.showErrorPopup('Please enter your first name, last name, and a valid email address.');
+        }
+        return digitalValid;
+      }
       var requiredIds = ['ppsm-first-name', 'ppsm-last-name', 'ppsm-email', 'ppsm-address', 'ppsm-postal-code', 'ppsm-phone', 'ppsm-state'];
       var valid = true;
       requiredIds.forEach(function (id) {
@@ -581,8 +939,81 @@
       };
     }
 
+    function loadStripeSdk() {
+      if (window.Stripe) return Promise.resolve();
+      if (window.ppsmStripeLoadPromise) return window.ppsmStripeLoadPromise;
+      window.ppsmStripeLoadPromise = new Promise(function (resolve, reject) {
+        var script = document.createElement('script');
+        script.src = 'https://js.stripe.com/v3/';
+        script.onload = resolve;
+        script.onerror = function () { reject(new Error('Card payment is temporarily unavailable.')); };
+        document.head.appendChild(script);
+      });
+      return window.ppsmStripeLoadPromise;
+    }
+
+    async function continueDigitalPayment() {
+      if (!validateForm()) return;
+      var cart = getCart();
+      if (!cart.length) {
+        if (typeof window.showErrorPopup === 'function') window.showErrorPopup('Your cart is empty.');
+        return;
+      }
+
+      continueBtn.disabled = true;
+      continueBtn.textContent = 'Processing...';
+      var paymentMethod = getDigitalPaymentMethod();
+      var shippingData = {
+        firstName: document.getElementById('ppsm-first-name').value.trim(),
+        lastName: document.getElementById('ppsm-last-name').value.trim(),
+        email: document.getElementById('ppsm-email').value.trim(),
+        shipping_method: 'Standard Shipping',
+        fulfillment_method: 'eprolo',
+        affRef: (typeof window.getAffRef === 'function' ? window.getAffRef() : null) || localStorage.getItem('aff_ref') || ''
+      };
+      var promoCode = document.getElementById('ppsm-promo-input').value.trim().toUpperCase() || null;
+      var endpoint = paymentMethod === 'stripe'
+        ? '/create-stripe-session'
+        : paymentMethod === 'nowpayments'
+          ? '/nowpayments-create-order'
+          : '/paypal-create-order';
+
+      try {
+        var response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cart: cart, shipping: shippingData, promoCode: promoCode })
+        });
+        var data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Payment could not be started.');
+
+        if (paymentMethod === 'stripe') {
+          if (!data.sessionId) throw new Error('Card payment could not be started.');
+          await loadStripeSdk();
+          var stripe = window.Stripe('pk_live_51PMDwoF9QAVBUyaU9ffneo6gWLCCPP94en6PPapDPawI9mnKqWBnJUjTbjUzjw3B8Et2ZWLBQHfCxm2djyCkzvXw00sP60H2NX');
+          localStorage.setItem('pendingOrder', 'stripe');
+          var redirectResult = await stripe.redirectToCheckout({ sessionId: data.sessionId });
+          if (redirectResult && redirectResult.error) throw new Error(redirectResult.error.message || 'Card payment redirect failed.');
+        } else if (paymentMethod === 'paypal') {
+          if (!data.orderID) throw new Error('PayPal payment could not be started.');
+          localStorage.setItem('pendingOrder', 'paypal');
+          window.location.href = (data.paypalDomain || 'https://www.sandbox.paypal.com') + '/checkoutnow?token=' + data.orderID;
+        } else {
+          if (!data.invoiceUrl) throw new Error('Crypto payment could not be started.');
+          localStorage.setItem('pendingOrder', 'nowpayments');
+          window.location.href = data.invoiceUrl;
+        }
+      } catch (error) {
+        console.error('[DIGITAL CHECKOUT]', error.message);
+        if (typeof window.showErrorPopup === 'function') window.showErrorPopup(error.message || 'Payment failed. Please try again.');
+        continueBtn.disabled = false;
+        updateDigitalPaymentButton();
+      }
+    }
+
     // ── Continue button : valide, crée la commande PayPal, redirige ──
     continueBtn.addEventListener('click', function () {
+      if (isDigitalProduct) { continueDigitalPayment(); return; }
       if (!validateForm()) return;
 
       continueBtn.disabled = true;
@@ -630,6 +1061,13 @@
 
     // ── Exposé globalement pour que script.js (buyWithPaypal) puisse l'ouvrir ──
     window.openPaypalShippingModal = function () {
+      if (isDigitalProduct) {
+        var additions = Array.isArray(window.__curvafitDirectPurchaseCart) ? window.__curvafitDirectPurchaseCart : [];
+        var savedCart = mergeEbookCarts(readSavedEbookCart(), additions);
+        window.__curvafitDirectPurchaseCart = savedCart;
+        saveEbookCart(savedCart);
+      }
+      updateEbookOrderSummary();
       overlay.classList.add('active');
       lockBodyScroll();
       refreshPromoAndDelays(); // panier à jour : recalcule le code promo suggéré

@@ -8,6 +8,9 @@ node_modules/
 .env.cloudflare
 .env.*
 
+# Ebook source PDFs stay local; uploads go directly to the private R2 bucket.
+/ebooks-to-upload/
+
 # Local-only scripts (not for GitHub)
 fetch-shopify-product-images.js
 compact-json.js

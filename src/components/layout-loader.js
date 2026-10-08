@@ -1,15 +1,11 @@
 (function () {
   'use strict';
 
-  // ── Cache localStorage du HTML header/footer/breadcrumb/newsletter ──
-  // But : éviter le flash visuel de rechargement quand on revient sur une
-  // page déjà visitée (header/footer/etc. réinjectés à chaque fois par
-  // fetch). On sert la version en cache immédiatement (sans attendre le
-  // réseau), puis on revalide en arrière-plan pour garder le cache à jour
-  // si header.html/footer.html changent plus tard.
-  var CACHE_VERSION = 'v3';
+  // ── Cache localStorage de secours pour les fragments HTML ──
+  // Le cache sert immédiatement de secours visuel, mais chaque chargement
+  // vérifie toujours la version réseau pour afficher rapidement les mises à jour.
+  var CACHE_VERSION = 'v7';
   var CACHE_PREFIX = 'bbw_layout_cache_' + CACHE_VERSION + '_';
-  var CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24h : re-fetch même si cache présent, au cas où le contenu a changé
 
   function cacheKey(url) { return CACHE_PREFIX + url; }
 
@@ -31,10 +27,9 @@
 
   /**
    * Charge un fragment HTML dans un container.
-   * - Si un cache valide existe : injection immédiate (synchrone), puis
-   *   revalidation silencieuse en arrière-plan (le DOM n'est ré-injecté
-   *   que si le contenu réseau diffère du cache, pour éviter tout flash).
-   * - Sinon : fetch normal, injection + mise en cache pour la prochaine fois.
+   * - Le cache local s'affiche immédiatement s'il existe, pour éviter un flash.
+   * - Une requête sans cache navigateur vérifie toujours le fragment réseau.
+   * - Le HTML réseau remplace le cache dès qu'il diffère.
    * @param {string} url
    * @param {string} containerId
    * @param {(html: string) => void} onInject - reçoit le HTML injecté (pour poser des <script> après coup, dispatch d'event, etc.)
@@ -52,15 +47,11 @@
       if (onInject) onInject(cached.html);
     }
 
-    var isStale = !cached || (Date.now() - cached.ts) > CACHE_MAX_AGE_MS;
-
-    // Si on a servi depuis le cache et qu'il n'est pas trop vieux, on ne
-    // revalide même pas en arrière-plan tout de suite — évite un fetch
-    // réseau inutile à chaque navigation. Le cache expire après 24h.
-    if (injectedFromCache && !isStale) return;
-
-    fetch(url)
-      .then(function (r) { return r.text(); })
+    fetch(url, { cache: 'no-store' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      })
       .then(function (html) {
         writeCache(url, html);
         // Si rien n'était affiché (pas de cache), ou si le contenu réseau
@@ -90,7 +81,7 @@
   // ne re-scanne jamais ce nouveau bouton, qui reste alors sans href
   // résolu ni listener tant qu'aucun clic ne se produit (bouton "mort").
   var headerScriptLoaded = false;
-  loadFragment('/src/components/header.html', 'header-container', function () {
+  loadFragment('/src/components/header.html?v=nav-submenus-1', 'header-container', function () {
     if (headerScriptLoaded) {
       // Le DOM du header vient d'être remplacé (revalidation réseau après
       // un cache périmé) : le script header.js déjà chargé n'a écouté que
@@ -101,7 +92,7 @@
       return;
     }
     headerScriptLoaded = true;
-    appendScript('/src/components/header.js');
+    appendScript('/src/components/header.js?v=nav-submenus-1');
   });
 
   // ── Breadcrumb (outerHTML : remplace le placeholder par le vrai <nav>) ──
@@ -115,11 +106,11 @@
       container.outerHTML = cached.html;
     }
 
-    var isStale = !cached || (Date.now() - cached.ts) > CACHE_MAX_AGE_MS;
-    if (cached && !isStale) return;
-
-    fetch(url)
-      .then(function (r) { return r.text(); })
+    fetch(url, { cache: 'no-store' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      })
       .then(function (html) {
         writeCache(url, html);
         // outerHTML ne peut être réappliqué qu'une fois : si déjà remplacé
@@ -127,10 +118,11 @@
         // en ciblant à nouveau via un sélecteur qui survit au remplacement.
         if (!cached) {
           container.outerHTML = html;
+        } else if (html !== cached.html) {
+          var currentBreadcrumb = document.getElementById('bc-nav');
+          if (currentBreadcrumb) currentBreadcrumb.outerHTML = html;
+          else container.outerHTML = html;
         }
-        // Si cached existait déjà et que html diffère, on laisse la version
-        // cache affichée pour cette visite (évite un flash) ; le cache mis à
-        // jour ci-dessus sera utilisé dès la prochaine navigation.
       })
       .catch(function (err) {
         console.error('[layout-loader] breadcrumb load error:', err);
@@ -144,13 +136,13 @@
   // footer.js deux fois créerait deux jeux de listeners/IIFE concurrents
   // sur le nouveau DOM du footer.
   var footerScriptLoaded = false;
-  loadFragment('/src/components/footer.html', 'footer-container', function () {
+  loadFragment('/src/components/footer.html?v=footer-curvafit-copy-1', 'footer-container', function () {
     document.dispatchEvent(new Event('footer:loaded'));
     if (footerScriptLoaded) return;
     footerScriptLoaded = true;
-    appendScript('/src/components/footer.js');
+    appendScript('/src/components/footer.js?v=footer-curvafit-copy-1');
   });
 
   // ── Newsletter ──
-  loadFragment('/src/components/newsletter.html', 'newsletter-container');
+  loadFragment('/src/components/newsletter.html?v=curvafit-newsletter-2', 'newsletter-container');
 })();

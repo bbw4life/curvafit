@@ -1,7 +1,5 @@
 const BBW_VAPID_PUBLIC_KEY = 'BPAy2x7jsTHvHMYA5uLWKZAbmwpAtUlFtCbgSiALsYFH4EKhSTxUemonrVf-xzg5FxsQIB4GXZdA_N5gwvLWF8Y';
 
-
-
 // ══════════════════════════════════════════════════════════════
 //  DESKTOP — liens de pages (page/, products/, collections/, blog/) en
 //  nouvel onglet. Sur mobile (≤768px, même seuil que le reste du
@@ -445,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
     style_morph_text:   'style-morph-text'
   };
 
-  var MORPH_TEXTS  = ['Welcome ✨', 'Beauty Has No Sizes', 'You Are Enough', 'BBW4LIFE 💖'];
+  var MORPH_TEXTS  = ['Welcome ✨', 'Small steps', 'You are capable', 'Curvafit 💜'];
   var morphTimer   = null;
   var barTimer     = null;
   var morphIdx     = 0;
@@ -527,10 +525,10 @@ document.addEventListener('DOMContentLoaded', () => {
     var container = document.getElementById('cf-pre-particles');
     if (!container) return;
     var colors = [
-      'rgba(110,36,57,0.5)',
-      'rgba(184,146,90,0.5)',
-      'rgba(156,58,82,0.45)',
-      'rgba(21,17,14,0.12)'
+      'rgba(123,79,184,0.5)',
+      'rgba(240,111,166,0.48)',
+      'rgba(183,154,224,0.45)',
+      'rgba(59,27,125,0.12)'
     ];
     for (var i = 0; i < 22; i++) {
       var p        = document.createElement('div');
@@ -837,110 +835,7 @@ document.addEventListener('DOMContentLoaded', () => {
         '/collections/beauty',
         '/collections/men',
         '/collections/shoes',
-        '/collections/pants-skirts',
-        '/bbw4life/glam-heels',
-        '/bbw4life/retrorun-sneakers',
-        '/bbw4life/bohoflip-sandals',
-        '/bbw4life/powerheels',
-        '/bbw4life/winterboost-boots',
-        '/bbw4life/colorstilettos',
-        '/bbw4life/nightchic-dress',
-        '/bbw4life/slitlux-dress',
-        '/bbw4life/plaidoverall-dress',
-        '/bbw4life/floralflounce-dress',
-        '/bbw4life/vintagesquare-dress',
-        '/bbw4life/paisleybelt-dress',
-        '/bbw4life/meshduo-set',
-        '/bbw4life/meshglam-dress',
-        '/bbw4life/linenbreeze-dress',
-        '/bbw4life/stripedmini-dress',
-        '/bbw4life/loungerobe',
-        '/bbw4life/lacenight-dress',
-        '/bbw4life/lacethong-set',
-        '/bbw4life/solidsexy-bikini',
-        '/bbw4life/curvebikini',
-        '/bbw4life/leopardnight-set',
-        '/bbw4life/supportbra',
-        '/bbw4life/laceromper',
-        '/bbw4life/stripedbikini',
-        '/bbw4life/tubebikinii',
-        '/bbw4life/ruffleone-bikini',
-        '/bbw4life/bandagebikini',
-        '/bbw4life/contrastone-piece',
-        '/bbw4life/premiumbikini',
-        '/bbw4life/irregulartop',
-        '/bbw4life/christmassweat',
-        '/bbw4life/dalmationshorts',
-        '/bbw4life/leopardshirt',
-        '/bbw4life/drawstringpants',
-        '/bbw4life/cropslimpants',
-        '/bbw4life/haremprints',
-        '/bbw4life/loosejeans',
-        '/bbw4life/britishloafers',
-        '/bbw4life/airmesh-runners',
-        '/bbw4life/leathercasuals',
-        '/bbw4life/businessdress-shoes',
-        '/bbw4life/hollowsneakers',
-        '/bbw4life/tendtrainers',
-        '/bbw4life/patentloafers',
-        '/bbw4life/collarshirt',
-        '/bbw4life/geopolo-shirt',
-        '/bbw4life/stripedcollar-sweater',
-        '/bbw4life/turtlenecklux',
-        '/bbw4life/hikejacket',
-        '/bbw4life/roundneck-sweatshirt',
-        '/bbw4life/nailbond-glue',
-        '/bbw4life/bownails',
-        '/bbw4life/nailrepair-lotion',
-        '/bbw4life/browdye-pencil',
-        '/bbw4life/curl-volume-mascara',
-        '/bbw4life/browkit-pro',
-        '/bbw4life/obsidian-lip-balm',
-        '/bbw4life/tearoff-lip-gloss',
-        '/bbw4life/gingerclean-pads',
-        '/bbw4life/deeprepair-hair-mask',
-        '/bbw4life/batanaglow-oil',
-        '/bbw4life/batanaboost-oil',
-        '/bbw4life/poreclean-gel',
-        '/bbw4life/knucklewhite-serum',
-        '/bbw4life/propolis-glow-essence',
-        '/bbw4life/menglow-cream',
-        '/bbw4life/iceglow-grid-set',
-        '/bbw4life/led-facial-mask-skin-care-beauty-salon',
-        '/bbw4life/neck-face-lifting-beauty-instrument',
-        '/bbw4life/laikou-vitamin-c-skincare-cleanser',
-        '/bbw4life/hyaluronic-acid-water-sensitive-sunscreen',
-        '/bbw4life/skin-hydrating-moisturizing-mist',
-        '/bbw4life/glamsatin-dress',
-        '/bbw4life/powersuit',
-        '/bbw4life/bohofloral-maxi',
-        '/bbw4life/cozylounge-set',
-        '/bbw4life/blushlace-gown',
-        '/bbw4life/tealempire-gown',
-        '/bbw4life/jacquardpower-suit',
-        '/bbw4life/patchlace-flats',
-        '/bbw4life/warmstep-boots',
-        '/bbw4life/platformwalk-sneakers',
-        '/bbw4life/stripewrap-bodycon',
-        '/bbw4life/flarefit-dress',
-        '/bbw4life/officestripe-shirt',
-        '/bbw4life/drawshirt-dress',
-        '/bbw4life/autumnvneck-maxi',
-        '/bbw4life/beltedbanquet-dress',
-        '/bbw4life/woventassel-bag',
-        '/bbw4life/koreantrend-bag',
-        '/bbw4life/blocksquare-bag',
-        '/bbw4life/rattanring-tote',
-        '/bbw4life/commutercanvas-tote',
-        '/bbw4life/embroidtote-bag',
-        '/bbw4life/texturedmini-bag',
-        '/bbw4life/retroniche-bag',
-        '/bbw4life/leopardunderarm-bag',
-        '/bbw4life/metalchain-clutch',
-        '/bbw4life/patterntote-bag',
-        '/bbw4life/pleatedtwo-piece',
-        '/bbw4life/onepiece-swim',
-        '/blog',
+        '/collections/pants-skirts',        '/blog',
         '/blog/beauty-has-no-sizes-the-movement-redefining-beauty',
         '/blog/stop-dieting-how-bbw-women-take-care-of-themselves',
         '/blog/nutrition-for-curvy-women-eat-to-feel-amazing',
@@ -970,8 +865,12 @@ document.addEventListener('DOMContentLoaded', () => {
         '/policies/terms',
         '/account',
         '/checkout',
-        '/cart'
-      ];
+        '/cart',
+        '/curvafit/gentle-walking-4-week-guide',
+        '/curvafit/simple-meal-planner-4-weeks-easy-meals-shopping-lists',
+        '/curvafit/move-at-home-gentle-workouts-no-equipment',
+        '/curvafit/back-on-track-14-day-restart-guide',
+    ];
 
     document.getElementById('fnav-next').addEventListener('click', () => {
       const currentPath = window.location.pathname;
@@ -1598,6 +1497,9 @@ function showErrorPopup(message) {
     .then(data => {
       products = data;
       window.__allProducts = data;
+      const affiliateSettings = products.find(p => p.type === 'settings') || {};
+      const affiliateEnabled = String(affiliateSettings.affiliate_program_enabled || 'yes').trim().toLowerCase() === 'yes';
+      document.documentElement.classList.toggle('affiliate-program-enabled', affiliateEnabled);
       // ══ INJECT MARQUEE DYNAMIC VALUES ══
     (function injectMarqueeValues() {
       const settings = products.find(p => p.type === 'settings') || {};
@@ -1618,117 +1520,7 @@ function showErrorPopup(message) {
       document.querySelectorAll('.marquee-members').forEach(el       => el.textContent = members.toLocaleString());
       document.querySelectorAll('.marquee-promo-code').forEach(el    => el.textContent = promoCode);
 
-      document.querySelectorAll('.col-marquee-free-shipping').forEach(el => el.textContent = freeShipping);
-      document.querySelectorAll('.col-marquee-members').forEach(el       => el.textContent = members.toLocaleString());
-      document.querySelectorAll('.col-marquee-discount').forEach(el      => el.textContent = discount);
     })();
-
-
-      // ══════════════════════════════════════════
-      //  BBW FEATURED — vitrine home (designs originaux BBW4LIFE)
-      // ══════════════════════════════════════════
-      (function renderBbwFeaturedHome() {
-        const section = document.getElementById('bbw-nb-section');
-        const grid    = document.getElementById('bbw-nb-grid');
-        if (!section || !grid) return;
-
-        const settings = products.find(p => p.type === 'settings') || {};
-        const cfg = settings.bbw_featured_home || {};
-        const ids = cfg.product_ids || [];
-        if (!ids.length) { section.style.display = 'none'; return; }
-
-        const photoImg = document.getElementById('bbw-nb-photo-img');
-        const photoPreloadLogo = document.getElementById('bbwNbPhotoPreloadLogo');
-        const photoSkeleton = document.getElementById('bbwNbPhotoSkeleton');
-        if (photoImg && cfg.photo) {
-          if (photoPreloadLogo) {
-            const revealPhoto = () => {
-              photoPreloadLogo.classList.add('is-loaded');
-              if (photoSkeleton && photoSkeleton.parentNode) photoSkeleton.parentNode.removeChild(photoSkeleton);
-            };
-            photoImg.addEventListener('load', revealPhoto, { once: true });
-            photoImg.addEventListener('error', revealPhoto, { once: true });
-          }
-          photoImg.src = cfg.photo;
-          if (photoPreloadLogo && photoImg.complete && photoImg.naturalWidth > 0) {
-            photoPreloadLogo.classList.add('is-loaded');
-            if (photoSkeleton && photoSkeleton.parentNode) photoSkeleton.parentNode.removeChild(photoSkeleton);
-          }
-        }
-
-        const taglineEl = document.getElementById('bbw-nb-tagline');
-        if (taglineEl && cfg.tagline) taglineEl.textContent = cfg.tagline;
-
-        const prods = ids
-          .map(id => products.find(p => p.id === id))
-          .filter(Boolean);
-        if (!prods.length) { section.style.display = 'none'; return; }
-
-        grid.innerHTML = ''; // retire un éventuel skeleton avant de remplir
-
-        prods.forEach(prod => {
-          const productUrl = getProductUrl(prod.id);
-          const imgMain     = upgradeShopifyImageUrl(prod.image, 600);
-          const price       = parseFloat(prod.price || 0).toFixed(2);
-          const rating      = parseFloat(prod.rating || 0);
-          const reviews     = prod.reviews_count || 0;
-          const fullStars   = Math.round(rating);
-
-          let starsHTML = '';
-          for (let i = 0; i < 5; i++) {
-            starsHTML += `<i class="fas fa-star${i < fullStars ? '' : ' bbw-nb-card__star--empty'}"></i>`;
-          }
-
-          const badgeText = (prod.badge && prod.badge.text) ? prod.badge.text : 'New';
-
-          const card = document.createElement('div');
-          card.className = 'bbw-nb-card';
-          card.dataset.id = prod.id;
-          card.innerHTML = `
-            <a href="${productUrl}" class="bbw-nb-card__media">
-              <span class="bbw-nb-card__badge">${badgeText}</span>
-              <img src="${imgMain}" alt="${prod.title}" loading="lazy">
-              <span class="mini-wishlist-icon bbw-nb-card__wishlist" data-id="${prod.id}"></span>
-            </a>
-            <div class="bbw-nb-card__body">
-              <a href="${productUrl}" class="bbw-nb-card__title">${prod.title}</a>
-              <div class="bbw-nb-card__price">$${price}</div>
-              <div class="bbw-nb-card__rating">
-                <span class="bbw-nb-card__stars">${starsHTML}</span>
-                <span class="bbw-nb-card__count">(${reviews})</span>
-              </div>
-              <a href="${productUrl}" class="bbw-nb-card__btn">View Product</a>
-            </div>`;
-          grid.appendChild(card);
-
-          const wishlistIcon = card.querySelector('.bbw-nb-card__wishlist');
-          if (wishlistIcon) {
-            wishlistIcon.innerHTML =
-              '<svg class="wishlist-icon-empty" viewBox="0 0 24 24" fill="none" stroke="var(--bbw-gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-              '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>' +
-              '</svg>' +
-              '<svg class="wishlist-icon-filled" viewBox="0 0 24 24" fill="var(--bbw-gold)" stroke="none">' +
-              '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>' +
-              '</svg>';
-            wishlistIcon.addEventListener('click', function (e) {
-              e.preventDefault();
-              e.stopPropagation();
-              const id = wishlistIcon.dataset.id;
-              if (!id) return;
-              if (!Array.isArray(window.wishlist)) window.wishlist = [];
-              const idx = window.wishlist.indexOf(id);
-              if (idx === -1) { window.wishlist.push(id); wishlistIcon.classList.add('added'); }
-              else { window.wishlist.splice(idx, 1); wishlistIcon.classList.remove('added'); }
-              if (typeof window.saveWishlist === 'function') window.saveWishlist();
-              if (typeof window.updateBadges === 'function') window.updateBadges();
-              if (typeof window.updateWishlistIcons === 'function') window.updateWishlistIcons();
-              document.dispatchEvent(new Event('wishlist:change'));
-            });
-          }
-        });
-
-        if (typeof window.updateWishlistIcons === 'function') window.updateWishlistIcons();
-      })();
 
 
       // ══════════════════════════════════════════
@@ -2248,7 +2040,14 @@ function showErrorPopup(message) {
         if (!btn.closest('.bundle-save-container')) btn.innerHTML = `<i class="fi fi-rr-shopping-cart"></i> ${L.addToCart}`;
       });
       document.querySelectorAll('.buy-now').forEach(btn => {
-        btn.innerHTML = `<i class="fi fi-rr-bolt"></i> ${L.buyNow}`;
+        const digitalEbookProductIds = ['Pdg-Francenel-product1', 'Pdg-Francenel-product2', 'Pdg-Francenel-product3', 'Pdg-Francenel-product15'];
+        const isDigitalEbookProduct = digitalEbookProductIds.includes(document.querySelector('.product-section')?.dataset.productId);
+        if (isDigitalEbookProduct) {
+          btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg><span>Download Now</span>';
+          btn.setAttribute('aria-label', 'Download Now');
+        } else {
+          btn.innerHTML = `<i class="fi fi-rr-bolt"></i> ${L.buyNow}`;
+        }
       });
       document.querySelectorAll('.flash-deal__cta, .ba-cta, .empty-cart .cta').forEach(btn => {
         btn.textContent = `${L.shopNow} →`;
@@ -2372,7 +2171,9 @@ function showErrorPopup(message) {
         // Rating & reviews
         const starsEl = section.querySelector('.fs-stars');
         const countEl = section.querySelector('.fs-count');
-        const rating = prod.rating || 4.8;
+        const rating = Number.isFinite(Number(prod.rating))
+          ? Math.max(0, Math.min(5, Number(prod.rating)))
+          : 0;
         const reviewsCount = prod.reviews_count || 0;
 
         if (starsEl) {
@@ -2446,26 +2247,7 @@ function showErrorPopup(message) {
       //  (contenu 100% statique, seul le poids réseau des images justifie
       //  un état de chargement ici).
       // ══════════════════════════════════════════
-      (function initOurStorySkeleton() {
-        const section = document.getElementById('ourStorySection');
-        if (!section) return;
-        const imgs = section.querySelectorAll('.our-story__img');
-        if (!imgs.length) { section.classList.remove('is-skeleton'); return; }
 
-        let remaining = imgs.length;
-        const reveal = () => {
-          remaining--;
-          if (remaining <= 0) section.classList.remove('is-skeleton');
-        };
-        imgs.forEach(img => {
-          if (img.complete) {
-            reveal();
-          } else {
-            img.addEventListener('load', reveal, { once: true });
-            img.addEventListener('error', reveal, { once: true });
-          }
-        });
-      })();
 
       // ══════════════════════════════════════════
       //  FEATURED SPOTLIGHT 2 — produit fixe (product114) mais toutes
@@ -2518,7 +2300,9 @@ function showErrorPopup(message) {
         // Rating & reviews
         const starsEl = section.querySelector('.fs-stars');
         const countEl = section.querySelector('.fs-count');
-        const rating = prod.rating || 4.8;
+        const rating = Number.isFinite(Number(prod.rating))
+          ? Math.max(0, Math.min(5, Number(prod.rating)))
+          : 0;
         const reviewsCount = prod.reviews_count || 0;
 
         if (starsEl) {
@@ -3184,102 +2968,6 @@ function showErrorPopup(message) {
       }
 
       // ── PDP collection grid ("More To Love") ──
-      const pdpGridEl = document.getElementById('pdp-grid-section');
-      if (pdpGridEl) {
-
-        const PDP_WISHLIST_SVG = `
-          <svg class="wishlist-icon-empty" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fffef7" stroke-width="2">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-          </svg>
-          <svg class="wishlist-icon-filled" width="18" height="18" viewBox="0 0 24 24" fill="#fffef7" stroke="#fffef7" stroke-width="2">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-          </svg>`;
-
-        const gridCfg = (settings.pdp_collection_grid) || {};
-        const gridIds = gridCfg.product_ids || [];
-
-        const gridTrack = pdpGridEl.querySelector('.pdp-grid');
-        let gridCardsBuilt = 0;
-
-        if (gridTrack) {
-          gridIds.forEach(pid => {
-            const prod = products.find(p => p.id === pid);
-            if (!prod) return;
-
-            const productUrl  = getProductUrl(pid);
-            const hasDiscount = prod.compare_price > prod.price;
-            const discPct     = hasDiscount ? Math.round(((prod.compare_price - prod.price) / prod.compare_price) * 100) : 0;
-            const badgeIcon   = (prod.badge && prod.badge.icon) ? `<i class="fi ${prod.badge.icon}"></i> ` : '';
-            const badgeHTML   = (prod.badge && prod.badge.text) ? `<span class="pdp-grid-card__badge">${badgeIcon}${prod.badge.text}</span>` : '';
-            const discHTML    = discPct > 0 ? `<span class="pdp-grid-card__discount">-${discPct}%</span>` : '';
-            const discTextHTML = discPct > 0 ? `<span class="pdp-grid-card__discount-text">(-${discPct}%)</span>` : '';
-            const compareHTML = hasDiscount ? `<span class="pdp-grid-card__compare">$${parseFloat(prod.compare_price).toFixed(2)}</span>` : '';
-            const imgMain     = upgradeShopifyImageUrl(prod.image, 600);
-
-            const swatchColors = (prod.colors || []).filter(c => c.active !== false && c.image);
-            const swatchesHTML = swatchColors.length ? `
-              <div class="pdp-grid-card__swatches">
-                ${swatchColors.map((c, i) => `<img class="pdp-grid-card__swatch${i === 0 ? ' active' : ''}" src="${upgradeShopifyImageUrl(c.image, 80)}" data-full="${upgradeShopifyImageUrl(c.image, 600)}" alt="${c.name}" title="${c.name}" loading="lazy">`).join('')}
-              </div>` : '';
-
-            const card = document.createElement('div');
-            card.className  = 'pdp-grid-card product-card';
-            card.dataset.id = pid;
-            card.innerHTML = `
-              ${badgeHTML}
-              <a href="${productUrl}" class="pdp-grid-card__media">
-                <img class="pdp-grid-card__img" src="${imgMain}" alt="${prod.title}" loading="lazy">
-                ${discHTML}
-                <span class="mini-wishlist-icon pdp-grid-card__wishlist" data-id="${pid}"></span>
-                <button type="button" class="pdp-grid-card__cart add-to-cart" aria-label="Add to cart"><i class="fi fi-rr-shopping-cart"></i></button>
-              </a>
-              <div class="pdp-grid-card__body">
-                <a href="${productUrl}" class="pdp-grid-card__title">${prod.title}</a>
-                <p class="pdp-grid-card__prices">
-                  <span class="pdp-grid-card__price">$${parseFloat(prod.price).toFixed(2)}</span>
-                  ${discTextHTML}
-                  ${compareHTML}
-                </p>
-                ${swatchesHTML}
-              </div>`;
-            gridTrack.appendChild(card);
-            gridCardsBuilt++;
-
-            if (swatchColors.length > 0) {
-              card.dataset.selectedColor = swatchColors[0].name;
-              /* Précharge les images des variantes pour un affichage instantané au clic */
-              swatchColors.forEach(c => { new Image().src = upgradeShopifyImageUrl(c.image, 600); });
-            }
-
-            const wishIcon = card.querySelector('.pdp-grid-card__wishlist');
-            wishIcon.innerHTML = PDP_WISHLIST_SVG;
-            wishIcon.addEventListener('click', function (e) { e.preventDefault(); toggleWishlist(e); });
-
-            const cartBtn = card.querySelector('.pdp-grid-card__cart');
-            cartBtn.addEventListener('click', function (e) { e.preventDefault(); addToCart(e); });
-
-            const mainImg = card.querySelector('.pdp-grid-card__img');
-            card.querySelectorAll('.pdp-grid-card__swatch').forEach(function (swatch) {
-              swatch.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                mainImg.src = swatch.dataset.full;
-                card.dataset.selectedColor = swatch.alt;
-                card.querySelectorAll('.pdp-grid-card__swatch').forEach(function (s) { s.classList.remove('active'); });
-                swatch.classList.add('active');
-              });
-            });
-          });
-        }
-
-        if (gridCardsBuilt > 0) {
-          updateWishlistIcons();
-        } else {
-          pdpGridEl.style.display = 'none';
-        }
-      }
-
-      // ══════════════════════════════════════════
       //  SEARCH RESULTS PAGE — /search-results.html
       //  Réutilise le même pattern de card que pdp-grid (ci-dessus) pour
       //  bénéficier directement de addToCart()/toggleWishlist() sans
@@ -3433,7 +3121,9 @@ function showErrorPopup(message) {
 
         // ====================== RATING & REVIEWS COUNT ======================
         if (prod) {
-          const rating = prod.rating || 4.8;
+          const rating = Number.isFinite(Number(prod.rating))
+            ? Math.max(0, Math.min(5, Number(prod.rating)))
+            : 0;
           const reviewsCount = prod.reviews_count || 0;
 
           const ratingEl = document.querySelector('.unique-stars');
@@ -3595,164 +3285,11 @@ function showErrorPopup(message) {
 
 
               const PRODUCT_SLUGS = {
-              'Pdg-Francenel-product1':  'glam-heels-cross-strap-stiletto-sandals',
-              'Pdg-Francenel-product2':  'retrorun-sneakers-chunky-sole-street-style',
-              'Pdg-Francenel-product3':  'bohoflip-sandals-embroidered-boho-flip-flops',
-              'Pdg-Francenel-product4':  'powerheels-12cm-stiletto-pumps',
-              'Pdg-Francenel-product5':  'winterboost-boots-ankle-boots',
-              'Pdg-Francenel-product6':  'colorstilettos-vibrant-stiletto-flip-flops',
-              'Pdg-Francenel-product7':  'nightchic-dress-mock-neck-long-sleeve-printed',
-              'Pdg-Francenel-product8':  'slitlux-dress-cutout-slit-round-neck',
-              'Pdg-Francenel-product9':  'plaidoverall-dress-wide-strap-dungaree',
-              'Pdg-Francenel-product10': 'floralflounce-dress-surplice-flounce-sleeve-maxi',
-              'Pdg-Francenel-product11': 'vintagesquare-dress-printed-square-neck',
-              'Pdg-Francenel-product12': 'paisleybelt-dress-orange-floral-print-belted',
-              'Pdg-Francenel-product13': 'meshduo-set-sheer-mesh-long-dress-suit',
-              'Pdg-Francenel-product14': 'meshglam-dress-solid-color-stitching-maxi',
-              'Pdg-Francenel-product15': 'linenbreeze-dress-cotton-linen-button-down',
-              'Pdg-Francenel-product16': 'stripedmini-dress-vneck-long-sleeve',
-              'Pdg-Francenel-product17': 'loungerobe-loose-sleepwear-bathrobe',
-              'Pdg-Francenel-product18': 'lacenight-dress-sexy-short-strap-lace-nightdress',
-              'Pdg-Francenel-product19': 'lacethong-set-sheer-lace-skirt-lingerie',
-              'Pdg-Francenel-product20': 'solidsexy-bikini-high-waist-hot-swimsuit',
-              'Pdg-Francenel-product21': 'curvebikini-solid-color-high-waist-swimwear',
-              'Pdg-Francenel-product22': 'leopardnight-set-mesh-pajama-lingerie-dress',
-              'Pdg-Francenel-product23': 'supportbra-large-cup-breathable-mesh-bra',
-              'Pdg-Francenel-product24': 'laceromper-jumpsuit-lace-splicing-thong',
-              'Pdg-Francenel-product25': 'stripedbikini-print-striped-swimwear',
-              'Pdg-Francenel-product26': 'tubebikinii-tube-top-swimsuit',
-              'Pdg-Francenel-product27': 'ruffleone-bikini-vneck-ruffled-one-piece',
-              'Pdg-Francenel-product28': 'bandagebikini-solid-color-bandage-swimsuit',
-              'Pdg-Francenel-product29': 'contrastone-piece-contrasting-color-swimwear',
-              'Pdg-Francenel-product30': 'premiumbikini-plus-size-swimsuit-collection',
-              'Pdg-Francenel-product31': 'irregulartop-loose-round-neck-irregular-hem',
-              'Pdg-Francenel-product32': 'christmassweat-casual-holiday-sweatshirt',
-              'Pdg-Francenel-product33': 'dalmationshorts-high-waist-dalmatian-print',
-              'Pdg-Francenel-product34': 'leopardshirt-irregular-collar-spliced-blouse',
-              'Pdg-Francenel-product35': 'drawstringpants-casual-pants-with-pockets',
-              'Pdg-Francenel-product36': 'cropslimpants-mens-drawstring-cropped-pants',
-              'Pdg-Francenel-product37': 'haremprints-printed-harem-trousers-men',
-              'Pdg-Francenel-product38': 'loosejeans-mens-relaxed-fit-denim',
-              'Pdg-Francenel-product39': 'britishloafers-formal-tassel-party-shoes-men',
-              'Pdg-Francenel-product40': 'airmesh-runners-professional-sports-sneakers-men',
-              'Pdg-Francenel-product41': 'leathercasuals-mens-breathable-flat-sneakers',
-              'Pdg-Francenel-product42': 'businessdress-shoes-classic-wedding-formal',
-              'Pdg-Francenel-product43': 'hollowsneakers-mesh-big-size-fashion-shoes-men',
-              'Pdg-Francenel-product44': 'tendtrainers-mens-outdoor-sport-sneakers',
-              'Pdg-Francenel-product45': 'patentloafers-luxury-patent-leather-party-shoes',
-              'Pdg-Francenel-product46': 'collarshirt-mens-plus-size-button-down',
-              'Pdg-Francenel-product47': 'geopolo-shirt-geometric-print-men-polo',
-              'Pdg-Francenel-product48': 'stripedcollar-sweater-mens-casual-knit',
-              'Pdg-Francenel-product49': 'turtlenecklux-mens-plus-size-turtleneck-sweater',
-              'Pdg-Francenel-product50': 'hikejacket-waterproof-outdoor-jacket',
-              'Pdg-Francenel-product51': 'roundneck-sweatshirt-mens-plus-size-pullover',
-              'Pdg-Francenel-product52': 'nailbond-glue-strong-uv-nail-tips-adhesive',
-              'Pdg-Francenel-product53': 'bownails-manicure-long-almond-fake-nails',
-              'Pdg-Francenel-product54': 'nailrepair-lotion-nourishing-nail-solution',
-              'Pdg-Francenel-product55': 'browdye-pencil-waterproof-quick-dry-eyebrow',
-              'Pdg-Francenel-product56': 'curl-volume-mascara-4d-waterproof-formula',
-              'Pdg-Francenel-product57': 'browkit-pro-waterproof-eyebrow-stencil-cream',
-              'Pdg-Francenel-product58': 'obsidian-lip-balm-warming-moisture-treatment',
-              'Pdg-Francenel-product59': 'tearoff-lip-gloss-4-color-long-lasting-peel',
-              'Pdg-Francenel-product60': 'gingerclean-pads-ginger-lemon-makeup-remover',
-              'Pdg-Francenel-product61': 'deeprepair-hair-mask-moisturizing-smoothing',
-              'Pdg-Francenel-product62': 'batanaglow-oil-moisturizing-hair-care',
-              'Pdg-Francenel-product63': 'batanaboost-oil-120ml-hair-growth-conditioner',
-              'Pdg-Francenel-product64': 'poreclean-gel-deep-exfoliating-anti-acne',
-              'Pdg-Francenel-product65': 'knucklewhite-serum-hand-joint-skin-brightener',
-              'Pdg-Francenel-product66': 'propolis-glow-essence-brightening-facial-serum',
-              'Pdg-Francenel-product67': 'menglow-cream-concealing-brightening-lazy-cream',
-              'Pdg-Francenel-product68': 'iceglow-grid-set-silicone-facial-cooling-tool',
-              'Pdg-Francenel-product69': 'glamsatin-dress-black-halter-ruched-maxi',
-              'Pdg-Francenel-product70': 'powersuit-ivory-structured-skirt-suit',
-              'Pdg-Francenel-product71': 'bohofloral-maxi-wrap-floral-bishop-sleeve-dress',
-              'Pdg-Francenel-product72': 'cozylounge-set-cream-tank-beige-wide-leg',
-              'Pdg-Francenel-product73': 'blushlace-gown-lace-cap-sleeve-empire-maxi',
-              'Pdg-Francenel-product74': 'tealempire-gown-sleeveless-vneck-formal-maxi',
-              'Pdg-Francenel-product75': 'jacquardpower-suit-multicolor-floral-brocade',
-              'Pdg-Francenel-product76': 'patchlace-flats-leisure-patchwork-shoelace-sneakers',
-              'Pdg-Francenel-product77': 'warmstep-boots-padded-fur-lined-winter-sneakers',
-              'Pdg-Francenel-product78': 'platformwalk-sneakers-vulcanized-plus-size-shoes',
-              'Pdg-Francenel-product79': 'stripewrap-bodycon-short-sleeve-bandage-dress',
-              'Pdg-Francenel-product80': 'flarefit-dress-spring-flared-sleeve-hip-hugging',
-              'Pdg-Francenel-product81': 'officestripe-shirt-dress-patchwork-streetwear-midi',
-              'Pdg-Francenel-product82': 'drawshirt-dress-drawstring-shirt-collar-streetwear',
-              'Pdg-Francenel-product83': 'autumnvneck-maxi-high-waist-family-matching-dress',
-              'Pdg-Francenel-product84': 'beltedbanquet-dress-long-sleeve-printed-high-waist',
-              'Pdg-Francenel-product85': 'woventassel-bag-hand-crochet-shoulder-bag',
-              'Pdg-Francenel-product86': 'koreantrend-bag-small-messenger-bag',
-              'Pdg-Francenel-product87': 'blocksquare-bag-color-blocked-mini-bag',
-              'Pdg-Francenel-product88': 'rattanring-tote-hand-knitted-beach-bag',
-              'Pdg-Francenel-product89': 'commutercanvas-tote-multi-pocket-zipper-bag',
-              'Pdg-Francenel-product90': 'embroidtote-bag-leather-top-handle-crossbody',
-              'Pdg-Francenel-product91': 'texturedmini-bag-japanese-style-hand-bag',
-              'Pdg-Francenel-product92': 'retroniche-bag-large-capacity-shoulder-messenger',
-              'Pdg-Francenel-product93': 'leopardunderarm-bag-retro-drawstring-crossbody',
-              'Pdg-Francenel-product94': 'metalchain-clutch-trendy-evening-party-bag',
-              'Pdg-Francenel-product95': 'patterntote-bag-earring-decorated-shoulder-tote',
-              'Pdg-Francenel-product96': 'pleatedtwo-piece-solid-color-skirt-set',
-              'Pdg-Francenel-product97': 'onepiece-swim-plus-size-solid-swimsuit',
-              'Pdg-Francenel-product98': 'gilded-gala-gown-sequin-bodice-tiered-tulle',
-              'Pdg-Francenel-product99': 'midnightvelvet-sheath-three-quarter-sleeve-bodycon',
-              'Pdg-Francenel-product100': 'velvetwrap-jumpsuit-gold-belt-wide-leg',
-              'Pdg-Francenel-product101': 'savannahprint-sundress-tribal-tiered-mini',
-              'Pdg-Francenel-product102': 'classictrench-coat-belted-double-breasted',
-              'Pdg-Francenel-product103': 'tiefront-sheath-cap-sleeve-wrap-detail',
-              'Pdg-Francenel-product104': 'slouchsuede-boots-knee-high-block-heel',
-              'Pdg-Francenel-product105': 'velvettailored-blazer-peak-lapel-jacket',
-              'Pdg-Francenel-product106': 'colorblockmidi-stripe-detail-sheath-dress',
-              'Pdg-Francenel-product107': 'houndstoothtweed-set-button-front-skirt-dress',
-              'Pdg-Francenel-product108': 'rufflecascade-sheath-draped-side-detail',
-              'Pdg-Francenel-product109': 'tweedshift-dress-cuffed-sleeve-classic',
-              'Pdg-Francenel-product110': 'polkadotblouse-set-wide-leg-belted-trouser',
-              'Pdg-Francenel-product111': 'autumn-canvas-high-top-boots-mens-workwear',
-              'Pdg-Francenel-product112': 'no-tie-leather-sneakers-mens-slip-on',
-              'Pdg-Francenel-product113': 'high-top-martin-boots-mens-outdoor-workwear',
-              'Pdg-Francenel-product114': 'breathable-mesh-sneakers-mens-casual-dad-shoes',
-              'Pdg-Francenel-product115': 'eva-sole-house-slippers-mens-slides',
-              'Pdg-Francenel-product116': 'solid-color-short-sleeve-tshirt-mens-slim-fit',
-              'Pdg-Francenel-product117': 'v-neck-ice-silk-tshirt-mens-quick-dry-fitness-top',
-              'Pdg-Francenel-product118': 'classic-v-neck-tee-multipack-mens-casual-white-black',
-              'Pdg-Francenel-product119': 'led-facial-mask-skin-care-beauty-salon',
-              'Pdg-Francenel-product120': 'neck-face-lifting-beauty-instrument',
-              'Pdg-Francenel-product121': 'laikou-vitamin-c-skincare-cleanser',
-              'Pdg-Francenel-product122': 'hyaluronic-acid-water-sensitive-sunscreen',
-              'Pdg-Francenel-product123': 'skin-hydrating-moisturizing-mist',
-              'Pdg-Francenel-product124': 'black-gray-printed-outfit-set-plus-size',
-              'Pdg-Francenel-product125': 'cinched-top-straight-leg-pants-set',
-              'Pdg-Francenel-product126': 'printed-lace-jacket-dress-skirt-set',
-              'Pdg-Francenel-product127': 'tie-up-top-wide-leg-pants-casual-set',
-              'Pdg-Francenel-product128': 'printed-comfortable-casual-set',
-              'Pdg-Francenel-product129': 'pajama-set-with-lace-shorts',
-              'Pdg-Francenel-product130': 'loose-fashionable-sportswear-set',
-              'Pdg-Francenel-product131': 'geo-pattern-shirt-high-waist-pants-set',
-              'Pdg-Francenel-product132': 'mens-large-size-casual-three-piece-set',
-              'Pdg-Francenel-product133': 'mens-casual-suit-pants-mid-waist-straight',
-              'Pdg-Francenel-product134': 'fashion-line-printing-round-neck-suit',
-              'Pdg-Francenel-product135': 'woven-colorblock-bbw4life-shirt-and-pants-set',
-              'Pdg-Francenel-product136': 'diagonal-zip-polo-and-bbw4life-jogger-set',
-              'Pdg-Francenel-product137': 'diagonal-zip-bbw4life-polo-and-shorts-set',
-              'Pdg-Francenel-product138': 'greek-key-bbw4life-baroque-shirt',
-              'Pdg-Francenel-product139': 'diagonal-zip-cable-knit-bbw4life-sweater',
-              'Pdg-Francenel-product140': 'tricolor-wave-bbw4life-crewneck-and-jogger-set',
-              'Pdg-Francenel-product141': 'suede-patch-bbw4life-hoodie-and-jogger-set',
-              'Pdg-Francenel-product142': 'gold-trim-bbw4life-leather-look-blazer',
-              'Pdg-Francenel-product143': 'guitar-and-treble-clef-bbw4life-shirt-and-pants-set',
-              'Pdg-Francenel-product144': 'diagonal-bbw4life-colorblock-tee-and-shorts-set',
-              'Pdg-Francenel-product145': 'quarter-zip-bbw4life-ribbed-sweater-dress',
-              'Pdg-Francenel-product146': 'quilted-bbw4life-pink-hoodie-and-jogger-set',
-              'Pdg-Francenel-product147': 'ombre-pleated-bbw4life-skirt-and-vest-set',
-              'Pdg-Francenel-product148': 'floral-embroidered-bbw4life-blazer-and-skirt-set',
-              'Pdg-Francenel-product149': 'floral-tulle-bbw4life-off-shoulder-gown',
-              'Pdg-Francenel-product150': 'striped-tie-front-bbw4life-shirt-and-pleated-wide-leg-pants-set',
-              'Pdg-Francenel-product151': 'diagonal-sash-bbw4life-pearl-button-maxi-dress',
-              'Pdg-Francenel-product152': 'sunflower-ankara-bbw4life-godet-maxi-dress',
-              'Pdg-Francenel-product153': 'sculpting-one-piece-shaping-jumpsuit',
-              'Pdg-Francenel-product154': 'zip-front-tummy-control-shapewear-bodysuit',
-              'Pdg-Francenel-product155': 'buckle-front-shaping-bra',
-              'Pdg-Francenel-product156': 'essential-haven-back-support-belt',
-              'Pdg-Francenel-product157': 'zip-front-neoprene-waist-shaper',
-            };
+              'Pdg-Francenel-product1': 'gentle-walking-4-week-guide',
+              'Pdg-Francenel-product2': 'simple-meal-planner-4-weeks-easy-meals-shopping-lists',
+              'Pdg-Francenel-product3': 'move-at-home-gentle-workouts-no-equipment',
+              'Pdg-Francenel-product15': 'back-on-track-14-day-restart-guide'
+              };
 
               // ── Récupérer les données du produit courant
               function getShareData() {
@@ -3765,7 +3302,7 @@ function showErrorPopup(message) {
 
                 const slug     = PRODUCT_SLUGS[pid];
                 const pageUrl  = slug
-                  ? window.location.origin + '/bbw4life/' + slug
+                  ? window.location.origin + '/curvafit/' + slug
                   : window.location.origin + (typeof getProductUrl === 'function' ? getProductUrl(pid) : window.location.pathname);
                 const title    = prod.title || '';
                 const price    = '$' + parseFloat(prod.price).toFixed(2);
@@ -3773,13 +3310,17 @@ function showErrorPopup(message) {
                 const imgSrc   = (typeof upgradeShopifyImageUrl === 'function') ? upgradeShopifyImageUrl(prod.image, 200) : prod.image;
 
                 // Message pré-rempli identique pour toutes les plateformes
-                const message =
-                  'Hi friend! 👋 I\'m browsing BBW4LIFE — a store that celebrates every curve 💕\n\n' +
-                  'I just found this amazing product and had to share it with you!\n\n' +
-                  '✨ ' + title + '\n' +
-                  '💰 Price: ' + price + (badge ? '\n🏷️ ' + badge : '') + '\n\n' +
-                  '🔗 Check it out here: ' + pageUrl + '\n\n' +
-                  'Beauty Has No Sizes 👑 — bbw4life.com';
+                const message = slug
+                  ? 'I found this Curvafit guide and thought you might like it.\n\n' +
+                    '✨ ' + title + '\n' +
+                    '🔗 Explore it here: ' + pageUrl + '\n\n' +
+                    'Curvafit — small steps, at your own pace.'
+                  : 'Hi friend! 👋 I\'m browsing BBW4LIFE — a store that celebrates every curve 💕\n\n' +
+                    'I just found this amazing product and had to share it with you!\n\n' +
+                    '✨ ' + title + '\n' +
+                    '💰 Price: ' + price + (badge ? '\n🏷️ ' + badge : '') + '\n\n' +
+                    '🔗 Check it out here: ' + pageUrl + '\n\n' +
+                    'Beauty Has No Sizes 👑 — bbw4life.com';
 
                 return { title: title, price: price, badge: badge, imgSrc: imgSrc, pageUrl: pageUrl, message: message };
               }
@@ -4070,6 +3611,18 @@ function showErrorPopup(message) {
           const colorContainer = document.querySelector('.color-swatches');
           if (colorContainer && prod.colors && prod.colors.length) {
             colorContainer.innerHTML = '';
+            const useProductImageSwatches = [
+              'Pdg-Francenel-product1',
+              'Pdg-Francenel-product2',
+              'Pdg-Francenel-product3',
+              'Pdg-Francenel-product15'
+            ].includes(prod.id);
+            if (useProductImageSwatches) {
+              const colorLabel = document.querySelector('label[for="color-select"]');
+              if (colorLabel) colorLabel.textContent = 'Select Your Language:';
+              const quickbuyColorLabel = document.querySelector('label[for="mzColorSelect"]');
+              if (quickbuyColorLabel) quickbuyColorLabel.textContent = 'Select Your Language';
+            }
             // Précharge l'image de chaque couleur en arrière-plan dès l'affichage
             // de la fiche produit, pour que le clic sur un swatch réutilise une
             // image déjà en cache navigateur au lieu d'attendre un téléchargement.
@@ -4095,7 +3648,17 @@ function showErrorPopup(message) {
               swatch.className = 'swatch';
               swatch.style.backgroundColor = color.hex;
               swatch.dataset.color = color.name;
-              if (color.image) {
+              if (useProductImageSwatches && color.image) {
+                swatch.classList.add('swatch--product-image');
+                const imageUrl = upgradeShopifyImageUrl(color.image, 120);
+                const image = document.createElement('img');
+                image.className = 'swatch-product-image';
+                image.src = imageUrl;
+                image.alt = color.name;
+                image.loading = 'eager';
+                image.decoding = 'async';
+                swatch.appendChild(image);
+              } else if (color.image) {
                 const avatar = document.createElement('div');
                 avatar.className = 'swatch-avatar';
                 avatar.style.backgroundImage = `url("${upgradeShopifyImageUrl(color.image, 120)}")`;
@@ -4445,6 +4008,13 @@ function showErrorPopup(message) {
         const productId = productSection.dataset.productId;
         const product = products.find(p => p.id === productId);
         if (product) {
+          const isDirectEbookBundle = DIRECT_EBOOK_PRODUCT_IDS.has(productId);
+          if (isDirectEbookBundle) {
+            bundleContainer.classList.add('bundle-save-container--ebook');
+            bundleContainer.querySelectorAll('.bundle-add-btn').forEach(btn => {
+              btn.textContent = 'Continue to Payment';
+            });
+          }
           function getVariantPrice(product, color, size) {
             if (!color || !size) return product.price;
             const variant = product.variants.find(v => v.color === color && v.size === size);
@@ -4480,7 +4050,7 @@ function showErrorPopup(message) {
             container.querySelectorAll(".variant-selectors").forEach(div => {
               div.innerHTML = "";
               if (hasColors) {
-                const colorSelect = createSelect(uniqueColors, "Color");
+                const colorSelect = createSelect(uniqueColors, isDirectEbookBundle ? "Language" : "Color");
                 if (colorSelect) {
                   div.appendChild(colorSelect);
                   colorSelect.querySelector('select').addEventListener('change', (e) => {
@@ -4512,7 +4082,7 @@ function showErrorPopup(message) {
             selectorsContainer.querySelectorAll("select").forEach(select => {
               const label = select.parentElement.querySelector("label")?.textContent.toLowerCase() || "";
               if (select.value !== "") {
-                if (label.includes("color")) values.color = select.value;
+                if (label.includes("color") || label.includes("language")) values.color = select.value;
                 else if (label.includes("size")) values.size = select.value;
               }
             });
@@ -4548,6 +4118,10 @@ function showErrorPopup(message) {
           }
 
           function addBundleToCart(items) {
+            if (isDirectEbookBundle) {
+              openDirectEbookBundlePurchase(items);
+              return;
+            }
             items.forEach(item => {
               let cartItem = cart.find(i => i.id === item.id && i.size === item.size && i.color === item.color);
               if (cartItem) cartItem.quantity += item.quantity;
@@ -4594,7 +4168,8 @@ function showErrorPopup(message) {
                   if ((hasColors && !selectedColor) || (hasSizes && !selectedSize)) { showErrorPopup("Please complete your selection."); return; }
                   if (selectedColor) { const colorObj = product.colors.find(c => c.name === selectedColor); if (colorObj) itemImage = colorObj.image; }
                   const varPrice = getVariantPrice(product, selectedColor, selectedSize);
-                  const variant = product.variants.find(v => v.color === selectedColor && v.size === selectedSize);
+                    const variant = product.variants.find(v => v.color === selectedColor &&
+                      (isDirectEbookBundle ? !v.size : v.size === selectedSize));
                   items.push({ id: product.id, title: product.title, price: varPrice*(1-discount), compare_price: varPrice*ratio, image: itemImage, size: selectedSize, color: selectedColor, quantity: 1, fromBundle: true, cj_product_id: product.cj_product_id || product.eprolo_id, cj_variant_id: variant ? variant.vid : null });
                 }
               } else {
@@ -4613,7 +4188,8 @@ function showErrorPopup(message) {
                   if ((hasColors && !selectedColor) || (hasSizes && !selectedSize)) { valid = false; showErrorPopup(`Item ${i}: Please complete selection.`); break; }
                   if (selectedColor) { const colorObj = product.colors.find(c => c.name === selectedColor); if (colorObj) pairImage = colorObj.image; }
                   const varPrice = getVariantPrice(product, selectedColor, selectedSize);
-                  const variant = product.variants.find(v => v.color === selectedColor && v.size === selectedSize);
+                  const variant = product.variants.find(v => v.color === selectedColor &&
+                    (isDirectEbookBundle ? !v.size : v.size === selectedSize));
                   items.push({ id: product.id, title: product.title, price: varPrice*(1-discount), compare_price: varPrice*ratio, image: pairImage, size: selectedSize, color: selectedColor, quantity: 1, fromBundle: true, cj_product_id: product.cj_product_id || product.eprolo_id, cj_variant_id: variant ? variant.vid : null });
                 }
                 if (!valid) return;
@@ -5158,275 +4734,6 @@ initAnnouncementBar();
 })();
 
 
-/* ================================================================
-   BBW4LIFE — PRODUCT GRID SECTION 
-================================================================ */
-
-(function initBBWProductGrid() {
-  'use strict';
-
-  function waitAndRun(cb) {
-    if (window.__allProducts && window.__allProducts.length) {
-      cb(window.__allProducts);
-    } else {
-      var tries = 0;
-      var poll = setInterval(function () {
-        tries++;
-        if (window.__allProducts && window.__allProducts.length) {
-          clearInterval(poll);
-          cb(window.__allProducts);
-        } else if (tries > 80) {
-          clearInterval(poll);
-        }
-      }, 100);
-    }
-  }
-
-  function sharpImg(url, size) {
-    if (!url || typeof url !== 'string') return url;
-    if (!url.includes('cdn.shopify.com')) return url;
-    url = url.replace(/[?&]width=\d+/g, '').replace(/\?&/, '?').replace(/\?$/, '');
-    var sep = url.includes('?') ? '&' : '?';
-    return url + sep + 'width=' + (size || 600) + '&quality=90';
-  }
-
-  function getUrl(allProducts, id) {
-    var idx = allProducts.findIndex(function (p) { return p.id === id; });
-    if (idx === -1) return '#';
-    return '/products/product' + (idx + 1) + '.html';
-  }
-
-  function buildCard(prod, url, btnText) {
-    var hasDiscount = prod.compare_price && prod.compare_price > prod.price;
-    var discountPct = hasDiscount
-      ? Math.round(((prod.compare_price - prod.price) / prod.compare_price) * 100)
-      : 0;
-
-    var badgeHTML = '';
-    if (prod.badge && prod.badge.text) {
-      badgeHTML = '<span class="bbwpg-card__badge">' + prod.badge.text + '</span>';
-    }
-
-    var discHTML = discountPct > 0
-      ? '<span class="bbwpg-card__discount">-' + discountPct + '%</span>'
-      : '';
-
-    var compareHTML = hasDiscount
-      ? '<span class="bbwpg-card__compare">$' + parseFloat(prod.compare_price).toFixed(2) + '</span>'
-      : '';
-
-    var imgSrc = sharpImg(prod.image, 600);
-    var imgHoverSrc = prod.image_hover ? sharpImg(prod.image_hover, 600) : '';
-
-    var card = document.createElement('div');
-    card.className = 'bbwpg-card';
-    card.dataset.id = prod.id;
-
-   card.innerHTML =
-  '<a class="bbwpg-card__img-link" href="' + url + '" aria-label="' + prod.title + '">' +
-    '<div class="bbwpg-card__img-wrap">' +
-      '<img class="bbwpg-card__img bbwpg-card__img--main" src="' + (imgHoverSrc || imgSrc) + '" alt="' + prod.title + '" loading="lazy">' +
-      (imgHoverSrc
-        ? '<img class="bbwpg-card__img bbwpg-card__img--hover" src="' + imgSrc + '" alt="" loading="lazy" aria-hidden="true">'
-        : '') +
-          badgeHTML +
-          discHTML +
-        '</div>' +
-      '</a>' +
-      '<div class="bbwpg-card__body">' +
-        '<a class="bbwpg-card__title" href="' + url + '">' + prod.title + '</a>' +
-        '<div class="bbwpg-card__prices">' +
-          '<span class="bbwpg-card__price">$' + parseFloat(prod.price).toFixed(2) + '</span>' +
-          compareHTML +
-        '</div>' +
-        '<a class="bbwpg-card__btn" href="' + url + '">' +
-          '<span>' + (btnText || 'View Product') + '</span>' +
-          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12H19M13 6l6 6-6 6"/></svg>' +
-        '</a>' +
-      '</div>';
-
-    return card;
-  }
-
-  function run(allProducts) {
-
-    var section  = document.getElementById('bbw-product-grid-featured');
-    var track    = document.getElementById('bbwpg-track');
-    var viewport = document.getElementById('bbwpg-viewport');
-    var dotsWrap = document.getElementById('bbwpg-dots');
-    var prevBtn  = document.getElementById('bbwpg-prev');
-    var nextBtn  = document.getElementById('bbwpg-next');
-
-    if (!section || !track) return;
-
-    var settings  = allProducts.find(function (p) { return p.type === 'settings'; }) || {};
-    var cfg       = settings.product_grid_section || {};
-    var ids       = cfg.product_ids || [];
-    var btnText   = cfg.view_product_btn_text || 'View Product';
-
-    if (!ids.length) { section.style.display = 'none'; return; }
-
-    var eyebrowEl  = document.getElementById('bbwpg-eyebrow');
-    var titleEl    = document.getElementById('bbwpg-title');
-    var subtitleEl = document.getElementById('bbwpg-subtitle');
-    if (eyebrowEl  && cfg.eyebrow)   eyebrowEl.textContent  = cfg.eyebrow;
-    if (titleEl    && cfg.title)     titleEl.textContent     = cfg.title;
-    if (subtitleEl && cfg.subtitle)  subtitleEl.textContent  = cfg.subtitle;
-
-    var prods = ids
-      .map(function (id) { return allProducts.find(function (p) { return p.id === id; }); })
-      .filter(Boolean);
-
-    if (!prods.length) { section.style.display = 'none'; return; }
-
-    track.innerHTML = ''; // retire un éventuel skeleton avant de remplir
-
-    prods.forEach(function (prod) {
-      var url  = getUrl(allProducts, prod.id);
-      var card = buildCard(prod, url, btnText);
-      track.appendChild(card);
-    });
-
-    /* ── Slider logic ── */
-    var isMobile    = function () { return window.innerWidth < 768; };
-    var perPage     = function () { return isMobile() ? 2 : 4; };
-    var totalPages  = function () { return Math.ceil(prods.length / perPage()); };
-    var currentPage = 0;
-    var isAnimating = false;
-
-    /* ── DESKTOP — translateX ── */
-    function getCardWidth() {
-      var cards = track.querySelectorAll('.bbwpg-card');
-      if (!cards.length) return 0;
-      var gap = parseInt(getComputedStyle(track).gap) || 20;
-      return cards[0].offsetWidth + gap;
-    }
-
-    function goToDesktop(page) {
-      if (isAnimating) return;
-      var tp = totalPages();
-      if (page < 0)   page = tp - 1;
-      if (page >= tp) page = 0;
-      currentPage = page;
-      var offset = page * perPage() * getCardWidth();
-      track.style.transform = 'translateX(-' + offset + 'px)';
-      isAnimating = true;
-      setTimeout(function () { isAnimating = false; }, 480);
-      updateDots();
-      updateArrows();
-    }
-
-    /* ── MOBILE — scroll natif + snap ── */
-    function initMobileScroll() {
-      track.style.overflowX = 'auto';
-      track.style.scrollSnapType = 'x mandatory';
-      track.style.webkitOverflowScrolling = 'touch';
-      track.style.scrollbarWidth = 'none';
-      track.querySelectorAll('.bbwpg-card').forEach(function (card) {
-        card.style.scrollSnapAlign = 'start';
-        card.style.flexShrink = '0';
-      });
-      var syncTimer = null;
-      track.addEventListener('scroll', function () {
-        clearTimeout(syncTimer);
-        syncTimer = setTimeout(function () {
-          var cards = track.querySelectorAll('.bbwpg-card');
-          if (!cards.length) return;
-          var gap   = parseInt(getComputedStyle(track).gap) || 12;
-          var cardW = cards[0].offsetWidth + gap;
-          var idx   = Math.round(track.scrollLeft / cardW);
-          var page  = Math.floor(idx / 2);
-          if (page !== currentPage) {
-            currentPage = page;
-            updateDots();
-          }
-        }, 60);
-      }, { passive: true });
-    }
-
-    function goToMobile(page) {
-      var cards = track.querySelectorAll('.bbwpg-card');
-      if (!cards.length) return;
-      var tp = totalPages();
-      if (page < 0)   page = tp - 1;
-      if (page >= tp) page = 0;
-      currentPage = page;
-      var gap   = parseInt(getComputedStyle(track).gap) || 12;
-      var cardW = cards[0].offsetWidth + gap;
-      track.scrollTo({ left: page * 2 * cardW, behavior: 'smooth' });
-      updateDots();
-      updateArrows();
-    }
-
-    function goTo(page) {
-      if (isMobile()) { goToMobile(page); } else { goToDesktop(page); }
-    }
-
-    /* ── Dots ── */
-    function buildDots() {
-      if (!dotsWrap) return;
-      dotsWrap.innerHTML = '';
-      var tp = totalPages();
-      for (var i = 0; i < tp; i++) {
-        (function (idx) {
-          var dot = document.createElement('button');
-          dot.className = 'bbwpg-dot' + (idx === 0 ? ' bbwpg-dot--active' : '');
-          dot.setAttribute('role', 'tab');
-          dot.setAttribute('aria-label', 'Page ' + (idx + 1));
-          dot.addEventListener('click', function () { goTo(idx); });
-          dotsWrap.appendChild(dot);
-        })(i);
-      }
-    }
-
-    function updateDots() {
-      if (!dotsWrap) return;
-      dotsWrap.querySelectorAll('.bbwpg-dot').forEach(function (d, i) {
-        d.classList.toggle('bbwpg-dot--active', i === currentPage);
-      });
-    }
-
-    function updateArrows() {
-      var tp = totalPages();
-      if (prevBtn) prevBtn.style.display = tp <= 1 ? 'none' : '';
-      if (nextBtn) nextBtn.style.display = tp <= 1 ? 'none' : '';
-    }
-
-    if (prevBtn) prevBtn.addEventListener('click', function () { goTo(currentPage - 1); });
-    if (nextBtn) nextBtn.addEventListener('click', function () { goTo(currentPage + 1); });
-
-    /* ── Resize ── */
-    var resizeTimer = null;
-    window.addEventListener('resize', function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () {
-        currentPage = 0;
-        if (isMobile()) {
-          track.scrollLeft = 0;
-        } else {
-          track.style.transition = 'none';
-          track.style.transform  = 'translateX(0)';
-          setTimeout(function () { track.style.transition = ''; }, 50);
-        }
-        buildDots();
-        updateArrows();
-      }, 200);
-    });
-
-    /* ── Init ── */
-    if (isMobile()) { initMobileScroll(); }
-    buildDots();
-    updateArrows();
-  }
-
-  waitAndRun(run);
-
-})();
-
-
-
-
-// ══════════════════════════════════════════
 //  JRGQ COLLECTIONS — inject from settings
 // ══════════════════════════════════════════
 (function initJrgqCollections() {
@@ -7588,7 +6895,7 @@ if (rcCheckoutBtn) {
           // pid (ex: "Pdg-Francenel-product69") vient de l'attribut HTML
           // statique data-product-id, jamais réécrit — contrairement à
           // window.location.pathname que pretty-url.js remplace très tôt
-          // (history.replaceState) par l'URL jolie /bbw4life/nom-du-produit,
+          // (history.replaceState) par l'URL jolie /curvafit/nom-du-guide,
           // ce qui rendait la détection par URL toujours fausse en production.
           const teaserPageMatch = (pid || '').match(/product(\d+)$/);
           const teaserPageNum   = teaserPageMatch ? parseInt(teaserPageMatch[1], 10) : null;
@@ -7663,12 +6970,27 @@ if (rcCheckoutBtn) {
 
         const hasColors = product.colors && product.colors.length > 0;
         const hasSizes  = product.sizes  && product.sizes.length  > 0;
+        const isLanguageImageProduct = [
+            'Pdg-Francenel-product1',
+            'Pdg-Francenel-product2',
+            'Pdg-Francenel-product3',
+            'Pdg-Francenel-product15'
+        ].includes(product.id);
 
         // ── Libellé Buy Now (identique au bouton buy-now principal) ──
         if (satcBuyBtn) {
-            const buyNowLabel = (settings.button_labels || {}).buy_now || 'Buy Now';
+            const isDigitalEbookProduct = [
+                'Pdg-Francenel-product1',
+                'Pdg-Francenel-product2',
+                'Pdg-Francenel-product3',
+                'Pdg-Francenel-product15'
+            ].includes(product.id);
+            const buyNowLabel = isDigitalEbookProduct
+                ? 'Download Now'
+                : (settings.button_labels || {}).buy_now || 'Buy Now';
             const satcBuyBtnSpan = satcBuyBtn.querySelector('span');
             if (satcBuyBtnSpan) satcBuyBtnSpan.textContent = buyNowLabel;
+            if (isDigitalEbookProduct) satcBuyBtn.setAttribute('aria-label', buyNowLabel);
         }
 
         // ── Remplir le titre ──
@@ -7798,7 +7120,8 @@ if (rcCheckoutBtn) {
 
         // ── Image par défaut ──
         const defaultImg = (hasColors && product.colors[0].image) ? product.colors[0].image : product.image;
-        satcImg.src = upgradeShopifyImageUrl(defaultImg);
+        if (isLanguageImageProduct) satcImg.classList.add('sticky-atc__img--language');
+        satcImg.src = upgradeShopifyImageUrl(defaultImg, isLanguageImageProduct ? 1000 : undefined);
 
         // ── Fonction prix ──
         function getSatcPrice(color, size) {
@@ -7834,17 +7157,33 @@ if (rcCheckoutBtn) {
 
         // ── Couleurs ──
         if (hasColors) {
+            const satcColorLabel = satcColorField && satcColorField.querySelector('.satc-label');
+            if (isLanguageImageProduct && satcColorLabel) {
+                satcColorLabel.textContent = 'Select Your Language';
+            }
             product.colors.forEach((col, i) => {
                 const sw = document.createElement('div');
                 sw.className = 'satc-swatch' + (i === 0 ? ' active' : '');
                 sw.style.backgroundColor = col.hex;
                 sw.title = col.name;
+                if (isLanguageImageProduct && col.image) {
+                    sw.classList.add('satc-swatch--product-image');
+                    const image = document.createElement('img');
+                    image.className = 'satc-swatch-product-image';
+                    image.src = upgradeShopifyImageUrl(col.image, 240);
+                    image.alt = col.name;
+                    image.loading = 'eager';
+                    image.decoding = 'async';
+                    sw.appendChild(image);
+                }
                 sw.addEventListener('click', () => {
                     satcSwatches.querySelectorAll('.satc-swatch').forEach(s => s.classList.remove('active'));
                     sw.classList.add('active');
                     satcSelectedColor = col.name;
                     setSatcColorName(col.name);
-                    if (col.image) satcImg.src = upgradeShopifyImageUrl(col.image);
+                    if (col.image) {
+                        satcImg.src = upgradeShopifyImageUrl(col.image, isLanguageImageProduct ? 1000 : undefined);
+                    }
                     updateSatcPrice();
                 });
                 satcSwatches.appendChild(sw);
@@ -7976,6 +7315,10 @@ if (rcCheckoutBtn) {
         if (satcBuyBtn) {
             satcBuyBtn.addEventListener('click', () => {
                 if (document.querySelector('.product-section.bbw-featured-request-mode')) return;
+                if (isLanguageImageProduct) {
+                    openDirectEbookPurchase(product, satcSelectedColor, satcSelectedSize, satcQty);
+                    return;
+                }
                 if (!addSatcItemToCart()) return;
                 checkout();
             });
@@ -8224,14 +7567,38 @@ if (rcCheckoutBtn) {
     .catch(error => console.error('Erreur de chargement des produits:', error));
 
   // ====================== SCROLL REVEAL ======================
-  // (auto-tag sur toutes les <section> retiré : sur les pages sans le CSS
-  // [data-scroll-reveal] associé — ex. index.html, qui ne charge pas
-  // search-results.css — ce tag ne produisait aucun effet visuel tout en
-  // forçant un getBoundingClientRect() par section à chaque frame de
-  // scroll, non-throttled. Ne reste géré que ce qui est marqué en dur
-  // dans le HTML, comme sur search-results.html.)
+  if ('IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('scroll-revealed', 'revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px 120px 0px' });
 
+    const observeRevealElements = root => {
+      const register = el => {
+        const delay = Number(el.dataset.scrollDelay);
+        if (Number.isFinite(delay) && delay > 0) el.style.setProperty('--scroll-reveal-delay', `${Math.min(delay, 500)}ms`);
+        revealObserver.observe(el);
+      };
+      if (root.matches && root.matches('[data-scroll-reveal]')) register(root);
+      root.querySelectorAll?.('[data-scroll-reveal]').forEach(register);
+    };
 
+    document.documentElement.classList.add('has-scroll-reveal');
+    observeRevealElements(document);
+
+    if ('MutationObserver' in window) {
+      const revealMutationObserver = new MutationObserver(records => {
+        records.forEach(record => record.addedNodes.forEach(node => {
+          if (node.nodeType === 1) observeRevealElements(node);
+        }));
+      });
+      revealMutationObserver.observe(document.body, { childList: true, subtree: true });
+    }
+  }
 
 
   // ── INJECT ACCOUNT ICON IN HEADER ──
@@ -8320,39 +7687,6 @@ if (rcCheckoutBtn) {
     const scrollPosition = window.pageYOffset;
     parallaxes.forEach(parallax => { parallax.style.transform = `translateY(${scrollPosition * 0.5}px)`; });
   });
-
-  // ====================== SCROLL REVEAL ======================
-  // IntersectionObserver au lieu d'un scroll listener + getBoundingClientRect
-  // par élément à chaque frame (l'ancienne version forçait un reflow sur
-  // chaque [data-scroll-reveal] à chaque pixel scrollé — coûteux et source
-  // de jank pendant le scroll).
-  const revealElements = document.querySelectorAll('[data-scroll-reveal]');
-  if (revealElements.length && 'IntersectionObserver' in window) {
-    // rootMargin NÉGATIF en bas (-100px) rétrécissait la zone de détection :
-    // l'élément devait entrer 100px plus profondément dans le viewport avant
-    // de déclencher isIntersecting, retardant l'apparition — surtout visible
-    // sur les grandes sections (images pleine largeur, blocs entiers) qu'on
-    // pouvait presque dépasser en scrollant avant qu'elles s'affichent.
-    // rootMargin POSITIF anticipe au contraire le déclenchement. 80px restait
-    // insuffisant pour les sections hautes (ex: #bbw-nb-section sur home —
-    // photo + grille produits + bandeau) : on pouvait scroller presque
-    // jusqu'à sa sortie du viewport avant qu'elle ne s'affiche, donnant
-    // l'impression que l'animation "bloque" la section. 400px anticipe
-    // largement, quelle que soit la hauteur de la section observée.
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.05, rootMargin: '0px 0px 400px 0px' });
-    revealElements.forEach(el => revealObserver.observe(el));
-  }
-
-
-
-
 
   // ====================== COUNTERS ======================
 document.querySelectorAll('.counter').forEach(counter => {
@@ -9208,7 +8542,7 @@ document.dispatchEvent(new Event('wishlist:change'));
 
   function addToCart(e) {
     e.stopPropagation();
-    const cardContainer = e.target.closest('.product-card');
+    const cardContainer = e.target.closest('.product-card, .cf-product-card');
     const container = cardContainer || e.target.closest('.product-section');
     if (!container) return false;
     const id = container.dataset.id || container.dataset.productId;
@@ -9920,7 +9254,103 @@ document.dispatchEvent(new Event('wishlist:change'));
 //    ajoute ce produit et on redirige vers le checkout classique, comme le
 //    bouton Shop Now — un paiement PayPal direct ne concernerait alors
 //    qu'un seul article et laisserait le reste du panier de côté.
+  const DIRECT_EBOOK_PRODUCT_IDS = new Set([
+    'Pdg-Francenel-product1',
+    'Pdg-Francenel-product2',
+    'Pdg-Francenel-product3',
+    'Pdg-Francenel-product15'
+  ]);
+
+  function openDirectEbookPurchase(product, selectedColor, selectedSize, quantity) {
+    if (!product || !DIRECT_EBOOK_PRODUCT_IDS.has(product.id)) return false;
+    if (product.colors && product.colors.length && !selectedColor) {
+      showErrorPopup('Please select your language.');
+      return false;
+    }
+    if (product.sizes && product.sizes.length && !selectedSize) {
+      showErrorPopup('Please select a size.');
+      return false;
+    }
+
+    const color = (product.colors || []).find(item => item.name === selectedColor) || null;
+    const variant = (product.variants || []).find(item =>
+      (!selectedColor || item.color === selectedColor) &&
+      (!selectedSize || item.size === selectedSize || !item.size)
+    ) || (product.variants || [])[0] || null;
+    const price = variant && Number.isFinite(Number(variant.price))
+      ? Number(variant.price)
+      : Number(product.price) || 0;
+    const itemImage = color && color.image
+      ? upgradeShopifyImageUrl(color.image)
+      : upgradeShopifyImageUrl(product.image);
+
+    window.__curvafitDirectPurchaseCart = [{
+      id: product.id,
+      title: product.title,
+      price: price,
+      compare_price: Number(product.compare_price) || price,
+      image: itemImage,
+      size: selectedSize || null,
+      color: selectedColor || null,
+      quantity: Math.max(1, parseInt(quantity, 10) || 1),
+      cj_product_id: product.cj_product_id || product.eprolo_id || null,
+      cj_variant_id: variant ? variant.vid : null
+    }];
+
+    if (typeof window.openPaypalShippingModal !== 'function') {
+      window.__curvafitDirectPurchaseCart = null;
+      showErrorPopup('Secure checkout is not ready yet. Please try again in a moment.');
+      return false;
+    }
+    window.openPaypalShippingModal();
+    return true;
+  }
+
+  function openDirectEbookBundlePurchase(items) {
+    if (!Array.isArray(items) || !items.length ||
+        items.some(item => !item || !DIRECT_EBOOK_PRODUCT_IDS.has(item.id))) {
+      showErrorPopup('This bundle could not be prepared. Please refresh and try again.');
+      return false;
+    }
+    if (items.some(item => !item.cj_variant_id || !item.color)) {
+      showErrorPopup('Please select a language for every ebook in the bundle.');
+      return false;
+    }
+    window.__curvafitDirectPurchaseCart = items.map(item => ({ ...item }));
+    if (typeof window.openPaypalShippingModal !== 'function') {
+      window.__curvafitDirectPurchaseCart = null;
+      showErrorPopup('Secure checkout is not ready yet. Please try again in a moment.');
+      return false;
+    }
+    window.openPaypalShippingModal();
+    return true;
+  }
+
+  function openDirectEbookPurchaseFromButton(e) {
+    const section = e.target.closest('.product-section');
+    const productId = section && section.dataset.productId;
+    if (!DIRECT_EBOOK_PRODUCT_IDS.has(productId)) return false;
+    e.preventDefault();
+    const product = products.find(item => item.id === productId);
+    if (!product) {
+      showErrorPopup('This product is temporarily unavailable. Please refresh and try again.');
+      return true;
+    }
+    const activeSwatch = section.querySelector('.color-swatches .swatch.active');
+    const sizeSelect = section.querySelector('#size-select');
+    const quantityInput = section.querySelector('.quantity input');
+    openDirectEbookPurchase(
+      product,
+      activeSwatch ? activeSwatch.dataset.color : null,
+      sizeSelect && sizeSelect.value ? sizeSelect.value : null,
+      quantityInput ? quantityInput.value : 1
+    );
+    return true;
+  }
+
   function buyWithPaypal(e) {
+    e.preventDefault();
+    if (openDirectEbookPurchaseFromButton(e)) return;
     const wasCartEmptyBefore = cart.length === 0;
 
     const added = addToCart(e); // valide couleur/taille (popup d'erreur sinon) puis ajoute au panier
@@ -9998,10 +9428,29 @@ function showCheckoutBlockPopup() {
   }
   window.updateWishlistIcons = updateWishlistIcons;
 
+  document.addEventListener('click', function (e) {
+    const addButton = e.target.closest('#cf-products-track .add-to-cart');
+    if (addButton) {
+      e.preventDefault();
+      addToCart(e);
+      return;
+    }
+    const wishlistButton = e.target.closest('#cf-products-track .wishlist-toggle');
+    if (wishlistButton) {
+      e.preventDefault();
+      toggleWishlist(e);
+    }
+  });
+
   updateBadges();
   updateWishlistIcons();
   document.querySelectorAll('.add-to-cart').forEach(btn => btn.addEventListener('click', addToCart));
-  document.querySelectorAll('.buy-now').forEach(btn => { btn.addEventListener('click', (e) => { if (addToCart(e)) checkout(); }); });
+  document.querySelectorAll('.buy-now').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      if (openDirectEbookPurchaseFromButton(e)) return;
+      if (addToCart(e)) checkout();
+    });
+  });
   document.querySelectorAll('.buy-paypal').forEach(btn => { btn.addEventListener('click', buyWithPaypal); });
   document.querySelectorAll('.wishlist-toggle, .wishlist-icon-product, .mini-wishlist-icon').forEach(icon => { icon.addEventListener('click', toggleWishlist); });
 
@@ -10027,163 +9476,10 @@ const cartWrapper = document.querySelector('.icon-wrapper:has(.cart-icon)');
 //   WISHLIST SLUG MAP — déclaré UNE SEULE FOIS, partagé
 // ================================================================
 const BBW_WISHLIST_SLUG_MAP = {
-  'Pdg-Francenel-product1':  'glam-heels-cross-strap-stiletto-sandals',
-  'Pdg-Francenel-product2':  'retrorun-sneakers-chunky-sole-street-style',
-  'Pdg-Francenel-product3':  'bohoflip-sandals-embroidered-boho-flip-flops',
-  'Pdg-Francenel-product4':  'powerheels-12cm-stiletto-pumps',
-  'Pdg-Francenel-product5':  'winterboost-boots-ankle-boots',
-  'Pdg-Francenel-product6':  'colorstilettos-vibrant-stiletto-flip-flops',
-  'Pdg-Francenel-product7':  'nightchic-dress-mock-neck-long-sleeve-printed',
-  'Pdg-Francenel-product8':  'slitlux-dress-cutout-slit-round-neck',
-  'Pdg-Francenel-product9':  'plaidoverall-dress-wide-strap-dungaree',
-  'Pdg-Francenel-product10': 'floralflounce-dress-surplice-flounce-sleeve-maxi',
-  'Pdg-Francenel-product11': 'vintagesquare-dress-printed-square-neck',
-  'Pdg-Francenel-product12': 'paisleybelt-dress-orange-floral-print-belted',
-  'Pdg-Francenel-product13': 'meshduo-set-sheer-mesh-long-dress-suit',
-  'Pdg-Francenel-product14': 'meshglam-dress-solid-color-stitching-maxi',
-  'Pdg-Francenel-product15': 'linenbreeze-dress-cotton-linen-button-down',
-  'Pdg-Francenel-product16': 'stripedmini-dress-vneck-long-sleeve',
-  'Pdg-Francenel-product17': 'loungerobe-loose-sleepwear-bathrobe',
-  'Pdg-Francenel-product18': 'lacenight-dress-sexy-short-strap-lace-nightdress',
-  'Pdg-Francenel-product19': 'lacethong-set-sheer-lace-skirt-lingerie',
-  'Pdg-Francenel-product20': 'solidsexy-bikini-high-waist-hot-swimsuit',
-  'Pdg-Francenel-product21': 'curvebikini-solid-color-high-waist-swimwear',
-  'Pdg-Francenel-product22': 'leopardnight-set-mesh-pajama-lingerie-dress',
-  'Pdg-Francenel-product23': 'supportbra-large-cup-breathable-mesh-bra',
-  'Pdg-Francenel-product24': 'laceromper-jumpsuit-lace-splicing-thong',
-  'Pdg-Francenel-product25': 'stripedbikini-print-striped-swimwear',
-  'Pdg-Francenel-product26': 'tubebikinii-tube-top-swimsuit',
-  'Pdg-Francenel-product27': 'ruffleone-bikini-vneck-ruffled-one-piece',
-  'Pdg-Francenel-product28': 'bandagebikini-solid-color-bandage-swimsuit',
-  'Pdg-Francenel-product29': 'contrastone-piece-contrasting-color-swimwear',
-  'Pdg-Francenel-product30': 'premiumbikini-plus-size-swimsuit-collection',
-  'Pdg-Francenel-product31': 'irregulartop-loose-round-neck-irregular-hem',
-  'Pdg-Francenel-product32': 'christmassweat-casual-holiday-sweatshirt',
-  'Pdg-Francenel-product33': 'dalmationshorts-high-waist-dalmatian-print',
-  'Pdg-Francenel-product34': 'leopardshirt-irregular-collar-spliced-blouse',
-  'Pdg-Francenel-product35': 'drawstringpants-casual-pants-with-pockets',
-  'Pdg-Francenel-product36': 'cropslimpants-mens-drawstring-cropped-pants',
-  'Pdg-Francenel-product37': 'haremprints-printed-harem-trousers-men',
-  'Pdg-Francenel-product38': 'loosejeans-mens-relaxed-fit-denim',
-  'Pdg-Francenel-product39': 'britishloafers-formal-tassel-party-shoes-men',
-  'Pdg-Francenel-product40': 'airmesh-runners-professional-sports-sneakers-men',
-  'Pdg-Francenel-product41': 'leathercasuals-mens-breathable-flat-sneakers',
-  'Pdg-Francenel-product42': 'businessdress-shoes-classic-wedding-formal',
-  'Pdg-Francenel-product43': 'hollowsneakers-mesh-big-size-fashion-shoes-men',
-  'Pdg-Francenel-product44': 'tendtrainers-mens-outdoor-sport-sneakers',
-  'Pdg-Francenel-product45': 'patentloafers-luxury-patent-leather-party-shoes',
-  'Pdg-Francenel-product46': 'collarshirt-mens-plus-size-button-down',
-  'Pdg-Francenel-product47': 'geopolo-shirt-geometric-print-men-polo',
-  'Pdg-Francenel-product48': 'stripedcollar-sweater-mens-casual-knit',
-  'Pdg-Francenel-product49': 'turtlenecklux-mens-plus-size-turtleneck-sweater',
-  'Pdg-Francenel-product50': 'hikejacket-waterproof-outdoor-jacket',
-  'Pdg-Francenel-product51': 'roundneck-sweatshirt-mens-plus-size-pullover',
-  'Pdg-Francenel-product52': 'nailbond-glue-strong-uv-nail-tips-adhesive',
-  'Pdg-Francenel-product53': 'bownails-manicure-long-almond-fake-nails',
-  'Pdg-Francenel-product54': 'nailrepair-lotion-nourishing-nail-solution',
-  'Pdg-Francenel-product55': 'browdye-pencil-waterproof-quick-dry-eyebrow',
-  'Pdg-Francenel-product56': 'curl-volume-mascara-4d-waterproof-formula',
-  'Pdg-Francenel-product57': 'browkit-pro-waterproof-eyebrow-stencil-cream',
-  'Pdg-Francenel-product58': 'obsidian-lip-balm-warming-moisture-treatment',
-  'Pdg-Francenel-product59': 'tearoff-lip-gloss-4-color-long-lasting-peel',
-  'Pdg-Francenel-product60': 'gingerclean-pads-ginger-lemon-makeup-remover',
-  'Pdg-Francenel-product61': 'deeprepair-hair-mask-moisturizing-smoothing',
-  'Pdg-Francenel-product62': 'batanaglow-oil-moisturizing-hair-care',
-  'Pdg-Francenel-product63': 'batanaboost-oil-120ml-hair-growth-conditioner',
-  'Pdg-Francenel-product64': 'poreclean-gel-deep-exfoliating-anti-acne',
-  'Pdg-Francenel-product65': 'knucklewhite-serum-hand-joint-skin-brightener',
-  'Pdg-Francenel-product66': 'propolis-glow-essence-brightening-facial-serum',
-  'Pdg-Francenel-product67': 'menglow-cream-concealing-brightening-lazy-cream',
-  'Pdg-Francenel-product68': 'iceglow-grid-set-silicone-facial-cooling-tool',
-  'Pdg-Francenel-product69': 'glamsatin-dress-black-halter-ruched-maxi',
-  'Pdg-Francenel-product70': 'powersuit-ivory-structured-skirt-suit',
-  'Pdg-Francenel-product71': 'bohofloral-maxi-wrap-floral-bishop-sleeve-dress',
-  'Pdg-Francenel-product72': 'cozylounge-set-cream-tank-beige-wide-leg',
-  'Pdg-Francenel-product73': 'blushlace-gown-lace-cap-sleeve-empire-maxi',
-  'Pdg-Francenel-product74': 'tealempire-gown-sleeveless-vneck-formal-maxi',
-  'Pdg-Francenel-product75': 'jacquardpower-suit-multicolor-floral-brocade',
-  'Pdg-Francenel-product76': 'patchlace-flats-leisure-patchwork-shoelace-sneakers',
-  'Pdg-Francenel-product77': 'warmstep-boots-padded-fur-lined-winter-sneakers',
-  'Pdg-Francenel-product78': 'platformwalk-sneakers-vulcanized-plus-size-shoes',
-  'Pdg-Francenel-product79': 'stripewrap-bodycon-short-sleeve-bandage-dress',
-  'Pdg-Francenel-product80': 'flarefit-dress-spring-flared-sleeve-hip-hugging',
-  'Pdg-Francenel-product81': 'officestripe-shirt-dress-patchwork-streetwear-midi',
-  'Pdg-Francenel-product82': 'drawshirt-dress-drawstring-shirt-collar-streetwear',
-  'Pdg-Francenel-product83': 'autumnvneck-maxi-high-waist-family-matching-dress',
-  'Pdg-Francenel-product84': 'beltedbanquet-dress-long-sleeve-printed-high-waist',
-  'Pdg-Francenel-product85': 'woventassel-bag-hand-crochet-shoulder-bag',
-  'Pdg-Francenel-product86': 'koreantrend-bag-small-messenger-bag',
-  'Pdg-Francenel-product87': 'blocksquare-bag-color-blocked-mini-bag',
-  'Pdg-Francenel-product88': 'rattanring-tote-hand-knitted-beach-bag',
-  'Pdg-Francenel-product89': 'commutercanvas-tote-multi-pocket-zipper-bag',
-  'Pdg-Francenel-product90': 'embroidtote-bag-leather-top-handle-crossbody',
-  'Pdg-Francenel-product91': 'texturedmini-bag-japanese-style-hand-bag',
-  'Pdg-Francenel-product92': 'retroniche-bag-large-capacity-shoulder-messenger',
-  'Pdg-Francenel-product93': 'leopardunderarm-bag-retro-drawstring-crossbody',
-  'Pdg-Francenel-product94': 'metalchain-clutch-trendy-evening-party-bag',
-  'Pdg-Francenel-product95': 'patterntote-bag-earring-decorated-shoulder-tote',
-  'Pdg-Francenel-product96': 'pleatedtwo-piece-solid-color-skirt-set',
-  'Pdg-Francenel-product97': 'onepiece-swim-plus-size-solid-swimsuit',
-  'Pdg-Francenel-product98': 'gilded-gala-gown-sequin-bodice-tiered-tulle',
-  'Pdg-Francenel-product99': 'midnightvelvet-sheath-three-quarter-sleeve-bodycon',
-  'Pdg-Francenel-product100': 'velvetwrap-jumpsuit-gold-belt-wide-leg',
-  'Pdg-Francenel-product101': 'savannahprint-sundress-tribal-tiered-mini',
-  'Pdg-Francenel-product102': 'classictrench-coat-belted-double-breasted',
-  'Pdg-Francenel-product103': 'tiefront-sheath-cap-sleeve-wrap-detail',
-  'Pdg-Francenel-product104': 'slouchsuede-boots-knee-high-block-heel',
-  'Pdg-Francenel-product105': 'velvettailored-blazer-peak-lapel-jacket',
-  'Pdg-Francenel-product106': 'colorblockmidi-stripe-detail-sheath-dress',
-  'Pdg-Francenel-product107': 'houndstoothtweed-set-button-front-skirt-dress',
-  'Pdg-Francenel-product108': 'rufflecascade-sheath-draped-side-detail',
-  'Pdg-Francenel-product109': 'tweedshift-dress-cuffed-sleeve-classic',
-  'Pdg-Francenel-product110': 'polkadotblouse-set-wide-leg-belted-trouser',
-  'Pdg-Francenel-product111': 'autumn-canvas-high-top-boots-mens-workwear',
-  'Pdg-Francenel-product112': 'no-tie-leather-sneakers-mens-slip-on',
-  'Pdg-Francenel-product113': 'high-top-martin-boots-mens-outdoor-workwear',
-  'Pdg-Francenel-product114': 'breathable-mesh-sneakers-mens-casual-dad-shoes',
-  'Pdg-Francenel-product115': 'eva-sole-house-slippers-mens-slides',
-  'Pdg-Francenel-product116': 'solid-color-short-sleeve-tshirt-mens-slim-fit',
-  'Pdg-Francenel-product117': 'v-neck-ice-silk-tshirt-mens-quick-dry-fitness-top',
-  'Pdg-Francenel-product118': 'classic-v-neck-tee-multipack-mens-casual-white-black',
-  'Pdg-Francenel-product119': 'led-facial-mask-skin-care-beauty-salon',
-  'Pdg-Francenel-product120': 'neck-face-lifting-beauty-instrument',
-  'Pdg-Francenel-product121': 'laikou-vitamin-c-skincare-cleanser',
-  'Pdg-Francenel-product122': 'hyaluronic-acid-water-sensitive-sunscreen',
-  'Pdg-Francenel-product123': 'skin-hydrating-moisturizing-mist',
-  'Pdg-Francenel-product124': 'black-gray-printed-outfit-set-plus-size',
-  'Pdg-Francenel-product125': 'cinched-top-straight-leg-pants-set',
-  'Pdg-Francenel-product126': 'printed-lace-jacket-dress-skirt-set',
-  'Pdg-Francenel-product127': 'tie-up-top-wide-leg-pants-casual-set',
-  'Pdg-Francenel-product128': 'printed-comfortable-casual-set',
-  'Pdg-Francenel-product129': 'pajama-set-with-lace-shorts',
-  'Pdg-Francenel-product130': 'loose-fashionable-sportswear-set',
-  'Pdg-Francenel-product131': 'geo-pattern-shirt-high-waist-pants-set',
-  'Pdg-Francenel-product132': 'mens-large-size-casual-three-piece-set',
-  'Pdg-Francenel-product133': 'mens-casual-suit-pants-mid-waist-straight',
-  'Pdg-Francenel-product134': 'fashion-line-printing-round-neck-suit',
-  'Pdg-Francenel-product135': 'woven-colorblock-bbw4life-shirt-and-pants-set',
-  'Pdg-Francenel-product136': 'diagonal-zip-polo-and-bbw4life-jogger-set',
-  'Pdg-Francenel-product137': 'diagonal-zip-bbw4life-polo-and-shorts-set',
-  'Pdg-Francenel-product138': 'greek-key-bbw4life-baroque-shirt',
-  'Pdg-Francenel-product139': 'diagonal-zip-cable-knit-bbw4life-sweater',
-  'Pdg-Francenel-product140': 'tricolor-wave-bbw4life-crewneck-and-jogger-set',
-  'Pdg-Francenel-product141': 'suede-patch-bbw4life-hoodie-and-jogger-set',
-  'Pdg-Francenel-product142': 'gold-trim-bbw4life-leather-look-blazer',
-  'Pdg-Francenel-product143': 'guitar-and-treble-clef-bbw4life-shirt-and-pants-set',
-  'Pdg-Francenel-product144': 'diagonal-bbw4life-colorblock-tee-and-shorts-set',
-  'Pdg-Francenel-product145': 'quarter-zip-bbw4life-ribbed-sweater-dress',
-  'Pdg-Francenel-product146': 'quilted-bbw4life-pink-hoodie-and-jogger-set',
-  'Pdg-Francenel-product147': 'ombre-pleated-bbw4life-skirt-and-vest-set',
-  'Pdg-Francenel-product148': 'floral-embroidered-bbw4life-blazer-and-skirt-set',
-  'Pdg-Francenel-product149': 'floral-tulle-bbw4life-off-shoulder-gown',
-  'Pdg-Francenel-product150': 'striped-tie-front-bbw4life-shirt-and-pleated-wide-leg-pants-set',
-  'Pdg-Francenel-product151': 'diagonal-sash-bbw4life-pearl-button-maxi-dress',
-  'Pdg-Francenel-product152': 'sunflower-ankara-bbw4life-godet-maxi-dress',
-  'Pdg-Francenel-product153': 'sculpting-one-piece-shaping-jumpsuit',
-  'Pdg-Francenel-product154': 'zip-front-tummy-control-shapewear-bodysuit',
-  'Pdg-Francenel-product155': 'buckle-front-shaping-bra',
-  'Pdg-Francenel-product156': 'essential-haven-back-support-belt',
-  'Pdg-Francenel-product157': 'zip-front-neoprene-waist-shaper',
+  'Pdg-Francenel-product1': 'gentle-walking-4-week-guide',
+  'Pdg-Francenel-product2': 'simple-meal-planner-4-weeks-easy-meals-shopping-lists',
+  'Pdg-Francenel-product3': 'move-at-home-gentle-workouts-no-equipment',
+  'Pdg-Francenel-product15': 'back-on-track-14-day-restart-guide'
 };
 // Exposé sur window : un `const` de niveau script n'est visible que dans
 // CE fichier — un autre <script> classique séparé (ex: collections.js,
@@ -10272,7 +9568,7 @@ window.BBW_WISHLIST_SLUG_MAP = BBW_WISHLIST_SLUG_MAP;
     function buildProductUrl(id) {
         const slug = BBW_WISHLIST_SLUG_MAP[id];
         return slug
-            ? window.location.origin + '/bbw4life/' + slug
+            ? window.location.origin + '/curvafit/' + slug
             : window.location.origin + (typeof window.getProductUrl === 'function' ? window.getProductUrl(id) : '/collections/bbw4life-all-product.html');
     }
 
@@ -16038,6 +15334,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var titleEl    = $('bbwHeroTitle');
     var subtitleEl = $('bbwHeroSubtitle');
     var textEl     = $('bbwHeroText');
+    var eyebrowEl  = $('bbwHeroEyebrow');
     var cdWrap     = $('bbwHeroCountdown');
     var btnWrap    = $('bbwHeroBtnWrap');
     var btnMain    = $('bbwHeroBtnMain');
@@ -16049,6 +15346,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var videoUrl         = cfg.video_url            || '';
     var images           = cfg.images               || [];
+    var mobileImages     = cfg.mobile_images        || [];
     var showThumbs       = (cfg.show_thumbnails      || 'yes').toLowerCase() === 'yes';
     var thumbPosDesktop  = (cfg.thumbnails_position_desktop || 'right').toLowerCase();
     var thumbPosMobile   = (cfg.thumbnails_position_mobile  || 'bottom').toLowerCase();
@@ -16143,15 +15441,25 @@ document.addEventListener('DOMContentLoaded', function () {
         /* Mode images */
         images.forEach(function (src, i) {
           var img = document.createElement('img');
-          img.src      = (typeof upgradeShopifyImageUrl === 'function') ? upgradeShopifyImageUrl(src, 1600) : src;
           img.alt      = (slides[i] && slides[i].title) ? slides[i].title : 'BBW4LIFE banner ' + (i + 1);
           img.loading  = 'eager';
           img.decoding = 'async';
           if (i === 0) img.fetchPriority = 'high';
           heroImgEls.push(img);
+          var picture = document.createElement('picture');
+          var mobileSrc = typeof mobileImages[i] === 'string' ? mobileImages[i].trim() : '';
+          if (mobileSrc) {
+            var mobileSource = document.createElement('source');
+            mobileSource.media = '(max-width: 767px)';
+            var mobileImageUrl = (typeof upgradeShopifyImageUrl === 'function') ? upgradeShopifyImageUrl(mobileSrc, 1200) : mobileSrc;
+            mobileSource.srcset = encodeURI(mobileImageUrl);
+            picture.appendChild(mobileSource);
+          }
+          picture.appendChild(img);
           /* pas de bbw-hero--active tout de suite pour le slide 0 —
              on l'ajoute seulement une fois toutes les images chargées */
-          mediaEl.appendChild(img);
+          mediaEl.appendChild(picture);
+          img.src = (typeof upgradeShopifyImageUrl === 'function') ? upgradeShopifyImageUrl(src, 1600) : src;
         });
 
         function bbwHeroRevealImages() {
@@ -16200,11 +15508,20 @@ document.addEventListener('DOMContentLoaded', function () {
         thumb.dataset.index = i;
 
         var img = document.createElement('img');
-        img.src     = (typeof upgradeShopifyImageUrl === 'function') ? upgradeShopifyImageUrl(src, 200) : src;
         img.alt     = 'Thumbnail ' + (i + 1);
         img.loading = 'lazy';
         img.decoding = 'async';
-        thumb.appendChild(img);
+          var picture = document.createElement('picture');
+          var mobileSrc = typeof mobileImages[i] === 'string' ? mobileImages[i].trim() : '';
+          if (mobileSrc) {
+            var mobileSource = document.createElement('source');
+            mobileSource.media = '(max-width: 767px)';
+            var mobileThumbUrl = (typeof upgradeShopifyImageUrl === 'function') ? upgradeShopifyImageUrl(mobileSrc, 200) : mobileSrc;
+            mobileSource.srcset = encodeURI(mobileThumbUrl);
+            picture.appendChild(mobileSource);
+          }
+          picture.appendChild(img);
+          thumb.appendChild(picture);
 
         thumb.addEventListener('click', function () {
           goToSlide(parseInt(this.dataset.index));
@@ -16212,6 +15529,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         thumbsEl.appendChild(thumb);
+        img.src = (typeof upgradeShopifyImageUrl === 'function') ? upgradeShopifyImageUrl(src, 200) : src;
       });
     } else if (thumbsEl && !videoUrl) {
       thumbsEl.style.display = 'none';
@@ -16243,30 +15561,39 @@ document.addEventListener('DOMContentLoaded', function () {
     ════════════════════════════════════════════════════════ */
     var _heroFirstRender = true;
 
+    function setHeroText(el, value) {
+      if (!el) return;
+      el.textContent = value || '';
+      el.classList.remove('skel-text-loading');
+    }
+
     function updateContent(idx) {
       var slide = slides[idx] || {};
-      var els = [titleEl, subtitleEl, textEl, cdWrap, btnWrap].filter(Boolean);
+      var eyebrow = slide.eyebrow || cfg.eyebrow || '';
+      var els = [eyebrowEl, titleEl, subtitleEl, textEl, cdWrap, btnWrap].filter(Boolean);
 
-      // Premier rendu : pas de fondu, on affiche direct
+      if (eyebrowEl) {
+        setHeroText(eyebrowEl, eyebrow);
+        eyebrowEl.style.display = eyebrow ? '' : 'none';
+      }
+
       if (_heroFirstRender) {
-        if (titleEl)    titleEl.textContent    = slide.title    || '';
-        if (subtitleEl) subtitleEl.textContent = slide.subtitle || '';
-        if (textEl)     textEl.textContent     = slide.text     || '';
+        setHeroText(titleEl, slide.title);
+        setHeroText(subtitleEl, slide.subtitle);
+        setHeroText(textEl, slide.text);
         _heroFirstRender = false;
         return;
       }
 
-      // Crossfade doux : fondu sortant → changement de texte → fondu entrant
       els.forEach(function (el) {
         el.style.transition = 'opacity 0.4s ease';
         el.style.opacity = '0';
       });
 
       setTimeout(function () {
-        if (titleEl)    titleEl.textContent    = slide.title    || '';
-        if (subtitleEl) subtitleEl.textContent = slide.subtitle || '';
-        if (textEl)     textEl.textContent     = slide.text     || '';
-
+        setHeroText(titleEl, slide.title);
+        setHeroText(subtitleEl, slide.subtitle);
+        setHeroText(textEl, slide.text);
         els.forEach(function (el) {
           el.style.opacity = '1';
         });
@@ -16730,525 +16057,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 })();
 
-/* ═══════════════════════════════════════════════════════════════════
-   COLLECTION SLIDER — collection-slider.js
-   ═══════════════════════════════════════════════════════════════════ */
 
-(function () {
-  'use strict';
-
-  function fmt(price) {
-    return '$' + parseFloat(price).toFixed(2);
-  }
-
-  function getImg(url) {
-    return typeof upgradeShopifyImageUrl === 'function'
-      ? upgradeShopifyImageUrl(url, 600)
-      : url;
-  }
-
-  function getWishlist() {
-    try { return JSON.parse(localStorage.getItem('wishlist') || '[]'); }
-    catch (e) { return []; }
-  }
-
-  function toggleWishlistItem(handle) {
-    let wl = getWishlist();
-    if (!Array.isArray(wl)) wl = [];
-    const idx = wl.indexOf(handle);
-    if (idx === -1) wl.push(handle);
-    else wl.splice(idx, 1);
-    localStorage.setItem('wishlist', JSON.stringify(wl));
-    if (typeof window.__setWishlist === 'function') window.__setWishlist(wl);
-    document.dispatchEvent(new Event('wishlist:change'));
-    if (typeof window.updateWishlistIcons === 'function') window.updateWishlistIcons();
-    if (typeof window.updateBadges === 'function') window.updateBadges();
-  }
-
-  function isWishlisted(handle) {
-    const wl = getWishlist();
-    return Array.isArray(wl) && wl.includes(handle);
-  }
-
-  function addToCartFromWidget(prod, variantOverride) {
-    const variant = variantOverride || (prod.variants && prod.variants[0]) || null;
-    const color  = variant ? variant.color  || null : null;
-    const size   = variant ? variant.size   || null : null;
-    const price  = variant ? variant.price  : prod.price;
-    const vid    = variant ? variant.vid    : null;
-
-    const colorObj = (color && prod.colors)
-      ? prod.colors.find(c => c.name === color)
-      : null;
-    const image = getImg(colorObj ? colorObj.image || prod.image : prod.image);
-
-    let cart = (typeof window.__getCart === 'function')
-      ? window.__getCart()
-      : JSON.parse(localStorage.getItem('cart') || '[]');
-
-    const existing = cart.find(
-      i => i.id === prod.id && i.color === color && i.size === size
-    );
-
-    if (existing) {
-      existing.quantity += 1;
-    } else {
-      cart.push({
-        id:            prod.id,
-        title:         prod.title,
-        price:         price,
-        compare_price: prod.compare_price,
-        image:         image,
-        size:          size,
-        color:         color,
-        quantity:      1,
-        cj_product_id: prod.cj_product_id || prod.eprolo_id,
-        cj_variant_id: vid
-      });
-    }
-
-    if (typeof window.__setCart === 'function') window.__setCart(cart);
-    if (typeof window.saveCart                  === 'function') window.saveCart();
-    if (typeof window.updateCartQuantityInSheet === 'function') window.updateCartQuantityInSheet();
-    if (typeof window.updateBadges              === 'function') window.updateBadges();
-    if (typeof window.renderCart                === 'function') window.renderCart();
-    if (typeof window.openCartDrawer            === 'function') window.openCartDrawer();
-  }
-
-  function buildCard(prod, addToCartLabel) {
-    const card = document.createElement('div');
-    card.className = 'cs-card';
-    card.dataset.productId = prod.id;
-
-    let currentMediaIndex = 0;
-    let selectedVariant   = prod.variants && prod.variants.length ? prod.variants[0] : null;
-    const MAX_VISIBLE_VARIANTS = 4;
-    let variantsExpanded  = false;
-
-    let discountPct = 0;
-    if (prod.compare_price > prod.price) {
-      discountPct = Math.round(((prod.compare_price - prod.price) / prod.compare_price) * 100);
-    }
-
-    const discountBadge = document.createElement('span');
-    discountBadge.className = 'cs-discount-badge';
-    discountBadge.style.display = discountPct > 0 ? '' : 'none';
-    discountBadge.textContent = '-' + discountPct + '%';
-    card.appendChild(discountBadge);
-
-    const wishBtn = document.createElement('button');
-    wishBtn.className = 'cs-wishlist-btn' + (isWishlisted(prod.handle || prod.id) ? ' cs-in-wishlist' : '');
-    wishBtn.setAttribute('aria-label', 'Wishlist');
-    wishBtn.innerHTML = `
-      <svg class="cs-heart-empty" viewBox="0 0 24 24" fill="none" stroke="#c0385e" stroke-width="2">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
-      </svg>
-      <svg class="cs-heart-filled" viewBox="0 0 24 24" fill="#c0385e" stroke="#c0385e" stroke-width="2">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
-      </svg>`;
-    wishBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      const key = prod.handle || prod.id;
-      toggleWishlistItem(key);
-      wishBtn.classList.toggle('cs-in-wishlist', isWishlisted(key));
-    });
-    card.appendChild(wishBtn);
-
-    const mediaEl = document.createElement('div');
-    mediaEl.className = 'cs-media';
-
-    const mediaLink = document.createElement('a');
-    mediaLink.href = typeof getProductUrl === 'function' ? getProductUrl(prod.id) : (prod.url || '#');
-
-    const inner = document.createElement('div');
-    inner.className = 'cs-media-inner';
-
-    const slides = prod.media && prod.media.length ? prod.media : [prod.image];
-    slides.forEach((src, i) => {
-      const slide = document.createElement('div');
-      slide.className = 'cs-media-slide';
-      const img = document.createElement('img');
-      img.src     = getImg(src);
-      img.alt     = prod.title + ' image ' + (i + 1);
-      img.loading = i === 0 ? 'eager' : 'lazy';
-      slide.appendChild(img);
-      inner.appendChild(slide);
-    });
-
-    mediaLink.appendChild(inner);
-    mediaEl.appendChild(mediaLink);
-
-    function goToMediaSlide(idx) {
-      currentMediaIndex = Math.max(0, Math.min(slides.length - 1, idx));
-      inner.style.transform = 'translateX(-' + (currentMediaIndex * 100) + '%)';
-    }
-
-    if (slides.length > 1) {
-      const prevBtn = document.createElement('button');
-      prevBtn.className = 'cs-media-arrow cs-media-arrow--prev';
-      prevBtn.setAttribute('aria-label', 'Image précédente');
-      prevBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>`;
-    prevBtn.addEventListener('click', function (e) {
-        e.preventDefault(); e.stopPropagation();
-        goToMediaSlide(currentMediaIndex - 1);
-      });
-      prevBtn.addEventListener('touchstart', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        goToMediaSlide(currentMediaIndex - 1);
-      }, { passive: false });
-
-      const nextBtn = document.createElement('button');
-      nextBtn.className = 'cs-media-arrow cs-media-arrow--next';
-      nextBtn.setAttribute('aria-label', 'Image suivante');
-      nextBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>`;
-      nextBtn.addEventListener('click', function (e) {
-        e.preventDefault(); e.stopPropagation();
-        goToMediaSlide(currentMediaIndex + 1);
-      });
-      nextBtn.addEventListener('touchstart', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        goToMediaSlide(currentMediaIndex + 1);
-      }, { passive: false });
-
-      mediaEl.appendChild(prevBtn);
-      mediaEl.appendChild(nextBtn);
-    }
-
-    card.appendChild(mediaEl);
-
-    const body = document.createElement('div');
-    body.className = 'cs-body';
-
-    const titleLink = document.createElement('a');
-    titleLink.className = 'cs-title';
-    titleLink.href  = typeof getProductUrl === 'function' ? getProductUrl(prod.id) : (prod.url || '#');
-    titleLink.title = prod.title;
-    titleLink.textContent = prod.title;
-    body.appendChild(titleLink);
-
-    const variantsWrap = document.createElement('div');
-    variantsWrap.className = 'cs-variants';
-
-    const priceEl = document.createElement('span');
-    priceEl.className = 'cs-price';
-    priceEl.textContent = fmt(prod.price);
-
-    const compareEl = document.createElement('span');
-    compareEl.className = 'cs-compare-price';
-    if (prod.compare_price > prod.price) {
-      compareEl.textContent = fmt(prod.compare_price);
-    } else {
-      compareEl.style.display = 'none';
-    }
-
-    function updateVariantState(colorName, variantThumb) {
-      variantsWrap.querySelectorAll('.cs-variant-thumb').forEach(t => t.classList.remove('cs-active'));
-      if (variantThumb) variantThumb.classList.add('cs-active');
-
-      if (prod.variants && colorName) {
-        const found = prod.variants.find(v => v.color === colorName);
-        if (found) selectedVariant = found;
-      }
-
-      const colorObj = (colorName && prod.colors)
-        ? prod.colors.find(c => c.name === colorName)
-        : null;
-      if (colorObj && colorObj.image) {
-        inner.querySelectorAll('.cs-media-slide img').forEach((img, i) => {
-          if (i === 0) img.src = getImg(colorObj.image);
-        });
-        currentMediaIndex = 0;
-        inner.style.transform = 'translateX(0)';
-      }
-
-      if (selectedVariant) {
-        priceEl.textContent = fmt(selectedVariant.price);
-        const compareVal = prod.compare_price || 0;
-        if (compareVal > selectedVariant.price) {
-          compareEl.textContent = fmt(compareVal);
-          compareEl.style.display = '';
-          const pct = Math.round(((compareVal - selectedVariant.price) / compareVal) * 100);
-          discountBadge.textContent   = '-' + pct + '%';
-          discountBadge.style.display = '';
-        } else {
-          compareEl.style.display    = 'none';
-          discountBadge.style.display = 'none';
-        }
-      }
-    }
-
-    const allColors = prod.colors && prod.colors.length
-      ? prod.colors.filter(c => c.active !== false)
-      : [];
-
-    allColors.forEach((color, idx) => {
-      const thumb = document.createElement('img');
-      thumb.className = 'cs-variant-thumb' + (idx >= MAX_VISIBLE_VARIANTS ? ' cs-variant-hidden' : '');
-      thumb.src     = getImg(color.image || prod.image);
-      thumb.alt     = color.name;
-      thumb.title   = color.name;
-      thumb.loading = 'lazy';
-      if (idx >= MAX_VISIBLE_VARIANTS) thumb.style.display = 'none';
-      if (idx === 0) thumb.classList.add('cs-active');
-
-      thumb.addEventListener('click', function (e) {
-        e.stopPropagation();
-        updateVariantState(color.name, thumb);
-      });
-      variantsWrap.appendChild(thumb);
-    });
-
-    if (allColors.length > MAX_VISIBLE_VARIANTS) {
-      const toggleBtn = document.createElement('button');
-      toggleBtn.className = 'cs-variants-toggle';
-      toggleBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5V19M5 12H19"/></svg>`;
-
-      toggleBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        variantsExpanded = !variantsExpanded;
-        variantsWrap.querySelectorAll('.cs-variant-hidden').forEach(t => {
-          t.style.display = variantsExpanded ? 'block' : 'none';
-        });
-        toggleBtn.innerHTML = variantsExpanded
-          ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12H19"/></svg>`
-          : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5V19M5 12H19"/></svg>`;
-      });
-
-      variantsWrap.appendChild(toggleBtn);
-    }
-
-    if (allColors.length > 0) body.appendChild(variantsWrap);
-
-    const priceRow = document.createElement('div');
-    priceRow.className = 'cs-price-row';
-    priceRow.appendChild(priceEl);
-    priceRow.appendChild(compareEl);
-    body.appendChild(priceRow);
-
-    const atcBtn = document.createElement('button');
-    atcBtn.className = 'cs-atc-btn';
-    atcBtn.innerHTML = `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-      </svg>
-      <span>${addToCartLabel || 'Add to Cart'}</span>`;
-
-    atcBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      atcBtn.classList.add('cs-adding');
-      addToCartFromWidget(prod, selectedVariant);
-      setTimeout(() => {
-        atcBtn.classList.remove('cs-adding');
-        atcBtn.classList.add('cs-added');
-        setTimeout(() => atcBtn.classList.remove('cs-added'), 1800);
-      }, 400);
-    });
-
-    body.appendChild(atcBtn);
-    card.appendChild(body);
-
-    return card;
-  }
-
-  function initCollectionSlider(allProducts) {
-    const track   = document.getElementById('csTrack');
-    const dotsEl  = document.getElementById('csDots');
-    const prevBtn = document.getElementById('csNavPrev');
-    const nextBtn = document.getElementById('csNavNext');
-
-    if (!track) return;
-
-    const settings      = allProducts.find(p => p.type === 'settings') || {};
-    const colSetting    = settings.collection_slider || {};
-    const ids           = colSetting.product_ids || [];
-    const addToCartLabel = (settings.button_labels && settings.button_labels.add_to_cart) || 'Add to Cart';
-
-    if (!ids.length) {
-      console.warn('[CollectionSlider] Aucun product_id dans settings.collection_slider');
-      return;
-    }
-
-    const realProducts = allProducts.filter(p => !p.type);
-    const sliderProds  = ids
-      .map(id => realProducts.find(p => p.id === id))
-      .filter(Boolean);
-
-    if (!sliderProds.length) {
-      console.warn('[CollectionSlider] Aucun produit trouvé pour les IDs fournis');
-      return;
-    }
-
-    track.innerHTML = '';
-    sliderProds.forEach(prod => {
-      const card = buildCard(prod, addToCartLabel);
-      track.appendChild(card);
-    });
-
-    if (dotsEl) {
-      dotsEl.innerHTML = '';
-      sliderProds.forEach((_, i) => {
-        const dot = document.createElement('button');
-        dot.className = 'cs-dot' + (i === 0 ? ' cs-active' : '');
-        dot.setAttribute('aria-label', 'Go to product ' + (i + 1));
-        dot.addEventListener('click', () => {
-          autoSlideIndex = i;
-          scrollToCard(i);
-          resetAutoSlide();
-        });
-        dotsEl.appendChild(dot);
-      });
-    }
-
-    function scrollToCard(index) {
-      const cards = track.querySelectorAll('.cs-card');
-      if (!cards.length) return;
-      const card = cards[index];
-      if (!card) return;
-      track.scrollTo({ left: card.offsetLeft, behavior: 'smooth' });
-      updateDots(index);
-    }
-
-    function updateDots(activeIdx) {
-      if (!dotsEl) return;
-      dotsEl.querySelectorAll('.cs-dot').forEach((d, i) => {
-        d.classList.toggle('cs-active', i === activeIdx);
-      });
-    }
-
-   /* ── Variables auto-slide ── */
-let autoSlideIndex  = 0;
-let autoSlideTimer  = null;
-let isHovered       = false;
-let isUserScrolling = false;
-let scrollSyncTimer = null;
-let manualPauseTimer = null;  // ← NOUVEAU
-
-/* ── Scroll listener — sync dots + autoSlideIndex ── */
-track.addEventListener('scroll', function () {
-    isUserScrolling = true;
-    clearTimeout(scrollSyncTimer);
-    clearTimeout(manualPauseTimer);   // ← stop reprise immédiate
-    clearInterval(autoSlideTimer);    // ← stop auto pendant scroll
-    autoSlideTimer = null;
-
-    scrollSyncTimer = setTimeout(function () {
-        const cards = track.querySelectorAll('.cs-card');
-        let closest = 0, minDist = Infinity;
-        cards.forEach(function (c, i) {
-            const dist = Math.abs(c.getBoundingClientRect().left - track.getBoundingClientRect().left);
-            if (dist < minDist) { minDist = dist; closest = i; }
-        });
-        autoSlideIndex  = closest;
-        isUserScrolling = false;
-        updateDots(closest);
-
-        // Reprendre l'auto-slide 4s après la fin du scroll manuel
-        manualPauseTimer = setTimeout(startAutoSlide, 4000);
-    }, 150);
-});
-
-/* ── Flèches prev/next ── */
-const CARDS_TO_SCROLL = window.innerWidth >= 768 ? 4 : 1;
-
-function scrollByDir(dir) {
-    const cards = track.querySelectorAll('.cs-card');
-    const cardW = cards[0] ? cards[0].offsetWidth + 20 : 220;
-    track.scrollBy({ left: dir * CARDS_TO_SCROLL * cardW, behavior: 'smooth' });
-}
-
-if (prevBtn) prevBtn.addEventListener('click', function () {
-    scrollByDir(-1);
-    resetAutoSlide();
-});
-if (nextBtn) nextBtn.addEventListener('click', function () {
-    scrollByDir(1);
-    resetAutoSlide();
-});
-
-/* ── Auto-slide ── */
-function startAutoSlide() {
-    if (autoSlideTimer) clearInterval(autoSlideTimer);
-    autoSlideTimer = setInterval(function () {
-        if (isHovered || isUserScrolling) return;
-        const cards = track.querySelectorAll('.cs-card');
-        if (!cards.length) return;
-        autoSlideIndex = (autoSlideIndex + 1) % cards.length;
-        scrollToCard(autoSlideIndex);
-    }, 5000);
-}
-
-function resetAutoSlide() {
-    clearInterval(autoSlideTimer);
-    clearTimeout(manualPauseTimer);
-    autoSlideTimer = null;
-    manualPauseTimer = setTimeout(startAutoSlide, 4000); // reprend 4s après
-}
-
-/* ── Pause sur hover ── */
-track.addEventListener('mouseenter', function () { isHovered = true; });
-track.addEventListener('mouseleave', function () { isHovered = false; });
-
-/* ── Touch manuel — pause + reprise 4s après ── */
-track.addEventListener('touchstart', function () {
-    isHovered = true;
-    clearInterval(autoSlideTimer);
-    clearTimeout(manualPauseTimer);
-    autoSlideTimer = null;
-}, { passive: true });
-
-track.addEventListener('touchend', function () {
-    isHovered = false;
-    manualPauseTimer = setTimeout(function () {
-        startAutoSlide();
-    }, 4000);
-}, { passive: true });
-
-/* ── Démarrage ── */
-startAutoSlide();
-
-    /* ── Synchro wishlist ── */
-    document.addEventListener('wishlist:change', function () {
-      track.querySelectorAll('.cs-card').forEach(function (card) {
-        const pid  = card.dataset.productId;
-        const prod = sliderProds.find(p => p.id === pid);
-        if (!prod) return;
-        const key = prod.handle || prod.id;
-        const btn = card.querySelector('.cs-wishlist-btn');
-        if (btn) btn.classList.toggle('cs-in-wishlist', isWishlisted(key));
-      });
-    });
-  }
-
-  if (window.__allProducts && Array.isArray(window.__allProducts)) {
-    initCollectionSlider(window.__allProducts);
-  } else {
-    const origFetch = window.fetch;
-    window.fetch = function (url, opts) {
-      return origFetch.call(this, url, opts).then(function (res) {
-        if (typeof url === 'string' && url.includes('products.data.json')) {
-          res.clone().json().then(function (data) {
-            if (Array.isArray(data)) initCollectionSlider(data);
-          }).catch(() => {});
-        }
-        return res;
-      });
-    };
-
-    let attempts = 0;
-    const poll = setInterval(function () {
-      attempts++;
-      if (window.__allProducts && Array.isArray(window.__allProducts)) {
-        clearInterval(poll);
-        initCollectionSlider(window.__allProducts);
-      }
-      if (attempts > 25) clearInterval(poll);
-    }, 200);
-  }
-
-})();
 /* ── Newsletter particles ── */
 (function () {
   var c = document.getElementById('nl-particles');
@@ -17267,39 +16076,7 @@ startAutoSlide();
 
 
 
-(function() {
-  'use strict';
 
-  // threshold bas (0.05) + rootMargin anticipé : avant, threshold:0.15 sans
-  // rootMargin exigeait que 15% de la HAUTEUR TOTALE de l'élément soit déjà
-  // visible pour se déclencher — sur les grands blocs (images pleine largeur,
-  // sections entières), ça demandait de scroller presque jusqu'à leur milieu
-  // avant que l'animation ne parte, donnant l'impression que la section
-  // "prend du temps" ou n'apparaît qu'en la dépassant presque. On déclenche
-  // maintenant dès qu'un petit bord de l'élément entre dans le viewport,
-  // avec une marge de 80px pour anticiper légèrement avant même l'entrée.
-  var observer = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.05, rootMargin: '0px 0px 80px 0px' });
-
-  function init() {
-    document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(function(el) {
-      observer.observe(el);
-    });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
-})();
 
 
 
@@ -17785,35 +16562,6 @@ startAutoSlide();
   }
 
   /* ────────────────────────────────────────────────────────
-     3. BBW PRODUCT GRID FEATURED — coin inférieur droit de l'image
-  ────────────────────────────────────────────────────────── */
-  function injectProductGrid() {
-  var track = document.getElementById('bbwpg-track');
-  if (!track) return;
-
-  track.querySelectorAll('.bbwpg-card').forEach(function(card) {
-    var imgWrap = card.querySelector('.bbwpg-card__img-wrap');
-    if (!imgWrap || imgWrap.querySelector('.bbw-mini-wish')) return;
-
-    var productId = null;
-
-    /* Extraire l'ID depuis le href du lien image */
-    var link = card.querySelector('.bbwpg-card__img-link');
-    if (link && link.href) {
-      var match = link.href.match(/product(\d+)\.html/);
-      if (match && window.__allProducts) {
-        var idx = parseInt(match[1]) - 1;
-        var realProds = window.__allProducts.filter(function(p) { return !p.type; });
-        if (realProds[idx]) productId = realProds[idx].id;
-      }
-    }
-
-    if (!productId) return;
-    imgWrap.appendChild(makeBtn(productId));
-  });
-}
-
-/* ────────────────────────────────────────────────────────
    4. FEATURED SPOTLIGHT — coin supérieur droit de l'image
 ────────────────────────────────────────────────────────── */
 function injectFeaturedSpotlight() {
@@ -17955,7 +16703,6 @@ function injectColFbt() {
     injectCartDrawerItems();
     injectCartPageItems();
     injectDrawerExtra();
-    injectProductGrid();
     injectFeaturedSpotlight();
     injectRecentlyViewed();
     injectColRecentlyViewed();
@@ -18036,14 +16783,8 @@ function injectColFbt() {
     document.querySelectorAll('.col-card__media').forEach(inject);
 
     /* ── 3. BBW Product Grid Featured ── */
-    document.querySelectorAll('.bbwpg-card__img-wrap').forEach(inject);
 
     /* ── 3b. BBW Featured — vitrine home ── */
-    document.querySelectorAll('.bbw-nb-card__media').forEach(inject);
-
-    /* ── 4. Collection Slider ── */
-    document.querySelectorAll('.cs-media').forEach(inject);
-
     /* ── 5. Recently Viewed ── */
     document.querySelectorAll('.rv-card__img-wrap').forEach(inject);
 
@@ -18153,8 +16894,8 @@ function injectColFbt() {
     inject(document.getElementById('main-image-slider'));
 
     document.querySelectorAll(
-      '.col-card__media, .bbwpg-card__img-wrap, .bbw-nb-card__media, ' +
-      '.cs-media, .rv-card__img-wrap, .fs-img-frame, .mini-media-slider, ' +
+      '.col-card__media, ' +
+      '.rv-card__img-wrap, .fs-img-frame, .mini-media-slider, ' +
       '.cart-item-img-wrap, .cp-item-img-wrap, .drawer-extra-card__img-wrap, .cp-extra-card__img-wrap, ' +
       '.bd-product-item__media, .p2-upsell-img-wrap, ' +
       '.highlight-product-card, .col-qv-media, .cf-pc-img-wrap'
@@ -18186,7 +16927,7 @@ function injectColFbt() {
 
   const MINI_LIKE_SELECTORS =
     '.col-card__media, .cart-item-img-wrap, .cp-item-img-wrap, ' +
-    '.bbwpg-card__img-wrap, .bbw-nb-card__media, .cs-media, .rv-card__img-wrap, .col-rv-card__media, ' +
+    '.rv-card__img-wrap, .col-rv-card__media, ' +
     '.fs-img-frame, .mini-media-slider, .pdp-grid-card__media, .imq-card, ' +
     '.drawer-extra-card__img-wrap, .cp-extra-card__img-wrap, ' +
     '.bd-product-item__media, .p2-upsell-img-wrap, ' +
@@ -18381,11 +17122,11 @@ function injectColFbt() {
   /* Conteneurs dédiés à l'image (occupent toute la zone image) : le logo
      peut couvrir tout le wrap en position:absolute sans recouvrir de texte. */
   const CARD_SELECTORS =
-    '.col-card__media, .bbwpg-card__img-wrap, ' +
-    '.cs-media, .rv-card__img-wrap, .fs-img-frame, .mini-media-slider, ' +
+    '.col-card__media, ' +
+    '.rv-card__img-wrap, .fs-img-frame, .mini-media-slider, ' +
     '.cart-item-img-wrap, .cp-item-img-wrap, .drawer-extra-card__img-wrap, .cp-extra-card__img-wrap, ' +
     '.highlight-product-card, .product-card:not(.pdp-grid-card), ' +
-    '.bbw-nb-card__media, .jrgq-gal-img-wrap, .imq-card, ' +
+    '.jrgq-gal-img-wrap, .imq-card, ' +
     '.col-hero__media, .col-qv-media, .cf-pc-img-wrap, ' +
     '.pdp-grid-card__media, .main-image, .thumbnail-item, .blog-card-img-wrap';
   const IMG_WRAP_SELECTORS = '.col-rv-card__img, .col-fbt-card__img';
@@ -18410,7 +17151,7 @@ function injectColFbt() {
     const cfg = getSettings();
     const logoEl = document.createElement('img');
     logoEl.className = 'bbw-card-preload-logo' + (circular ? ' bbw-card-preload-logo--circular' : '');
-    logoEl.src = cfg.logo_url || '/public/vrlogo%20bbw4life.png';
+    logoEl.src = cfg.logo_url || '/public/Logo-Curvafit.png';
     logoEl.alt = '';
     logoEl.setAttribute('aria-hidden', 'true');
     if (cfg.bg_color) logoEl.style.setProperty('--bbw-preload-bg', cfg.bg_color);

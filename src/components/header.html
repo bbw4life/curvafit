@@ -40,10 +40,19 @@
     </div>
     <button class="ann-bar__btn" id="annNext">&#8250;</button>
   </div>
+  <div class="ann-bar__socials" aria-label="Curvafit social media">
+    <a href="" class="ann-bar__social" data-social="facebook" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
+    <a href="" class="ann-bar__social" data-social="instagram" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+    <a href="" class="ann-bar__social" data-social="tiktok" target="_blank" rel="noopener" aria-label="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
+    <a href="" class="ann-bar__social" data-social="youtube" target="_blank" rel="noopener" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
+    <a href="" class="ann-bar__social" data-social="pinterest" target="_blank" rel="noopener" aria-label="Pinterest"><i class="fa-brands fa-pinterest-p" aria-hidden="true"></i></a>
+    <a href="" class="ann-bar__social" data-social="whatsapp" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>
+    <a href="" class="ann-bar__social" data-social="twitter" target="_blank" rel="noopener" aria-label="X"><i class="fa-brands fa-x-twitter" aria-hidden="true"></i></a>
+  </div>
  </div>
 </div>
 
-<div class="promo-bar" id="promoBar">
+<div class="promo-bar" id="promoBar" style="display:none">
   <div class="promo-bar__inner">
     <div class="promo-bar__item">
       <i class="fas fa-crown" aria-hidden="true"></i>
@@ -79,6 +88,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </button>
 
+        <a href="#" id="bbwTelegramHeaderBtn" class="bbw-header__telegram-btn" aria-label="Add me on Telegram" title="Add me on Telegram"><i class="fab fa-telegram" aria-hidden="true"></i><span>Add me on Telegram</span><span class="bbw-header__telegram-tooltip" role="tooltip">Get your order confirmations, tracking numbers, new arrivals &amp; exclusive promos — straight to Telegram.</span></a>
         <div class="bbw-hdr-lang" id="bbwHdrLang">
           <button class="bbw-hdr-lang__btn" id="bbwHdrLangBtn" aria-haspopup="listbox" aria-expanded="false">
             <span class="bbw-hdr-lang__flag" id="bbwHdrLangFlag">🇺🇸</span>
@@ -109,16 +119,50 @@
 
    
     <div class="bbw-header__logo">
-      <a href="/index.html" class="bbw-logo" aria-label="BBW4LIFE Home">
-        <img src="/public/vrlogo bbw4life.png" alt="BBW4LIFE" class="bbw-logo__img"
+      <a href="/index.html" class="bbw-logo" aria-label="Curvafit Home">
+        <img src="/public/Logo-Curvafit.png" alt="Curvafit" class="bbw-logo__img"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-        <span class="bbw-logo__text" style="display:none">BBW<span>4</span>LIFE</span>
+        <span class="bbw-logo__text" style="display:none">Curvafit</span>
         <span class="bbw-logo__glow" aria-hidden="true"></span>
       </a>
     </div>
 
     
-    <div class="bbw-header__right">
+<nav class="cf-desktop-nav" aria-label="Main navigation">
+  <a href="/index.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a>
+  <div class="cf-nav-item cf-nav-item--submenu" data-nav-submenu>
+    <button class="cf-nav-trigger" type="button" aria-expanded="false" aria-controls="cf-nav-blog"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h8"/></svg><span>Blog</span><svg class="cf-nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    <div class="cf-submenu" id="cf-nav-blog" role="group" aria-label="Blog links">
+      <a href="/blog/blog.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A2.5 2.5 0 0 1 7.5 2H20v18H7.5A2.5 2.5 0 0 0 5 22V4.5Z"/><path d="M5 5h12M9 7v9m4-9v9m-8 3h15"/></svg>All Articles</a>
+      <a href="/blog/article-featured.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.8a5.4 5.4 0 0 0-7.6 0L12 6l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6l1.2 1.2L12 21l7.6-7.4 1.2-1.2a5.4 5.4 0 0 0 0-7.6Z"/></svg>Body Confidence</a>
+      <a href="/blog/article1.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.4-7-11a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 6.6-7 11-7 11Z"/><path d="M12 17c0-4 2-6 5-7"/></svg>Self-Care Habits</a>
+      <a href="/blog/blog.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><path d="m10 9 2-1 3 2 3 1m-8-2-3 4 3 2-2 5m5-9-1 5 4 4"/></svg>Gentle Movement</a>
+      <a href="/blog/blog.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v2m4-2v2m-6 2h8v2a4 4 0 0 1-8 0V7Zm13-4v2m4-2v2m-6 2h8v2a4 4 0 0 1-8 0V7ZM7 13v2a5 5 0 0 0 10 0v-2m-5 2v7"/></svg>Simple Meal Ideas</a>
+      <a href="/blog/blog.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"/><path d="M16 3v4m-2-2h4"/></svg>Rest and Recovery</a>
+    </div>
+  </div>
+  <a href="/collections/bbw4life-all-product.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>All Products</span></a>
+  <div class="cf-nav-item cf-nav-item--submenu" data-nav-submenu>
+    <button class="cf-nav-trigger" type="button" aria-expanded="false" aria-controls="cf-nav-pages"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg><span>Pages</span><svg class="cf-nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    <div class="cf-submenu" id="cf-nav-pages" role="group" aria-label="Page links">
+      <a href="/page/about.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>About</a>
+      <a href="/page/contact.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>Contact</a>
+      <a href="/page/order-tracking.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>Order Tracking</a>
+      <a href="/page/disclaimer.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.8 19h18.4L12 3Z"/><path d="M12 9v4m0 3h.01"/></svg>Medical Disclaimer</a>
+      <a href="/page/faq.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.5 2.5 0 1 1 4.4 1.6c-1.1 1.1-2 1.4-2 3m0 3h.01"/></svg>FAQ</a>
+      <a href="/cart.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11h10.9l2-8H6"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>My Cart</a>
+    </div>
+  </div>
+  <div class="cf-nav-item cf-nav-item--submenu" data-nav-submenu>
+    <button class="cf-nav-trigger" type="button" aria-expanded="false" aria-controls="cf-nav-policies"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg><span>Policies</span><svg class="cf-nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    <div class="cf-submenu" id="cf-nav-policies" role="group" aria-label="Policy links">
+      <a href="/policies/privacy.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg>Privacy Policy</a>
+      <a href="/policies/shipping.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>Shipping Policy</a>
+      <a href="/policies/refund.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7v5h5M20 17v-5h-5"/><path d="M5.5 12a7 7 0 0 1 12-4L20 12m-1.5 0a7 7 0 0 1-12 4L4 12"/></svg>Refund Policy</a>
+      <a href="/policies/terms.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM15 3v5h4M9 12h7m-7 4h7"/></svg>Terms and Conditions</a>
+    </div>
+  </div>
+</nav><div class="bbw-header__right">
 
       <div class="bbw-search-desktop" id="bbwSearchDesktop" aria-label="Search" style="display:none;">
         <div class="bbw-search-desktop__bar">
@@ -174,9 +218,9 @@
 
   <div class="bbw-drawer__head">
     <a href="/index.html" class="bbw-drawer__logo">
-      <img src="/src-images/LogoBBW4LIFE.png" alt="BBW4LIFE"
+      <img src="/public/Logo-Curvafit.png" alt="Curvafit"
         onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-      <span style="display:none" class="bbw-drawer__logo-text">BBW<em>4</em>LIFE</span>
+      <span style="display:none" class="bbw-drawer__logo-text">Curvafit</span>
     </a>
     <button class="bbw-drawer__close" id="bbwDrawerClose" aria-label="Close navigation">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -189,214 +233,50 @@
   <div class="bbw-drawer__body">
 
     <ul class="bbw-drawer__nav">
-
       <li class="bbw-drawer__item">
         <a href="/index.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">Home</span>
-          <span class="bbw-drawer__link-arrow">→</span>
+          <span class="bbw-drawer__link-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+          <span class="bbw-drawer__link-label">Home</span><span class="bbw-drawer__link-arrow">→</span>
         </a>
       </li>
-
+      <li class="bbw-drawer__item bbw-drawer__item--submenu" data-drawer-submenu>
+        <button class="bbw-drawer__link bbw-drawer__submenu-toggle" type="button" aria-expanded="false" aria-controls="bbw-drawer-blog">
+          <span class="bbw-drawer__link-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h8"/></svg></span>
+          <span class="bbw-drawer__link-label">Blog</span><svg class="bbw-drawer__submenu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="bbw-drawer__submenu" id="bbw-drawer-blog">
+          <a class="bbw-drawer__sub-link" href="/blog/blog.html">All Articles</a>
+          <a class="bbw-drawer__sub-link" href="/blog/article-featured.html">Body Confidence</a>
+          <a class="bbw-drawer__sub-link" href="/blog/article1.html">Self-Care Habits</a>
+          <a class="bbw-drawer__sub-link" href="/blog/blog.html">Gentle Movement</a>
+          <a class="bbw-drawer__sub-link" href="/blog/blog.html">Simple Meal Ideas</a>
+          <a class="bbw-drawer__sub-link" href="/blog/blog.html">Rest and Recovery</a>
+        </div>
+      </li>
       <li class="bbw-drawer__item">
         <a href="/collections/bbw4life-all-product.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">Shop All</span>
-          <span class="bbw-drawer__link-arrow">→</span>
+          <span class="bbw-drawer__link-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+          <span class="bbw-drawer__link-label">All Products</span><span class="bbw-drawer__link-arrow">→</span>
         </a>
       </li>
-
-      <li class="bbw-drawer__item">
-        <a href="/collections/bbw4life-all-collections.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label"> All Collections</span>
-          <span class="bbw-drawer__link-arrow">→</span>
-        </a>
+      <li class="bbw-drawer__item bbw-drawer__item--submenu" data-drawer-submenu>
+        <button class="bbw-drawer__link bbw-drawer__submenu-toggle" type="button" aria-expanded="false" aria-controls="bbw-drawer-pages">
+          <span class="bbw-drawer__link-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg></span>
+          <span class="bbw-drawer__link-label">Pages</span><svg class="bbw-drawer__submenu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="bbw-drawer__submenu" id="bbw-drawer-pages">
+          <a class="bbw-drawer__sub-link" href="/page/about.html">About</a>
+          <a class="bbw-drawer__sub-link" href="/page/contact.html">Contact</a>
+          <a class="bbw-drawer__sub-link" href="/page/order-tracking.html">Order Tracking</a>
+          <a class="bbw-drawer__sub-link" href="/page/disclaimer.html">Medical Disclaimer</a>
+          <a class="bbw-drawer__sub-link" href="/page/faq.html">FAQ</a>
+          <a class="bbw-drawer__sub-link" href="/cart.html">My Cart</a>
+        </div>
       </li>
-
-      <li class="bbw-drawer__item">
-      <a href="/collections/bbw4life-new-arrivals.html" class="bbw-drawer__link">
-        <span class="bbw-drawer__link-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        </span>
-        <span class="bbw-drawer__link-label">New Arrivals</span>
-        <span class="bbw-drawer__link-badge">NEW</span>
-        <span class="bbw-drawer__link-arrow">→</span>
-      </a>
-    </li>
-
-      <li class="bbw-drawer__item">
-      <a href="/collections/bbw-features-products.html" class="bbw-drawer__link">
-        <span class="bbw-drawer__link-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 20h20M4 20l2-8 6 4 6-4 2 8"/>
-            <circle cx="12" cy="8" r="2" fill="currentColor"/>
-            <circle cx="4" cy="12" r="1.5" fill="currentColor"/>
-            <circle cx="20" cy="12" r="1.5" fill="currentColor"/>
-          </svg>
-        </span>
-        <span class="bbw-drawer__link-label">BBW Originals</span>
-        <span class="bbw-drawer__link-badge">Brand</span>
-        <span class="bbw-drawer__link-arrow">→</span>
-      </a>
-    </li>
-
-      <li class="bbw-drawer__item">
-        <a href="/collections/curvy-woman.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">Women Plus Size</span>
-          <span class="bbw-drawer__link-arrow">→</span>
-        </a>
-      </li>
-
-      <li class="bbw-drawer__item">
-        <a href="/collections/sets.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v6H4z"/><path d="M6 10v10h12V10"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">Sets Women&Men</span>
-          <span class="bbw-drawer__link-arrow">→</span>
-        </a>
-      </li>
-
-      <li class="bbw-drawer__item">
-      <a href="/collections/curvy-bags.html" class="bbw-drawer__link">
-        <span class="bbw-drawer__link-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 13H5z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
-        </span>
-        <span class="bbw-drawer__link-label">Hand Bags Woman</span>
-        <span class="bbw-drawer__link-arrow">→</span>
-      </a>
-    </li>
-
-      <li class="bbw-drawer__item">
-        <a href="/collections/curvy-dresses.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L8 6H5l-2 5 4 1-1 10h12l-1-10 4-1-2-5h-3L12 2z"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">Dresses</span>
-          <span class="bbw-drawer__link-arrow">→</span>
-        </a>
-      </li>
-
-      <li class="bbw-drawer__item">
-        <a href="/collections/curvy-beauty.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">Beauty</span>
-          <span class="bbw-drawer__link-arrow">→</span>
-        </a>
-      </li>
-
-      <li class="bbw-drawer__item">
-        <a href="/collections/bbw4life-pants-skirts.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="4"/><path d="M2 7l2 14h7l1-7 1 7h7l2-14"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">Pants &amp; Skirts</span>
-          <span class="bbw-drawer__link-arrow">→</span>
-        </a>
-      </li>
-
-      <li class="bbw-drawer__item">
-        <a href="/collections/shoes-sandals.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h20M6 18v-4l4-4 4 2 4-6v4l-4 6-4-2-4 4z"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">Shoes &amp; Sandals</span>
-          <span class="bbw-drawer__link-arrow">→</span>
-        </a>
-      </li>
-
-      <li class="bbw-drawer__item">
-        <a href="/collections/men-plus-size.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a8 8 0 0 1 13 0"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="9.5" y1="13.5" x2="14.5" y2="13.5"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">Men Plus Size</span>
-          <span class="bbw-drawer__link-arrow">→</span>
-        </a>
-      </li>
-
-      <li class="bbw-drawer__item">
-        <a href="/page/our-story.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">Our Story</span>
-          <span class="bbw-drawer__link-arrow">→</span>
-        </a>
-      </li>
-
-      <li class="bbw-drawer__item">
-        <a href="/blog/blog.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">Blog Posts</span>
-          <span class="bbw-drawer__link-arrow">→</span>
-        </a>
-      </li>
-
-      <li class="bbw-drawer__item">
-        <a href="/page/about.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">About Us</span>
-          <span class="bbw-drawer__link-arrow">→</span>
-        </a>
-      </li>
-
-      <li class="bbw-drawer__item">
-        <a href="/page/contact.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">Contact Us</span>
-          <span class="bbw-drawer__link-arrow">→</span>
-        </a>
-      </li>
-
-      <li class="bbw-drawer__item">
-        <a href="/account.html" class="bbw-drawer__link">
-          <span class="bbw-drawer__link-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </span>
-          <span class="bbw-drawer__link-label">My Account</span>
-          <span class="bbw-drawer__link-arrow">→</span>
-        </a>
-      </li>
-
-      <li class="bbw-drawer__item">
-      <a href="/cart.html" class="bbw-drawer__link">
-        <span class="bbw-drawer__link-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-        </span>
-        <span class="bbw-drawer__link-label">My Cart</span>
-        <span class="bbw-drawer__link-arrow">→</span>
-      </a>
-    </li>
-
     </ul>
 
     
     <div class="bbw-drawer__footer">
-
-      <div class="bbw-drawer__stats">
-        <div class="bbw-drawer__stat"><strong>12k+</strong><span>Happy Clients</span></div>
-        <div class="bbw-drawer__stat"><strong>98%</strong><span>Satisfaction</span></div>
-        <div class="bbw-drawer__stat"><strong>54</strong><span>Countries</span></div>
-      </div>
 
       <div class="bbw-drawer__divider"><span>Our Promise</span></div>
       <div class="bbw-drawer__trust">

@@ -4,11 +4,11 @@
   <script src="/maintenance-gate.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thank You — BBW4LIFE</title>
-    <meta name="description" content="Thank you for your order at BBW4LIFE — Beauty Has No Sizes">
+    <title>Thank You — Curvafit</title>
+    <meta name="description" content="Thank you for your Curvafit order. Your next step starts at your own pace.">
     <meta name="robots" content="noindex, nofollow">
-    <meta name="author" content="BBW4LIFE">
-    <meta name="theme-color" content="#000000">
+    <meta name="author" content="Curvafit">
+    <meta name="theme-color" content="#fff7fb">
     <meta http-equiv="Content-Security-Policy"
         content="default-src 'self' https:;
          script-src 'self' https://js.stripe.com https://www.paypal.com;
@@ -16,7 +16,7 @@
          img-src 'self' https: data:;
          connect-src 'self' https://restcountries.com https://countriesnow.space https:;
          frame-src https://js.stripe.com https://hooks.stripe.com https://www.paypal.com;">
-    <link rel="icon" href="/public/bbw4life-favicon.png" type="image/x-icon">
+    <link rel="icon" href="/public/favicon-curvafit.jpg" type="image/jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,10 +26,10 @@
     <link rel="stylesheet" href="/tokens.css">
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/checkout/checkout.css">
-    <link rel="stylesheet" href="thankyou.css">
+    <link rel="stylesheet" href="thankyou.css?v=curvafit-palette-2">
     <link rel="stylesheet" href="thanks-pup.css">
     <link rel="stylesheet" href="/products/products.css">
-    <link rel="icon" href="/public/bbw4life-favicon.png">
+    <link rel="icon" href="/public/favicon-curvafit.jpg">
 </head>
 <body>
 
@@ -52,10 +52,9 @@
 <header class="ty-hero">
     <div class="ty-hero__topbar">
         <a href="/index.html" class="ty-hero__brand">
-            <img src="/public/vrlogo bbw4life.png" alt="BBW4LIFE Logo">
-            <span>BBW<em>4</em>LIFE</span>
+            <img src="/public/Logo-Curvafit.png" alt="Curvafit">
         </a>
-        <span class="ty-hero__tagline">Confidence. Beauty. You.</span>
+        <span class="ty-hero__tagline">Gentle guidance. Steady habits. Your pace.</span>
     </div>
 
     <div class="ty-hero__body">
@@ -67,16 +66,16 @@
                     <i class="fas fa-check"></i>
                 </div>
 
-                <h1>Confirming Your Order...</h1>
+                <h1>Confirming your payment…</h1>
 
                 <div id="spinner" class="spinner"></div>
 
                 <div id="message" style="display:none;"></div>
 
                 <div id="buttons" style="display:none;">
-                    <a href="/collections/bbw4life-all-product.html" class="button">
+                    <a href="/index.html" class="button">
                         <i class="fas fa-shopping-bag"></i>
-                        Continue Shopping
+                        Explore Curvafit
                     </a>
                     <a href="/account.html" class="button">
                         <i class="fas fa-user"></i>
@@ -87,13 +86,23 @@
         </div>
 
         <div class="ty-hero__photo">
-            <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/thankyou.png?v=1786846214" alt="BBW4LIFE" loading="eager">
+            <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/thankyou.png?v=1786846214" alt="A warm thank-you from Curvafit" loading="eager">
         </div>
     </div>
 </header>
 
 
 <div class="ty-page">
+
+<section class="ebook-download-section" id="ebook-download-section" aria-live="polite" style="display:none;">
+    <div class="ebook-download-section__intro">
+        <span class="ebook-download-section__eyebrow">Your digital guides</span>
+        <h2>Your ebooks are ready</h2>
+        <p>Your order’s guides appear below in the languages you selected.</p>
+        <p class="ebook-download-section__timer" id="ebook-download-timer"></p>
+    </div>
+    <div class="ebook-download-section__buttons" id="ebook-download-buttons"></div>
+</section>
 
 <section class="ty-order-details" id="ty-order-details-section" style="display:none;">
     <div class="ty-order-details__title">Order Details</div>
@@ -110,13 +119,13 @@
         </div>
         <div class="ty-order-details__item">
             <div class="ty-order-details__icon"><i class="fas fa-clock"></i></div>
-            <span class="ty-order-details__label">Processing Time</span>
-            <strong class="ty-order-details__value">1–2 Business Days</strong>
+            <span class="ty-order-details__label">Next step</span>
+            <strong class="ty-order-details__value">Check your email for order details</strong>
         </div>
         <div class="ty-order-details__item">
             <div class="ty-order-details__icon"><i class="fas fa-truck"></i></div>
-            <span class="ty-order-details__label">Shipping</span>
-            <strong class="ty-order-details__value">Tracking email on the way</strong>
+            <span class="ty-order-details__label">Order type</span>
+            <strong class="ty-order-details__value">Digital guides or physical items</strong>
         </div>
     </div>
 </section>
@@ -128,29 +137,29 @@
         <div class="step-item">
             <div class="step-num"><i class="fas fa-envelope"></i></div>
             <div class="step-text">
-                <h4>Confirmation Email</h4>
-                <p>You'll receive an order confirmation email within the next few minutes with all your details.</p>
+                <h4>Order details</h4>
+                <p>Check your inbox for your receipt and information about your order.</p>
             </div>
         </div>
         <div class="step-item">
             <div class="step-num"><i class="fas fa-box-open"></i></div>
             <div class="step-text">
-                <h4>Order Processing</h4>
-                <p>Our team carefully prepares your order within 24–48 hours, with love and attention to every detail — because you deserve nothing less.</p>
+                <h4>Your digital guides</h4>
+                <p>If your order includes an ebook, its download button will appear above when access is ready.</p>
             </div>
         </div>
         <div class="step-item">
             <div class="step-num"><i class="fas fa-truck"></i></div>
             <div class="step-text">
-                <h4>Shipping &amp; Tracking</h4>
-                <p>Once shipped, you'll receive a tracking number so you can follow your package every step of the way.</p>
+                <h4>Physical items</h4>
+                <p>For physical items, check your email for shipping updates and tracking information.</p>
             </div>
         </div>
         <div class="step-item">
             <div class="step-num"><i class="fas fa-star"></i></div>
             <div class="step-text">
-                <h4>Enjoy &amp; Shine!</h4>
-                <p>Your journey with BBW4LIFE continues — we can't wait to hear how you feel wearing your new pieces. Own every room you enter.</p>
+                <h4>Go at your own pace</h4>
+                <p>Use your guide in a way that feels manageable. Small steps can make a routine easier to return to.</p>
             </div>
         </div>
     </div>
@@ -183,7 +192,7 @@
 
 <section class="gratitude-section" id="gratitude-section" style="display:none;">
     <span class="gratitude-emoji"><i class="fas fa-heart-pulse"></i></span>
-    <h3>From the bottom of our hearts,<br><em>thank you for choosing yourself.</em></h3>
+    <h3>Thank you for choosing Curvafit.<br><em>Take the next step at your own pace.</em></h3>
 
     <div class="ty-whatsnext">
         <div class="ty-whatsnext__title">
@@ -192,41 +201,41 @@
         <div class="ty-whatsnext__steps">
             <div class="ty-whatsnext__step">
                 <div class="ty-whatsnext__icon"><i class="fas fa-user"></i></div>
-                <strong>Create Your Account</strong>
-                <p>Easily track your orders, save your addresses and more.</p>
+                <strong>Keep your order details</strong>
+                <p>Save your confirmation email so your order information is easy to find.</p>
             </div>
             <div class="ty-whatsnext__step">
                 <div class="ty-whatsnext__icon"><i class="fas fa-tags"></i></div>
-                <strong>Exclusive Offers</strong>
-                <p>Enjoy perks reserved for our VIP customers.</p>
+                <strong>Choose a steady rhythm</strong>
+                <p>Use the guide’s prompts and options in a way that fits your day.</p>
             </div>
             <div class="ty-whatsnext__step">
                 <div class="ty-whatsnext__icon"><i class="fas fa-gift"></i></div>
-                <strong>Loyalty Rewards</strong>
-                <p>Earn points and unlock gifts.</p>
+                <strong>Missed a day?</strong>
+                <p>You can begin again when you’re ready. There’s no need to catch up.</p>
             </div>
             <div class="ty-whatsnext__step">
                 <div class="ty-whatsnext__icon"><i class="fas fa-mobile-screen-button"></i></div>
-                <strong>Stay Connected</strong>
-                <p>Follow us for daily inspiration.</p>
+                <strong>One habit at a time</strong>
+                <p>No shortcuts. No miracles. Real progress, one habit at a time.</p>
             </div>
         </div>
         <a href="/account.html" class="ty-whatsnext__cta">
-            Create My Account <i class="far fa-heart"></i>
+            View your account <i class="far fa-heart"></i>
         </a>
     </div>
 </section>
 
 
 <section class="share-section" id="share-section" style="display:none;">
-    <h4>Share the Love <i class="fas fa-sparkles share-title-icon"></i></h4>
-    <p>Inspire a queen you love — share your BBW4LIFE moment</p>
+    <h4>Share a little encouragement <i class="fas fa-sparkles share-title-icon"></i></h4>
+    <p>Know someone who appreciates practical, gentle tools? Share Curvafit with them.</p>
     <div class="share-buttons">
         <a class="share-btn instagram" id="share-instagram-btn" href="https://www.instagram.com" target="_blank" rel="noopener">
             <i class="fab fa-instagram"></i> Instagram
         </a>
         <a class="share-btn whatsapp"
-           href="https://wa.me/?text=I%20just%20ordered%20from%20BBW4LIFE%20%F0%9F%8C%B8%20Beauty%20Has%20No%20Sizes%20%E2%80%94%20a%20brand%20that%20truly%20celebrates%20every%20curve!%20Check%20them%20out!%20bbw4life.com"
+           href="https://wa.me/?text=I%20just%20placed%20an%20order%20with%20Curvafit.%20Gentle%20guides%20and%20practical%20tools%20to%20help%20build%20steady%20habits%2C%20one%20step%20at%20a%20time."
            target="_blank" rel="noopener">
             <i class="fab fa-whatsapp"></i> WhatsApp
         </a>
@@ -237,64 +246,32 @@
 </section>
 
 
-<section class="bbw-request-section" id="bbw-request-section" data-scroll-reveal style="display:none;">
-    <div class="container">
-        <div class="bbw-request-label">
-            <i class="fas fa-clock"></i>
-            <span>Want to reserve one of our upcoming BBW4LIFE exclusive designs?</span>
-        </div>
-        
-        <div id="plan-request-trigger-placeholder"></div>
-    </div>
-</section>
-
 <section class="ty-promo-banner" id="bbw-banner-section" style="display:none;">
     <div class="ty-promo-banner__photo">
-        <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_11.1.png?v=1779050357" alt="BBW4LIFE" loading="lazy">
+        <img src="https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_11.1.png?v=1779050357" alt="A reminder to keep building habits at your own pace" loading="lazy">
         <div class="ty-promo-banner__photo-text">
-            <span class="ty-promo-banner__eyebrow">Welcome to the</span>
-            <strong class="ty-promo-banner__title">BBW4LIFE Family</strong>
-            <p class="ty-promo-banner__quote">You are gorgeous.<br>You are beautiful.<br>You are BBW4LIFE.<span class="ty-promo-banner__heart"> ♡</span></p>
+            <span class="ty-promo-banner__eyebrow">A gentle reminder</span>
+            <strong class="ty-promo-banner__title">Your pace. Your progress.</strong>
+            <p class="ty-promo-banner__quote">Small steps count.<br>Come back when you’re ready.<br>Keep going gently.<span class="ty-promo-banner__heart"> ♡</span></p>
         </div>
     </div>
 
     <div class="ty-promo-banner__offer">
         <span class="ty-promo-banner__offer-pct" id="ty-promo-pct">— % OFF</span>
-        <span class="ty-promo-banner__offer-sub">ON YOUR NEXT ORDER</span>
-        <p class="ty-promo-banner__offer-desc">Use the code below on your next purchase.</p>
+        <span class="ty-promo-banner__offer-sub">A CURVAFIT OFFER</span>
+        <p class="ty-promo-banner__offer-desc">Enter this code at checkout on an eligible order.</p>
         <div class="ty-promo-banner__code" id="ty-promo-code">—</div>
-        <a href="/collections/bbw4life-all-product.html" class="ty-promo-banner__cta">
-            Discover New Arrivals <i class="fas fa-arrow-right"></i>
+        <a href="/index.html" class="ty-promo-banner__cta">
+            Explore Curvafit <i class="fas fa-arrow-right"></i>
         </a>
     </div>
 </section>
 
-<section class="bbw-request-section bbw-request-section--personalized" id="bbw-request-personalized-section" data-scroll-reveal style="display:none;">
-    <div class="container">
-        <div class="bbw-request-label">
-            <i class="fas fa-wand-magic-sparkles"></i>
-            <span>You deserve a style that was made <em>just for you</em> — your body, your vision, your rules. Let us create it.</span>
-        </div>
-
-        <button class="my-product-btn" id="openMyProductPopup">
-            <span class="my-product-btn__icon">
-                <i class="fas fa-wand-magic-sparkles"></i>
-            </span>
-            <span class="my-product-btn__text">
-                <strong><i class="fas fa-wand-magic-sparkles"></i> Design My Personalized Product</strong>
-                <small>Your curves. Your style. Your size. We bring your dream to life — just for you.</small>
-            </span>
-            <span class="my-product-btn__arrow">→</span>
-        </button>
-    </div>
-</section>
-
-
 <div class="support-bar" id="support-bar-section" style="display:none;">
     <i class="fab fa-whatsapp"></i>
-    <p>Questions about your order? The BBW4LIFE family is here for you 24/7.</p>
-    <a href="https://wa.me/18292677434?text=Hi%20BBW4LIFE%20team%2C%20I%20just%20placed%20an%20order%20and%20have%20a%20question!" target="_blank" rel="noopener" class="support-wa-btn">
-        <i class="fab fa-whatsapp"></i> Chat with us
+    <p>Need help with your order? Contact the Curvafit support team.</p>
+    <a href="https://wa.me/18292677434?text=Hi%2C%20I%20need%20help%20with%20my%20Curvafit%20order." target="_blank" rel="noopener" class="support-wa-btn">
+        <i class="fab fa-whatsapp"></i> Contact support
     </a>
 </div>
 
@@ -311,37 +288,37 @@
     <div class="ty-footer__perk">
       <i class="fas fa-truck-fast"></i>
       <div>
-        <strong>Fast Shipping</strong>
-        <span>Worldwide delivery</span>
+        <strong>Digital guides</strong>
+        <span>Language-specific downloads</span>
       </div>
     </div>
     <div class="ty-footer__perk">
       <i class="fas fa-rotate"></i>
       <div>
-        <strong>Easy Returns</strong>
-        <span>30 days to change your mind</span>
+        <strong>Order updates</strong>
+        <span>Details sent by email</span>
       </div>
     </div>
     <div class="ty-footer__perk">
       <i class="fas fa-shield-halved"></i>
       <div>
         <strong>Secure Payment</strong>
-        <span>100% protected</span>
+        <span>Checkout through your selected payment method</span>
       </div>
     </div>
     <div class="ty-footer__perk">
       <i class="fas fa-rotate"></i>
       <div>
-        <strong>Satisfaction Guaranteed</strong>
-        <span>Your happiness, our priority</span>
+        <strong>Gentle guidance</strong>
+        <span>Use each guide at your own pace</span>
       </div>
     </div>
   </div>
 
   <div class="ty-footer__main">
     <div class="ty-footer__col">
-      <span class="ty-footer__col-title">Subscribe To Our Newsletter</span>
-      <p class="ty-footer__newsletter-sub">Get our latest news, tips and exclusive offers.</p>
+      <span class="ty-footer__col-title">Notes from Curvafit</span>
+      <p class="ty-footer__newsletter-sub">Get practical ideas and gentle reminders in your inbox.</p>
       <form class="ty-footer__newsletter" id="ty-footer-newsletter-form">
         <input type="email" id="ty-footer-newsletter-email" placeholder="Your email" required autocomplete="email">
         <button type="submit" id="ty-footer-newsletter-btn" aria-label="Subscribe">
@@ -350,22 +327,22 @@
       </form>
       <span class="ty-footer__newsletter-msg" id="ty-footer-newsletter-msg"></span>
 
-      <span class="ty-footer__col-title ty-footer__col-title--social">Follow Us</span>
+      <span class="ty-footer__col-title ty-footer__col-title--social">Stay connected</span>
       <div class="ty-footer__socials">
         <a id="ty-social-instagram" href="" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
         <a id="ty-social-facebook" href="" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
         <a id="ty-social-tiktok" href="" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
         <a id="ty-social-pinterest" href="" target="_blank" rel="noopener" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
         <a id="ty-social-youtube" href="" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-        <a href="mailto:support@bbw4life.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+        <a href="mailto:support@bbw4life.com" aria-label="Email Curvafit support"><i class="fas fa-envelope"></i></a>
         <a id="ty-social-whatsapp" href="" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
       </div>
     </div>
 
     <div class="ty-footer__col">
-      <span class="ty-footer__col-title">Need Help?</span>
+      <span class="ty-footer__col-title">Curvafit support</span>
       <a href="mailto:support@bbw4life.com" class="ty-footer__contact-line">
-        <i class="fas fa-envelope"></i> support@bbw4life.com
+        <i class="fas fa-envelope"></i> Email support
       </a>
       <a href="https://wa.me/18292677434" target="_blank" rel="noopener" class="ty-footer__contact-line">
         <i class="fas fa-comment-dots"></i> Live Chat
@@ -373,17 +350,13 @@
     </div>
 
     <a href="/index.html" class="ty-footer__logo">
-      <img src="/public/vrlogo bbw4life.png" alt="BBW4LIFE">
-      <span class="ty-footer__logo-text">
-        <strong class="ty-footer__logo-name">BBW<em>4</em>LIFE</strong>
-        <small>BEAUTY HAS NO SIZE <i class="far fa-heart"></i></small>
-      </span>
+      <img src="/public/Logo-Curvafit.png" alt="Curvafit">
     </a>
   </div>
 
   <div class="ty-footer__bottom">
     <p class="ty-footer__copy">
-      &copy; <span id="ty-year"></span> BBW4LIFE. All rights reserved.
+      &copy; <span id="ty-year"></span> Curvafit. All rights reserved.
     </p>
     <nav class="ty-footer__links" aria-label="Policies">
       <a href="/policies/terms.html">Terms of Service</a>

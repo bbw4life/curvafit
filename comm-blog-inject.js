@@ -22,9 +22,10 @@
       </div>`;
   }
 
-  function renderCard(card) {
+  function renderCard(card, index) {
+    var revealDirection = index % 2 === 0 ? 'left' : 'right';
     return `
-      <article class="blog-card" data-category="${card.category}" id="${card.id}">
+      <article class="blog-card" data-category="${card.category}" id="${card.id}" data-scroll-reveal="${revealDirection}" data-scroll-delay="${index * 50}">
         <div class="blog-card-img-wrap">
           <a href="${card.url}" class="card-img-link"><img src="${card.image}" alt="${card.imageAlt}" loading="lazy"></a>
           <span class="card-category-badge">${card.badge}</span>

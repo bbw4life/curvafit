@@ -10,8 +10,7 @@
      gère que ce qui se passe APRÈS sa disparition.
 
      Principe : chaque skeleton réutilise les VRAIES classes CSS du
-     composant final (ex: .bbw-nb-card, .story-circle-ring,
-     .bbwpg-card) pour que ses dimensions (aspect-ratio, largeur,
+     composant final (ex: .bbw-nb-card, ) pour que ses dimensions (aspect-ratio, largeur,
      hauteur) soient garanties identiques au contenu réel — pas de
      valeurs pixel dupliquées à la main qui risqueraient de désynchro-
      niser skeleton et design réel si celui-ci change plus tard. Seul
@@ -42,27 +41,6 @@
     return d;
   }
 
-  /* ── Story circles / story rows (cercles produits/collections) ── */
-  function buildStoryCircleSkeleton() {
-    var a = document.createElement('div');
-    a.className = 'story-circle-item is-skeleton';
-    var ring = document.createElement('div');
-    ring.className = 'story-circle-ring';
-    ring.style.background = 'transparent';
-    ring.appendChild(shimmerDiv('skel-circle'));
-    var label = shimmerDiv('skel-line skel-line--xs');
-    a.appendChild(ring);
-    a.appendChild(label);
-    return a;
-  }
-
-  function initStoryTrackSkeletons() {
-    ['storyCirclesTrack', 'storyRowWomenTrack', 'storyRowMenTrack'].forEach(function (id) {
-      var el = document.getElementById(id);
-      fillIfEmpty(el, 8, buildStoryCircleSkeleton);
-    });
-  }
-
   /* ── BBW Featured grid (.bbw-nb-grid, cartes 1:1) ── */
   function buildNbCardSkeleton() {
     var card = document.createElement('div');
@@ -78,47 +56,6 @@
     fillIfEmpty(document.getElementById('bbw-nb-grid'), 4, buildNbCardSkeleton);
   }
 
-  /* ── Carrousel produit (.bbwpg-track, ratio 138% type "padding-top") ── */
-  function buildPgCardSkeleton() {
-    var card = document.createElement('div');
-    card.className = 'bbwpg-card is-skeleton';
-    var imgWrap = document.createElement('div');
-    imgWrap.className = 'bbwpg-card__img-wrap';
-    imgWrap.appendChild(shimmerDiv('skel-abs-fill'));
-    var body = document.createElement('div');
-    body.className = 'bbwpg-card__body skel-card-body';
-    body.appendChild(shimmerDiv('skel-line'));
-    body.appendChild(shimmerDiv('skel-line skel-line--sm'));
-    card.appendChild(imgWrap);
-    card.appendChild(body);
-    return card;
-  }
-
-  function initPgTrackSkeleton() {
-    fillIfEmpty(document.getElementById('bbwpg-track'), 4, buildPgCardSkeleton);
-  }
-
-  /* ── Collection slider best-sellers (#csTrack, cartes .cs-card) ── */
-  function buildCsCardSkeleton() {
-    var card = document.createElement('div');
-    card.className = 'cs-card is-skeleton';
-    var media = document.createElement('div');
-    media.className = 'cs-media';
-    media.appendChild(shimmerDiv('skel-abs-fill'));
-    var body = document.createElement('div');
-    body.className = 'skel-card-body';
-    body.appendChild(shimmerDiv('skel-line'));
-    body.appendChild(shimmerDiv('skel-line skel-line--sm'));
-    card.appendChild(media);
-    card.appendChild(body);
-    return card;
-  }
-
-  function initCsTrackSkeleton() {
-    fillIfEmpty(document.getElementById('csTrack'), 4, buildCsCardSkeleton);
-  }
-
-  /* ── Galerie collections (.jrgq-gallery-mosaic) — hauteur déjà réservée par grid-template-rows, on ajoute juste un shimmer par cellule ── */
   function buildGalItemSkeleton(i) {
     var item = document.createElement('div');
     item.className = 'jrgq-gal-item jrgq-gal-item--' + (i + 1) + ' is-skeleton';
@@ -448,6 +385,24 @@
   }
 
   /* ── Collections (.col-hero image + #colGrid cartes .col-product-card) ── */
+  /* Product detail images (.pp-image-block): CSS paints the shimmer from
+     the first render. Remove it only after the image request completes. */
+  function initProductImageBlockSkeletons() {
+    document.querySelectorAll('.pp-image-block img').forEach(function (image) {
+      var block = image.closest('.pp-image-block');
+      if (!block || !image.getAttribute('src') || block.classList.contains('pp-image-block--loaded')) return;
+      function clearImageSkeleton() {
+        block.classList.add('pp-image-block--loaded');
+      }
+      if (image.complete) {
+        clearImageSkeleton();
+        return;
+      }
+      image.addEventListener('load', clearImageSkeleton, { once: true });
+      image.addEventListener('error', clearImageSkeleton, { once: true });
+    });
+  }
+
   function buildColCardSkeleton() {
     var card = document.createElement('div');
     card.className = 'col-product-card is-skeleton';
@@ -545,15 +500,13 @@
      immédiatement si le preloader est déjà absent — page revisitée
      avec cache, ou preloader désactivé dans les settings). ── */
   function initSkeletons() {
-    initStoryTrackSkeletons();
     initNbGridSkeleton();
-    initPgTrackSkeleton();
-    initCsTrackSkeleton();
     initGalleryMosaicSkeleton();
     initHeroTextSkeleton();
     initFeaturedSpotlightSkeleton();
     initFirstBlocksSkeleton();
     initProductGallerySkeleton();
+    initProductImageBlockSkeletons();
     initCollectionsSkeleton();
     initBlogHubSkeleton();
     initArticleSkeleton();

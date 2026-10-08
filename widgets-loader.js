@@ -69,7 +69,7 @@
   <div class="cart-drawer__body">
     <div class="cart-items"></div>
     <div class="empty-cart" style="display:none;">
-      <div class="empty-cart__icon">🛒</div>
+      <div class="empty-cart__icon" aria-hidden="true"><i class="fa-solid fa-basket-shopping"></i></div>
       <h3>Your cart is empty</h3>
       <p>Add products to start shopping.</p>
       <a href="/collections/bbw4life-all-product.html" class="cta button-3d">Shop Now</a>

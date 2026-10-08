@@ -24,6 +24,7 @@
     "node": "20"
   },
   "devDependencies": {
-    "playwright": "^1.62.1"
+    "playwright": "^1.62.1",
+    "wrangler": "^4.148.0"
   }
 }

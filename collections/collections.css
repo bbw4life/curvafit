@@ -4,28 +4,25 @@
 
 :root {
 
-  /* Palette — ancrée sur les tokens de marque globaux (/tokens.css),
-     chargés avant ce fichier sur toutes les pages. On garde des noms
-     --col-* locaux (consommés dans tout ce fichier) mais ils pointent
-     désormais vers la source unique de vérité --bbw-*. */
-  --col-bg:          #F6EFE5;                          /* ivoire de marque */
-  --col-surface:     var(--bbw-white);
-  --col-surface-2:   #F6EFE5;
-  --col-border:      rgba(184, 146, 90, 0.20);          /* or antique, discret */
-  --col-text:        var(--bbw-black);
-  --col-text-2:      rgba(21, 17, 14, 0.62);
-  --col-text-3:      rgba(21, 17, 14, 0.40);
-  --col-accent:      var(--bbw-rose);                   /* burgundy #6E2439 */
-  --col-accent-2:    var(--bbw-rose-light);
-  --col-accent-soft: rgba(110, 36, 57, 0.08);
-  --col-dark:        var(--bbw-black);                  /* #15110E */
-  --col-gold:        var(--bbw-gold);                   /* #B8925A */
-  --col-gold-light:  var(--bbw-gold-light);
+  /* Collection palette: warm ivory, berry, plum and soft rose. */
+  --col-bg:          #fbf7f9;
+  --col-surface:     #fffdfd;
+  --col-surface-2:   #f7edf3;
+  --col-border:      rgba(113, 52, 119, 0.15);
+  --col-text:        #3c2636;
+  --col-text-2:      rgba(60, 38, 54, 0.72);
+  --col-text-3:      rgba(60, 38, 54, 0.48);
+  --col-accent:      #b83279;
+  --col-accent-2:    #e06b9a;
+  --col-accent-soft: rgba(214, 69, 143, 0.08);
+  --col-dark:        #532044;
+  --col-gold:        #985779;
+  --col-gold-light:  #d982a9;
   --col-radius:      3px;
   --col-radius-sm:   2px;
   --col-radius-lg:   4px;
-  --col-shadow:      0 4px 24px rgba(21, 17, 14, 0.08);
-  --col-shadow-lg:   0 16px 48px rgba(21, 17, 14, 0.14);
+  --col-shadow:      0 4px 24px rgba(83, 32, 68, 0.08);
+  --col-shadow-lg:   0 16px 48px rgba(83, 32, 68, 0.14);
   --col-transition:  var(--bbw-transition);
   --col-drawer-w:    360px;
   /* --font-display / --font-body → déplacées dans /tokens.css */
@@ -1358,7 +1355,7 @@ body.bbw-sets-popup-open .col-product-card {
 }
 
 .col-card__badge--discount {
-  background: #F6EFE5;
+  background: #fff0f7;
   color: var(--bbw-gold);
   border: 1px solid var(--bbw-gold);
   box-shadow: none;
@@ -3023,7 +3020,7 @@ body.bbw-sets-popup-open .col-marquee-inner {
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #8a6a3c;
+  color: #985779;
   margin-bottom: 18px;
   opacity: 0;
   animation: acFadeUp 0.7s 0.2s ease both;
@@ -3090,7 +3087,7 @@ body.bbw-sets-popup-open .col-marquee-inner {
   transition: background 0.25s, border-color 0.25s, color 0.25s;
 }
 
-.ac-hero__badge i { color: #8a6a3c; font-size: 12px; }
+.ac-hero__badge i { color: #985779; font-size: 12px; }
 
 .ac-hero__badge:hover {
   background: var(--bbw-gold-pale-mid);
@@ -3596,7 +3593,7 @@ body.bbw-sets-popup-open [class*="skeleton"] {
 
 .bbw-hero-orig__badge:first-child { border-left: none; padding-left: 0; }
 
-.bbw-hero-orig__badge i { color: #8a6a3c; font-size: 11px; }
+.bbw-hero-orig__badge i { color: #985779; font-size: 11px; }
 
 .bbw-hero-orig__badge:hover {
   background: none;
@@ -4696,132 +4693,6 @@ body.bbw-sets-popup-open [class*="skeleton"] {
 
 
 
-.bbw-founder-banner {
-  background: linear-gradient(180deg, var(--bbw-white) 0%, var(--col-bg) 100%);
-  border-top: 1px solid var(--bbw-gold-border);
-  border-bottom: 1px solid var(--bbw-gold-border);
-  padding: 14px 10px;
-}
-
-.bbw-founder-banner__inner {
-  max-width: 900px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.bbw-founder-banner__avatar {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.bbw-founder-banner__img {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--col-gold);
-  display: block;
-  box-shadow: 0 0 0 6px var(--bbw-gold-pale);
-}
-
-.bbw-founder-banner__content {
-  flex: 1;
-  min-width: 260px;
-  text-align: left;
-}
-
-.bbw-founder-banner__quote {
-  font-family: var(--font-display);
-  font-size: clamp(20px, 3vw, 28px);
-  font-style: italic;
-  font-weight: 500;
-  color: var(--col-accent);
-  line-height: 1.45;
-  margin: 0 0 12px;
-  padding: 0;
-  border: none;
-}
-
-.bbw-founder-banner__cite {
-  display: block;
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #8a6a3c;
-  margin-bottom: 10px;
-  font-style: normal;
-}
-
-.bbw-founder-banner__sub {
-  font-family: var(--font-body);
-  font-size: 14px;
-  color: var(--col-text-2);
-  margin: 0;
-  line-height: 1.6;
-}
-
-@media (max-width: 768px) {
-  .bbw-founder-banner { padding: 20px 16px; }
-  .bbw-founder-banner__inner { flex-direction: column; text-align: center; gap: 16px; }
-  .bbw-founder-banner__content { text-align: center; }
-  .bbw-founder-banner__img { width: 64px; height: 64px; }
-}
-
-/* ---- BBW Originals page — founder moment gets the strongest brand treatment on the site ---- */
-body.bbw-originals-page .bbw-founder-banner {
-  padding: 72px 24px;
-  position: relative;
-  overflow: hidden;
-}
-
-body.bbw-originals-page .bbw-founder-banner::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 65% 70% at 50% 40%, var(--bbw-gold-glow) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-body.bbw-originals-page .bbw-founder-banner__inner {
-  position: relative;
-  z-index: 1;
-  max-width: 780px;
-  flex-direction: column;
-  text-align: center;
-  gap: 26px;
-}
-
-body.bbw-originals-page .bbw-founder-banner__content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-body.bbw-originals-page .bbw-founder-banner__img {
-  width: 88px;
-  height: 88px;
-}
-
-body.bbw-originals-page .bbw-founder-banner__cite {
-  order: -1;
-  margin-bottom: 22px;
-}
-
-body.bbw-originals-page .bbw-founder-banner__quote {
-  font-size: clamp(24px, 3.6vw, 36px);
-}
-
-@media (max-width: 768px) {
-  body.bbw-originals-page .bbw-founder-banner { padding: 48px 16px; }
-}
-
 /* ================================================================
    COLLECTION HERO — bandeau d'introduction pleine largeur
    (contenu rempli dynamiquement par collections.js → injectCollectionHero())
@@ -4962,4 +4833,25 @@ body.bbw-originals-page .col-product-card:hover {
 
 @media (max-width: 768px) {
   body.bbw-originals-page .col-grid.grid-view { gap: 18px 12px; }
+}
+
+/* Replace the former blue-violet legacy aliases on this collection page
+   so components still using bbw-* tokens inherit the berry/plum palette. */
+body:has(#collection-page) {
+  --bbw-black: #532044;
+  --bbw-black-soft: #713477;
+  --bbw-gold: #985779;
+  --bbw-gold-light: #d982a9;
+  --bbw-gold-vivid: #d6458f;
+  --bbw-gold-pale: #f7edf3;
+  --bbw-gold-pale-mid: #f8c8e2;
+  --bbw-gold-border: rgba(113, 52, 119, 0.15);
+  --bbw-gold-border-hi: rgba(184, 50, 121, 0.34);
+  --bbw-gold-glow: rgba(214, 69, 143, 0.16);
+  --bbw-rose: #b83279;
+  --bbw-rose-light: #e06b9a;
+  --bbw-white: #fffdfd;
+  --bbw-white-mid: #fbf2f7;
+  --bbw-white-mist: #fff8fb;
+  --bbw-white-soft: #fff8fb;
 }

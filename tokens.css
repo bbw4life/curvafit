@@ -1,48 +1,75 @@
-/* ================================================================
-   BBW4LIFE — TOKENS.CSS — SOURCE UNIQUE DE VÉRITÉ
-   Variables de marque (--bbw-*) + polices, partagées par tout le site.
-   Ce fichier doit être chargé EN PREMIER, avant tout autre CSS,
-   sur chaque page. Ne pas redéclarer ces variables ailleurs.
-================================================================ */
-
 :root {
+  /* Violets */
+  --purple-900: #2e0f6b;
+  --purple-800: #33107b;
+  --purple-700: #3b1b7d;
+  --purple-600: #5d3c90;
+  --purple-500: #7b4fb8;
+  --purple-300: #b79ae0;
 
-  /* ═══════════════════════════════════════
-     BRAND COLORS — noir / or antique / burgundy
-  ═══════════════════════════════════════ */
-  --bbw-black:          #15110E;
-  --bbw-black-soft:     #1a1a1a;
-  --bbw-black-deep:     #111111;
-  --bbw-black-card:     #141414;
+  /* Roses */
+  --pink-600: #d6458f;
+  --pink-500: #e84387;
+  --pink-400: #f06fa6;
+  --pink-200: #f8c8e2;
 
-  --bbw-gold:           #B8925A;
-  --bbw-gold-vivid:     #CBA45C;
-  --bbw-gold-light:     #e8bc6a;
-  --bbw-gold-pale:      rgba(184, 146, 90, 0.10);
-  --bbw-gold-pale-mid:  rgba(184, 146, 90, 0.16);
-  --bbw-gold-border:    rgba(184, 146, 90, 0.28);
-  --bbw-gold-border-hi: rgba(184, 146, 90, 0.50);
-  --bbw-gold-glow:      rgba(203, 164, 92, 0.18);
-  --bbw-gold-glow-hi:   rgba(203, 164, 92, 0.35);
+  /* Fonds */
+  --lavender-100: #f3ecfb;
+  --lavender-50: #faf6fe;
+  --white: #ffffff;
 
-  --bbw-rose:           #6E2439;
-  --bbw-rose-light:     #9C3A52;
+  /* Texte */
+  --text: #2a1650;
+  --text-muted: #6b5c88;
+  --text-on-dark: #ffffff;
 
-  --bbw-white:          #ffffff;
-  --bbw-white-soft:     rgba(255, 255, 255, 0.85);
-  --bbw-white-mid:      rgba(255, 255, 255, 0.60);
-  --bbw-white-mist:     rgba(255, 255, 255, 0.40);
-  --bbw-white-ghost:    rgba(255, 255, 255, 0.06);
-  --bbw-mist:           rgba(255, 255, 255, 0.45);
+  /* Dégradés */
+  --gradient-brand: linear-gradient(135deg, var(--purple-700), var(--pink-500));
+  --gradient-soft: linear-gradient(180deg, var(--lavender-50), var(--lavender-100));
 
-  /* ═══════════════════════════════════════
-     TRANSITIONS
-  ═══════════════════════════════════════ */
-  --bbw-transition:     all 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Palette sémantique Curvafit */
+  --cf-primary: var(--purple-700);
+  --cf-primary-strong: var(--purple-900);
+  --cf-accent: var(--pink-500);
+  --cf-accent-strong: var(--pink-600);
+  --cf-canvas: #ffffff;
+  --cf-canvas-soft: var(--lavender-50);
+  --cf-card-surface: #ffffff;
+  --cf-surface-tint: var(--lavender-100);
+  --cf-ink: var(--text);
+  --cf-ink-muted: var(--text-muted);
+  --cf-line: rgba(93, 60, 144, 0.14);
+  --cf-card-shadow: 0 16px 42px rgba(46, 15, 107, 0.08);
 
-  /* ═══════════════════════════════════════
-     TYPOGRAPHIE
-  ═══════════════════════════════════════ */
-  --font-display:       'Fraunces', Georgia, serif;
-  --font-body:          'Inter', system-ui, sans-serif;
+  /* États */
+  --success: #2e9e6b;
+  --error: #d93a5b;
+  --border: #e4d8f3;
+
+  /* Typographie */
+  --font-heading: "Poppins", "Segoe UI", Arial, sans-serif;
+  --font-body: "Inter", "Segoe UI", Arial, sans-serif;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.75rem;
+  --fs-2xl: 2.5rem;
+  --fs-hero: clamp(2.25rem, 6vw, 4rem);
+
+  /* Formes et ombres */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 2px 8px rgba(51, 16, 123, 0.08);
+  --shadow-md: 0 8px 24px rgba(51, 16, 123, 0.14);
+
+  /* Espacement et mise en page */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: 4rem;
+  --container: 1200px;
+  --header-h: 72px;
 }

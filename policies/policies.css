@@ -1451,3 +1451,289 @@
     padding-top: 2px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   CURVAFIT EDITORIAL POLICY THEME
+   Shared site palette: violet, lavender, rose and white.
+═══════════════════════════════════════════════════════════════ */
+.privacy-page {
+  --rose: var(--pink-600);
+  --rose-light: var(--pink-400);
+  --rose-dark: var(--purple-900);
+  --rose-pale: rgba(214, 69, 143, 0.08);
+  --rose-ultra: rgba(214, 69, 143, 0.04);
+  --rose-mid: rgba(214, 69, 143, 0.14);
+  --plum: var(--purple-700);
+  --plum-light: var(--purple-500);
+  --plum-pale: rgba(93, 60, 144, 0.08);
+  --gold: var(--purple-600);
+  --gold-vivid: var(--pink-600);
+  --gold-light: var(--purple-300);
+  --gold-pale: rgba(123, 79, 184, 0.12);
+  --gold-mist: rgba(123, 79, 184, 0.28);
+  --gold-mid: rgba(123, 79, 184, 0.16);
+  --ivory: var(--lavender-50);
+  --ivory-warm: var(--lavender-100);
+  --cream: var(--lavender-100);
+  --cream-soft: var(--lavender-50);
+  --champagne: var(--lavender-100);
+  --pearl: #fff;
+  --ink: var(--text);
+  --charcoal: var(--purple-900);
+  --slate: #49366d;
+  --mist: var(--text-muted);
+  --faint: rgba(42, 22, 80, 0.48);
+  --border: rgba(93, 60, 144, 0.16);
+  --border-rose: rgba(214, 69, 143, 0.2);
+  --border-mid: rgba(123, 79, 184, 0.28);
+  --border-soft: rgba(93, 60, 144, 0.1);
+  --shadow-soft: 0 4px 18px rgba(46, 15, 107, 0.06);
+  --shadow-mid: 0 12px 34px rgba(46, 15, 107, 0.09);
+  --shadow-lift: 0 20px 50px rgba(46, 15, 107, 0.13);
+  --shadow-glow: 0 0 34px rgba(123, 79, 184, 0.12);
+  --shadow-gold: 0 0 28px rgba(214, 69, 143, 0.08);
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(183, 154, 224, 0.22), transparent 48%),
+    radial-gradient(ellipse at 100% 88%, rgba(248, 200, 226, 0.24), transparent 44%),
+    linear-gradient(180deg, var(--lavender-50), #fff 42%, var(--lavender-50));
+  color: var(--text);
+}
+
+.privacy-page::before {
+  background: radial-gradient(circle, rgba(183, 154, 224, 0.2) 0%, transparent 70%);
+}
+.privacy-page::after {
+  background: radial-gradient(circle, rgba(240, 111, 166, 0.12) 0%, transparent 70%);
+}
+
+/* A rich plum hero with a soft rose highlight frames the page title. */
+.privacy-banner {
+  padding: clamp(22px, 3vw, 36px) clamp(20px, 5vw, 60px) 22px;
+  background:
+    radial-gradient(ellipse at 82% 0%, rgba(248, 200, 226, 0.42), transparent 44%),
+    radial-gradient(ellipse at 8% 100%, rgba(183, 154, 224, 0.24), transparent 48%),
+    linear-gradient(125deg, #fff 0%, var(--lavender-50) 58%, var(--lavender-100) 100%);
+  border: 1px solid rgba(123, 79, 184, 0.2);
+  border-radius: 26px;
+  color: var(--purple-900);
+  box-shadow: 0 18px 46px rgba(46, 15, 107, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  animation: none;
+}
+.privacy-banner::before { opacity: 0.2; mix-blend-mode: soft-light; }
+.privacy-banner-bar {
+  left: -100%;
+  background: linear-gradient(90deg, transparent, rgba(123,79,184,.35), #fff, #d6458f, #fff, transparent);
+  box-shadow: 0 0 14px rgba(123,79,184,.2);
+}
+.privacy-banner-scan,
+.privacy-banner-lightwave,
+.privacy-banner-lightwave-2,
+.privacy-banner-halo,
+.privacy-banner-ring,
+.privacy-banner-ring-2,
+.privacy-banner-glow-left,
+.privacy-banner-glow-right { opacity: 0.45; }
+.privacy-banner-ring,
+.privacy-banner-ring-2 { border-color: rgba(123,79,184,.14); }
+.privacy-banner-scan {
+  background: linear-gradient(90deg, transparent, rgba(123,79,184,.08), rgba(214,69,143,.42), rgba(123,79,184,.08), transparent);
+}
+.privacy-banner-lightwave {
+  background: linear-gradient(90deg, transparent, rgba(183,154,224,.04), rgba(183,154,224,.16), rgba(183,154,224,.04), transparent);
+}
+.privacy-banner-lightwave-2 {
+  background: linear-gradient(90deg, transparent, rgba(248,200,226,.04), rgba(248,200,226,.18), rgba(248,200,226,.04), transparent);
+}
+.privacy-banner-halo {
+  background: radial-gradient(ellipse, rgba(183,154,224,.2) 0%, rgba(248,200,226,.12) 35%, transparent 68%);
+}
+.privacy-banner-cosmic {
+  opacity: .1;
+  background: conic-gradient(from 0deg, transparent, rgba(183,154,224,.08), transparent 30%, rgba(248,200,226,.12), transparent 55%, rgba(123,79,184,.06), transparent 78%);
+}
+.privacy-banner-glow-left,
+.privacy-banner-glow-right {
+  background: linear-gradient(180deg, transparent, rgba(123,79,184,.22), rgba(214,69,143,.5), rgba(123,79,184,.22), transparent);
+}
+.privacy-banner-star,
+.privacy-banner-star-2,
+.privacy-banner-star-3,
+.privacy-banner-star-4,
+.privacy-banner-star-5 {
+  background: radial-gradient(circle, #fff 0%, var(--pink-400) 48%, transparent 72%);
+}
+.privacy-banner-badge {
+  color: var(--purple-700) !important;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(123,79,184,.2);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(46,15,107,.07), inset 0 1px 0 #fff;
+  backdrop-filter: blur(12px);
+}
+.privacy-banner-badge::before {
+  background: var(--pink-500);
+  box-shadow: 0 0 10px rgba(232,67,135,.36);
+}
+.privacy-banner h1 {
+  color: var(--purple-900);
+  text-shadow: 0 3px 16px rgba(46,15,107,.08);
+}
+.privacy-banner h1 em {
+  display: inline;
+  color: var(--purple-600);
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  -webkit-text-fill-color: currentColor;
+  filter: none;
+  animation: none;
+  text-shadow: 0 2px 18px rgba(123,79,184,.14);
+}
+.privacy-subtitle { color: var(--purple-700); }
+.privacy-banner-desc { color: #49366d; }
+.policy-meta { color: rgba(42,22,80,.62); }
+.policy-meta a { color: var(--pink-600); }
+.policy-meta a:hover { color: var(--purple-900); text-shadow: none; }
+.banner-divider {
+  background: linear-gradient(90deg, transparent, rgba(123,79,184,.24), #fff, #d6458f, rgba(183,154,224,.32), transparent);
+  box-shadow: 0 0 14px rgba(123,79,184,.18);
+}
+
+/* Soft, bright reading surfaces keep long policy pages calm and legible. */
+.privacy-never-block,
+.contact-info {
+  background: linear-gradient(135deg, #fff 0%, var(--lavender-50) 100%);
+  border-color: var(--border);
+  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,.9);
+}
+.privacy-never-block::before,
+.privacy-toc::before,
+.privacy-table::before,
+.privacy-right-card::before,
+.contact-info::before {
+  background: linear-gradient(90deg, transparent, var(--purple-300), var(--pink-400), var(--purple-500), transparent);
+}
+.privacy-never-block::after,
+.privacy-article::after,
+.privacy-right-card::after {
+  background: radial-gradient(circle, rgba(183,154,224,.16) 0%, transparent 70%);
+}
+.privacy-never-block:hover,
+.privacy-right-card:hover { box-shadow: var(--shadow-lift), var(--shadow-glow); }
+.pnb-header i,
+.pnb-item i { color: var(--pink-600); }
+.pnb-header h2 { color: var(--purple-900); }
+.pnb-item {
+  color: var(--text);
+  background: rgba(255,255,255,.9);
+  border-color: var(--border-soft);
+}
+.pnb-item:hover { border-color: rgba(214,69,143,.25); }
+
+.privacy-toc {
+  background:
+    radial-gradient(ellipse at 90% 0%, rgba(248,200,226,.42), transparent 48%),
+    linear-gradient(155deg, #fff 0%, var(--lavender-50) 100%);
+  border-color: var(--border);
+  box-shadow: var(--shadow-mid), inset 0 1px 0 rgba(255,255,255,.9);
+  animation: none;
+}
+.privacy-toc::after {
+  background: radial-gradient(circle at 15% 20%, rgba(183,154,224,.12), transparent 50%),
+    radial-gradient(circle at 85% 80%, rgba(248,200,226,.18), transparent 50%);
+  animation: none;
+}
+.privacy-toc-glow-left,
+.privacy-toc-glow-right { opacity: .38; }
+.privacy-toc h2 {
+  color: var(--purple-900);
+  text-shadow: none;
+}
+.toc-list a {
+  color: var(--text);
+  background: rgba(255,255,255,.76);
+  border-color: rgba(93,60,144,.12);
+  backdrop-filter: none;
+}
+.toc-list a:hover {
+  color: var(--purple-900);
+  background: linear-gradient(120deg, #fff0f7, var(--lavender-100));
+  border-color: rgba(214,69,143,.28);
+  box-shadow: 0 8px 22px rgba(46,15,107,.09);
+  text-shadow: none;
+}
+
+.privacy-article {
+  background: rgba(255,255,255,.94);
+  border-color: var(--border);
+  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,.9);
+}
+.privacy-article p,
+.contact-info p,
+.privacy-table td,
+.privacy-article ul li,
+.privacy-article ol li { color: var(--text); }
+.privacy-article p strong,
+.privacy-article ul li strong,
+.privacy-article ol li strong { color: var(--purple-900); }
+.privacy-article p a,
+.contact-info a,
+.privacy-table a { color: var(--purple-600); }
+.privacy-article p a:hover,
+.contact-info a:hover,
+.privacy-table a:hover { color: var(--pink-600); }
+.privacy-article h2 {
+  color: var(--purple-900) !important;
+  border-bottom-color: rgba(93,60,144,.16);
+}
+.privacy-article h2::after { background: linear-gradient(90deg, var(--purple-500), var(--pink-500), var(--purple-300)); }
+.privacy-article h3,
+.privacy-right-card h3 { color: var(--purple-700); }
+.contact-info {
+  border-left-color: var(--pink-500);
+}
+.privacy-table {
+  background: #fff;
+  border-color: var(--border);
+}
+.privacy-table th {
+  color: var(--purple-900);
+  background: linear-gradient(135deg, var(--lavender-100), #fff);
+  border-bottom-color: var(--border-mid);
+}
+.privacy-table tbody tr:nth-child(even) td { background: rgba(243,236,251,.46); }
+.privacy-table tbody tr:hover td { background: rgba(248,200,226,.18); }
+.privacy-right-card {
+  background: #fff;
+  border-color: var(--border);
+}
+.prc-icon {
+  color: var(--purple-600);
+  background: linear-gradient(135deg, var(--lavender-100), #fff);
+  border-color: rgba(123,79,184,.18);
+}
+.privacy-right-card:hover .prc-icon {
+  background: linear-gradient(135deg, var(--purple-600), var(--pink-500));
+  box-shadow: 0 8px 22px rgba(93,60,144,.2);
+}
+.privacy-right-card p { color: var(--text-muted); }
+.privacy-article ul li,
+.privacy-article ol li { background: #fff; }
+.privacy-article ul li::before,
+.privacy-article ol li::before { color: var(--pink-600); }
+.privacy-article ul li:hover,
+.privacy-article ol li:hover {
+  background: var(--lavender-50);
+  border-color: rgba(123,79,184,.24);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .privacy-page *,
+  .privacy-page *::before,
+  .privacy-page *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

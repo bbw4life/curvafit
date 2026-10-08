@@ -94,6 +94,54 @@
     if (e.key === 'Escape' && drawer && drawer.classList.contains('is-open')) closeDrawer();
   });
 
+  // Navigation submenus: desktop hover is temporary, click pins open; mobile toggles on tap.
+  function setMenuOpen(item, open, pinned) {
+    if (!item) return;
+    item.classList.toggle('is-open', open);
+    if (pinned !== undefined) item.dataset.pinned = pinned ? 'true' : 'false';
+    const trigger = item.querySelector(':scope > button[aria-expanded]');
+    if (trigger) trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  document.querySelectorAll('[data-nav-submenu]').forEach(item => {
+    item.addEventListener('pointerenter', () => {
+      if (window.matchMedia('(min-width: 993px)').matches && item.dataset.pinned !== 'true') {
+        setMenuOpen(item, true, false);
+      }
+    });
+    item.addEventListener('pointerleave', () => {
+      if (window.matchMedia('(min-width: 993px)').matches && item.dataset.pinned !== 'true') {
+        setMenuOpen(item, false, false);
+      }
+    });
+  });
+
+  document.addEventListener('click', e => {
+    const trigger = e.target.closest('.cf-nav-trigger, .bbw-drawer__submenu-toggle');
+    if (trigger) {
+      const item = trigger.closest('[data-nav-submenu], [data-drawer-submenu]');
+      const isDesktop = trigger.classList.contains('cf-nav-trigger');
+      if (isDesktop) {
+        const pinned = item.dataset.pinned === 'true';
+        if (pinned) setMenuOpen(item, false, false);
+        else setMenuOpen(item, true, true);
+      } else {
+        setMenuOpen(item, !item.classList.contains('is-open'));
+      }
+      e.preventDefault();
+      return;
+    }
+
+    if (!e.target.closest('.cf-desktop-nav')) {
+      document.querySelectorAll('[data-nav-submenu].is-open').forEach(item => setMenuOpen(item, false, false));
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    document.querySelectorAll('[data-nav-submenu].is-open, [data-drawer-submenu].is-open').forEach(item => setMenuOpen(item, false, false));
+  });
+
   let touchStartX = 0;
   if (drawer) {
     drawer.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
@@ -498,7 +546,7 @@
       twitter:   socialLinks.twitter
     };
 
-    document.querySelectorAll('.bbw-drawer__social').forEach(a => {
+    document.querySelectorAll('.bbw-drawer__social, .ann-bar__social').forEach(a => {
       const url = urlMap[a.dataset.social];
       if (url) a.href = url;
     });
@@ -1066,12 +1114,29 @@
     const bar = document.getElementById('promoBar');
     if (!bar) return;
     const h = bar.getBoundingClientRect().height;
-    if (h > 0) document.documentElement.style.setProperty('--promo-bar-h', h + 'px');
+    const value = h > 0 ? h + 'px' : '0px';
+    document.documentElement.style.setProperty('--promo-bar-h', value);
+    // Inner pages begin with no promo-row space reserved, avoiding a blank
+    // band below the announcement bar while settings are still loading.
+    // Keep body.home-page on the existing root-driven sizing behavior.
+    if (document.body && !document.body.classList.contains('home-page')) {
+      document.body.style.setProperty('--promo-bar-h', value);
+    }
   }
 
   function run() {
     const allProducts = window.__allProducts || [];
     const settings     = allProducts.find(p => p.type === 'settings') || {};
+    const promoBar     = document.getElementById('promoBar');
+    const showPromoBar = String(settings.show_promo_bar || 'yes').toLowerCase() === 'yes';
+
+    if (promoBar) promoBar.style.display = showPromoBar ? '' : 'none';
+    if (!showPromoBar) {
+      document.documentElement.style.setProperty('--promo-bar-h', '0px');
+      if (document.body && !document.body.classList.contains('home-page')) {
+        document.body.style.setProperty('--promo-bar-h', '0px');
+      }
+    }
 
     // Le texte est déjà dans le HTML (header.html) — on n'injecte que la
     // valeur du setting, même pattern que .hdr-free-shipping-threshold /
@@ -1202,3 +1267,12 @@
   setup();
   document.addEventListener('header:reinjected', setup);
 })();
+
+// The desktop header CTA delegates to the drawer's configured Telegram flow.
+document.addEventListener('click', function (event) {
+  const headerButton = event.target.closest('#bbwTelegramHeaderBtn');
+  if (!headerButton) return;
+  event.preventDefault();
+  const drawerButton = document.getElementById('bbwTelegramBtn');
+  if (drawerButton) drawerButton.click();
+});

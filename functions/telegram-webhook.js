@@ -70,10 +70,10 @@ async function notifyClientPush(deviceId, chatId, env) {
 
     const BASE_URL = env.BASE_URL || 'https://bbw4life.com';
     const payload = JSON.stringify({
-      title: 'BBW4LIFE',
+      title: 'Curvafit',
       body: 'Un agent vient de vous répondre en direct 💬',
-      icon: `${BASE_URL}/public/bbw4life-favicon.png`,
-      badge: `${BASE_URL}/public/bbw4life-favicon.png`,
+      icon: `${BASE_URL}/public/Logo-Curvafit.png`,
+      badge: `${BASE_URL}/public/Logo-Curvafit.png`,
       // ⚠️ FIX : url relative (voir send-cart-push-reminder.js) — sinon un
       // BASE_URL mal configuré redirige vers le mauvais domaine au clic.
       url: `/?openChat=${chatId}`,

@@ -1,6 +1,39 @@
-// thankyou.js — BBW4LIFE Order Confirmation
+// thankyou.js — Curvafit order confirmation
+async function prepareEbookAccess(paymentId) {
+    if (!paymentId) return;
+
+    for (let attempt = 0; attempt < 8; attempt++) {
+        try {
+            const response = await fetch('/ebook-download', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'prepare-order', paymentId })
+            });
+            const data = await response.json();
+
+            if (response.status === 202 && data.pending) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                continue;
+            }
+
+            if (response.ok && data.success) {
+                sessionStorage.setItem('ebookSelections', JSON.stringify(data.ebooks || []));
+                sessionStorage.setItem('ebookAccessToken', data.ebookAccessToken || '');
+                sessionStorage.setItem('ebookAccessExpiresAt', String(data.ebookAccessExpiresAt || 0));
+            } else if (data.expired) {
+                sessionStorage.removeItem('ebookAccessToken');
+                sessionStorage.removeItem('ebookAccessExpiresAt');
+            }
+            return;
+        } catch (error) {
+            console.warn('[EBOOK DOWNLOAD] Access preparation failed:', error.message);
+            return;
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log("🚀 BBW4LIFE thankyou.html LOADED - Starting verification...");
+    console.log("🚀 Curvafit thankyou.html loaded - Starting verification...");
 
     const spinner   = document.getElementById('spinner');
     const messageEl = document.getElementById('message');
@@ -14,6 +47,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ── NOWPayments : commande déjà traitée par le webhook ──
         const provider = urlParams.get('provider') || '';
          if (provider === 'nowpayments') {
+            const nowpaymentsOrderId = urlParams.get('orderId') || '';
+            if (nowpaymentsOrderId) {
+                await prepareEbookAccess(nowpaymentsOrderId);
+            }
             localStorage.removeItem('cart');
             if (spinner) spinner.style.display = 'none';
             showSuccess();
@@ -32,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     else if (orderID) payload = { provider: 'paypal', orderID  };
 
     if (!payload) {
-        displayError("We're sorry, but we couldn't find your payment information. Please contact the BBW4LIFE support team for assistance — we're here for you.");
+        displayError("We couldn’t find the payment information for this order. Please return to checkout or contact Curvafit support.");
         spinner.style.display = "none";
         return;
     }
@@ -41,6 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (sessionStorage.getItem("paymentVerified") === verifiedId) {
         console.log("✅ Already verified in this session — skipping server call");
         localStorage.removeItem('cart');
+        await prepareEbookAccess(verifiedId);
         spinner.style.display = "none";
         showSuccess();
         return;
@@ -59,26 +97,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log(`📡 Response status: ${response.status}`);
 
         if (response.status === 404) {
-            throw new Error("We're experiencing a temporary issue with order verification. Please try again in a moment or contact BBW4LIFE support — we will make it right.");
+            throw new Error("We’re having trouble confirming this payment right now. Please try again shortly or contact Curvafit support.");
         }
 
         const data = await response.json();
         console.log("📦 Data received:", data);
 
         if (!response.ok || !data.success) {
-            throw new Error(data.error || "There was an issue verifying your order. Please contact BBW4LIFE support and we'll take care of you right away.");
+            throw new Error(data.error || "We couldn’t confirm this order. Please contact Curvafit support for help.");
         }
 
         sessionStorage.setItem("paymentVerified", verifiedId);
         if (data.orderNumber) sessionStorage.setItem("orderNumber", data.orderNumber);
         localStorage.removeItem('cart');
+        await prepareEbookAccess(verifiedId);
 
         showSuccess();
-        console.log("🎉 VERIFICATION COMPLETED — Welcome to the BBW4LIFE family!");
+        console.log("🎉 Payment verification completed — Welcome to Curvafit!");
 
     } catch (error) {
         console.error("❌ ERREUR COMPLETE:", error);
-        displayError(error.message || "An unexpected error occurred. Please contact BBW4LIFE support and we'll resolve it for you.");
+        displayError(error.message || "Something went wrong while confirming this order. Please contact Curvafit support.");
     } finally {
         spinner.style.display = "none";
     }
@@ -92,9 +131,7 @@ function revealExtraSections() {
         'next-steps-section',
         'gratitude-section',
         'share-section',
-        'bbw-request-section',
         'bbw-banner-section',
-        'bbw-request-personalized-section',
         'support-bar-section',
         'ty-footer-section',
         'success-icon'
@@ -109,7 +146,7 @@ function revealExtraSections() {
     const h1 = document.querySelector('.container > h1');
     if (h1) {
         h1.textContent = 'Order Confirmed! 🎉';
-        h1.style.background = 'linear-gradient(135deg, var(--bbw-gold, #B8925A), var(--bbw-gold-vivid, #CBA45C))';
+        h1.style.background = 'linear-gradient(135deg, var(--ty-rose-deep), var(--ty-rose))';
         h1.style.webkitBackgroundClip = 'text';
         h1.style.webkitTextFillColor = 'transparent';
         h1.style.backgroundClip = 'text';
@@ -266,17 +303,124 @@ function waitForProductsThenApply() {
 document.addEventListener('DOMContentLoaded', waitForProductsThenApply);
 
 // ── Show success state ──
+async function initializeEbookDownloads() {
+    const section = document.getElementById('ebook-download-section');
+    const buttonsEl = document.getElementById('ebook-download-buttons');
+    const timerEl = document.getElementById('ebook-download-timer');
+    if (!section || !buttonsEl || window.__ebookDownloadsInitialized) return;
+    window.__ebookDownloadsInitialized = true;
+
+    const token = sessionStorage.getItem('ebookAccessToken') || '';
+    const expiresAt = Number(sessionStorage.getItem('ebookAccessExpiresAt') || 0);
+    if (!token || !expiresAt || Date.now() >= expiresAt) return;
+
+    const hideDownloads = () => {
+        section.style.display = 'none';
+        buttonsEl.replaceChildren();
+    };
+
+    let timerInterval;
+    const updateTimer = () => {
+        const remaining = Math.max(0, expiresAt - Date.now());
+        if (!remaining) {
+            clearInterval(timerInterval);
+            hideDownloads();
+            return;
+        }
+        const seconds = Math.ceil(remaining / 1000);
+        timerEl.textContent = `Download access closes in ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}.`;
+    };
+
+    try {
+        const response = await fetch('/ebook-download', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'availability', token })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) return;
+
+        const availableEbooks = (data.ebooks || []).filter(item => item.available && item.configured);
+        if (!availableEbooks.length) return;
+
+        section.style.display = '';
+        timerInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+
+        const languageLabels = { en: 'English', fr: 'Français', es: 'Español' };
+        availableEbooks.forEach(item => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'ebook-download-button';
+            button.textContent = `Download ${item.title || 'ebook'} — ${languageLabels[item.language] || item.language}`;
+            button.addEventListener('click', async () => {
+                if (Date.now() >= expiresAt || button.disabled) return;
+                button.disabled = true;
+                button.textContent = 'Preparing your download…';
+
+                try {
+                    const downloadResponse = await fetch('/ebook-download', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'download', token, variantId: item.variantId })
+                    });
+
+                    if (!downloadResponse.ok) {
+                        let error = 'The download could not be completed. Please try again.';
+                        try { error = (await downloadResponse.json()).error || error; } catch (_) {}
+                        throw new Error(error);
+                    }
+
+                    const file = await downloadResponse.blob();
+                    const objectUrl = URL.createObjectURL(file);
+                    const link = document.createElement('a');
+                    link.href = objectUrl;
+                    link.download = `${(item.title || 'Curvafit-guide').replace(/[^a-z0-9]+/gi, '-')}-${item.language}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+
+                    const completeResponse = await fetch('/ebook-download', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'complete', token, variantId: item.variantId })
+                    });
+                    const completion = await completeResponse.json();
+                    if (!completeResponse.ok || !completion.success) {
+                        throw new Error(completion.error || 'The download status could not be saved.');
+                    }
+
+                    button.textContent = 'Downloaded';
+                    button.classList.add('is-downloaded');
+                } catch (error) {
+                    button.disabled = Date.now() >= expiresAt;
+                    button.textContent = Date.now() >= expiresAt
+                        ? 'Download window closed'
+                        : `Retry — ${item.title || 'ebook'} (${languageLabels[item.language] || item.language})`;
+                    button.title = error.message;
+                    console.error('[EBOOK DOWNLOAD]', error);
+                }
+            });
+            buttonsEl.appendChild(button);
+        });
+    } catch (error) {
+        console.error('[EBOOK DOWNLOAD] Availability check failed:', error);
+        hideDownloads();
+    }
+}
+
 function showSuccess() {
     document.getElementById('message').innerHTML = `
-        <h1>Welcome to the BBW4LIFE Family! 💖</h1>
-        <p>Your order has been confirmed — and we couldn't be more excited for you!</p>
-        <p>✅ <strong>Your order is confirmed!</strong></p>
-        <p>Your package is being prepared with care and will be on its way to you soon.</p>
-        <p>📧 Please check your email inbox for your order details and tracking number.</p>
-        <p>Remember: <em>Beauty Has No Sizes.</em> You made the right choice — for yourself. 🌸</p>
+        <h2>Thank you for choosing Curvafit 💜</h2>
+        <p>Your payment has been confirmed and your order is in progress.</p>
+        <p>✅ <strong>Your order is confirmed.</strong></p>
+        <p>If your order includes a digital guide, its download button will appear below when access is ready. For physical items, check your email for order updates.</p>
+        <p><em>No shortcuts. No miracles. Real progress, one habit at a time.</em></p>
     `;
     document.getElementById('message').style.display = 'block';
     document.getElementById('buttons').style.display = 'block';
+    initializeEbookDownloads();
 
     // ✅ Appel direct ici — revealExtraSections est dans le même fichier
     revealExtraSections();
@@ -296,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Copy link button ──
     document.getElementById('copy-link-btn')?.addEventListener('click', function() {
-        const msg = `🌸 I just ordered from BBW4LIFE — Beauty Has No Sizes! A brand that truly celebrates every curve and every woman. Check them out! 👉 ${window.location.origin}`;
+        const msg = `I just placed an order with Curvafit. Gentle guides and practical tools to help build steady habits, one step at a time. ${window.location.origin}`;
 
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(msg).then(() => {
@@ -329,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('share-instagram-btn')?.addEventListener('click', function(e) {
         e.preventDefault();
 
-        const msg = `🌸 I just ordered from BBW4LIFE — Beauty Has No Sizes! A brand that truly celebrates every curve and every woman. Check them out! 👉 ${window.location.origin}`;
+        const msg = `I just placed an order with Curvafit. Gentle guides and practical tools to help build steady habits, one step at a time. ${window.location.origin}`;
 
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(msg).then(() => {

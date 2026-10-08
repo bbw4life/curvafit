@@ -1,42 +1,50 @@
 /* ================================================================
-   THANKYOU.CSS — BBW4LIFE Order Confirmation
+   CURVAFIT — order confirmation
 ================================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
 :root {
-
-  /* BBW4LIFE brand colors (--bbw-*) → déplacées dans /tokens.css
-     (chargé avant ce fichier) */
-
-  --charcoal:         #1a1a1a;
-  --slate:            #42383e;
-  --mist:             #8a7a82;
-  --cream:            #fdf8f2;
-  --ivory:            #fffdf8;
-
-  --border:           rgba(184, 146, 90, 0.14);
-  --border-mid:       rgba(184, 146, 90, 0.24);
-
-  --shadow-soft:      0 4px 24px rgba(184, 146, 90, 0.10);
-  --shadow-mid:       0 10px 40px rgba(184, 146, 90, 0.16);
-  --shadow-lift:      0 20px 60px rgba(184, 146, 90, 0.18);
-
-  --radius:           20px;
-  --radius-sm:        14px;
-  --radius-pill:      100px;
-  /* --font-display / --font-body → déplacées dans /tokens.css */
+  --ty-ink: #3c2938;
+  --ty-muted: #806d7b;
+  --ty-rose: #df4b91;
+  --ty-rose-deep: #c83f7f;
+  --ty-blush: #fff2f8;
+  --ty-blush-strong: #fbe4ef;
+  --ty-line: rgba(200, 63, 127, .17);
+  --ty-shadow: 0 14px 40px rgba(115, 48, 83, .09);
+  --charcoal:         var(--ty-ink);
+  --slate:            #51404e;
+  --mist:             var(--ty-muted);
+  --cream:            #fff8fb;
+  --ivory:            var(--white);
+  --border:           var(--ty-line);
+  --border-mid:       rgba(200, 63, 127, .27);
+  --shadow-soft:      0 5px 22px rgba(115, 48, 83, .07);
+  --shadow-mid:       0 9px 28px rgba(115, 48, 83, .11);
+  --shadow-lift:      0 18px 48px rgba(115, 48, 83, .13);
+  --radius:           var(--radius-lg);
+  --radius-sm:        var(--radius-md);
+  --radius-pill:      999px;
+  --font-display:     var(--font-heading);
+  /* Existing component selectors use these page-local aliases. */
+  --bbw-black: var(--ty-ink);
+  --bbw-black-soft: #634354;
+  --bbw-gold: var(--ty-rose-deep);
+  --bbw-gold-light: var(--ty-rose);
+  --bbw-gold-vivid: #ec6ca5;
+  --bbw-gold-pale: var(--ty-blush-strong);
+  --bbw-gold-border: rgba(200, 63, 127, .22);
+  --bbw-gold-border-hi: rgba(200, 63, 127, .36);
+  --bbw-rose: var(--ty-rose-deep);
+  --bbw-rose-light: #f6b8d2;
   --transition:       all 0.32s cubic-bezier(0.4, 0, 0.2, 1);
   --spring:           all 0.44s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 
 body {
-  background: linear-gradient(155deg,
-    #fffdf8 0%,
-    #fdf8ee 40%,
-    #f9f1e2 100%
-  ) !important;
+  background: linear-gradient(155deg, #fff 0%, #fff9fc 53%, #fff0f6 100%) !important;
   font-family: var(--font-body) !important;
   overflow-x: hidden;
 }
@@ -1406,66 +1414,6 @@ p.error {
 }
 
 
-.bbw-request-section {
-  background: var(--cream) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius) !important;
-  padding: 28px 32px !important;
-  position: relative !important;
-  z-index: 1 !important;
-  margin-bottom: 20px !important;
-}
-
-.bbw-request-section--personalized {
-  background: linear-gradient(170deg, #0d0803 0%, var(--bbw-black) 100%) !important;
-  border-color: var(--bbw-gold-border) !important;
-}
-.bbw-request-section--personalized .bbw-request-label {
-  color: rgba(253, 249, 244, 0.72) !important;
-}
-
-.bbw-request-section .container {
-  background: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-  max-width: 100% !important;
-  animation: none !important;
-  text-align: initial !important;
-}
-
-/* Le composant .plan-request-trigger-wrap est conçu pour une page produit
-   avec un espacement différent au-dessus — son margin-top négatif (-30px)
-   le fait déborder visuellement du cadre crème ici. */
-.bbw-request-section .plan-request-trigger-wrap {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-.bbw-request-section .container::before,
-.bbw-request-section .container::after {
-  content: none !important;
-}
-
-.my-product-section {
-  padding: 0 !important;
-  margin: 0 !important;
-}
-.my-product-section .container {
-  background: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-  max-width: 100% !important;
-  animation: none !important;
-}
-
-
 /* ================================================================
    TY-FOOTER
 ================================================================ */
@@ -1738,3 +1686,163 @@ p.error {
   .ty-footer__bottom { flex-direction: column; text-align: center; padding: 18px 20px; }
   .ty-footer__links { justify-content: center; }
 }
+/* Digital ebook downloads */
+.ebook-download-section {
+  max-width: 980px;
+  margin: 0 auto 32px;
+  padding: clamp(24px, 5vw, 44px);
+  border: 1px solid rgba(184, 146, 90, .3);
+  border-radius: 22px;
+  background: linear-gradient(135deg, #fff 0%, #fbf7ef 100%);
+  box-shadow: 0 18px 48px rgba(31, 24, 13, .08);
+  text-align: center;
+}
+.ebook-download-section__eyebrow {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #9a743c;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.ebook-download-section__intro h2 {
+  margin: 0 0 10px;
+  color: #231d16;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+}
+.ebook-download-section__intro p {
+  margin: 0 auto 10px;
+  color: #625b52;
+}
+.ebook-download-section__timer {
+  font-weight: 700;
+}
+.ebook-download-section__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 22px;
+}
+.ebook-download-button {
+  min-height: 48px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #231d16;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  transition: transform .18s ease, background .18s ease, opacity .18s ease;
+}
+.ebook-download-button:hover:not(:disabled) {
+  background: #9a743c;
+  transform: translateY(-2px);
+}
+.ebook-download-button:disabled {
+  cursor: default;
+  opacity: .65;
+}
+.ebook-download-button.is-downloaded {
+  background: #567458;
+}
+
+/* Curvafit thank-you styling: warm blush surfaces, rose actions, plum text. */
+body::before { background: radial-gradient(circle, rgba(223,75,145,.18) 0%, rgba(251,228,239,.22) 52%, transparent 76%); }
+body::after { background: radial-gradient(circle, rgba(200,63,127,.12) 0%, rgba(255,242,248,.2) 52%, transparent 76%); }
+.ty-hero__topbar {
+  gap: 2px;
+  padding: 8px 20px 10px;
+  background: linear-gradient(180deg, #fff 0%, #fff8fb 100%) !important;
+  border-bottom: 1px solid var(--ty-line);
+}
+.ty-hero__brand { min-height: 78px; }
+.ty-hero__brand img { width: 78px; height: 78px; object-fit: contain; }
+.ty-hero__tagline { color: var(--ty-muted); letter-spacing: .2em; }
+.ty-hero__body { background: rgba(255,255,255,.96) !important; }
+.ty-hero__script { color: var(--ty-rose) !important; }
+.ty-hero__text .container > h1 { color: var(--ty-ink) !important; -webkit-text-fill-color: var(--ty-ink) !important; }
+.ty-hero__photo { border: 1px solid var(--ty-line); box-shadow: var(--ty-shadow); }
+.ty-hero__photo::after { background: linear-gradient(180deg, transparent 55%, rgba(100,39,69,.3) 100%) !important; }
+.ty-hero::after { background: linear-gradient(90deg, #f7b7d2, var(--ty-rose)) !important; }
+.container {
+  background: linear-gradient(160deg, #fff 0%, #fff8fb 100%) !important;
+  border-color: var(--ty-line) !important;
+  box-shadow: 0 18px 44px rgba(115,48,83,.10), inset 0 1px 0 rgba(255,255,255,.96) !important;
+}
+.container::before { background: linear-gradient(90deg, transparent, #f7b7d2, var(--ty-rose), #f7b7d2, transparent) !important; }
+.success-icon {
+  background: linear-gradient(135deg, #e85b9b, #c83f7f) !important;
+  border-color: rgba(255,255,255,.82) !important;
+  box-shadow: 0 8px 26px rgba(200,63,127,.2), 0 0 0 8px var(--ty-blush-strong) !important;
+}
+.ty-order-details, .ty-order-summary, .next-steps, .share-section {
+  border-color: var(--ty-line) !important;
+  background: #fff !important;
+  box-shadow: var(--ty-shadow) !important;
+}
+.ty-order-details__title, .ty-order-summary__title, .next-steps h2,
+.ty-order-summary__row--total, .ty-order-details__icon { color: var(--ty-rose-deep) !important; }
+.ty-order-details__icon, .step-num, .ty-whatsnext__icon {
+  background: var(--ty-blush) !important;
+  border-color: var(--ty-line) !important;
+  color: var(--ty-rose-deep) !important;
+}
+.step-num { color: var(--ty-rose-deep) !important; }
+.step-item, .ty-whatsnext__step, .ty-order-summary__item { border-color: var(--ty-line) !important; }
+.gratitude-section {
+  background: linear-gradient(145deg, #fff2f8 0%, #fde7f0 100%) !important;
+  border-color: var(--ty-line) !important;
+  box-shadow: var(--ty-shadow) !important;
+}
+.gratitude-section::after { background: radial-gradient(ellipse, rgba(223,75,145,.11) 0%, transparent 72%) !important; }
+.gratitude-section h3, .ty-whatsnext__title span, .ty-whatsnext__step strong { color: var(--ty-ink) !important; }
+.gratitude-section h3 em, .gratitude-emoji i { color: var(--ty-rose-deep) !important; }
+.gratitude-section p, .ty-whatsnext__step p { color: var(--ty-muted) !important; }
+.ty-whatsnext { border-color: var(--ty-line) !important; }
+.ty-whatsnext__steps::before { border-color: rgba(200,63,127,.28) !important; }
+.ty-whatsnext__cta, .share-btn.copy, .support-wa-btn,
+.ty-promo-banner__cta, .ty-footer__newsletter button,
+.ebook-download-button {
+  background: linear-gradient(115deg, #e85b9b, #c83f7f) !important;
+  color: #fff !important;
+}
+.ty-whatsnext__cta:hover, .share-btn.copy:hover, .support-wa-btn:hover,
+.ebook-download-button:hover:not(:disabled) { background: linear-gradient(115deg, #d9478b, #b93272) !important; }
+.share-btn { background: var(--ty-blush) !important; color: var(--ty-ink) !important; border-color: var(--ty-line) !important; }
+.share-btn i, .share-btn.copy i { color: var(--ty-rose-deep) !important; }
+.support-bar { background: #fff7fb !important; border-color: var(--ty-line) !important; color: var(--ty-ink) !important; }
+.support-bar p { color: var(--ty-ink) !important; }
+.ty-promo-banner { border-color: var(--ty-line) !important; box-shadow: var(--ty-shadow) !important; }
+.ty-promo-banner__photo::after { background: linear-gradient(90deg, rgba(72,34,55,.14), rgba(72,34,55,.40), rgba(72,34,55,.12)) !important; }
+.ty-promo-banner__offer { background: linear-gradient(145deg, #e85b9b, #c83f7f) !important; }
+.ty-promo-banner__offer-sub, .ty-promo-banner__title, .ty-promo-banner__heart { color: #ffe6f1 !important; }
+.ty-promo-banner__code { color: var(--ty-ink) !important; background: rgba(255,255,255,.94) !important; border-color: rgba(255,255,255,.8) !important; }
+.ty-promo-banner__cta { border-color: rgba(255,255,255,.5) !important; }
+.ty-order-summary { background: linear-gradient(145deg, #fff 0%, #fff8fb 100%) !important; }
+.ty-order-summary__row--total { background: var(--ty-blush) !important; }
+.ty-order-summary__item-info strong, .ty-order-summary__row--total span { color: var(--ty-ink) !important; }
+.ty-order-summary__item-info span, .ty-order-summary__row span { color: var(--ty-muted) !important; }
+.ty-order-summary__item-price, .ty-order-summary__row strong,
+.ty-order-summary__row--total strong { color: var(--ty-rose-deep) !important; }
+.ty-order-summary__items, .ty-order-summary__row--total { border-color: var(--ty-line) !important; }
+.ty-footer { background: #fff !important; border-color: var(--ty-line) !important; }
+.ty-footer__perks { background: linear-gradient(180deg, #fff5fa, #ffedf5) !important; }
+.ty-footer__perk strong { color: var(--ty-ink) !important; }
+.ty-footer__perk span { color: var(--ty-muted) !important; }
+.ty-footer__perk i { color: var(--ty-rose-deep) !important; }
+.ty-footer__main { background: #fff !important; }
+.ty-footer__logo img { width: 76px !important; height: 76px !important; object-fit: contain; }
+.ty-footer__bottom { background: #fff7fb !important; }
+.ebook-download-section {
+  border-color: var(--ty-line) !important;
+  background: linear-gradient(145deg, #fff 0%, #fff7fb 100%) !important;
+  box-shadow: var(--ty-shadow) !important;
+}
+.ebook-download-section__eyebrow { color: var(--ty-rose-deep) !important; }
+.ebook-download-section__intro h2 { color: var(--ty-ink) !important; }
+.ebook-download-section__intro p { color: var(--ty-muted) !important; }
+.ebook-download-button.is-downloaded { background: #2e9e6b !important; }

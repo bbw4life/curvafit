@@ -76,7 +76,7 @@ export async function onRequestGet(context) {
   const { env } = context;
   const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
   const BASE_URL = env.BASE_URL || 'https://bbw4life.com';
-  const LOGO_URL = `${BASE_URL}/public/bbw4life-favicon.png`;
+  const LOGO_URL = `${BASE_URL}/public/Logo-Curvafit.png`;
   // ⚠️ FIX : url doit rester relative (pas ${BASE_URL}${...}) — c'est cette
   // valeur que sw-push.js utilise pour ouvrir/naviguer au clic sur la
   // notification. En absolu, un BASE_URL mal configuré (ou pointant encore
