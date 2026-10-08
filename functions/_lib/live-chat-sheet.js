@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════
    LIVE CHAT — accès partagé à la feuille Google Sheets
-   "bbw4life-live-chat". Utilisé par chat.js (création de
+   "curvafit-live-chat". Utilisé par chat.js (création de
    session), telegram-webhook.js (réponses de l'agent) et
    get-live-chat-messages.js (polling frontend).
 
@@ -17,7 +17,7 @@
 const { google } = require('googleapis');
 const { getGoogleAuthClient } = require('./google-auth');
 
-const SHEET_NAME = 'bbw4life-live-chat';
+const SHEET_NAME = 'curvafit-live-chat';
 const HEADERS = ['chat_id', 'sender', 'message', 'timestamp', 'status', 'device_id'];
 
 async function getSheetsClient(env) {
@@ -26,7 +26,7 @@ async function getSheetsClient(env) {
 }
 
 function getSpreadsheetId(env) {
-  return env.SHEET_ID_BBW4LIFE_ACCOUNTS;
+  return env.SHEET_ID_CURVAFIT_ACCOUNTS;
 }
 
 // ── Cache : une fois l'onglet confirmé existant sur cet isolate, on ne

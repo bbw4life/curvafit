@@ -35,7 +35,7 @@ async function ensureSheetExists(sheets, spreadsheetId) {
 
 export async function onRequestPost(context) {
   const { request, env } = context;
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_ACCOUNTS;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_ACCOUNTS;
 
   try {
     const body = await request.json();

@@ -75,10 +75,10 @@ export async function onRequestGet(context) {
   try {
     const auth = await getGoogleAuthClient(env);
     const sheets = google.sheets({ version: "v4", auth });
-    const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
+    const spreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_ORDERS;
 
     // ── Lire jusqu'à la colonne U (fromCountryCode) ──
-    const rangesToTry = ["bbw4life-pending-orders!A:U"];
+    const rangesToTry = ["curvafit-pending-orders!A:U"];
     let rows = [];
     let activeTab = "";
     for (const range of rangesToTry) {
@@ -201,7 +201,7 @@ export async function onRequestGet(context) {
               for (const { lineNumber } of group) {
                 await sheets.spreadsheets.values.update({
                   spreadsheetId,
-                  range: `bbw4life-pending-orders!U${lineNumber}`,
+                  range: `curvafit-pending-orders!U${lineNumber}`,
                   valueInputOption: "RAW",
                   resource: { values: [[resolvedFromCountryCode]] }
                 });
@@ -251,7 +251,7 @@ export async function onRequestGet(context) {
           for (const { lineNumber } of group) {
             await sheets.spreadsheets.values.update({
               spreadsheetId,
-              range:            `bbw4life-pending-orders!O${lineNumber}`,
+              range:            `curvafit-pending-orders!O${lineNumber}`,
               valueInputOption: "RAW",
               resource: { values: [["successful"]] }
             });
@@ -261,7 +261,7 @@ export async function onRequestGet(context) {
             for (const { lineNumber } of group) {
               await sheets.spreadsheets.values.update({
                 spreadsheetId,
-                range:            `bbw4life-pending-orders!V${lineNumber}`,
+                range:            `curvafit-pending-orders!V${lineNumber}`,
                 valueInputOption: "RAW",
                 resource: { values: [[createData.orderId]] }
               });
@@ -279,7 +279,7 @@ export async function onRequestGet(context) {
         for (const { lineNumber } of group) {
           await sheets.spreadsheets.values.update({
             spreadsheetId,
-            range:            `bbw4life-pending-orders!O${lineNumber}`,
+            range:            `curvafit-pending-orders!O${lineNumber}`,
             valueInputOption: "RAW",
             resource: { values: [["failed"]] }
           });

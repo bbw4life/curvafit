@@ -8,7 +8,7 @@
 const { google } = require('googleapis');
 const { getGoogleAuthClient } = require('./google-auth');
 
-const COUNTER_SHEET  = 'bbw4life-order-counter';
+const COUNTER_SHEET  = 'curvafit-order-counter';
 const COUNTER_HEADERS = ['key', 'value'];
 const START_AT = 100000; // premier numéro généré : BBW-100001
 
@@ -39,7 +39,7 @@ async function ensureCounterSheet(sheets, spreadsheetId) {
  *  le curseur Telegram existant) — acceptable au volume de commandes actuel. */
 async function getNextOrderNumber(env) {
   const sheets = await getSheetsClient(env);
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_ORDERS;
   await ensureCounterSheet(sheets, spreadsheetId);
 
   const res = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${COUNTER_SHEET}!A2:B` });

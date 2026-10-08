@@ -22,11 +22,11 @@ export async function onRequestPost(context) {
     const auth = await getGoogleAuthClient(env);
 
     const sheets = google.sheets({ version: "v4", auth });
-    const spreadsheetId = env.SHEET_ID_BBW4LIFE_ACCOUNTS;
+    const spreadsheetId = env.SHEET_ID_CURVAFIT_ACCOUNTS;
 
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "bbw4life-accounts!A:AF"
+      range: "curvafit-accounts!A:AF"
     });
     const rows = res.data.values || [];
 
@@ -53,7 +53,7 @@ export async function onRequestPost(context) {
             const newHash = hashPassword(userPassword);
             await sheets.spreadsheets.values.update({
               spreadsheetId,
-              range: `bbw4life-accounts!E${rowIndex + 1}`,
+              range: `curvafit-accounts!E${rowIndex + 1}`,
               valueInputOption: "RAW",
               resource: { values: [[newHash]] }
             });

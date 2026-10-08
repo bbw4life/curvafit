@@ -1,14 +1,14 @@
 /* ══════════════════════════════════════════════════════
    TELEGRAM BROADCAST — helpers partagés pour les notifications
    automatiques envoyées aux clients ayant lié leur compte
-   BBW4LIFE à Telegram (colonne AK de bbw4life-accounts).
+   BBW4LIFE à Telegram (colonne AK de curvafit-accounts).
 
    - getTelegramSubscribers() : liste { firstName, chatId } pour
      chaque compte avec un TelegramChatId non vide.
    - getNewArrivalsCursor() / advanceNewArrivalsCursor() : position
      du cycle de rotation des nouveautés (3 produits tous les
      3 jours, boucle une fois la collection épuisée), stockée
-     dans un onglet dédié "bbw4life-telegram-cursor".
+     dans un onglet dédié "curvafit-telegram-cursor".
    - sendTelegramPhoto() : envoie une photo distante (URL) avec
      légende — Telegram télécharge l'image lui-même, pas besoin
      de la rapatrier côté serveur.
@@ -18,7 +18,7 @@
 const { google } = require('googleapis');
 const { getGoogleAuthClient } = require('./google-auth');
 
-const CURSOR_SHEET = 'bbw4life-telegram-cursor';
+const CURSOR_SHEET = 'curvafit-telegram-cursor';
 const CURSOR_HEADERS = ['key', 'value'];
 
 async function getSheetsClient(env) {
@@ -27,7 +27,7 @@ async function getSheetsClient(env) {
 }
 
 function getAccountsSpreadsheetId(env) {
-  return env.SHEET_ID_BBW4LIFE_ACCOUNTS;
+  return env.SHEET_ID_CURVAFIT_ACCOUNTS;
 }
 
 async function getSettings(env) {
@@ -53,7 +53,7 @@ async function getTelegramSubscribers(env) {
   const spreadsheetId = getAccountsSpreadsheetId(env);
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: 'bbw4life-accounts!B:AL' // B=firstName ... AK=telegram_chat_id, AL=gender
+    range: 'curvafit-accounts!B:AL' // B=firstName ... AK=telegram_chat_id, AL=gender
   });
   const rows = res.data.values || [];
   // Déduplique par chatId : si le même chat Telegram apparaît sur plusieurs
@@ -185,7 +185,7 @@ async function getAccountByEmail(email, env) {
     const spreadsheetId = getAccountsSpreadsheetId(env);
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'bbw4life-accounts!B:AK' // B=firstName, C=email ... AK=telegram_chat_id
+      range: 'curvafit-accounts!B:AK' // B=firstName, C=email ... AK=telegram_chat_id
     });
     const rows = res.data.values || [];
     const row = rows.find(r => (r[1] || '').trim().toLowerCase() === email.trim().toLowerCase()); // C - B = index 1

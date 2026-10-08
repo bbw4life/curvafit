@@ -19,11 +19,11 @@ export async function onRequestGet(context) {
     const auth = await getGoogleAuthClient(env);
 
     const sheets        = google.sheets({ version: "v4", auth });
-    const spreadsheetId = env.SHEET_ID_BBW4LIFE_ANALYTICS;
+    const spreadsheetId = env.SHEET_ID_CURVAFIT_ANALYTICS;
 
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "bbw4life-analytics!A:T"
+      range: "curvafit-analytics!A:T"
     });
     const rows = res.data.values || [];
     return new Response(JSON.stringify({ success: true, rows }), {
@@ -44,7 +44,7 @@ export async function onRequestPost(context) {
     const auth = await getGoogleAuthClient(env);
 
     const sheets        = google.sheets({ version: "v4", auth });
-    const spreadsheetId = env.SHEET_ID_BBW4LIFE_ANALYTICS;
+    const spreadsheetId = env.SHEET_ID_CURVAFIT_ANALYTICS;
 
     const bodyText = await request.text();
     if (!bodyText) {
@@ -115,7 +115,7 @@ export async function onRequestPost(context) {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range:             "bbw4life-analytics!A:T",
+      range:             "curvafit-analytics!A:T",
       valueInputOption:  "RAW",
       insertDataOption:  "INSERT_ROWS",
       resource:          { values: row }

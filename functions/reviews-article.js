@@ -2,7 +2,7 @@
 const { google } = require('googleapis');
 const { getGoogleAuthClient } = require('./_lib/google-auth');
 
-const SHEET_NAME = 'bbw4life-reviews-article';
+const SHEET_NAME = 'curvafit-reviews-article';
 
 async function getSheets(env) {
   const auth = await getGoogleAuthClient(env);
@@ -101,7 +101,7 @@ export async function onRequestOptions() {
 
 export async function onRequestGet(context) {
   const { request, env } = context;
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_CUSTOMERS_REVIEWS;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_CUSTOMERS_REVIEWS;
 
   try {
     const sheets = await getSheets(env);
@@ -136,7 +136,7 @@ export async function onRequestGet(context) {
 
 export async function onRequestPost(context) {
   const { request, env } = context;
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_CUSTOMERS_REVIEWS;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_CUSTOMERS_REVIEWS;
 
   try {
     const sheets = await getSheets(env);

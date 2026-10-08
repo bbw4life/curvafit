@@ -261,10 +261,10 @@ async function sheetAppend(sheets, spreadsheetId, range, values) {
 }
 
 // ── Email Log — anti-duplicate ────────────────────────────────
-const EMAIL_LOG_SHEET = 'bbw4life-email-log';
+const EMAIL_LOG_SHEET = 'curvafit-email-log';
 
 async function loadEmailLog(sheets, env) {
-  const rows = await sheetRead(sheets, env.SHEET_ID_BBW4LIFE_ACCOUNTS, `${EMAIL_LOG_SHEET}!A:C`);
+  const rows = await sheetRead(sheets, env.SHEET_ID_CURVAFIT_ACCOUNTS, `${EMAIL_LOG_SHEET}!A:C`);
   const set  = new Set();
   rows.forEach(r => { if (r[0] && r[1]) set.add(`${r[0].toLowerCase()}||${r[1]}`); });
   console.log(`[EmailLog] ${set.size} sent records loaded`);
@@ -274,7 +274,7 @@ async function loadEmailLog(sheets, env) {
 async function markEmailSent(sheets, email, type, env) {
   await sheetAppend(
     sheets,
-    env.SHEET_ID_BBW4LIFE_ACCOUNTS,
+    env.SHEET_ID_CURVAFIT_ACCOUNTS,
     `${EMAIL_LOG_SHEET}!A:C`,
     [email.toLowerCase(), type, new Date().toISOString().slice(0, 10)]
   );
@@ -417,8 +417,8 @@ async function runTrackingChecker(sheets, settings, env) {
 
   const rows = await sheetRead(
     sheets,
-    env.SHEET_ID_BBW4LIFE_PENDING_ORDERS,
-    'bbw4life-pending-orders!A:X'
+    env.SHEET_ID_CURVAFIT_PENDING_ORDERS,
+    'curvafit-pending-orders!A:X'
   );
 
   if (rows.length <= 1) {
@@ -488,8 +488,8 @@ async function runTrackingChecker(sheets, settings, env) {
 
       try {
         await sheets.spreadsheets.values.update({
-          spreadsheetId: env.SHEET_ID_BBW4LIFE_PENDING_ORDERS,
-          range:         `bbw4life-pending-orders!S${i + 1}`,
+          spreadsheetId: env.SHEET_ID_CURVAFIT_PENDING_ORDERS,
+          range:         `curvafit-pending-orders!S${i + 1}`,
           valueInputOption: 'RAW',
           resource: { values: [[result.trackingNumber]] }
         });
@@ -560,8 +560,8 @@ async function runEmailQueueProcessor(sheets, sentLog, settings, env) {
   console.log('[Queue] Checking scheduled emails...');
   const rows = await sheetRead(
     sheets,
-    env.SHEET_ID_BBW4LIFE_ACCOUNTS,
-    'bbw4life-accounts!A:AJ'
+    env.SHEET_ID_CURVAFIT_ACCOUNTS,
+    'curvafit-accounts!A:AJ'
   );
 
   if (!rows.length) return { processed: 0 };
@@ -590,8 +590,8 @@ async function runEmailQueueProcessor(sheets, sentLog, settings, env) {
         sheets, sentLog, single, env
       );
       await sheets.spreadsheets.values.update({
-        spreadsheetId: env.SHEET_ID_BBW4LIFE_ACCOUNTS,
-        range: `bbw4life-accounts!AH${i + 1}`,
+        spreadsheetId: env.SHEET_ID_CURVAFIT_ACCOUNTS,
+        range: `curvafit-accounts!AH${i + 1}`,
         valueInputOption: 'RAW',
         resource: { values: [['yes']] }
       });
@@ -607,8 +607,8 @@ async function runEmailQueueProcessor(sheets, sentLog, settings, env) {
         sheets, sentLog, single, env
       );
       await sheets.spreadsheets.values.update({
-        spreadsheetId: env.SHEET_ID_BBW4LIFE_ACCOUNTS,
-        range: `bbw4life-accounts!AJ${i + 1}`,
+        spreadsheetId: env.SHEET_ID_CURVAFIT_ACCOUNTS,
+        range: `curvafit-accounts!AJ${i + 1}`,
         valueInputOption: 'RAW',
         resource: { values: [['yes']] }
       });
@@ -2319,8 +2319,8 @@ export async function onRequestGet(context) {
 
     const accountRows = await sheetRead(
       sheets,
-      env.SHEET_ID_BBW4LIFE_ACCOUNTS,
-      'bbw4life-accounts!A:I'
+      env.SHEET_ID_CURVAFIT_ACCOUNTS,
+      'curvafit-accounts!A:I'
     );
 
     console.log(`[Batch] ${accountRows.length} account rows`);

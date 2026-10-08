@@ -74,7 +74,7 @@ async function deleteRow(sheets, spreadsheetId, sheetId, rowIndex) {
 
 export async function onRequestGet(context) {
   const { env } = context;
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_ORDERS;
   const BASE_URL = env.BASE_URL || 'https://bbw4life.com';
   const LOGO_URL = `${BASE_URL}/public/Logo-Curvafit.png`;
   // ⚠️ FIX : url doit rester relative (pas ${BASE_URL}${...}) — c'est cette

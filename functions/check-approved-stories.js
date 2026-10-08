@@ -2,7 +2,7 @@
 // ⚠️ SCHEDULED FUNCTION — Netlify : [functions."check-approved-stories"]
 // schedule = "*/10 * * * *". Cron Trigger Cloudflare câblé séparément.
 // Cron : détecte les stories passées de "pending" à "approved" (édité à la
-// main dans la feuille bbw4life-stories, colonne P — story-share.js ne fait
+// main dans la feuille curvafit-stories, colonne P — story-share.js ne fait
 // que LIRE les stories approuvées pour l'affichage, rien ne notifiait le
 // client jusqu'ici). Ajoute une colonne R (telegram_notified_at) pour ne
 // notifier qu'une seule fois par story — n'affecte pas les colonnes A:Q déjà
@@ -11,7 +11,7 @@ const { google } = require('googleapis');
 const { notifyCustomerTelegram } = require('./_lib/telegram-broadcast');
 const { getGoogleAuthClient } = require('./_lib/google-auth');
 
-const SHEET_NAME = 'bbw4life-stories';
+const SHEET_NAME = 'curvafit-stories';
 
 async function getAuth(env) {
   return await getGoogleAuthClient(env);
@@ -23,7 +23,7 @@ export async function onRequestGet(context) {
   try {
     const auth   = await getAuth(env);
     const sheets = google.sheets({ version: 'v4', auth });
-    const spreadsheetId = env.SHEET_ID_BBW4LIFE_ACCOUNTS;
+    const spreadsheetId = env.SHEET_ID_CURVAFIT_ACCOUNTS;
 
     const res  = await sheets.spreadsheets.values.get({
       spreadsheetId,

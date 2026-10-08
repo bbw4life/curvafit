@@ -9,8 +9,8 @@ export async function onRequestPost(context) {
 
   try {
     const body = await request.json();
-    const spreadsheetId = env.SHEET_ID_BBW4LIFE_PLAN_REQUEST;
-    const SHEET_NAME = "bbw4life-product-personalized";
+    const spreadsheetId = env.SHEET_ID_CURVAFIT_PLAN_REQUEST;
+    const SHEET_NAME = "curvafit-product-personalized";
 
     async function getAuth() {
       return await getGoogleAuthClient(env);

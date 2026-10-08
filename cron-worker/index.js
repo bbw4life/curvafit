@@ -37,7 +37,7 @@ export default {
       return;
     }
 
-    const baseUrl = env.BASE_URL || "https://bbw4life.com";
+    const baseUrl = env.BASE_URL || "https://curvafit.pages.dev";
 
     const calls = endpoints.map(async (path) => {
       const url = `${baseUrl}${path}`;
@@ -58,6 +58,6 @@ export default {
   // Pas de trafic HTTP normal attendu sur ce Worker — répond simplement
   // pour confirmer qu'il est déployé et vivant si quelqu'un visite son URL.
   async fetch() {
-    return new Response("BBW4LIFE cron worker is running.", { status: 200 });
+    return new Response("CURVAFIT cron worker is running.", { status: 200 });
   },
 };

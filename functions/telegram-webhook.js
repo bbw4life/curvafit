@@ -3,7 +3,7 @@
    Reçoit chaque message entrant du bot Telegram. Si le texte
    commence par "CHAT-xxxxxx:", c'est une réponse de l'agent
    (PDG Francenel) à un client en live chat :
-     - écrit la réponse dans bbw4life-live-chat (sender=agent)
+     - écrit la réponse dans curvafit-live-chat (sender=agent)
      - passe le statut de la session à "answered" (ou "closed"
        si le message est "CLOSE")
      - envoie une push notification au visiteur (uniquement à
@@ -46,7 +46,7 @@ async function getSheetsClient(env) {
 async function findSubscriptionByDeviceId(deviceId, env) {
   if (!deviceId) return null;
   const sheets = await getSheetsClient(env);
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_ORDERS;
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
     range: 'Push_Subscriptions!A:D'

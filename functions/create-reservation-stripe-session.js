@@ -23,7 +23,7 @@ async function getReservationPrice(env) {
 async function saveToSheet(data, env) {
   const auth = await getGoogleAuthClient(env);
   const sheets        = google.sheets({ version: 'v4', auth });
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_PLAN;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_PLAN;
 
   function formatDate() {
     const d = new Date();
@@ -32,7 +32,7 @@ async function saveToSheet(data, env) {
 
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range:            'bbw4life-pending-plan!A:I',
+    range:            'curvafit-pending-plan!A:I',
     valueInputOption: 'RAW',
     insertDataOption: 'INSERT_ROWS',
     resource: {

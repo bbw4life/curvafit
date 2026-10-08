@@ -1,10 +1,10 @@
-name = "bbw4life-cron-worker"
+name = "curvafit-cron-worker"
 main = "index.js"
 compatibility_date = "2026-09-01"
 compatibility_flags = ["nodejs_compat"]
 
 # ─────────────────────────────────────────────────────────────
-# BBW4LIFE — Cron Worker
+# CURVAFIT — Cron Worker
 #
 # Cloudflare Pages Functions (le dossier functions/ à la racine du
 # projet, déployé comme Cloudflare Pages) ne supporte PAS les Cron
@@ -12,7 +12,7 @@ compatibility_flags = ["nodejs_compat"]
 # "purs". Ce Worker séparé n'a qu'un rôle : se réveiller aux mêmes
 # fréquences que les [functions.X] schedule = "..." de netlify.toml,
 # et appeler par fetch() l'endpoint HTTP correspondant déjà migré
-# dans functions/ (ex: https://bbw4life.com/retry-pending-order).
+# dans functions/ (ex: https://curvafit.pages.dev/retry-pending-order).
 #
 # Toute la LOGIQUE des tâches reste dans les Pages Functions — ce
 # Worker est un simple déclencheur, jamais une réimplémentation.
@@ -20,18 +20,12 @@ compatibility_flags = ["nodejs_compat"]
 # Déploiement : `wrangler deploy` depuis ce dossier (cron-worker/),
 # séparément du déploiement Cloudflare Pages du reste du site.
 #
-# ⚠️ BASE_URL DOIT pointer vers le projet Cloudflare Pages lui-même
-# (bbw4life-cloud.pages.dev), PAS vers bbw4life.com (qui reste le domaine
-# Netlify de production, un repository totalement séparé). Ce Worker et le
-# site Cloudflare Pages sont dans le même repo/projet — se tromper ici fait
-# déclencher les crons (panier abandonné, retry commande, etc.) contre
-# Netlify au lieu de Cloudflare, où ils n'ont aucun effet. À mettre à jour
-# vers le vrai domaine bbw4life.com UNIQUEMENT le jour où ce domaine sera
-# officiellement basculé sur Cloudflare Pages (DNS + projet Cloudflare).
+# BASE_URL cible le déploiement Pages Curvafit.
+# Le Worker appelle les endpoints Pages Functions aux heures configurées ci-dessous.
 # ─────────────────────────────────────────────────────────────
 
 [vars]
-BASE_URL = "https://bbw4life-cloud.pages.dev"
+BASE_URL = "https://curvafit.pages.dev"
 
 # Chaque entrée reproduit exactement une fréquence de netlify.toml.
 # Format cron standard 5 champs, UTC uniquement (pas de fuseau horaire

@@ -508,8 +508,8 @@ export async function onRequestGet(context) {
 
   try {
     const sheets        = await getSheets(env);
-    const spreadsheetId = env.SHEET_ID_BBW4LIFE_ACCOUNTS;
-    const SHEET         = 'bbw4life-contact-messages';
+    const spreadsheetId = env.SHEET_ID_CURVAFIT_ACCOUNTS;
+    const SHEET         = 'curvafit-contact-messages';
     const settings      = await loadSettings(env);
 
     const res  = await sheets.spreadsheets.values.get({

@@ -34,7 +34,7 @@ async function ensureProcessedTabExists(sheets, spreadsheetId) {
 // ── Écrit cart + shipping dans le sheet temporaire, identifié par orderId ──
 async function saveTempOrder(orderId, cart, shipping, env) {
   const sheets = await getSheetsClient(env);
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_ORDERS;
   const now = new Date().toISOString();
   await sheets.spreadsheets.values.append({
     spreadsheetId,
@@ -55,7 +55,7 @@ async function saveTempOrder(orderId, cart, shipping, env) {
 // ── Récupère cart + shipping par orderId, puis supprime immédiatement la ligne ──
 async function getAndDeleteTempOrder(orderId, env) {
   const sheets = await getSheetsClient(env);
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_ORDERS;
 
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
@@ -103,7 +103,7 @@ async function getAndDeleteTempOrder(orderId, env) {
 // ── Supprime la ligne Temp_Orders correspondant à un orderId, sans la retourner ──
 async function deleteTempOrderByPaymentId(orderId, env) {
   const sheets = await getSheetsClient(env);
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_ORDERS;
 
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
@@ -140,7 +140,7 @@ async function deleteTempOrderByPaymentId(orderId, env) {
 // ── Vérifie si paymentId a déjà été traité (lecture fiable, onglet dédié) ──
 async function isOrderAlreadyProcessed(paymentId, env) {
   const sheets = await getSheetsClient(env);
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_ORDERS;
   try {
     await ensureProcessedTabExists(sheets, spreadsheetId);
 
@@ -161,7 +161,7 @@ async function isOrderAlreadyProcessed(paymentId, env) {
 // ── Marque paymentId comme traité (écriture fiable, onglet dédié) ──
 async function markOrderAsProcessed(paymentId, env) {
   const sheets = await getSheetsClient(env);
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_ORDERS;
   try {
     await ensureProcessedTabExists(sheets, spreadsheetId);
 

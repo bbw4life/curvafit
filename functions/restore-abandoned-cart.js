@@ -23,7 +23,7 @@ export async function onRequestOptions() {
 
 export async function onRequestGet(context) {
   const { request, env } = context;
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_ORDERS;
 
   try {
     const url = new URL(request.url);

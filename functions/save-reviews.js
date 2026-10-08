@@ -14,8 +14,8 @@ export async function onRequestPost(context) {
     const auth = await getGoogleAuthClient(env);
     const sheets = google.sheets({ version: "v4", auth });
 
-    const reviewsSpreadsheetId  = env.SHEET_ID_BBW4LIFE_CUSTOMERS_REVIEWS;
-    const accountsSpreadsheetId = env.SHEET_ID_BBW4LIFE_ACCOUNTS;
+    const reviewsSpreadsheetId  = env.SHEET_ID_CURVAFIT_CUSTOMERS_REVIEWS;
+    const accountsSpreadsheetId = env.SHEET_ID_CURVAFIT_ACCOUNTS;
 
     function formatReviewDate() {
       const d = new Date();
@@ -37,7 +37,7 @@ export async function onRequestPost(context) {
       const values = [[fullName.trim(), email.trim(), title.trim(), rating, text.trim(), date, productId, imagesCell]];
       await sheets.spreadsheets.values.append({
         spreadsheetId: reviewsSpreadsheetId,
-        range: "bbw4life-customers-reviews!A:H",
+        range: "curvafit-customers-reviews!A:H",
         valueInputOption: "RAW",
         insertDataOption: "INSERT_ROWS",
         resource: { values }
@@ -45,7 +45,7 @@ export async function onRequestPost(context) {
 
       const accountsRes = await sheets.spreadsheets.values.get({
         spreadsheetId: accountsSpreadsheetId,
-        range: "bbw4life-accounts!A:Z"
+        range: "curvafit-accounts!A:Z"
       });
       const accountsRows = accountsRes.data.values || [];
 
@@ -59,7 +59,7 @@ export async function onRequestPost(context) {
 
         await sheets.spreadsheets.values.update({
           spreadsheetId: accountsSpreadsheetId,
-          range: `bbw4life-accounts!I${accountRowNum}`,
+          range: `curvafit-accounts!I${accountRowNum}`,
           valueInputOption: "RAW",
           resource: { values: [[newReviewsCount]] }
         });
@@ -86,7 +86,7 @@ export async function onRequestPost(context) {
       if (!productId) throw new Error("Product ID manquant");
       const res = await sheets.spreadsheets.values.get({
         spreadsheetId: reviewsSpreadsheetId,
-        range: "bbw4life-customers-reviews!A:Z"
+        range: "curvafit-customers-reviews!A:Z"
       });
       const rows = res.data.values || [];
 
@@ -112,7 +112,7 @@ export async function onRequestPost(context) {
     }
 
     // ── LIKE / DISLIKE PRODUIT ─────────────────────────────────────
-    // Même feuille que les avis (bbw4life-customers-reviews) — une ligne
+    // Même feuille que les avis (curvafit-customers-reviews) — une ligne
     // dédiée par produit (identifiée par G=productId, A=fullName vide)
     // porte le compteur cumulatif, sans toucher à la colonne I existante
     // (REVIEWSWRITTEN) :
@@ -144,7 +144,7 @@ export async function onRequestPost(context) {
 
       const res = await sheets.spreadsheets.values.get({
         spreadsheetId: reviewsSpreadsheetId,
-        range: "bbw4life-customers-reviews!A:M"
+        range: "curvafit-customers-reviews!A:M"
       });
       const rows = res.data.values || [];
 
@@ -187,7 +187,7 @@ export async function onRequestPost(context) {
         const rowNum = likeRowIndex + 1;
         await sheets.spreadsheets.values.update({
           spreadsheetId: reviewsSpreadsheetId,
-          range: `bbw4life-customers-reviews!J${rowNum}:M${rowNum}`,
+          range: `curvafit-customers-reviews!J${rowNum}:M${rowNum}`,
           valueInputOption: "RAW",
           resource: { values: [[total, likes, dislikes, JSON.stringify(voters)]] }
         });
@@ -197,7 +197,7 @@ export async function onRequestPost(context) {
         // s'applique pas ici), G=productId, J-M remplis.
         await sheets.spreadsheets.values.append({
           spreadsheetId: reviewsSpreadsheetId,
-          range: "bbw4life-customers-reviews!A:M",
+          range: "curvafit-customers-reviews!A:M",
           valueInputOption: "RAW",
           insertDataOption: "INSERT_ROWS",
           resource: { values: [["", "", "", "", "", "", productId, "", "", total, likes, dislikes, JSON.stringify(voters)]] }

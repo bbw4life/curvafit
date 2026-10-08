@@ -51,8 +51,8 @@ export async function onRequestGet(context) {
     const countedOrderIds = new Set(); // évite de compter le même payment_id 2x (multi-articles)
     try {
       const ordersRes = await sheets.spreadsheets.values.get({
-        spreadsheetId: env.SHEET_ID_BBW4LIFE_PENDING_ORDERS,
-        range: 'bbw4life-pending-orders!A:W'
+        spreadsheetId: env.SHEET_ID_CURVAFIT_PENDING_ORDERS,
+        range: 'curvafit-pending-orders!A:W'
       });
       const orderRows = (ordersRes.data.values || []).slice(1);
       orderRows.forEach(row => {
@@ -71,7 +71,7 @@ export async function onRequestGet(context) {
     let abandonedToday = 0;
     try {
       const abandonedRes = await sheets.spreadsheets.values.get({
-        spreadsheetId: env.SHEET_ID_BBW4LIFE_PENDING_ORDERS,
+        spreadsheetId: env.SHEET_ID_CURVAFIT_PENDING_ORDERS,
         range: 'Abandoned_Carts!A:J'
       });
       const abandonedRows = (abandonedRes.data.values || []).slice(1);
@@ -86,8 +86,8 @@ export async function onRequestGet(context) {
     let newClients = 0;
     try {
       const accountsRes = await sheets.spreadsheets.values.get({
-        spreadsheetId: env.SHEET_ID_BBW4LIFE_ACCOUNTS,
-        range: 'bbw4life-accounts!A:Z'
+        spreadsheetId: env.SHEET_ID_CURVAFIT_ACCOUNTS,
+        range: 'curvafit-accounts!A:Z'
       });
       const accountRows = (accountsRes.data.values || []).slice(1);
       accountRows.forEach(row => {
@@ -99,8 +99,8 @@ export async function onRequestGet(context) {
     let messagesTODAY = 0;
     try {
       const messagesRes = await sheets.spreadsheets.values.get({
-        spreadsheetId: env.SHEET_ID_BBW4LIFE_ACCOUNTS,
-        range: 'bbw4life-contact-messages!A:G'
+        spreadsheetId: env.SHEET_ID_CURVAFIT_ACCOUNTS,
+        range: 'curvafit-contact-messages!A:G'
       });
       const messageRows = (messagesRes.data.values || []).slice(1);
       messageRows.forEach(row => {
@@ -112,8 +112,8 @@ export async function onRequestGet(context) {
     let storiesToday = 0;
     try {
       const storiesRes = await sheets.spreadsheets.values.get({
-        spreadsheetId: env.SHEET_ID_BBW4LIFE_STORIES,
-        range: 'bbw4life-stories!A:Q'
+        spreadsheetId: env.SHEET_ID_CURVAFIT_STORIES,
+        range: 'curvafit-stories!A:Q'
       });
       const storyRows = (storiesRes.data.values || []).slice(1);
       storyRows.forEach(row => {
@@ -125,8 +125,8 @@ export async function onRequestGet(context) {
     let customToday = 0;
     try {
       const customRes = await sheets.spreadsheets.values.get({
-        spreadsheetId: env.SHEET_ID_BBW4LIFE_PLAN_REQUEST,
-        range: 'bbw4life-product-personalized!A:Q'
+        spreadsheetId: env.SHEET_ID_CURVAFIT_PLAN_REQUEST,
+        range: 'curvafit-product-personalized!A:Q'
       });
       const customRows = (customRes.data.values || []).slice(1);
       customRows.forEach(row => {
@@ -138,8 +138,8 @@ export async function onRequestGet(context) {
     let plansToday = 0;
     try {
       const plansRes = await sheets.spreadsheets.values.get({
-        spreadsheetId: env.SHEET_ID_BBW4LIFE_PLAN_REQUEST,
-        range: 'bbw4life-plan-request!A:K'
+        spreadsheetId: env.SHEET_ID_CURVAFIT_PLAN_REQUEST,
+        range: 'curvafit-plan-request!A:K'
       });
       const planRows = (plansRes.data.values || []).slice(1);
       planRows.forEach(row => {

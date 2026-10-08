@@ -20,7 +20,7 @@ export async function onRequestPost(context) {
         const auth = await getGoogleAuthClient(env);
 
         const sheets = google.sheets({ version: "v4", auth });
-        const spreadsheetId = env.SHEET_ID_BBW4LIFE_ACCOUNTS;
+        const spreadsheetId = env.SHEET_ID_CURVAFIT_ACCOUNTS;
 
         function formatDate() {
             const d = new Date();
@@ -39,7 +39,7 @@ export async function onRequestPost(context) {
 
         await sheets.spreadsheets.values.append({
             spreadsheetId,
-            range: "bbw4life-contact-messages!A:G",
+            range: "curvafit-contact-messages!A:G",
             valueInputOption: "RAW",
             insertDataOption: "INSERT_ROWS",
             resource: { values }

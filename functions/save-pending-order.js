@@ -49,7 +49,7 @@ export async function onRequestPost(context) {
     const auth = await getGoogleAuthClient(env);
 
     const sheets        = google.sheets({ version: 'v4', auth });
-    const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
+    const spreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_ORDERS;
     const now           = new Date().toISOString();
     const internalOrderId = `PENDING_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
 
@@ -81,7 +81,7 @@ export async function onRequestPost(context) {
       orderNumber || ''                                        // X ← numéro de commande propre envoyé au client
     ]];
 
-    const rangesToTry = ['bbw4life-pending-orders!A:X'];
+    const rangesToTry = ['curvafit-pending-orders!A:X'];
 
     let success = false;
     for (const range of rangesToTry) {

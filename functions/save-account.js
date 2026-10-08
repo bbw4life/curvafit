@@ -26,7 +26,7 @@ async function sendTelegramConfirmation(telegramChatId, text, replyMarkup, env) 
   }
 }
 
-// ── Agrandit la grille de bbw4life-accounts si elle n'a pas encore assez
+// ── Agrandit la grille de curvafit-accounts si elle n'a pas encore assez
 // de colonnes pour AL (38) — la feuille a été créée avec 37 colonnes max
 // (A:AK), donc toute écriture en AL échouait avec "Range exceeds grid
 // limits" tant que la grille elle-même n'était pas élargie. Idempotent :
@@ -39,7 +39,7 @@ async function ensureAccountsSheetHasColumn(sheets, spreadsheetId, neededColumnC
   if (accountsSheetColumnsEnsured) return;
   try {
     const meta = await sheets.spreadsheets.get({ spreadsheetId, fields: 'sheets.properties' });
-    const sheet = (meta.data.sheets || []).find(s => s.properties.title === 'bbw4life-accounts');
+    const sheet = (meta.data.sheets || []).find(s => s.properties.title === 'curvafit-accounts');
     if (!sheet) return;
     const currentCount = (sheet.properties.gridProperties && sheet.properties.gridProperties.columnCount) || 0;
     if (currentCount >= neededColumnCount) {
@@ -196,14 +196,14 @@ export async function onRequestPost(context) {
     const normalize = (str) => str ? str.normalize("NFKD").replace(/[̀-ͯ]/g, "").trim().toLowerCase() : "";
     const auth = await getGoogleAuthClient(env);
     const sheets = google.sheets({ version: "v4", auth });
-    const spreadsheetId = env.SHEET_ID_BBW4LIFE_ACCOUNTS;
+    const spreadsheetId = env.SHEET_ID_CURVAFIT_ACCOUNTS;
 
     function formatDate() {
       const d = new Date();
       return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear().toString().slice(-2)}`;
     }
 
-    const sheetRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: "bbw4life-accounts!A:AL" });
+    const sheetRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: "curvafit-accounts!A:AL" });
     let rows = sheetRes.data.values || [];
     const rowIndex = rows.findIndex(row => normalize(row[2] || "") === normalize(email));
     const rowNum = rowIndex + 1;
@@ -221,7 +221,7 @@ export async function onRequestPost(context) {
       const values = [[normalize(lastName), normalize(firstName), normalize(email), normalize(phone), passHashed, newsletter,
                        0, 0, 0, "", "", "", "", "", 0, memberSince, "[]"]];
       await sheets.spreadsheets.values.append({
-        spreadsheetId, range: "bbw4life-accounts!A:Z", valueInputOption: "RAW", insertDataOption: "INSERT_ROWS", resource: { values }
+        spreadsheetId, range: "curvafit-accounts!A:Z", valueInputOption: "RAW", insertDataOption: "INSERT_ROWS", resource: { values }
       });
 
      const newRowNum = rows.length + 1;
@@ -232,7 +232,7 @@ export async function onRequestPost(context) {
 
       await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `bbw4life-accounts!AF${newRowNum}:AJ${newRowNum}`,
+        range: `curvafit-accounts!AF${newRowNum}:AJ${newRowNum}`,
         valueInputOption: "RAW",
         resource: { values: [[
           "no",
@@ -272,7 +272,7 @@ export async function onRequestPost(context) {
 
       await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `bbw4life-accounts!AF${rowNum}`,
+        range: `curvafit-accounts!AF${rowNum}`,
         valueInputOption: "RAW",
         resource: { values: [["yes"]] }
       });
@@ -286,7 +286,7 @@ export async function onRequestPost(context) {
       const { photoBase64 } = body;
       await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `bbw4life-accounts!R${rowNum}`,
+        range: `curvafit-accounts!R${rowNum}`,
         valueInputOption: "RAW",
         resource: { values: [[photoBase64 || ""]] }
       });
@@ -296,7 +296,7 @@ export async function onRequestPost(context) {
     // ==================== UPDATE ADDRESS ====================
     if (action === 'update-address') {
       if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
-      await sheets.spreadsheets.values.update({ spreadsheetId, range: `bbw4life-accounts!J${rowNum}:N${rowNum}`, valueInputOption: "RAW",
+      await sheets.spreadsheets.values.update({ spreadsheetId, range: `curvafit-accounts!J${rowNum}:N${rowNum}`, valueInputOption: "RAW",
         resource: { values: [[line1 || "", line2 || "", city || "", state || "", zip || ""]] }
       });
       return res(200, { success: true });
@@ -462,7 +462,7 @@ export async function onRequestPost(context) {
 
       await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `bbw4life-accounts!E${targetRow}`,
+        range: `curvafit-accounts!E${targetRow}`,
         valueInputOption: "RAW",
         resource: { values: [[newHash]] }
       });
@@ -485,7 +485,7 @@ export async function onRequestPost(context) {
     // ==================== UPDATE PASSWORD ====================
     if (action === 'update-password') {
       if (rowIndex === -1) throw new Error("Utilisateur non trouvé");
-      await sheets.spreadsheets.values.update({ spreadsheetId, range: `bbw4life-accounts!E${rowNum}`, valueInputOption: "RAW",
+      await sheets.spreadsheets.values.update({ spreadsheetId, range: `curvafit-accounts!E${rowNum}`, valueInputOption: "RAW",
         resource: { values: [[hashPassword(normalize(newPassword))]] }
       });
       return res(200, { success: true });
@@ -497,12 +497,12 @@ export async function onRequestPost(context) {
       const { cartContent = null } = body;
 
       const updateData = [
-        { range: `bbw4life-accounts!O${rowNum}`, values: [[currentCartQuantity]] }
+        { range: `curvafit-accounts!O${rowNum}`, values: [[currentCartQuantity]] }
       ];
 
       if (cartContent !== null) {
         updateData.push({
-          range: `bbw4life-accounts!AC${rowNum}`,
+          range: `curvafit-accounts!AC${rowNum}`,
           values: [[JSON.stringify(cartContent)]]
         });
       }
@@ -530,9 +530,9 @@ export async function onRequestPost(context) {
         resource: {
           valueInputOption: "RAW",
           data: [
-            { range: `bbw4life-accounts!G${rowNum}`, values: [[newOrders]] },
-            { range: `bbw4life-accounts!H${rowNum}`, values: [[newSpent]] },
-            { range: `bbw4life-accounts!Q${rowNum}`, values: [[JSON.stringify(history)]] }
+            { range: `curvafit-accounts!G${rowNum}`, values: [[newOrders]] },
+            { range: `curvafit-accounts!H${rowNum}`, values: [[newSpent]] },
+            { range: `curvafit-accounts!Q${rowNum}`, values: [[JSON.stringify(history)]] }
           ]
         }
       });
@@ -587,7 +587,7 @@ export async function onRequestPost(context) {
 
       await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `bbw4life-accounts!AB${rowNum}`,
+        range: `curvafit-accounts!AB${rowNum}`,
         valueInputOption: "RAW",
         resource: { values: [[birthday]] }
       });
@@ -613,7 +613,7 @@ export async function onRequestPost(context) {
 
         await sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `bbw4life-accounts!F${rowNum}`,
+          range: `curvafit-accounts!F${rowNum}`,
           valueInputOption: "RAW",
           resource: { values: [["Yes"]] }
         });
@@ -621,7 +621,7 @@ export async function onRequestPost(context) {
         if (firstName || lastName) {
           await sheets.spreadsheets.values.update({
             spreadsheetId,
-            range: `bbw4life-accounts!A${rowNum}:B${rowNum}`,
+            range: `curvafit-accounts!A${rowNum}:B${rowNum}`,
             valueInputOption: "RAW",
             resource: { values: [[normalize(lastName) || "", normalize(firstName) || ""]] }
           });
@@ -630,7 +630,7 @@ export async function onRequestPost(context) {
         if (birthday) {
           await sheets.spreadsheets.values.update({
             spreadsheetId,
-            range: `bbw4life-accounts!AB${rowNum}`,
+            range: `curvafit-accounts!AB${rowNum}`,
             valueInputOption: "RAW",
             resource: { values: [[birthday]] }
           });
@@ -651,7 +651,7 @@ export async function onRequestPost(context) {
 
         await sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: "bbw4life-accounts!A:Z",
+          range: "curvafit-accounts!A:Z",
           valueInputOption: "RAW",
           insertDataOption: "INSERT_ROWS",
           resource: { values: [rowData] }
@@ -661,7 +661,7 @@ export async function onRequestPost(context) {
           const newRowNum = rows.length + 1;
           await sheets.spreadsheets.values.update({
             spreadsheetId,
-            range: `bbw4life-accounts!AB${newRowNum}`,
+            range: `curvafit-accounts!AB${newRowNum}`,
             valueInputOption: "RAW",
             resource: { values: [[birthday]] }
           });
@@ -692,7 +692,7 @@ export async function onRequestPost(context) {
 
       await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `bbw4life-accounts!AK${rowNum}`,
+        range: `curvafit-accounts!AK${rowNum}`,
         valueInputOption: "RAW",
         resource: { values: [[String(telegramChatId)]] }
       });
@@ -733,7 +733,7 @@ export async function onRequestPost(context) {
       await ensureAccountsSheetHasColumn(sheets, spreadsheetId, 38); // AL = 38e colonne
       await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `bbw4life-accounts!AL${genderRowNum}`,
+        range: `curvafit-accounts!AL${genderRowNum}`,
         valueInputOption: "RAW",
         resource: { values: [[gender]] }
       });
@@ -761,7 +761,7 @@ export async function onRequestPost(context) {
         // volontairement redonné son email pour se relier à Telegram).
         await sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `bbw4life-accounts!AK${rowNum}`,
+          range: `curvafit-accounts!AK${rowNum}`,
           valueInputOption: "RAW",
           resource: { values: [[String(telegramChatId)]] }
         });
@@ -781,7 +781,7 @@ export async function onRequestPost(context) {
       const values = [[normalize(lastName), normalize(firstName), normalize(email), normalize(phone), passHashed, "Yes",
                        0, 0, 0, "", "", "", "", "", 0, memberSince, "[]"]];
       await sheets.spreadsheets.values.append({
-        spreadsheetId, range: "bbw4life-accounts!A:Z", valueInputOption: "RAW", insertDataOption: "INSERT_ROWS", resource: { values }
+        spreadsheetId, range: "curvafit-accounts!A:Z", valueInputOption: "RAW", insertDataOption: "INSERT_ROWS", resource: { values }
       });
 
       const newRowNum = rows.length + 1;
@@ -789,7 +789,7 @@ export async function onRequestPost(context) {
 
       await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `bbw4life-accounts!AF${newRowNum}:AK${newRowNum}`,
+        range: `curvafit-accounts!AF${newRowNum}:AK${newRowNum}`,
         valueInputOption: "RAW",
         resource: { values: [[
           "yes",  // Email confirmé d'office — le client a déjà prouvé sa présence via Telegram
@@ -852,7 +852,7 @@ export async function onRequestPost(context) {
   // S=Username, T=Clicks, U=Earnings, V=Orders, W=OrderValue, X=WithdrawStatus, Y=CreatedAt
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `bbw4life-accounts!S${rowNum}:Y${rowNum}`,
+    range: `curvafit-accounts!S${rowNum}:Y${rowNum}`,
     valueInputOption: 'RAW',
     resource: { values: [[
       newAff.username,
@@ -925,7 +925,7 @@ if (action === 'aff-track-click') {
 
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `bbw4life-accounts!T${i + 1}`,
+      range: `curvafit-accounts!T${i + 1}`,
       valueInputOption: 'RAW',
       resource: { values: [[newClicks]] }
     });
@@ -951,7 +951,7 @@ if (action === 'aff-record-order') {
 
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `bbw4life-accounts!U${i + 1}:W${i + 1}`,
+      range: `curvafit-accounts!U${i + 1}:W${i + 1}`,
       valueInputOption: 'RAW',
       resource: { values: [[newMoney, newOrders, newOrderVal]] }
     });
@@ -968,7 +968,7 @@ if (action === 'aff-withdraw-request') {
   // X=WithdrawStatus(23), Z=PaypalName(25), AA=PaypalEmail(26)
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `bbw4life-accounts!X${rowNum}:AA${rowNum}`,
+    range: `curvafit-accounts!X${rowNum}:AA${rowNum}`,
     valueInputOption: 'RAW',
     resource: { values: [['pending', '', paypalName, paypalEmail]] }
   });
@@ -988,7 +988,7 @@ if (action === 'aff-approve-withdraw') {
   // X=WithdrawStatus(23)
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `bbw4life-accounts!X${targetRowNum}`,
+    range: `curvafit-accounts!X${targetRowNum}`,
     valueInputOption: 'RAW',
     resource: { values: [['approved']] }
   });
@@ -1002,7 +1002,7 @@ if (action === 'aff-mark-promo-used') {
   // Colonne AB (index 27) — PromoCodeUsed
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `bbw4life-accounts!AB${rowNum}`,
+    range: `curvafit-accounts!AB${rowNum}`,
     valueInputOption: 'RAW',
     resource: { values: [['yes']] }
   });
@@ -1157,7 +1157,7 @@ if (action === 'aff-update-click-reward') {
   // AD (index 29) = ClickRewardThreshold, AE (index 30) = ClickRewardEarned
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `bbw4life-accounts!AD${rowNum}:AE${rowNum}`,
+    range: `curvafit-accounts!AD${rowNum}:AE${rowNum}`,
     valueInputOption: 'RAW',
     resource: { values: [[clicksPerReward, clickRewardEarned]] }
   });
@@ -1170,7 +1170,7 @@ if (action === 'aff-update-click-reward') {
     if (action === 'get-abandoned-carts') {
       if (!email) throw new Error("Email required");
 
-      const abandonedSpreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
+      const abandonedSpreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_ORDERS;
       const abandonedRes = await sheets.spreadsheets.values.get({
         spreadsheetId: abandonedSpreadsheetId,
         range: "Abandoned_Carts!A:J"

@@ -3,7 +3,7 @@
    Cloudflare Pages Function : /validate-promo-code
 
    Le solde utilisable par le code affilié EST son solde d'affilié réel
-   (bbw4life-accounts colonne U, "Earnings" — accumulé par les clics
+   (curvafit-accounts colonne U, "Earnings" — accumulé par les clics
    payés + le % de commission sur les commandes de ses filleuls, même
    valeur que celle affichée sur son dashboard et utilisée pour le
    retrait PayPal). Ce n'est PAS un solde séparé/forfaitaire :
@@ -21,7 +21,7 @@
 
    La feuille "PromoCodes" ne sert plus qu'à retrouver le USERNAME
    associé à un code (code → username), pas à stocker un solde — le
-   solde vient toujours de bbw4life-accounts!U pour ce username. ──
+   solde vient toujours de curvafit-accounts!U pour ce username. ──
 ================================================================ */
 const { google } = require('googleapis');
 const { getGoogleAuthClient } = require('./_lib/google-auth');
@@ -90,14 +90,14 @@ async function registerCode(sheets, spreadsheetId, code, username) {
   });
 }
 
-// ── Retrouve le solde réel de l'affilié (bbw4life-accounts!U, Earnings)
+// ── Retrouve le solde réel de l'affilié (curvafit-accounts!U, Earnings)
 //    à partir de son username — même colonne que aff-get-stats/
 //    aff-withdraw-request dans save-account.js (ne pas diverger). ──
 async function getAccountBalanceForUsername(sheets, accountsSpreadsheetId, username) {
   if (!username) return { balance: 0, rowNum: -1 };
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: accountsSpreadsheetId,
-    range: 'bbw4life-accounts!A:Y'
+    range: 'curvafit-accounts!A:Y'
   });
   const rows = res.data.values || [];
   const target = username.trim().toLowerCase();
@@ -112,7 +112,7 @@ async function getAccountBalanceForUsername(sheets, accountsSpreadsheetId, usern
 
 // ── Lecture seule : le code est-il utilisable, et avec quel solde ?
 //    Ne modifie RIEN dans le sheet — appelé au clic "Apply" au checkout,
-//    avant tout paiement. Le solde vient de bbw4life-accounts!U. ──
+//    avant tout paiement. Le solde vient de curvafit-accounts!U. ──
 async function validateCode(sheets, promoSpreadsheetId, accountsSpreadsheetId, code) {
   await getOrCreatePromoSheet(sheets, promoSpreadsheetId);
 
@@ -135,7 +135,7 @@ async function validateCode(sheets, promoSpreadsheetId, accountsSpreadsheetId, c
 //    seule fois, uniquement après confirmation du paiement
 //    (verify-payment.js). amountUsed = min(sous-total commande, solde
 //    au moment de l'appel), déjà calculé côté serveur par _lib/pricing.js
-//    (source unique de vérité des prix). Écrit dans bbw4life-accounts!U,
+//    (source unique de vérité des prix). Écrit dans curvafit-accounts!U,
 //    la même colonne que le retrait PayPal / aff-get-stats. ──
 async function consumeCode(sheets, promoSpreadsheetId, accountsSpreadsheetId, code, amountUsed) {
   await getOrCreatePromoSheet(sheets, promoSpreadsheetId);
@@ -156,7 +156,7 @@ async function consumeCode(sheets, promoSpreadsheetId, accountsSpreadsheetId, co
 
   await sheets.spreadsheets.values.update({
     spreadsheetId: accountsSpreadsheetId,
-    range: `bbw4life-accounts!U${rowNum}`,
+    range: `curvafit-accounts!U${rowNum}`,
     valueInputOption: 'RAW',
     resource: { values: [[newBalance]] }
   });
@@ -175,9 +175,9 @@ export async function onRequestPost(context) {
     }
 
     const { action, code, username, amountUsed } = JSON.parse(bodyText);
-    // PromoCodes (code → username) et bbw4life-accounts (le vrai solde,
+    // PromoCodes (code → username) et curvafit-accounts (le vrai solde,
     // colonne U) vivent dans le même classeur Google Sheets.
-    const spreadsheetId = env.SHEET_ID_BBW4LIFE_ACCOUNTS;
+    const spreadsheetId = env.SHEET_ID_CURVAFIT_ACCOUNTS;
     const sheets = await getSheets(env);
 
     if (action === 'register') {

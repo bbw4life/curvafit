@@ -112,7 +112,7 @@ async function deleteTempOrderRow(sheets, spreadsheetId, rowIndex) {
 
 export async function onRequestGet(context) {
   const { env } = context;
-  const spreadsheetId = env.SHEET_ID_BBW4LIFE_PENDING_ORDERS;
+  const spreadsheetId = env.SHEET_ID_CURVAFIT_PENDING_ORDERS;
   console.log('[ABANDONED CART] 🚀 Démarrage - ' + new Date().toISOString());
   try {
     const sheets = await getSheetsClient(env);

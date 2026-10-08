@@ -3,7 +3,7 @@ const { notifyTelegram } = require('./_lib/notify-telegram');
 const { notifyStoryReceived } = require('./_lib/notify-email');
 const { getGoogleAuthClient } = require('./_lib/google-auth');
 
-const SHEET_NAME = 'bbw4life-stories';
+const SHEET_NAME = 'curvafit-stories';
 
 async function getAuth(env) {
   return await getGoogleAuthClient(env);
@@ -50,7 +50,7 @@ async function saveStory(body, env) {
   ]];
 
   await sheets.spreadsheets.values.append({
-    spreadsheetId: env.SHEET_ID_BBW4LIFE_ACCOUNTS,
+    spreadsheetId: env.SHEET_ID_CURVAFIT_ACCOUNTS,
     range:           `${SHEET_NAME}!A:Q`,
     valueInputOption:'RAW',
     insertDataOption:'INSERT_ROWS',
@@ -78,7 +78,7 @@ async function fetchStories(env) {
   const sheets = google.sheets({ version: 'v4', auth });
 
   const res = await sheets.spreadsheets.values.get({
-    spreadsheetId: env.SHEET_ID_BBW4LIFE_ACCOUNTS,
+    spreadsheetId: env.SHEET_ID_CURVAFIT_ACCOUNTS,
     range:         `${SHEET_NAME}!A:Q`
   });
 

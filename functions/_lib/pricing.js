@@ -23,7 +23,7 @@ async function getAllProductsData(env) {
 }
 
 // ── Codes affiliés — le solde utilisable EST le solde d'affilié réel
-//    (bbw4life-accounts!U, "Earnings" — clics payés + % commission sur
+//    (curvafit-accounts!U, "Earnings" — clics payés + % commission sur
 //    commandes des filleuls, même valeur que le dashboard affilié et le
 //    retrait PayPal), pas un solde séparé. La feuille "PromoCodes" ne
 //    sert plus qu'à retrouver le username associé au code (voir
@@ -34,7 +34,7 @@ async function getAffiliatePromoBalance(code, env) {
   try {
     const auth = await getGoogleAuthClient(env);
     const sheets = google.sheets({ version: 'v4', auth });
-    const spreadsheetId = env.SHEET_ID_BBW4LIFE_ACCOUNTS;
+    const spreadsheetId = env.SHEET_ID_CURVAFIT_ACCOUNTS;
 
     const promoRes = await sheets.spreadsheets.values.get({
       spreadsheetId,
@@ -52,7 +52,7 @@ async function getAffiliatePromoBalance(code, env) {
 
     const accountsRes = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'bbw4life-accounts!A:Y'
+      range: 'curvafit-accounts!A:Y'
     });
     const accountRows = accountsRes.data.values || [];
     const targetUsername = username.trim().toLowerCase();

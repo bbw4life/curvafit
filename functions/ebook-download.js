@@ -8,7 +8,7 @@ const {
   verifyEbookAccessToken
 } = require('./_lib/ebook-downloads');
 
-const SHEET_TAB = 'bbw4life-pending-orders';
+const SHEET_TAB = 'curvafit-pending-orders';
 const DOWNLOAD_STATUS_COLUMN = 'Y';
 
 function json(status, data) {
@@ -32,11 +32,11 @@ function findAuthorizedEbook(tokenData, variantId) {
 }
 
 async function getOrderRows(env, paymentId) {
-  if (!env.SHEET_ID_BBW4LIFE_PENDING_ORDERS) throw new Error('Order sheet is not configured');
+  if (!env.SHEET_ID_CURVAFIT_PENDING_ORDERS) throw new Error('Order sheet is not configured');
   const auth = await getGoogleAuthClient(env);
   const sheets = google.sheets({ version: 'v4', auth });
   const result = await sheets.spreadsheets.values.get({
-    spreadsheetId: env.SHEET_ID_BBW4LIFE_PENDING_ORDERS,
+    spreadsheetId: env.SHEET_ID_CURVAFIT_PENDING_ORDERS,
     range: `'${SHEET_TAB}'!A:Y`
   });
   const rows = result.data.values || [];
@@ -45,7 +45,7 @@ async function getOrderRows(env, paymentId) {
   const hasHeaderRow = Boolean(firstCell && !firstCell.startsWith('PENDING_'));
   if (hasHeaderRow && !firstRow[24]) {
     await sheets.spreadsheets.values.update({
-      spreadsheetId: env.SHEET_ID_BBW4LIFE_PENDING_ORDERS,
+      spreadsheetId: env.SHEET_ID_CURVAFIT_PENDING_ORDERS,
       range: `'${SHEET_TAB}'!${DOWNLOAD_STATUS_COLUMN}1`,
       valueInputOption: 'RAW',
       resource: { values: [['ebook_download_status']] }
@@ -54,7 +54,7 @@ async function getOrderRows(env, paymentId) {
   const matches = rows
     .map((row, index) => ({ row, rowNumber: index + 1 }))
     .filter(({ row }) => String(row[2] || '') === String(paymentId));
-  return { sheets, matches, spreadsheetId: env.SHEET_ID_BBW4LIFE_PENDING_ORDERS };
+  return { sheets, matches, spreadsheetId: env.SHEET_ID_CURVAFIT_PENDING_ORDERS };
 }
 
 function rowsForVariant(matches, variantId) {
