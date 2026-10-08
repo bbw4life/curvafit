@@ -1,6 +1,7 @@
 const Stripe = require('stripe');
 const { saveTempOrder } = require('./_lib/temp-orders-store');
 const { getAllProductsData, computeServerTotal } = require('./_lib/pricing');
+const { getSiteBaseUrl } = require('./_lib/site-url');
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -104,13 +105,14 @@ export async function onRequestPost(context) {
       discounts.push({ coupon: coupon.id });
     }
 
+    const siteBaseUrl = getSiteBaseUrl(request, env);
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
       ...(discounts.length ? { discounts } : {}),
-      success_url: `${env.BASE_URL}/thankyou.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url:  `${env.BASE_URL}/index.html`,
+      success_url: `${siteBaseUrl}/thankyou.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url:  `${siteBaseUrl}/index.html`,
     });
 
     // ── Le code promo affilié appliqué (et son montant, déjà calculé côté

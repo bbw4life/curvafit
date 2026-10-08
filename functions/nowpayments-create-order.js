@@ -1,5 +1,6 @@
 const { saveTempOrder } = require('./_lib/temp-orders-store');
 const { getAllProductsData, computeServerTotal } = require('./_lib/pricing');
+const { getSiteBaseUrl } = require('./_lib/site-url');
 
 const BASE_URL_NOW = 'https://api.nowpayments.io';
 
@@ -70,11 +71,11 @@ export async function onRequestPost(context) {
     const cart = sanitizedCart;
     const totalAmount = total;
 
-    const BASE_SITE  = env.BASE_URL || 'https://bbw4lifee.netlify.app';
+    const BASE_SITE  = getSiteBaseUrl(request, env);
     const orderId    = `BBW-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
     const orderTitle = cart.length === 1
       ? cart[0].title.substring(0, 100)
-      : `BBW4LIFE — ${cart.length} articles`;
+      : `Curvafit — ${cart.length} items`;
 
     // ── Le code promo affilié appliqué (et son montant, déjà calculé côté
     //    serveur ci-dessus) voyage avec shipping jusqu'à verify-payment.js,
