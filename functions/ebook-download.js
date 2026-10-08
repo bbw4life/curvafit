@@ -137,19 +137,20 @@ async function handlePost({ request, env }) {
 
     if (action === 'availability') {
       const { matches } = await getOrderRows(env, tokenData.paymentId);
-      const ebooks = tokenData.ebooks.map(item => {
+      const ebooks = await Promise.all(tokenData.ebooks.map(async item => {
         const download = getEbookDownload(item.productId, item.language);
         const orderRows = rowsForVariant(matches, item.variantId);
         const alreadyDownloaded = orderRows.some(({ row }) => String(row[24] || '').trim().toLowerCase() === 'success');
+        const objectExists = Boolean(download?.key && env.EBOOKS_BUCKET && await env.EBOOKS_BUCKET.head(download.key));
         return {
           productId: item.productId,
           variantId: item.variantId,
           language: item.language,
           title: item.title,
-          available: Boolean(download && orderRows.length && !alreadyDownloaded),
-          configured: Boolean(download)
+          available: Boolean(download && objectExists && orderRows.length && !alreadyDownloaded),
+          configured: Boolean(download && env.EBOOKS_BUCKET)
         };
-      });
+      }));
       return json(200, { success: true, expiresAt: tokenData.expiresAt, ebooks });
     }
 
@@ -176,18 +177,21 @@ async function handlePost({ request, env }) {
     }
 
     const download = getEbookDownload(item.productId, item.language);
-    if (!download) return json(503, { success: false, error: 'The download link has not been configured yet.' });
-
-    const upstream = await fetch(download.url, { redirect: 'follow' });
-    if (!upstream.ok || !upstream.body) {
-      return json(502, { success: false, error: 'The ebook file could not be retrieved. Please try again.' });
+    if (!download || !env.EBOOKS_BUCKET) {
+      return json(503, { success: false, error: 'Ebook storage is not configured yet.' });
     }
 
-    return new Response(upstream.body, {
+    const ebookFile = await env.EBOOKS_BUCKET.get(download.key);
+    if (!ebookFile || !ebookFile.body) {
+      return json(404, { success: false, error: 'The ebook file is not available yet. Please try again later.' });
+    }
+
+    return new Response(ebookFile.body, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${safeFileName(item.title, item.language)}"`,
+        'Content-Length': String(ebookFile.size),
         'Cache-Control': 'no-store, private',
         'X-Content-Type-Options': 'nosniff'
       }

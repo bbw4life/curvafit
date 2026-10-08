@@ -1,29 +1,28 @@
-// Liens privés des ebooks Curvafit.
-// Renseigner les URL ici : ce module est utilisé côté serveur, jamais chargé
-// directement par les pages du site.
+// Private R2 object keys for Curvafit ebooks.
+// This module is used server-side and is never loaded by public pages.
 const crypto = require('crypto');
 const DOWNLOAD_TOKEN_TTL_MS = 5 * 60 * 1000;
 
 const EBOOK_DOWNLOADS = Object.freeze({
   'Pdg-Francenel-product1': Object.freeze({
-    en: '', // Gentle Walking — English
-    fr: '', // Marche Douce — Français
-    es: ''  // Caminata Suave — Español
+    en: 'gentle-walking/en.pdf',
+    fr: 'gentle-walking/fr.pdf',
+    es: 'gentle-walking/es.pdf'
   }),
   'Pdg-Francenel-product2': Object.freeze({
-    en: '', // Simple Meal Planner — English
-    fr: '', // Planificateur de repas simple — Français
-    es: ''  // Planificador de Comidas Simple — Español
+    en: 'simple-meal-planner/en.pdf',
+    fr: 'simple-meal-planner/fr.pdf',
+    es: 'simple-meal-planner/es.pdf'
   }),
   'Pdg-Francenel-product3': Object.freeze({
-    en: '', // Move at Home — English
-    fr: '', // Bouger à la maison — Français
-    es: ''  // Muévete en casa — Español
+    en: 'move-at-home/en.pdf',
+    fr: 'move-at-home/fr.pdf',
+    es: 'move-at-home/es.pdf'
   }),
   'Pdg-Francenel-product15': Object.freeze({
-    en: '', // Back on Track — English
-    fr: '', // Reprendre le Cap — Français
-    es: ''  // Retoma el Rumbo — Español
+    en: 'back-on-track/en.pdf',
+    fr: 'back-on-track/fr.pdf',
+    es: 'back-on-track/es.pdf'
   })
 });
 
@@ -61,15 +60,15 @@ function normalizeLanguage(language) {
 }
 
 function getEbookDownload(productId, language = 'en') {
-  const productLinks = EBOOK_DOWNLOADS[String(productId || '').trim()];
+  const productFiles = EBOOK_DOWNLOADS[String(productId || '').trim()];
   const lang = normalizeLanguage(language);
 
-  if (!productLinks || !lang || !productLinks[lang]) return null;
+  if (!productFiles || !lang || !productFiles[lang]) return null;
 
   return {
     productId: String(productId).trim(),
     language: lang,
-    url: productLinks[lang]
+    key: productFiles[lang]
   };
 }
 
@@ -85,7 +84,7 @@ function getEbookSelection(item = {}) {
     productId,
     language,
     variantId,
-    url: EBOOK_DOWNLOADS[productId][language]
+    key: EBOOK_DOWNLOADS[productId][language]
   };
 }
 
@@ -96,7 +95,7 @@ function getEbookDownloadsForOrder(items = []) {
 
   for (const item of Array.isArray(items) ? items : []) {
     const download = getEbookSelection(item);
-    if (!download || !download.url) continue;
+    if (!download || !download.key) continue;
 
     const key = `${download.productId}:${download.language}`;
     if (!downloads.has(key)) downloads.set(key, download);
