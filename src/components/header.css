@@ -5263,3 +5263,59 @@ body:not(.home-page) #bc-nav.bc-nav--scrolled .bc-item.bc-active a {
   background: none !important;
   -webkit-text-fill-color: #513553 !important;
 }
+
+/* Mobile inner-page header controls: white icons over the Curvafit header.
+   The search trigger here sits outside the expanding search bar. */
+@media (max-width: 767px) {
+  body:not(.home-page) .bbw-header__right .bbw-icon-btn {
+    color: #fff !important;
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.38) !important;
+    box-shadow: none !important;
+  }
+  body:not(.home-page) .bbw-header__right .bbw-icon-btn > svg {
+    color: #fff !important;
+    stroke: currentColor !important;
+  }
+  body:not(.home-page) .bbw-header__right .bbw-icon-btn:hover,
+  body:not(.home-page) .bbw-header__right .bbw-icon-btn:focus-visible {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.7) !important;
+  }
+  body:not(.home-page) .bbw-search__icon {
+    color: #fff !important;
+    background: transparent !important;
+  }
+  body:not(.home-page) .bbw-search__icon > svg {
+    stroke: currentColor !important;
+  }
+}
+
+/* Keep homepage mobile header action icons white as well. The search trigger
+   is outside the search field; controls inside the field keep their own style. */
+@media (max-width: 767px) {
+  body.home-page .bbw-header__right .bbw-icon-btn {
+    color: #fff !important;
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.42) !important;
+    box-shadow: none !important;
+  }
+  body.home-page .bbw-header__right .bbw-icon-btn > svg {
+    color: #fff !important;
+    stroke: currentColor !important;
+  }
+  body.home-page .bbw-header__right .bbw-icon-btn:hover,
+  body.home-page .bbw-header__right .bbw-icon-btn:focus-visible {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.72) !important;
+  }
+  body.home-page .bbw-search__icon {
+    color: #fff !important;
+    background: transparent !important;
+  }
+  body.home-page .bbw-search__icon > svg {
+    stroke: currentColor !important;
+  }
+}
