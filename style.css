@@ -3119,7 +3119,7 @@ body {
   font-size: clamp(20px, 5.5vw, 40px);
   font-weight: 900;
   letter-spacing: 0.12em;
-  color: rgba(80, 60, 60, 0.32);
+  color: rgba(59, 27, 125, 0.42);
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
@@ -7605,15 +7605,86 @@ body.sr-page .bbw-search-dropdown {
    de /blog/blog.css pour un rendu visuel identique à la page blog)
 ══════════════════════════════════════════════════════════════ */
 .comm-blog-section {
-  background: #fff;
-  padding: 44px 10px 0;
+  --blog-rose: #f3ecfb;
+  --blog-plum: #55205f;
+  --blog-plum-deep: #381536;
+  --blog-gold: #e84387;
+  --blog-gold-light: #f08ab4;
+  --blog-rose-pale: #f3ecfb;
+  --blog-slate: #2b1b38;
+  --blog-mist: #756274;
+  --blog-border: rgba(85,32,95,0.14);
+  --blog-shadow-soft: 0 10px 30px rgba(45,22,83,0.08);
+  --blog-shadow-lift: 0 22px 48px rgba(45,22,83,0.16);
+  --blog-radius-md: 20px;
+  --blog-transition: all 0.28s ease;
+  --blog-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: linear-gradient(145deg, #faf6fe 0%, #fff 48%, #f6effa 100%);
+  padding: 10px 10px 0;
   position: relative;
   overflow: hidden;
 }
 
-.comm-blog-section .bbw-wave-sep--reviews-out { margin-top: 50px; }
+.comm-blog-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 42% 50% at 8% 18%, rgba(232,67,135,0.07), transparent 72%),
+              radial-gradient(ellipse 38% 48% at 92% 78%, rgba(85,32,95,0.055), transparent 74%);
+  pointer-events: none;
+}
 
-.comm-blog-header { margin-bottom: 32px; }
+.comm-blog-section > .container {
+  position: relative;
+  z-index: 1;
+}
+
+.comm-blog-wave {
+  width: calc(100% + 20px);
+  height: 38px;
+  margin: 0 -10px;
+  overflow: hidden;
+  background: linear-gradient(90deg, #f8f1fa, #fff 50%, #f6effa);
+  line-height: 0;
+}
+
+.comm-blog-wave svg { display: block; width: 100%; height: 100%; }
+.comm-blog-wave__base { fill: url(#comm-blog-wave-fill); }
+.comm-blog-wave__highlight { fill: rgba(255,255,255,0.42); }
+.comm-blog-wave__edge {
+  fill: none;
+  stroke: rgba(232,67,135,0.28);
+  stroke-width: 1.5;
+}
+
+.comm-blog-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.comm-blog-header .section-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 13px;
+  border: 1px solid rgba(232,67,135,0.2);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.78);
+  color: #bd3478;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.comm-blog-header h2 {
+  margin: 14px 0 0;
+  color: #321b45;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(1.9rem, 3.2vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
 
 /* Description tronquée à 3 lignes avec "…" — seulement dans cette section
    home (comm-blog-scroller), la vraie page /blog garde l'excerpt complet. */
@@ -7633,7 +7704,34 @@ body.sr-page .bbw-search-dropdown {
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 22px;
+}
+
+.comm-blog-scroller .blog-card {
+  border: 1px solid rgba(85,32,95,0.12);
+  box-shadow: 0 12px 34px rgba(45,22,83,0.09);
+}
+
+.comm-blog-scroller .blog-card-img-wrap {
+  aspect-ratio: 4 / 3;
+}
+
+.comm-blog-scroller .blog-card-body {
+  padding: 18px 18px 17px;
+}
+
+.comm-blog-scroller .blog-card-body h3 {
+  font-size: 1.02rem;
+  line-height: 1.4;
+}
+
+.comm-blog-scroller .blog-card-body .card-excerpt {
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.comm-blog-scroller .blog-card-meta {
+  margin-top: auto;
 }
 
 .comm-blog-cta {
@@ -7648,16 +7746,16 @@ body.sr-page .bbw-search-dropdown {
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--bbw-gold, #c9963e);
-  background: #15110E;
+  color: #fff;
+  background: linear-gradient(120deg, #55205f, #8a2e75 54%, #e84387);
   background-size: 200% auto;
-  border: 1px solid var(--bbw-gold, #c9963e);
+  border: 1px solid rgba(255,255,255,0.55);
   border-radius: 100px;
   padding: 15px 32px;
   cursor: pointer;
   text-decoration: none;
   transition: background-position 0.45s ease, transform 0.25s ease, box-shadow 0.30s ease;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.08) inset;
+  box-shadow: 0 8px 24px rgba(85,32,95,0.22), 0 1px 0 rgba(255,255,255,0.18) inset;
   position: relative;
   overflow: hidden;
 }
@@ -7673,8 +7771,8 @@ body.sr-page .bbw-search-dropdown {
 .comm-blog-cta-btn:hover {
   background-position: right center;
   transform: translateY(-3px);
-  box-shadow: 0 12px 36px rgba(0,0,0,0.48);
-  color: var(--bbw-gold-light, #e8bc6a);
+  box-shadow: 0 14px 34px rgba(85,32,95,0.30);
+  color: #fff;
 }
 .comm-blog-cta-btn:active {
   transform: scale(0.97);
@@ -7689,8 +7787,8 @@ body.sr-page .bbw-search-dropdown {
 }
 
 @media (max-width: 600px) {
-  .comm-blog-section { padding: 30px 0 0; }
-  .comm-blog-section .bbw-wave-sep--reviews-out { margin-top: 36px; }
+  .comm-blog-section { padding: 10px 0 0; }
+  .comm-blog-wave { width: 100%; height: 28px; margin: 0; }
 
   /* Mobile : rangée horizontale scrollable, ~1.5 carte visible,
      barre de scroll masquée (le geste swipe reste actif) */
@@ -12996,13 +13094,13 @@ html:not(.affiliate-program-enabled) #affiliation-section {
 
 /* Curvafit luxury bundle deal — home page */
 body.home-page #bundle-deal.bundle-deal-section {
-  padding: clamp(58px, 7vw, 92px) 22px !important;
+  padding: clamp(28px, 3.5vw, 46px) 22px 0 !important;
   padding-bottom: 0 !important;
   background:
-    radial-gradient(ellipse at 8% 12%, rgba(214, 69, 143, 0.09), transparent 34%),
-    radial-gradient(ellipse at 94% 85%, rgba(123, 79, 184, 0.10), transparent 36%),
-    linear-gradient(145deg, #fff 0%, #faf6fe 52%, #f3ecfb 100%) !important;
-  border-top: 1px solid rgba(93, 60, 144, 0.09);
+    radial-gradient(ellipse at 8% 12%, rgba(232, 67, 135, 0.07), transparent 34%),
+    radial-gradient(ellipse at 94% 85%, rgba(123, 79, 184, 0.07), transparent 36%),
+    linear-gradient(145deg, #fff 0%, #fcf8fd 52%, #f6effa 100%) !important;
+  border-top: 1px solid rgba(85, 32, 95, 0.08);
 }
 body.home-page #bundle-deal .container {
   width: min(1160px, 100%) !important;
@@ -13096,67 +13194,68 @@ body.home-page #bundle-deal .bd-summary {
   gap: 20px !important;
   padding: clamp(24px, 3vw, 34px) !important;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(85, 32, 95, 0.14) !important;
   border-radius: 20px !important;
   background:
-    radial-gradient(ellipse at 100% 0%, rgba(232, 67, 135, 0.26), transparent 42%),
-    linear-gradient(145deg, #2e0f6b 0%, #3b1b7d 58%, #503078 100%) !important;
-  box-shadow: 0 20px 48px rgba(46, 15, 107, 0.18) !important;
+    radial-gradient(ellipse at 100% 0%, rgba(232, 67, 135, 0.09), transparent 42%),
+    linear-gradient(145deg, #fff 0%, #fcf8fd 58%, #f5edf9 100%) !important;
+  box-shadow: 0 18px 44px rgba(46, 15, 107, 0.10) !important;
 }
 body.home-page #bundle-deal .bd-summary::before {
   height: 2px !important;
-  background: linear-gradient(90deg, #f8c8e2, #d6458f, #b79ae0) !important;
+  background: linear-gradient(90deg, #f8c8e2, #e84387, #b79ae0) !important;
 }
 body.home-page #bundle-deal .bd-price-box {
   gap: 9px !important;
   padding-top: 16px !important;
-  border-color: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(85, 32, 95, 0.14) !important;
 }
 body.home-page #bundle-deal .bd-original,
 body.home-page #bundle-deal .bd-total {
-  color: rgba(255, 255, 255, 0.72) !important;
+  color: #75677c !important;
 }
 body.home-page #bundle-deal .bd-original s {
-  color: rgba(255, 255, 255, 0.48) !important;
+  color: #9b8da1 !important;
 }
 body.home-page #bundle-deal .bd-save {
-  color: #ffb8d7 !important;
+  color: #c52f78 !important;
 }
 body.home-page #bundle-deal .bd-total-price {
-  color: #fff !important;
+  color: #381536 !important;
   font-size: clamp(2.35rem, 4vw, 3rem) !important;
   letter-spacing: -0.045em !important;
 }
 body.home-page #bundle-deal .bd-benefits {
   gap: 11px !important;
   padding: 15px 16px !important;
-  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  border: 1px solid rgba(85, 32, 95, 0.11) !important;
   border-radius: 12px !important;
-  background: rgba(255, 255, 255, 0.07) !important;
+  background: rgba(255, 255, 255, 0.72) !important;
 }
 body.home-page #bundle-deal .bd-benefit {
-  color: rgba(255, 255, 255, 0.88) !important;
+  color: #59495f !important;
   font-size: 0.78rem !important;
 }
 body.home-page #bundle-deal .bd-benefit::before {
   width: 6px !important;
   height: 6px !important;
-  background: #f06fa6 !important;
-  box-shadow: 0 0 10px rgba(240, 111, 166, 0.45);
+  background: #e84387 !important;
+  box-shadow: 0 0 10px rgba(232, 67, 135, 0.28);
 }
 body.home-page #bundle-deal .bd-cta {
   padding: 16px 18px !important;
   color: #fff !important;
-  background: linear-gradient(110deg, #d6458f, #a63d91 58%, #7b4fb8) !important;
-  border: 1px solid rgba(255, 255, 255, 0.24) !important;
-  border-radius: 11px !important;
-  box-shadow: 0 8px 22px rgba(12, 5, 31, 0.22) !important;
+  background: linear-gradient(110deg, #e84387, #a63d91 58%, #7041b5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.72) !important;
+  border-radius: 13px !important;
+  box-shadow: 0 9px 24px rgba(85, 32, 95, 0.18) !important;
   font-size: 0.78rem !important;
   letter-spacing: 0.075em !important;
 }
 body.home-page #bundle-deal .bd-cta:hover {
   color: #fff !important;
   background: linear-gradient(110deg, #e84387, #b64a9e 58%, #8b61c4) !important;
+  box-shadow: 0 13px 28px rgba(85, 32, 95, 0.25) !important;
   transform: translateY(-1px);
 }
 @media (max-width: 900px) {
@@ -13167,7 +13266,7 @@ body.home-page #bundle-deal .bd-cta:hover {
   body.home-page #bundle-deal .bd-summary { width: 100% !important; }
 }
 @media (max-width: 560px) {
-  body.home-page #bundle-deal.bundle-deal-section { padding: 48px 16px 0 !important; }
+  body.home-page #bundle-deal.bundle-deal-section { padding: 24px 16px 0 !important; }
   body.home-page #bundle-deal .bd-header { margin-bottom: 22px !important; }
   body.home-page #bundle-deal .bd-product-item { gap: 12px !important; padding: 12px !important; }
   body.home-page #bundle-deal .bd-product-item img { width: 64px !important; height: 64px !important; }
@@ -13929,3 +14028,157 @@ body.home-page #bundle-deal .bd-cta:hover {
   color: #fff7fb !important;
 }
 #bbwBdayModal .bbw-bday-close:hover { background: #d6458f !important; border-color: #f3a0bf !important; }
+
+/* One Curvafit wishlist color system. Header wishlist icons are intentionally excluded. */
+.bbw-mini-wish:not(.bbw-mw-active) .bbw-mw-empty,
+.mini-wishlist-icon:not(.imq-card-wishlist):not(.added) .wishlist-icon-empty,
+.wishlist-icon-product:not(.added) .wishlist-icon-empty,
+.sticky-atc__wishlist:not(.active) .wishlist-icon-empty,
+.bbw-sets-page__wishlist:not(.added) .wishlist-icon-empty,
+.cf-product-card__wishlist:not(.active) .wishlist-icon-empty {
+  fill: none !important;
+  stroke: #3b1b7d !important;
+}
+
+.bbw-mini-wish.bbw-mw-active .bbw-mw-filled,
+.mini-wishlist-icon:not(.imq-card-wishlist).added .wishlist-icon-filled,
+.wishlist-icon-product.added .wishlist-icon-filled,
+.sticky-atc__wishlist.active .wishlist-icon-filled,
+.bbw-sets-page__wishlist.added .wishlist-icon-filled,
+.cf-product-card__wishlist.active .wishlist-icon-filled {
+  fill: #e84387 !important;
+  stroke: #e84387 !important;
+}
+
+.col-card__wishlist:not(.active),
+.col-card__wishlist:not(.active) i,
+.col-card__wishlist:not(.active):hover,
+.col-card__wishlist:not(.active):hover i,
+.mini-wishlist-icon:not(.imq-card-wishlist):not(.added),
+.mini-wishlist-icon:not(.imq-card-wishlist):not(.added) .wishlist-icon-empty,
+.mini-wishlist-icon:not(.imq-card-wishlist):not(.added):hover,
+.mini-wishlist-icon:not(.imq-card-wishlist):not(.added):hover .wishlist-icon-empty,
+.wishlist-icon-product:not(.added),
+.wishlist-icon-product:not(.added) svg,
+.wishlist-icon-product:not(.added):hover,
+.sticky-atc__wishlist:not(.active),
+.bbw-sets-page__wishlist:not(.added) .wishlist-icon-empty,
+.cf-product-card__wishlist:not(.active),
+.cf-product-card__wishlist:not(.active) .wishlist-icon-empty {
+  color: #3b1b7d !important;
+}
+
+.col-card__wishlist.active,
+.col-card__wishlist.active i,
+.mini-wishlist-icon:not(.imq-card-wishlist).added,
+.mini-wishlist-icon:not(.imq-card-wishlist).added .wishlist-icon-filled,
+.wishlist-icon-product.added,
+.wishlist-icon-product.added svg,
+.sticky-atc__wishlist.active,
+.bbw-sets-page__wishlist.added .wishlist-icon-filled,
+.cf-product-card__wishlist.active,
+.cf-product-card__wishlist.active .wishlist-icon-filled {
+  color: #e84387 !important;
+}
+
+/* Shared reaction colors and wishlist borders across product cards and widgets. */
+.bbw-mini-wish,
+.bbw-mini-wish:hover,
+.bbw-mini-wish.bbw-mw-active,
+.mini-wishlist-icon:not(.imq-card-wishlist),
+.mini-wishlist-icon:not(.imq-card-wishlist):hover,
+.mini-wishlist-icon:not(.imq-card-wishlist).added,
+.wishlist-icon-product,
+.sticky-atc__wishlist,
+.bbw-sets-page__wishlist,
+.cf-product-card__wishlist,
+.col-card__wishlist,
+.sr-card .sr-card__wishlist,
+.sr-card .mini-wishlist-icon {
+  border-color: rgba(59, 27, 125, .34) !important;
+}
+
+.bbw-mini-wish.bbw-mw-active,
+.mini-wishlist-icon:not(.imq-card-wishlist).added,
+.wishlist-icon-product.added,
+.sticky-atc__wishlist.active,
+.bbw-sets-page__wishlist.added,
+.cf-product-card__wishlist.active,
+.col-card__wishlist.active,
+.sr-card .mini-wishlist-icon.added {
+  border-color: rgba(232, 67, 135, .48) !important;
+}
+
+.bbw-mini-like-btn--like,
+.bbw-mini-like-btn--like.active,
+.product-like-btn--like .product-like-icon,
+.product-like-btn--like.active .product-like-icon,
+.sticky-atc__like-btn--like,
+.sticky-atc__like-btn--like.active {
+  color: #2563eb !important;
+  border-color: rgba(37, 99, 235, .55) !important;
+  background-color: rgba(37, 99, 235, .12) !important;
+}
+
+.bbw-mini-like-btn--dislike,
+.bbw-mini-like-btn--dislike.active,
+.product-like-btn--dislike .product-like-icon,
+.product-like-btn--dislike.active .product-like-icon,
+.sticky-atc__like-btn--dislike,
+.sticky-atc__like-btn--dislike.active {
+  color: #dc3545 !important;
+  border-color: rgba(220, 53, 69, .55) !important;
+  background-color: rgba(220, 53, 69, .12) !important;
+}
+
+.bbw-mini-like-btn--like svg,
+.product-like-btn--like .product-like-icon svg,
+.sticky-atc__like-btn--like svg { color: #2563eb !important; fill: currentColor; }
+.bbw-mini-like-btn--dislike svg,
+.product-like-btn--dislike .product-like-icon svg,
+.sticky-atc__like-btn--dislike svg { color: #dc3545 !important; fill: currentColor; }
+
+/* Reactions are neutral until the visitor selects one. */
+.bbw-mini-like-btn--like:not(.active),
+.bbw-mini-like-btn--dislike:not(.active),
+.product-like-btn--like:not(.active) .product-like-icon,
+.product-like-btn--dislike:not(.active) .product-like-icon,
+.sticky-atc__like-btn--like:not(.active),
+.sticky-atc__like-btn--dislike:not(.active) {
+  color: #806b96 !important;
+  border-color: rgba(128, 107, 150, .38) !important;
+  background-color: rgba(128, 107, 150, .12) !important;
+}
+
+.bbw-mini-like-btn--like:not(.active) svg,
+.bbw-mini-like-btn--dislike:not(.active) svg,
+.product-like-btn--like:not(.active) .product-like-icon svg,
+.product-like-btn--dislike:not(.active) .product-like-icon svg,
+.sticky-atc__like-btn--like:not(.active) svg,
+.sticky-atc__like-btn--dislike:not(.active) svg {
+  color: #806b96 !important;
+  fill: currentColor;
+}
+
+.bbw-mini-like-btn--like.active,
+.product-like-btn--like.active .product-like-icon,
+.sticky-atc__like-btn--like.active {
+  color: #2563eb !important;
+  border-color: #2563eb !important;
+  background-color: rgba(37, 99, 235, .14) !important;
+}
+
+.bbw-mini-like-btn--dislike.active,
+.product-like-btn--dislike.active .product-like-icon,
+.sticky-atc__like-btn--dislike.active {
+  color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  background-color: rgba(220, 53, 69, .14) !important;
+}
+
+.bbw-mini-like-btn--like.active svg,
+.product-like-btn--like.active .product-like-icon svg,
+.sticky-atc__like-btn--like.active svg { color: #2563eb !important; fill: currentColor; }
+.bbw-mini-like-btn--dislike.active svg,
+.product-like-btn--dislike.active .product-like-icon svg,
+.sticky-atc__like-btn--dislike.active svg { color: #dc3545 !important; fill: currentColor; }

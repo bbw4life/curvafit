@@ -1,10 +1,13 @@
 /* ================================================================
-   BBW4LIFE — article1.js
+   Curvafit — article1.js
 ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
   // Ajoute cette ligne au tout début :
-  if (!document.body.classList.contains('a1-page')) return;
+  var cardId = document.body.getAttribute('data-article-card') ||
+    (document.body.classList.contains('a1-page') ? 'card-1' : '');
+  if (!cardId) return;
+  var pageArticleId = 'article' + cardId.replace(/^card-/, '');
 
   window.bbwFetchBlogArticles()
     .then(function (data) {
@@ -13,30 +16,44 @@ document.addEventListener('DOMContentLoaded', function () {
       var cardData = null;
       if (data.cards) {
         data.cards.forEach(function (c) {
-          if (c.id === 'card-1') cardData = c;
+          if (c.id === cardId) cardData = c;
         });
       }
 
       if (!cardData) {
-        console.warn('article1.js: card-1 not found in blog-articles.json');
+        console.warn('articles.js: ' + cardId + ' not found in blog-articles.json');
         return;
       }
 
+      var canonicalUrl = new URL(cardData.url, window.location.origin).href;
+      var canonicalLink = document.querySelector('link[rel="canonical"]');
+      if (canonicalLink) canonicalLink.href = canonicalUrl;
+      var ogUrl = document.querySelector('meta[property="og:url"]');
+      if (ogUrl) ogUrl.content = canonicalUrl;
+
       // ── Inject meta tags dynamically ────────────────────────
       var pageTitle = document.getElementById('page-title');
-      if (pageTitle) pageTitle.textContent = cardData.title + ' | BBW4LIFE Journal';
+      if (pageTitle) pageTitle.textContent = cardData.title + ' | Curvafit Journal';
+      else document.title = cardData.title + ' | Curvafit Journal';
 
       var metaDesc = document.getElementById('meta-description');
       if (metaDesc) metaDesc.setAttribute('content', cardData.excerpt);
 
       var metaOgTitle = document.getElementById('meta-og-title');
-      if (metaOgTitle) metaOgTitle.setAttribute('content', cardData.title + ' — BBW4LIFE Journal');
+      if (metaOgTitle) metaOgTitle.setAttribute('content', cardData.title + ' — Curvafit Journal');
 
       var metaOgDesc = document.getElementById('meta-og-desc');
       if (metaOgDesc) metaOgDesc.setAttribute('content', cardData.excerpt);
 
       var metaOgImage = document.getElementById('meta-og-image');
       if (metaOgImage) metaOgImage.setAttribute('content', cardData.image);
+
+      var metaTwitterTitle = document.getElementById('meta-twitter-title');
+      if (metaTwitterTitle) metaTwitterTitle.setAttribute('content', cardData.title + ' | Curvafit Journal');
+      var metaTwitterDesc = document.getElementById('meta-twitter-desc');
+      if (metaTwitterDesc) metaTwitterDesc.setAttribute('content', cardData.excerpt);
+      var metaTwitterImage = document.getElementById('meta-twitter-image');
+      if (metaTwitterImage) metaTwitterImage.setAttribute('content', cardData.image);
 
       var jsonLd = document.getElementById('json-ld');
       if (jsonLd) {
@@ -52,16 +69,16 @@ document.addEventListener('DOMContentLoaded', function () {
           },
           'publisher': {
             '@type': 'Organization',
-            'name': 'BBW4LIFE',
+            'name': 'Curvafit',
             'logo': {
               '@type': 'ImageObject',
-              'url': 'https://bbw4life.com/public/vrlogo bbw4life.png'
+              'url': 'https://curvafit.com/public/Logo-Curvafit.png'
             }
           },
           'datePublished': cardData.date,
           'mainEntityOfPage': {
             '@type': 'WebPage',
-            '@id': 'https://bbw4life.com/blog/article1.html'
+            '@id': canonicalUrl
           }
         };
         jsonLd.textContent = JSON.stringify(schema);
@@ -74,12 +91,37 @@ document.addEventListener('DOMContentLoaded', function () {
         heroImg.alt = cardData.imageAlt;
         heroImg.style.display = 'block';
       }
+      var articleHero = document.getElementById('article-hero');
+      if (articleHero && document.body.classList.contains('a4-page')) {
+        articleHero.style.backgroundImage = 'url("' + cardData.image.replace(/"/g, '\\"') + '")';
+        articleHero.style.backgroundColor = 'transparent';
+        articleHero.style.backgroundSize = 'cover';
+        articleHero.style.backgroundPosition = 'center 42%';
+      }
+      if (articleHero && document.body.classList.contains('a6-page')) {
+        articleHero.style.backgroundImage = 'url("' + cardData.image.replace(/"/g, '\\"') + '")';
+        articleHero.style.backgroundColor = 'transparent';
+        articleHero.style.backgroundSize = 'cover';
+        articleHero.style.backgroundPosition = 'center 42%';
+      }
+      if (articleHero && document.body.classList.contains('a7-page')) {
+        articleHero.style.backgroundImage = 'url("' + cardData.image.replace(/"/g, '\\"') + '")';
+        articleHero.style.backgroundColor = 'transparent';
+        articleHero.style.backgroundSize = 'cover';
+        articleHero.style.backgroundPosition = 'center';
+      }
+      if (articleHero && document.body.classList.contains('a8-page')) {
+        articleHero.style.backgroundImage = 'url("' + cardData.image.replace(/"/g, '\\"') + '")';
+        articleHero.style.backgroundColor = 'transparent';
+        articleHero.style.backgroundSize = 'cover';
+        articleHero.style.backgroundPosition = 'center 45%';
+      }
 
       // ── Hero text fields ────────────────────────────────────
       setText('hero-badge',        cardData.badge);
       setText('hero-readtime',     cardData.readTime);
-      setText('hero-title',        cardData.title);
-      setText('hero-excerpt',      cardData.excerpt);
+      setHeroTitle(cardData.title);
+      setHeroExcerpt(cardData.excerpt);
       setText('hero-date',         cardData.date);
       setText('hero-views',        cardData.views);
       setText('hero-readtime-stat',cardData.readTime);
@@ -92,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
         authorImg.alt = cardData.author.name;
       }
       setText('hero-author-name', cardData.author.name);
+      setText('hero-author-role', cardData.author.role || 'Curvafit Journal');
 
       // ── Bio section ─────────────────────────────────────────
       var bioImg = document.getElementById('bio-author-img');
@@ -100,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
         bioImg.alt = cardData.author.name;
       }
       setText('bio-author-name', cardData.author.name);
+      setText('bio-author-role', cardData.author.role || 'Curvafit Journal');
       setText('conclusion-author-name', cardData.author.name);
 
       // ── Quick stats strip ───────────────────────────────────
@@ -108,11 +152,11 @@ document.addEventListener('DOMContentLoaded', function () {
       setText('strip-date',     cardData.date);
 
       // ── Inject related articles ─────────────────────────────
-      injectRelated(data.cards, cardData.category, 'card-1');
+      injectRelated(data.cards, cardData.category, cardId);
 
     })
     .catch(function (err) {
-      console.error('article1.js: error loading blog-articles.json:', err);
+      console.error('articles.js: error loading blog-articles.json:', err);
     });
 
 
@@ -245,6 +289,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('.art-share-btn').forEach(function (btn) {
 
+      // The blog's shared Web Share handler owns native-share buttons.
+      if (btn.hasAttribute('data-native-share')) return;
+
       // Copy link
       if (btn.id === 'hero-copy-link' || btn.id === 'bottom-copy-link' ||
           btn.classList.contains('art-share-btn--copy')) {
@@ -301,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function () {
      7.  REACTIONS (like / inspired / more)
   ════════════════════════════════════════════════════════════ */
   function initReactions() {
-    var STORAGE_KEY = 'cf_article_reactions_article1';
+    var STORAGE_KEY = 'cf_article_reactions_' + pageArticleId;
 
     function getReacted()      { try { return localStorage.getItem(STORAGE_KEY) || ''; } catch (e) { return ''; } }
     function saveReacted(type) { try { localStorage.setItem(STORAGE_KEY, type); }        catch (e) {} }
@@ -338,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
      8.  REVIEW SYSTEM (article1)
   ════════════════════════════════════════════════════════════ */
   (function () {
-    var ARTICLE_ID       = 'article1';
+    var ARTICLE_ID       = pageArticleId;
     var API              = '/.netlify/functions/reviews-article';
     var REVIEWS_PER_PAGE = 5;
     var allReviews       = [];
@@ -778,6 +825,108 @@ document.addEventListener('DOMContentLoaded', function () {
   function setText(id, text) {
     var el = document.getElementById(id);
     if (el) el.textContent = text;
+  }
+
+  function setHeroTitle(text) {
+    var el = document.getElementById('hero-title');
+    if (!el) return;
+
+    var title = String(text || '');
+    var accents = [
+      { phrase: 'Restart Your Routine After a Setback', className: 'article-hero__title-accent article-hero__title-accent--opening' },
+      { phrase: 'Without Guilt', className: 'article-hero__title-accent' },
+      { phrase: 'Chair Workouts for Beginners', className: 'article-hero__title-accent article-hero__title-accent--opening' },
+      { phrase: '8 Gentle Moves You Can Do at Home', className: 'article-hero__title-accent' },
+      { phrase: 'How to Start', className: 'article-hero__title-accent article-hero__title-accent--opening' },
+      { phrase: 'Gentle 4-Week Plan', className: 'article-hero__title-accent' },
+      { phrase: 'Simple Meal Prep', className: 'article-hero__title-accent article-hero__title-accent--opening' },
+      { phrase: 'No Strict Diet Needed', className: 'article-hero__title-accent' },
+      { phrase: 'Staying Consistent When Motivation Disappears', className: 'article-hero__title-accent article-hero__title-accent--opening' },
+      { phrase: '7 Habits That Actually Work', className: 'article-hero__title-accent' },
+      { phrase: 'Anti-Chafing Tips for Plus-Size Women', className: 'article-hero__title-accent article-hero__title-accent--opening' },
+      { phrase: 'What to Wear and What to Avoid', className: 'article-hero__title-accent' },
+      { phrase: 'Your First Day at the Gym', className: 'article-hero__title-accent article-hero__title-accent--opening' },
+      { phrase: 'A Calm, Confidence-Building Guide', className: 'article-hero__title-accent' },
+      { phrase: 'The Plate Method Explained', className: 'article-hero__title-accent article-hero__title-accent--opening' },
+      { phrase: 'Balanced Meals Without Counting Calories', className: 'article-hero__title-accent' }
+    ].map(function (accent) {
+      var start = title.toLowerCase().indexOf(accent.phrase.toLowerCase());
+      return start < 0 ? null : {
+        start: start,
+        end: start + accent.phrase.length,
+        className: accent.className
+      };
+    }).filter(Boolean).sort(function (a, b) { return a.start - b.start; });
+
+    el.replaceChildren();
+    if (!accents.length) {
+      el.textContent = title;
+      return;
+    }
+
+    var cursor = 0;
+    accents.forEach(function (accent) {
+      if (accent.start < cursor) return;
+      el.appendChild(document.createTextNode(title.slice(cursor, accent.start)));
+      var highlighted = document.createElement('span');
+      highlighted.className = accent.className;
+      highlighted.textContent = title.slice(accent.start, accent.end);
+      el.appendChild(highlighted);
+      cursor = accent.end;
+    });
+    el.appendChild(document.createTextNode(title.slice(cursor)));
+  }
+
+  function setHeroExcerpt(text) {
+    var el = document.getElementById('hero-excerpt');
+    if (!el) return;
+
+    var excerpt = String(text || '');
+    var accents = [
+      { phrase: 'returning to routines after a pause', className: 'article-hero__excerpt-accent' },
+      { phrase: 'without punishment or trying to make up for missed days', className: 'article-hero__excerpt-accent article-hero__excerpt-accent--champagne' },
+      { phrase: 'eight gentle movements', className: 'article-hero__excerpt-accent' },
+      { phrase: 'chair option for each', className: 'article-hero__excerpt-accent article-hero__excerpt-accent--champagne' },
+      { phrase: 'three planned walks each week', className: 'article-hero__excerpt-accent' },
+      { phrase: 'repeat a week whenever you need more time', className: 'article-hero__excerpt-accent article-hero__excerpt-accent--champagne' },
+      { phrase: 'Ten flexible meal-prep ideas', className: 'article-hero__excerpt-accent' },
+      { phrase: 'simple ways to plan ahead', className: 'article-hero__excerpt-accent article-hero__excerpt-accent--champagne' },
+      { phrase: 'no strict diet rules', className: 'article-hero__excerpt-accent article-hero__excerpt-accent--rose' },
+      { phrase: 'Seven practical ways to make a routine easier to return to', className: 'article-hero__excerpt-accent' },
+      { phrase: 'keep a flexible Plan B', className: 'article-hero__excerpt-accent article-hero__excerpt-accent--champagne' },
+      { phrase: 'choose a smooth feel and a fit that stays in place without digging in', className: 'article-hero__excerpt-accent' },
+      { phrase: 'fabrics that move moisture away from the skin', className: 'article-hero__excerpt-accent article-hero__excerpt-accent--champagne' },
+      { phrase: 'planning your first visit', className: 'article-hero__excerpt-accent' },
+      { phrase: 'ask gym staff questions', className: 'article-hero__excerpt-accent article-hero__excerpt-accent--champagne' },
+      { phrase: 'flexible visual starting point', className: 'article-hero__excerpt-accent' },
+      { phrase: 'not a strict rule', className: 'article-hero__excerpt-accent article-hero__excerpt-accent--champagne' },
+      { phrase: 'does not require calorie counting', className: 'article-hero__excerpt-accent article-hero__excerpt-accent--champagne' }
+    ].map(function (accent) {
+      var start = excerpt.toLowerCase().indexOf(accent.phrase.toLowerCase());
+      return start < 0 ? null : {
+        start: start,
+        end: start + accent.phrase.length,
+        className: accent.className
+      };
+    }).filter(Boolean).sort(function (a, b) { return a.start - b.start; });
+
+    el.replaceChildren();
+    if (!accents.length) {
+      el.textContent = excerpt;
+      return;
+    }
+
+    var cursor = 0;
+    accents.forEach(function (accent) {
+      if (accent.start < cursor) return;
+      el.appendChild(document.createTextNode(excerpt.slice(cursor, accent.start)));
+      var highlighted = document.createElement('span');
+      highlighted.className = accent.className;
+      highlighted.textContent = excerpt.slice(accent.start, accent.end);
+      el.appendChild(highlighted);
+      cursor = accent.end;
+    });
+    el.appendChild(document.createTextNode(excerpt.slice(cursor)));
   }
 
   function shuffle(arr) {

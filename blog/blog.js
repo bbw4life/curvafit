@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <a href="#" class="share-btn card-share-btn" aria-label="Share on Pinterest"><i class="fab fa-pinterest-p"></i></a>
         <a href="#" class="share-btn card-share-btn" aria-label="Share on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
         <a href="#" class="share-btn card-share-btn" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        <button type="button" class="share-btn card-share-btn" data-native-share aria-label="Share article" title="Share article"><i class="fas fa-share-alt" aria-hidden="true"></i></button>
       </div>`;
   }
 
@@ -36,53 +37,24 @@ document.addEventListener('DOMContentLoaded', function () {
   window.bbwFetchBlogArticles()
     .then(function (data) {
 
-      // ── FEATURED ──────────────────────────────────────────────
-      var f = data.featured;
-      var featuredContainer = document.getElementById('featured-card-container');
-      if (featuredContainer && f) {
-        featuredContainer.innerHTML = `
-          <div class="featured-card">
-            <a href="${f.url}" class="featured-img-wrap">
-              <img src="${f.image}" alt="${f.imageAlt}">
-              <span class="featured-badge">Featured</span>
-              <span class="featured-new-badge">This Week</span>
-              <div class="featured-read-time">
-                <i class="fi fi-rr-clock"></i> ${f.readTime}
-              </div>
-            </a>
-            <div class="featured-body">
-              <span class="category-badge">${f.badge}</span>
-              <h2>${f.title}</h2>
-              <p>${f.excerpt}</p>
-              <div class="featured-meta-row">
-                <div class="author-chip">
-                  <img src="${f.author.image}" alt="${f.author.name}" class="author-chip-img">
-                  <div>
-                    <span class="author-chip-name">${f.author.name}</span>
-                    <span class="author-chip-role">${f.author.role}</span>
-                  </div>
-                </div>
-                <div class="article-meta-right">
-                  <span><i class="fi fi-rr-calendar"></i> ${f.date}</span>
-                  <span><i class="fi fi-rr-eye"></i> ${f.views} reads</span>
-                </div>
-              </div>
-              <div class="featured-cta-row">
-                <a href="${f.url}" class="button-3d">Read Full Article →</a>
-                <div class="share-row">
-                  <span class="share-label">Share:</span>
-                  <a href="#" class="share-btn" aria-label="Share on Facebook"><i class="fab fa-facebook-f"></i></a>
-                  <a href="#" class="share-btn" aria-label="Share on Pinterest"><i class="fab fa-pinterest-p"></i></a>
-                  <a href="#" class="share-btn card-share-btn" aria-label="Share on X / Twitter"><i class="fab fa-x-twitter"></i></a>
-                  <a href="#" class="share-btn card-share-btn" aria-label="Share on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                  <a href="#" class="share-btn" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>`;
+      // News ticker content comes from the same source as the article cards.
+      var tickerInner = document.querySelector('.blog-ticker .ticker-inner');
+      if (tickerInner && Array.isArray(data.cards) && data.cards.length) {
+        var tickerItems = data.cards.map(function (card) {
+          return `
+            <span class="ticker-item">
+              ${card.isNew ? '<span class="ticker-new-pill">new</span>' : ''}
+              <span class="ticker-item-title">${card.title || ''}</span>
+              <span class="ticker-item-meta">${card.readTime || ''} read</span>
+            </span>
+            <span class="ticker-sep" aria-hidden="true"></span>`;
+        }).join('');
+
+        // The duplicate lets the existing -50% animation loop seamlessly.
+        tickerInner.innerHTML = tickerItems + tickerItems;
       }
 
-      // ── BLOG CARDS ─────────────────────────────────────────────
+      // ── FEATURED ──────────────────────────────────────────────
       var gridContainer = document.getElementById('blog-grid-container');
       if (gridContainer && data.cards) {
         gridContainer.innerHTML = data.cards.map(function (card) {
@@ -97,7 +69,8 @@ document.addEventListener('DOMContentLoaded', function () {
               </div>
               <div class="blog-card-body">
                 <h3>${card.title}</h3>
-                <p>${card.excerpt}</p>
+                <p class="card-excerpt">${card.excerpt}</p>
+                <button type="button" class="card-excerpt-toggle" aria-expanded="false">Read more</button>
                 <div class="blog-card-meta">
                   <div class="card-author">
                     <img src="${card.author.image}" alt="${card.author.name}" class="card-author-img">
@@ -147,52 +120,43 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       }
 
-      // ── AUTHORS ────────────────────────────────────────────────
-      var authorsContainer = document.getElementById('authors-grid-container');
-      if (authorsContainer && data.authors) {
-        authorsContainer.innerHTML = data.authors.map(function (author) {
+      // ── HOME JOURNAL CARDS ──────────────────────────────────────
+      var homeJournal = document.getElementById('comm-blog-scroller');
+      if (homeJournal && Array.isArray(data.cards) && Array.isArray(data.popular)) {
+        var homeCards = data.popular.slice(0, 4).map(function (item) {
+          return data.cards.find(function (card) { return card.url === item.url; });
+        }).filter(Boolean);
+
+        homeJournal.innerHTML = homeCards.map(function (card) {
           return `
-            <div class="author-card">
-              <div class="author-card-img-wrap">
-                <img src="${author.image}" alt="${author.name}">
-                <div class="author-card-overlay">
-                  <a href="${author.instagram}" class="author-social"><i class="fab fa-instagram"></i></a>
-                  <a href="${author.twitter}" class="author-social"><i class="fab fa-x-twitter"></i></a>
-                </div>
+            <article class="blog-card comm-journal-card">
+              <div class="blog-card-img-wrap">
+                <a href="${card.url}" class="card-img-link">
+                  <img src="${card.image}" alt="${card.imageAlt}" loading="lazy">
+                </a>
+                <span class="card-category-badge">${card.badge}</span>
+                <div class="card-read-time"><i class="fi fi-rr-clock"></i> ${card.readTime}</div>
               </div>
-              <div class="author-card-body">
-                <h3>${author.name}</h3>
-                <span class="author-title">${author.title}</span>
-                <p>${author.bio}</p>
-                <div class="author-stats">
-                  <span><strong>${author.articles}</strong> Articles</span>
-                  <span><strong>${author.reads}</strong> Reads</span>
+              <div class="blog-card-body">
+                <h3>${card.title}</h3>
+                <p class="card-excerpt">${card.excerpt}</p>
+                <div class="blog-card-meta">
+                  <div class="card-author">
+                    <img src="${card.author.image}" alt="" class="card-author-img" loading="lazy">
+                    <span>${card.author.name}</span>
+                  </div>
+                  <div class="card-stats">
+                    <span><i class="fi fi-rr-eye"></i> ${card.views}</span>
+                    <span class="card-date">${card.date}</span>
+                  </div>
                 </div>
+                <a href="${card.url}" class="card-read-more">Read Article <span>→</span></a>
               </div>
-            </div>`;
+            </article>`;
         }).join('');
       }
 
-      // ── EDITOR'S PICKS ─────────────────────────────────────────
-      var picksContainer = document.getElementById('editors-picks-container');
-      if (picksContainer && data.editorsPicks) {
-        picksContainer.innerHTML = data.editorsPicks.map(function (pick) {
-          return `
-             <div class="pick-card" id="${pick.id}">
-              <div class="pick-img-wrap">
-                <a href="${pick.url}" class="card-img-link"><img src="${pick.image}" alt="${pick.imageAlt}" loading="lazy"></a>
-                <span class="pick-label">Editor's Choice</span>
-              </div>
-              <div class="pick-body">
-                <span class="pick-cat">${pick.category}</span>
-                <h3>${pick.title}</h3>
-                <p>${pick.excerpt}</p>
-                <a href="${pick.url}" class="pick-link">Read Full Article →</a>
-              </div>
-            </div>`;
-        }).join('');
-      }
-        // ── STATS BAR ──────────────────────────────────────────────
+      // ── AUTHORS ────────────────────────────────────────────────
       var statsContainer = document.getElementById('blog-stats-container');
       if (statsContainer && data.stats) {
         statsContainer.innerHTML = data.stats.map(function (stat, i) {
@@ -220,6 +184,16 @@ document.addEventListener('DOMContentLoaded', function () {
   //  INIT — appelé après injection JSON
   // ════════════════════════════════════════
   function initBlog() {
+
+    // Expand or collapse each article excerpt after its first three lines.
+    document.querySelectorAll('.card-excerpt-toggle').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var excerpt = button.previousElementSibling;
+        var isExpanded = excerpt.classList.toggle('is-expanded');
+        button.setAttribute('aria-expanded', String(isExpanded));
+        button.textContent = isExpanded ? 'Read less' : 'Read more';
+      });
+    });
 
     // ── CATEGORY FILTERING ──────────────────────────────────────
     var filterButtons = document.querySelectorAll('.category-filters button');
@@ -463,20 +437,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── SHARE BUTTONS ────────────────────────────────────────────
     document.querySelectorAll('.share-btn').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
+      btn.addEventListener('click', async function (e) {
         e.preventDefault();
 
-        var card   = btn.closest('.blog-card');
+        var card   = btn.closest('.blog-card, .popular-item');
         var rawUrl = card
-          ? (card.querySelector('.card-read-more') || {}).href || window.location.href
+          ? ((card.querySelector('.card-read-more, .popular-link') || {}).href || window.location.href)
           : window.location.href;
+        var heroTitle = document.getElementById('hero-title');
+        var rawTitle = card
+          ? ((card.querySelector('h3') || {}).textContent || document.title).trim()
+          : ((heroTitle && heroTitle.textContent.trim()) || document.title);
+
+        if (btn.hasAttribute('data-native-share')) {
+          if (navigator.share) {
+            try {
+              await navigator.share({ title: rawTitle, url: rawUrl });
+            } catch (error) {
+              if (error.name !== 'AbortError') console.error('Web Share failed:', error);
+            }
+          } else if (navigator.clipboard && navigator.clipboard.writeText) {
+            try {
+              await navigator.clipboard.writeText(rawUrl);
+              btn.setAttribute('title', 'Link copied');
+            } catch (error) {
+              console.error('Could not copy article link:', error);
+            }
+          }
+          return;
+        }
 
         var url   = encodeURIComponent(rawUrl);
-        var title = encodeURIComponent(
-          card
-            ? (card.querySelector('h3') || {}).textContent || document.title
-            : document.title
-        );
+        var title = encodeURIComponent(rawTitle);
 
         var icon     = btn.querySelector('i');
         var shareUrl = '#';

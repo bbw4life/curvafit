@@ -554,24 +554,6 @@
   }
 
   /* ================================================================
-     INJECT HERO FROM COLLECTION DATA
-  ================================================================ */
-  function injectCollectionHero(col) {
-    const heroTitle    = document.getElementById('colHeroTitle');
-    const heroSubtitle = document.getElementById('colHeroSubtitle');
-    const heroEyebrow  = document.getElementById('colHeroEyebrow');
-    const heroImage    = document.getElementById('colHeroImage');
-
-    if (heroTitle)    heroTitle.textContent    = col.hero_title    || col.title    || '';
-    if (heroSubtitle) heroSubtitle.textContent = col.hero_subtitle || col.subtitle || '';
-    if (heroEyebrow)  heroEyebrow.textContent  = col.hero_eyebrow  || col.name    || '';
-    if (heroImage && col.image) {
-      heroImage.src = upgradeShopifyImageUrl(col.image, 2400);
-      heroImage.alt = col.title || '';
-    }
-  }
-
-  /* ================================================================
      FETCH DATA
   ================================================================ */
   fetch('/products.data.json')
@@ -677,8 +659,6 @@
       if (colPriceDispMax) colPriceDispMax.textContent = '$' + maxPrice;
 
       
-      injectCollectionHero(colSettings);
-
       
       injectSocialLinks(settings.social_links || {});
 

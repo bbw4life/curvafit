@@ -4669,6 +4669,13 @@ details[open] .chevron {
     transform: scale(1.15);
     box-shadow: 0 4px 16px rgba(93,60,144,0.40);
 }
+#mini-product-slider .mini-cart-btn i {
+    color: #fff !important;
+    filter: drop-shadow(0 1px 1px rgba(36,19,63,.28));
+}
+#mini-product-slider .mini-cart-btn:hover i {
+    color: #fff !important;
+}
 
 #mini-product-slider .product-info {
     margin-top: 9px !important;

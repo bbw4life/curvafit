@@ -6230,7 +6230,57 @@ body { margin-bottom: 0 !important; }
   transform: none;
 }
 
-
+/* Curvafit newsletter palette: color refinements only. */
+#bbwNlOverlay .bbwnl-modal { background: linear-gradient(145deg, #fff 0%, #fcf8fd 58%, #f6effa 100%); }
+#bbwNlOverlay .bbwnl-backdrop { background: rgba(35, 20, 43, 0.72); }
+#bbwNlOverlay .bbwnl-wave-top svg path,
+#bbwNlOverlay .bbwnl-wave-bot svg path { fill: #e84387; }
+#bbwNlOverlay .bbwnl-wave-top svg path:nth-child(2) { fill: #d9c5e9; }
+#bbwNlOverlay .bbwnl-close,
+#bbwNlOverlay .bbwnl-crown-icon,
+#bbwNlOverlay .bbwnl-benefit-icon,
+#bbwNlOverlay .bbwnl-note i { color: #7041b5; }
+#bbwNlOverlay .bbwnl-close,
+#bbwNlOverlay .bbwnl-crown-ring,
+#bbwNlOverlay .bbwnl-benefit-icon { border-color: rgba(112, 65, 181, 0.24); }
+#bbwNlOverlay .bbwnl-close:hover { background: #e84387; border-color: #e84387; color: #fff; }
+#bbwNlOverlay .bbwnl-badge { background: rgba(217, 197, 233, 0.2); border-color: rgba(112, 65, 181, 0.2); }
+#bbwNlOverlay .bbwnl-badge-text { color: #7041b5; }
+#bbwNlOverlay .bbwnl-badge-pulse { background: #e84387; animation-name: bbwnlCurvafitPulse; }
+@keyframes bbwnlCurvafitPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 67, 135, 0.42); }
+  50% { box-shadow: 0 0 0 5px rgba(232, 67, 135, 0); }
+}
+#bbwNlOverlay .bbwnl-title,
+#bbwNlOverlay .bbwnl-benefit-text { color: #321b45; }
+#bbwNlOverlay .bbwnl-subtitle,
+#bbwNlOverlay .bbwnl-label,
+#bbwNlOverlay .bbwnl-note { color: rgba(50, 27, 69, 0.68); }
+#bbwNlOverlay .bbwnl-title-em,
+#bbwNlOverlay .bbwnl-required,
+#bbwNlOverlay .bbwnl-error { color: #e84387; }
+#bbwNlOverlay .bbwnl-title-em { color: #a63d91; -webkit-text-fill-color: #a63d91; }
+#bbwNlOverlay .bbwnl-benefit { background: rgba(217, 197, 233, 0.13); border-color: rgba(112, 65, 181, 0.18); }
+#bbwNlOverlay .bbwnl-input-icon { color: #7041b5; }
+#bbwNlOverlay .bbwnl-input { background: rgba(255, 255, 255, 0.78); border-color: rgba(112, 65, 181, 0.24); color: #321b45; }
+#bbwNlOverlay .bbwnl-input::placeholder,
+#bbwNlOverlay .bbwnl-label-hint { color: rgba(50, 27, 69, 0.48); }
+#bbwNlOverlay .bbwnl-input:focus { border-color: #7041b5; box-shadow: 0 0 0 3px rgba(112, 65, 181, 0.13); }
+#bbwNlOverlay .bbwnl-cta { border-color: #7041b5; color: #fff; }
+#bbwNlOverlay .bbwnl-cta-bg { background: linear-gradient(110deg, #7041b5, #a63d91 58%, #e84387); }
+#bbwNlOverlay .bbwnl-cta:hover .bbwnl-cta-bg { background: linear-gradient(110deg, #8054c5, #b64a9e 58%, #ef5798); }
+#bbwNlOverlay .bbwnl-cta:hover { border-color: #e84387; }
+#bbwNlOverlay .bbwnl-success-ring { background: linear-gradient(135deg, #7041b5, #e84387); }
+#bbwNlOverlay .bbwnl-confetti-piece { background: #7041b5 !important; }
+#bbwNlOverlay .bbwnl-confetti-piece:nth-child(3n) { background: #e84387 !important; }
+#bbwNlOverlay .bbwnl-confetti-piece:nth-child(3n+1) { background: #a63d91 !important; }
+#bbwNlOverlay .bbwnl-confetti-piece:nth-child(5n) { background: #fcf8fd !important; }
+#bbwNlOverlay .bbwnl-error { background: rgba(232, 67, 135, 0.08); }
+#bbwNlOverlay .nl-spin-wheel-pointer { border-top-color: #e84387; }
+#bbwNlOverlay .nl-spin-wheel { box-shadow: 0 0 0 6px #fcf8fd, 0 0 0 8px rgba(112, 65, 181, 0.28), 0 20px 44px rgba(45, 22, 83, 0.18); }
+#bbwNlOverlay .nl-spin-wheel-center { background: linear-gradient(135deg, #7041b5, #a63d91 56%, #e84387); border-color: #fcf8fd; color: #fff; }
+#bbwNlOverlay .bbwnl-success-close { color: #7041b5; border-color: rgba(112, 65, 181, 0.25); }
+#bbwNlOverlay .bbwnl-success-close:hover { background: #7041b5; border-color: #7041b5; color: #fff; }
 /* ══════════════════════════════════════════════════════════════
    NEWSLETTER SPIN-TO-WIN WHEEL
    Reuses the .bbwnl-* palette (black / ivory / gold) — no new colors.
@@ -7417,6 +7467,258 @@ body { margin-bottom: 0 !important; }
   .bbw-promo-ring--2 { width: 34px; height: 34px; top: 46%; left: 2%; }
   .bbw-promo-ring--3 { display: none; }
   .bbw-promo-ring--4 { width: 90px; height: 90px; top: 78%; left: -8%; }
+}
+
+
+/* Curvafit Essentials popup palette. */
+#bbwStyleOverlay {
+  --bbw-black: #321b45;
+  --bbw-gold: #7041b5;
+  --bbw-gold-light: #a63d91;
+  --bbw-gold-border: rgba(112, 65, 181, 0.22);
+  --bbw-rose: #e84387;
+  --bbw-gold-pale-mid: rgba(217, 197, 233, 0.46);
+}
+#bbwStyleOverlay.bbws-overlay { background: rgba(35, 20, 43, 0.76); }
+#bbwStyleOverlay .bbws-modal {
+  background: linear-gradient(145deg, #fff 0%, #fcf8fd 58%, #f6effa 100%);
+  border-color: rgba(112, 65, 181, 0.22);
+  scrollbar-color: rgba(112, 65, 181, 0.34) transparent;
+}
+#bbwStyleOverlay .bbws-modal::-webkit-scrollbar-thumb { background: rgba(112, 65, 181, 0.34); }
+#bbwStyleOverlay .bbws-topband-text { color: #f6e6c8; }
+#bbwStyleOverlay .bbws-close { background: rgba(252, 248, 253, 0.9); color: #7041b5; }
+#bbwStyleOverlay .bbws-close:hover { color: #fff; }
+#bbwStyleOverlay .bbws-crown-svg path { fill: #7041b5; }
+#bbwStyleOverlay .bbws-crown-svg circle { fill: #e84387; }
+#bbwStyleOverlay .bbws-title { color: #321b45; }
+#bbwStyleOverlay .bbws-title em { color: #e84387; }
+#bbwStyleOverlay .bbws-subtitle,
+#bbwStyleOverlay .bbws-tab { color: rgba(50, 27, 69, 0.62); }
+#bbwStyleOverlay .bbws-tab:hover,
+#bbwStyleOverlay .bbws-tab--active,
+#bbwStyleOverlay .bbws-tab--active:hover { color: #321b45; }
+#bbwStyleOverlay .bbws-tab--active { border-bottom-color: #e84387; }
+#bbwStyleOverlay .bbws-panel-desc { color: #7041b5; }
+#bbwStyleOverlay .bbws-img-wrap:hover { box-shadow: 0 14px 34px rgba(45, 22, 83, 0.18); }
+#bbwStyleOverlay .bbws-img-badge { color: #fff; }
+#bbwStyleOverlay .bbws-explore-btn { color: #fff; }
+#bbwStyleOverlay .bbws-explore-btn--rose { color: #fff; }
+#bbwStyleOverlay .bbws-wave-path--front { fill: rgba(112, 65, 181, 0.1); }
+#bbwStyleOverlay .bbws-wave-text { color: #7041b5; }
+#bbwStyleOverlay .bbws-marquee-section {
+  background: linear-gradient(180deg, rgba(252,248,253,0) 0%, rgba(217,197,233,0.2) 40%, rgba(217,197,233,0.2) 60%, rgba(252,248,253,0) 100%);
+}
+#bbwStyleOverlay .bbws-footer-line { color: rgba(50, 27, 69, 0.56); }
+
+/* Curvafit Special Offers palette; keep the existing popup layout and hooks. */
+#bdOverlay {
+  --bd-black: #281a32;
+  --bd-black-soft: #35243f;
+  --bd-gold: #d2ad79;
+  --bd-gold-mid: #d2ad79;
+  --bd-gold-light: #ead8b8;
+  --bd-rose: #c86b8c;
+  --bd-rose-soft: #e2a3b5;
+  --bd-plum: #281a32;
+  --bd-purple-soft: #d9c3e8;
+  --bd-white: #fbf7f1;
+  --bbw-black: #281a32;
+  --bbw-gold: #d2ad79;
+  --bbw-gold-light: #ead8b8;
+  --bbw-rose: #c86b8c;
+  --bbw-rose-light: #e2a3b5;
+  --bbw-gold-border: rgba(210, 173, 121, 0.28);
+  --bbw-gold-border-hi: rgba(226, 163, 181, 0.48);
+  --bbw-gold-pale: rgba(210, 173, 121, 0.14);
+  --bbw-gold-pale-mid: rgba(210, 173, 121, 0.2);
+}
+#bdOverlay.bwflash-overlay { background: rgba(28, 17, 35, 0.82); }
+#bdOverlay .bwflash-topband-inner,
+#bdOverlay .bwflash-topband-inner .fas { color: #ead8b8; }
+#bdOverlay .bwflash-badge-text,
+#bdOverlay .bwflash-badge-icon { color: #e2a3b5; }
+#bdOverlay .bwflash-main-btn { background: linear-gradient(110deg, #684178, #a64e75); border-color: #d2ad79; }
+#bdOverlay .bwflash-main-btn:hover { background: linear-gradient(110deg, #80508e, #bf6187); }
+#bdOverlay .bwflash-countdown-wrap { display: none; }
+
+/* Our approach popup: Curvafit colors and a calmer, polished finish. */
+#bbwCommitmentOverlay {
+  --bbw-gold: #7041b5;
+  --bbw-gold-light: #a63d91;
+  --bbw-gold-vivid: #e84387;
+  --bbw-black: #321b45;
+}
+#bbwCommitmentOverlay.bbwc-overlay { background: rgba(35, 20, 43, 0.76); }
+#bbwCommitmentOverlay .bbwc-modal {
+  max-width: 600px;
+  border: 1px solid rgba(112, 65, 181, 0.2);
+  border-radius: 28px;
+  background: linear-gradient(145deg, #fff 0%, #fcf8fd 60%, #f5edf8 100%);
+  box-shadow: 0 32px 90px rgba(25, 12, 38, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transform: translateY(18px) scale(0.98);
+  scrollbar-color: rgba(112, 65, 181, 0.3) transparent;
+}
+#bbwCommitmentOverlay.bbwc-active .bbwc-modal { transform: translateY(0) scale(1); }
+#bbwCommitmentOverlay .bbwc-close {
+  color: #7041b5;
+  background: rgba(217, 197, 233, 0.22);
+  border-color: rgba(112, 65, 181, 0.22);
+}
+#bbwCommitmentOverlay .bbwc-close:hover { background: #7041b5; border-color: #7041b5; color: #fff; }
+#bbwCommitmentOverlay .bbwc-eyebrow { color: #7041b5; }
+#bbwCommitmentOverlay .bbwc-title { color: #321b45; }
+#bbwCommitmentOverlay .bbwc-sep-line { background: linear-gradient(90deg, transparent, #d2ad79, transparent); }
+#bbwCommitmentOverlay .bbwc-sep-icon { color: #e84387; }
+#bbwCommitmentOverlay .bbwc-intro-text { color: rgba(50, 27, 69, 0.76); }
+#bbwCommitmentOverlay .bbwc-intro-text strong,
+#bbwCommitmentOverlay .bbwc-card-desc strong { color: #7041b5; }
+#bbwCommitmentOverlay .bbwc-cards { gap: 14px; }
+#bbwCommitmentOverlay .bbwc-card {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(112, 65, 181, 0.15);
+  border-radius: 18px;
+  box-shadow: 0 8px 22px rgba(45, 22, 83, 0.045);
+}
+#bbwCommitmentOverlay .bbwc-card:hover {
+  background: #fff;
+  border-color: rgba(112, 65, 181, 0.3);
+  box-shadow: 0 12px 28px rgba(45, 22, 83, 0.09);
+}
+#bbwCommitmentOverlay .bbwc-card-icon {
+  color: #7041b5;
+  background: linear-gradient(145deg, #f4eafb, #fceaf1);
+  box-shadow: inset 0 0 0 1px rgba(112, 65, 181, 0.12);
+}
+#bbwCommitmentOverlay .bbwc-card-title { color: #321b45; }
+#bbwCommitmentOverlay .bbwc-card-desc { color: rgba(50, 27, 69, 0.68); }
+#bbwCommitmentOverlay .bbwc-quote {
+  background: linear-gradient(120deg, rgba(217, 197, 233, 0.2), rgba(252, 234, 241, 0.64));
+  border-left-color: #a63d91;
+  border-radius: 0 16px 16px 0;
+}
+#bbwCommitmentOverlay .bbwc-quote-icon,
+#bbwCommitmentOverlay .bbwc-quote p strong,
+#bbwCommitmentOverlay .bbwc-sig-name { color: #7041b5; }
+#bbwCommitmentOverlay .bbwc-quote-icon { background: #fcf8fd; }
+#bbwCommitmentOverlay .bbwc-quote p { color: rgba(50, 27, 69, 0.88); }
+#bbwCommitmentOverlay .bbwc-sig-date { color: rgba(50, 27, 69, 0.52); }
+#bbwCommitmentOverlay .bbwc-cta-btn {
+  color: #fff;
+  background: linear-gradient(110deg, #684178, #a64e75);
+  box-shadow: 0 10px 24px rgba(104, 65, 120, 0.24);
+}
+#bbwCommitmentOverlay .bbwc-cta-btn:hover {
+  background: linear-gradient(110deg, #80508e, #bf6187);
+  box-shadow: 0 14px 28px rgba(104, 65, 120, 0.3);
+}
+
+
+/* Curvafit Picks: retain the legacy quiz hooks while giving the experience its own palette. */
+#bbw-quiz-overlay {
+  --bbq-accent: #7041b5;
+  --bbq-accent-deep: #321b45;
+  --bbq-rose: #c65b82;
+  --bbq-cream: #fffaf4;
+  --bbq-line: rgba(112, 65, 181, .18);
+}
+#bbw-quiz-overlay.bbq-overlay { background: rgba(37, 22, 48, .78); }
+#bbw-quiz-overlay .bbq-modal {
+  color: var(--bbq-accent-deep);
+  background: linear-gradient(155deg, #fffefa 0%, #fbf7fc 58%, #f7eef7 100%);
+  border: 1px solid rgba(255, 255, 255, .8);
+  box-shadow: 0 30px 90px rgba(28, 14, 40, .32);
+}
+#bbw-quiz-overlay .bbq-top-band { background: linear-gradient(100deg, #321b45, #533568 58%, #7041b5); }
+#bbw-quiz-overlay .bbq-band-text { color: #eadcf8; }
+#bbw-quiz-overlay .bbq-close-btn { color: #7041b5; background: #fff; border: 1px solid var(--bbq-line); }
+#bbw-quiz-overlay .bbq-close-btn:hover { color: #fff; background: #7041b5; }
+#bbw-quiz-overlay .bbq-progress-bar { background: linear-gradient(90deg, #7041b5, #c65b82); }
+#bbw-quiz-overlay .bbq-progress-label,
+#bbw-quiz-overlay .bbq-q-number { color: #7041b5; }
+#bbw-quiz-overlay .bbq-crown-icon,
+#bbw-quiz-overlay .bbq-opt-icon { color: #7041b5; background: #f5edf9; }
+#bbw-quiz-overlay .bbq-intro-title,
+#bbw-quiz-overlay .bbq-q-title,
+#bbw-quiz-overlay .bbq-result-title { color: #321b45; }
+#bbw-quiz-overlay .bbq-intro-title em { color: #a74482; }
+#bbw-quiz-overlay .bbq-intro-subtitle,
+#bbw-quiz-overlay .bbq-q-sub,
+#bbw-quiz-overlay .bbq-result-desc { color: #6f6275; }
+#bbw-quiz-overlay .bbq-badge { color: #654278; background: #f5edf9; border-color: rgba(112, 65, 181, .12); }
+#bbw-quiz-overlay .bbq-cta-btn { color: #fff; background: linear-gradient(110deg, #684178, #a64e75); box-shadow: 0 10px 24px rgba(104, 65, 120, .22); }
+#bbw-quiz-overlay .bbq-cta-btn:hover { background: linear-gradient(110deg, #80508e, #bf6187); }
+#bbw-quiz-overlay .bbq-opt-card {
+  color: #321b45;
+  background: rgba(255,255,255,.86);
+  border: 1px solid var(--bbq-line);
+  box-shadow: 0 8px 22px rgba(45, 22, 83, .045);
+}
+#bbw-quiz-overlay .bbq-opt-card:hover,
+#bbw-quiz-overlay .bbq-opt-card.bbq-selected { border-color: #a985ca; background: #fbf6ff; box-shadow: 0 10px 26px rgba(112,65,181,.12); }
+#bbw-quiz-overlay .bbq-opt-desc,
+#bbw-quiz-overlay .bbq-color-name { color: #706477; }
+#bbw-quiz-overlay .bbq-color-swatch { color: #321b45; background: #fff; border-color: var(--bbq-line); }
+#bbw-quiz-overlay .bbq-color-swatch.bbq-selected { border-color: #7041b5; box-shadow: 0 0 0 3px rgba(112,65,181,.12); }
+#bbw-quiz-overlay .bbq-language-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: min(31%, 190px);
+  min-width: 118px;
+  height: auto;
+  padding: 9px;
+  gap: 8px;
+  border-radius: 15px;
+}
+#bbw-quiz-overlay .bbq-language-cover { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 9px; background: #f4edf4; }
+#bbw-quiz-overlay .bbq-language-card .bbq-color-name { display: block; font-weight: 700; text-align: center; }
+#bbw-quiz-overlay .bbq-size-btn { color: #4e3760; background: #fff; border-color: var(--bbq-line); }
+#bbw-quiz-overlay .bbq-size-btn:hover,
+#bbw-quiz-overlay .bbq-size-btn.bbq-selected { color: #fff; border-color: #7041b5; background: #7041b5; }
+#bbw-quiz-overlay .bbq-result-product { background: rgba(255,255,255,.85); border-color: var(--bbq-line); }
+#bbw-quiz-overlay .bbq-result-badge { color: #7041b5; background: #f5edf9; }
+#bbw-quiz-overlay .bbq-result-prod-name { color: #321b45; }
+#bbw-quiz-overlay .bbq-result-prod-variant { color: #75687b; }
+#bbw-quiz-overlay .bbq-result-prod-price { color: #7041b5; }
+#bbw-quiz-overlay .bbq-retake-btn,
+#bbw-quiz-overlay .bbq-nav-back { color: #7041b5; }
+
+/* Make the Curvafit Picks launcher easy to notice among the footer links. */
+.bbw-footer__links li a.bbw-footer__quiz-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 2px 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: #56317f !important;
+  background: transparent;
+  box-shadow: none;
+  font-weight: 750;
+  line-height: 1.25;
+  transition: color .2s ease;
+}
+.bbw-footer__links li a.bbw-footer__quiz-link::after {
+  content: '→';
+  position: static;
+  width: auto;
+  height: auto;
+  color: #a74482;
+  background: none;
+  box-shadow: none;
+  font-size: 16px;
+  line-height: 1;
+}
+.bbw-footer__links li a.bbw-footer__quiz-link:hover {
+  padding-left: 0;
+  color: #7041b5 !important;
+  background: transparent;
+  box-shadow: none;
+}
+.bbw-footer__links li a.bbw-footer__quiz-link:hover::after {
+  width: auto;
 }
 
 

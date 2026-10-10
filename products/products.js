@@ -106,6 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // On initialise l'urgency bar avec les données réelles du produit depuis products.data.json
       // puis on charge les reviews dynamiques depuis le serveur pour compléter le total
       initDynamicUrgencyBar(product, currentProductId);
+      // Affiche les avis réels du produit, ou l'état vide partagé si aucun n'existe.
+      loadDynamicReviews(currentProductId);
 
       // ====================== MINI REVIEWS SLIDER (au-dessus de "More To Love") ======================
           })
@@ -808,16 +810,41 @@ function addOptimisticReview(name, rating, title, text, imagesBase64 = []) {
         <div class="social-icon"></div>
     `;
     if (reviewsList) reviewsList.appendChild(newReview);
+    syncEmptyReviewState(reviewsList);
 }
 
-async function loadDynamicReviews() {
-    if (!window.currentProductId) return;
+function syncEmptyReviewState(list) {
+    if (!list) return;
+    const hasReviews = Boolean(list.querySelector('.review-card'));
+    let emptyMessage = list.querySelector('.reviews-empty');
+    if (!hasReviews && !emptyMessage) {
+        emptyMessage = document.createElement('p');
+        emptyMessage.className = 'reviews-empty';
+        emptyMessage.textContent = 'No reviews yet. Be the first to share your experience.';
+        list.appendChild(emptyMessage);
+    } else if (hasReviews && emptyMessage) {
+        emptyMessage.remove();
+    }
+
+    const readMore = document.getElementById('read-more');
+    if (readMore) {
+        readMore.style.display = list.querySelector('.review-card.hidden') ? '' : 'none';
+    }
+}
+
+// Keep the same empty review state on every product page from first render.
+syncEmptyReviewState(reviewsList);
+
+async function loadDynamicReviews(productIdOverride) {
+    const productId = productIdOverride || window.currentProductId;
+    if (!productId) return;
     document.querySelectorAll('.review-card.dynamic-review').forEach(el => el.remove());
+    syncEmptyReviewState(reviewsList);
     try {
         const res = await fetch('/.netlify/functions/save-reviews', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'get-reviews', productId: window.currentProductId })
+            body: JSON.stringify({ action: 'get-reviews', productId })
         });
         const data = await res.json();
         if (data.success && data.reviews) {
@@ -848,8 +875,10 @@ async function loadDynamicReviews() {
                 if (reviewsList) reviewsList.appendChild(newReview);
             });
         }
+        syncEmptyReviewState(reviewsList);
     } catch (e) {
         console.error("Error loading reviews:", e);
+        syncEmptyReviewState(reviewsList);
     }
 }
 

@@ -835,7 +835,8 @@ document.addEventListener('DOMContentLoaded', () => {
         '/collections/beauty',
         '/collections/men',
         '/collections/shoes',
-        '/collections/pants-skirts',        '/blog',
+        '/collections/pants-skirts',
+        '/blog',
         '/blog/beauty-has-no-sizes-the-movement-redefining-beauty',
         '/blog/stop-dieting-how-bbw-women-take-care-of-themselves',
         '/blog/nutrition-for-curvy-women-eat-to-feel-amazing',
@@ -2438,13 +2439,13 @@ function showErrorPopup(message) {
         const savings = totalCompare - totalPrice;
 
         const originalEl = section.querySelector('.bd-original');
-        if (originalEl) originalEl.innerHTML = `Original: <s>$${totalCompare.toFixed(2)}</s>`;
+        if (originalEl) originalEl.innerHTML = `Regular price: <s>$${totalCompare.toFixed(2)}</s>`;
 
         const saveEl = section.querySelector('.bd-save');
         if (saveEl) saveEl.innerHTML = `${bd.savings_label || 'You Save:'} <strong>$${savings.toFixed(2)}</strong>`;
 
         const totalEl = section.querySelector('.bd-total');
-        if (totalEl) totalEl.innerHTML = `Bundle Price: <strong class="bd-total-price">$${totalPrice.toFixed(2)}</strong>`;
+        if (totalEl) totalEl.innerHTML = `Curvafit bundle: <strong class="bd-total-price">$${totalPrice.toFixed(2)}</strong>`;
 
         const ctaEl = section.querySelector('.bd-cta');
         if (ctaEl) {
@@ -8556,13 +8557,7 @@ document.dispatchEvent(new Event('wishlist:change'));
     function getVariantComparePrice(product, color, size) {
       return getVariantPrice(product, color, size) * (product.compare_price / product.price);
     }
-    // La vraie page produit est .product-section (jamais .product-card) —
-    // se baser sur dataset.productId était faux dès qu'une carte de type
-    // .product-card porte aussi ce champ pour un autre usage (ex: le
-    // mini-media-slider de mini-product-slider le lit indépendamment),
-    // ce qui faisait passer une simple carte "Add to Cart" par la
-    // branche page-produit et exiger un choix de taille/couleur
-    // inexistant dans ce contexte.
+    // La vraie page produit est .product-section (jamais .product-card)
     const isProductPage = !cardContainer;
     let quantity = 1;
     const qtyInput = container.querySelector('.quantity input');
@@ -16750,12 +16745,13 @@ function injectColFbt() {
 
     if ((wm.show || 'no').toLowerCase().trim() !== 'yes') return;
 
-    const TEXT = wm.text || 'bbw4life.com';
+    const TEXT = wm.text || 'Curvafit';
 
     function makeWatermark() {
       const el = document.createElement('span');
       el.className    = 'bbw-watermark';
       el.textContent  = TEXT;
+      el.style.color  = wm.color || 'rgba(59, 27, 125, 0.42)';
       el.setAttribute('aria-hidden', 'true');
       return el;
     }
@@ -16865,12 +16861,13 @@ function injectColFbt() {
     const wm          = settings.watermark || {};
     if ((wm.show || 'no').toLowerCase().trim() !== 'yes') return;
 
-    const TEXT = wm.text || 'bbw4life.com';
+    const TEXT = wm.text || 'Curvafit';
 
     function makeWatermark() {
       const el = document.createElement('span');
       el.className   = 'bbw-watermark';
       el.textContent = TEXT;
+      el.style.color = wm.color || 'rgba(59, 27, 125, 0.42)';
       el.setAttribute('aria-hidden', 'true');
       return el;
     }

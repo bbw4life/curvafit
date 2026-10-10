@@ -22,12 +22,12 @@
 
     title1: 'EXPLORE CURVAFIT',
     links1: [
+      { text: 'Find Your Pick', url: '#', action: 'curvafit-picks' },
       { text: 'Curvafit essentials', url: '#' },
       { text: 'Wellness journal',    url: '/blog/blog.html' },
       { text: 'Special offers',      url: '#' },
       { text: 'Our approach',        url: '#' },
-      { text: 'Our mission',         url: '#' },
-      { text: 'Wellness disclaimer', url: '#' }
+      { text: 'Our mission',         url: '#' }
     ],
 
     title2: 'CUSTOMER CARE',
@@ -128,6 +128,10 @@
       const a  = document.createElement('a');
       a.href        = item.url || '#';
       a.textContent = item.text;
+      if (colNum === 1 && (item.action === 'curvafit-picks' || item.text.trim().toLowerCase() === 'curvafit picks')) {
+        a.setAttribute('data-open-quiz', 'true');
+        a.classList.add('bbw-footer__quiz-link');
+      }
       li.appendChild(a);
       ulEl.appendChild(li);
     });
@@ -686,7 +690,7 @@
 
 
 /* ═══════════════════════════════════════════════════════════════
-   BBW4LIFE — "Find Your Best" Style Quiz — bbw-quiz.js
+   Curvafit Picks — guide and product selector
 ═══════════════════════════════════════════════════════════════ */
 
 (function () {
@@ -710,19 +714,7 @@
   /* ──────────────────────────────────────────────────────────────
      STYLE DESCRIPTIONS (fallbacks if not in settings)
   ────────────────────────────────────────────────────────────── */
-  var STYLE_DESCS = {
-    Casual:  'Comfortable, relaxed and effortlessly chic for everyday living.',
-    Chic:    'Refined elegance with a contemporary edge — timeless sophistication.',
-    Beauty:  'Soft, feminine and delicate — pieces that celebrate your natural glow.',
-    Glamour: 'Bold, dazzling and unapologetically radiant — you were born to shine.'
-  };
-
-  var OCCASION_SLOTS = {
-    Everyday: 0,
-    Evening:  1,
-    Work:     2,
-    Party:    3
-  };
+  var EBOOK_IDS = ['Pdg-Francenel-product1', 'Pdg-Francenel-product2', 'Pdg-Francenel-product3', 'Pdg-Francenel-product15'];
 
   /* ──────────────────────────────────────────────────────────────
      DOM HELPERS
@@ -782,9 +774,10 @@
     if (wrap) wrap.style.display = 'flex';
 
     var totalSteps = 4;
-    var pct = Math.round((step / totalSteps) * 100);
+    var visibleStep = Math.min(step, totalSteps);
+    var pct = Math.round((visibleStep / totalSteps) * 100);
     bar.style.setProperty('--bbq-progress', pct + '%');
-    label.textContent = 'Step ' + step + ' of ' + totalSteps;
+    label.textContent = step > totalSteps ? 'Your Curvafit pick' : 'Step ' + visibleStep + ' of ' + totalSteps;
   }
 
   /* ──────────────────────────────────────────────────────────────
@@ -840,11 +833,8 @@
   ────────────────────────────────────────────────────────────── */
   function onStyleSelected(styleVal) {
     state.style = styleVal;
-
-    var cfg = (state.quizSettings.styles || {})[styleVal] || {};
-    var ids = cfg.product_ids || [];
-    state.stylePool = ids;
-
+    var cfg = (state.quizSettings.categories || {})[styleVal] || {};
+    state.stylePool = cfg.product_ids || [];
     goTo(2);
   }
 
@@ -853,37 +843,34 @@
      (labels are fixed; products come from the style pool)
   ────────────────────────────────────────────────────────────── */
   function buildQ2() {
-    // No dynamic content needed — options are static HTML already.
-    // Just reset selection state.
+    var options = $('bbqQ2Options');
+    if (!options) return;
+    options.innerHTML = '';
     state.occasion = null;
-    document.querySelectorAll('#bbqQ2Options .bbq-opt-card').forEach(function (btn) {
-      btn.classList.remove('bbq-selected');
+    state.stylePool.forEach(function (pid) {
+      var product = getProductById(pid);
+      if (!product) return;
+      var details = state.quizSettings.products && state.quizSettings.products[pid] || {};
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'bbq-opt-card';
+      button.setAttribute('data-q', '2');
+      button.setAttribute('data-val', pid);
+      button.innerHTML = '<span class="bbq-opt-icon"><i class="fas ' + (EBOOK_IDS.indexOf(pid) >= 0 ? 'fa-book-open' : 'fa-heart') + '"></i></span><span class="bbq-opt-label"></span><span class="bbq-opt-desc"></span><span class="bbq-opt-check"><i class="fas fa-check"></i></span>';
+      button.querySelector('.bbq-opt-label').textContent = product.title;
+      button.querySelector('.bbq-opt-desc').textContent = details.description || '';
+      options.appendChild(button);
     });
   }
 
   /* ──────────────────────────────────────────────────────────────
      Q2 — OCCASION SELECTED
   ────────────────────────────────────────────────────────────── */
-  function onOccasionSelected(occasionVal) {
-    state.occasion = occasionVal;
-
-    var cfg    = (state.quizSettings.occasions || {})[occasionVal] || {};
-    var slot   = typeof cfg.slot === 'number' ? cfg.slot : (OCCASION_SLOTS[occasionVal] || 0);
-    var pool   = state.stylePool;
-
-    // Cycle through pool in case slot > pool.length
-    var pid    = pool.length ? pool[slot % pool.length] : null;
-    var prod   = pid ? getProductById(pid) : null;
-
-    // Fallback: pick any product from the pool
-    if (!prod && pool.length) {
-      for (var i = 0; i < pool.length; i++) {
-        prod = getProductById(pool[i]);
-        if (prod) break;
-      }
-    }
-
-    state.selectedProduct = prod;
+  function onOccasionSelected(productId) {
+    state.occasion = productId;
+    state.selectedProduct = getProductById(productId);
+    state.color = null;
+    state.size = null;
     goTo(3);
   }
 
@@ -906,23 +893,32 @@
       // No colors — auto advance
       if (noMsg) noMsg.style.display = 'block';
       state.color = null;
-      setTimeout(function () { goTo(4); }, 1800);
+      setTimeout(function () { buildAndShowResult(); }, 250);
       return;
     }
 
     colors.forEach(function (colorObj) {
-      var swatch = document.createElement('div');
-      swatch.className = 'bbq-color-swatch';
-
-      var circle = document.createElement('div');
-      circle.className = 'bbq-color-circle';
-      circle.style.backgroundColor = colorObj.hex || '#ccc';
-
+      var isEbook = EBOOK_IDS.indexOf(prod.id) >= 0;
+      if (colorObj.active === false) return;
+      var swatch = document.createElement('button');
+      swatch.type = 'button';
+      swatch.className = 'bbq-color-swatch' + (isEbook ? ' bbq-language-card' : '');
+      if (isEbook && colorObj.image) {
+        var cover = document.createElement('img');
+        cover.className = 'bbq-language-cover';
+        cover.src = typeof upgradeShopifyImageUrl === 'function' ? upgradeShopifyImageUrl(colorObj.image, 320) : colorObj.image;
+        cover.alt = prod.title + ' — ' + colorObj.name;
+        cover.loading = 'lazy';
+        swatch.appendChild(cover);
+      } else {
+        var circle = document.createElement('span');
+        circle.className = 'bbq-color-circle';
+        circle.style.backgroundColor = colorObj.hex || '#ccc';
+        swatch.appendChild(circle);
+      }
       var name = document.createElement('span');
-      name.className   = 'bbq-color-name';
+      name.className = 'bbq-color-name';
       name.textContent = colorObj.name;
-
-      swatch.appendChild(circle);
       swatch.appendChild(name);
       palette.appendChild(swatch);
 
@@ -942,7 +938,10 @@
             : colorObj.image;
         }
 
-        setTimeout(function () { goTo(4); }, 400);
+        setTimeout(function () {
+          if (isEbook) buildAndShowResult();
+          else goTo(4);
+        }, 300);
       });
     });
   }
@@ -960,9 +959,9 @@
     grid.innerHTML = '';
     if (noMsg) noMsg.style.display = 'none';
 
-    var sizes = (prod && prod.sizes && prod.sizes.length) ? prod.sizes : [];
+    var sizes = (prod && prod.sizes && prod.sizes.length && EBOOK_IDS.indexOf(prod.id) < 0) ? prod.sizes : [];
 
-    if (!sizes.length) {
+      if (!sizes.length) {
       if (noMsg) noMsg.style.display = 'block';
       state.size = null;
       setTimeout(function () { buildAndShowResult(); }, 1800);
@@ -1044,8 +1043,9 @@
     state.selectedVariant = variant;
 
     // Style description
-    var styleCfg = ((state.quizSettings.styles || {})[state.style]) || {};
-    var desc = styleCfg.description || STYLE_DESCS[state.style] || '';
+    var productCfg = state.quizSettings.products && prod && state.quizSettings.products[prod.id] || {};
+    var categoryCfg = ((state.quizSettings.categories || {})[state.style]) || {};
+    var desc = productCfg.description || categoryCfg.description || '';
 
     var titleEl    = $('bbqResultTitle');
     var styleEl    = $('bbqResultStyle');
@@ -1055,23 +1055,26 @@
     var variantEl  = $('bbqResultProdVariant');
     var priceEl    = $('bbqResultProdPrice');
 
-    if (titleEl)   titleEl.textContent   = 'Your ' + (state.style || '') + ' Look!';
-    if (styleEl)   styleEl.textContent   = (state.style || '') + ' · ' + (state.occasion || '');
+    var ebook = !!prod && EBOOK_IDS.indexOf(prod.id) >= 0;
+    if (titleEl)   titleEl.textContent   = 'Your Curvafit Pick';
+    if (styleEl)   styleEl.textContent   = (ebook ? 'Digital guide' : 'Movement essential') + (state.color ? ' · ' + state.color : '');
     if (descEl)    descEl.textContent    = desc;
 
     if (prod) {
       var imgSrc = getVariantImage(prod, state.color);
       if (typeof upgradeShopifyImageUrl === 'function') imgSrc = upgradeShopifyImageUrl(imgSrc, 400);
-      if (imgEl) { imgEl.src = imgSrc; imgEl.alt = prod.title; }
+      if (imgEl) { imgEl.src = imgSrc; imgEl.alt = prod.title; imgEl.style.display = ''; }
       if (nameEl)  nameEl.textContent  = prod.title;
 
       var variantParts = [];
       if (state.color) variantParts.push(state.color);
       if (state.size)  variantParts.push('Size: ' + state.size);
-      if (variantEl) variantEl.textContent = variantParts.join(' — ') || 'One size';
+      if (variantEl) variantEl.textContent = variantParts.join(' — ') || (ebook ? 'Digital guide · no size required' : 'One size');
 
       var price = variant ? variant.price : prod.price;
       if (priceEl) priceEl.textContent = '$' + parseFloat(price).toFixed(2);
+      var cta = $('bbqAddToCartBtn');
+      if (cta) cta.innerHTML = ebook ? '<i class="fas fa-download"></i> Download Now' : '<i class="fas fa-shopping-bag"></i> Add to Cart';
     } else {
       if (imgEl)     imgEl.style.display  = 'none';
       if (nameEl)    nameEl.textContent   = 'No product found for this combination.';
@@ -1094,6 +1097,27 @@
     var size  = state.size  || (variant ? variant.size  || null : null);
     var price = variant ? parseFloat(variant.price) : parseFloat(prod.price);
     var vid   = variant ? variant.vid : null;
+
+    if (EBOOK_IDS.indexOf(prod.id) >= 0) {
+      var colorObj = (prod.colors || []).find(function (item) { return item.name === color; });
+      var ebookImage = colorObj && colorObj.image ? colorObj.image : prod.image;
+      if (typeof upgradeShopifyImageUrl === 'function') ebookImage = upgradeShopifyImageUrl(ebookImage, 600);
+      window.__curvafitDirectPurchaseCart = [{
+        id: prod.id, title: prod.title, price: price,
+        compare_price: parseFloat(prod.compare_price) || price,
+        image: ebookImage, size: null, color: color, quantity: 1,
+        cj_product_id: prod.cj_product_id || prod.eprolo_id || null,
+        cj_variant_id: vid
+      }];
+      closeQuiz();
+      if (typeof window.openPaypalShippingModal === 'function') {
+        window.openPaypalShippingModal();
+      } else {
+        window.__curvafitDirectPurchaseCart = null;
+        if (typeof window.showErrorPopup === 'function') window.showErrorPopup('Secure ebook checkout is still loading. Please try again in a moment.');
+      }
+      return;
+    }
 
     var imgSrc = getVariantImage(prod, color);
     if (typeof upgradeShopifyImageUrl === 'function') imgSrc = upgradeShopifyImageUrl(imgSrc, 600);
@@ -1233,15 +1257,14 @@
     });
 
     
-    document.querySelectorAll('#bbqQ2Options .bbq-opt-card').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        document.querySelectorAll('#bbqQ2Options .bbq-opt-card').forEach(function (b) {
-          b.classList.remove('bbq-selected');
-        });
-        btn.classList.add('bbq-selected');
-        var val = btn.getAttribute('data-val');
-        setTimeout(function () { onOccasionSelected(val); }, 320);
-      });
+    var productOptions = $('bbqQ2Options');
+    if (productOptions) productOptions.addEventListener('click', function (e) {
+      var btn = e.target.closest('.bbq-opt-card');
+      if (!btn || !productOptions.contains(btn)) return;
+      productOptions.querySelectorAll('.bbq-opt-card').forEach(function (item) { item.classList.remove('bbq-selected'); });
+      btn.classList.add('bbq-selected');
+      var val = btn.getAttribute('data-val');
+      setTimeout(function () { onOccasionSelected(val); }, 260);
     });
 
     
@@ -1293,7 +1316,7 @@
     var settings = (window.__allProducts || []).find(function (p) {
       return p.type === 'settings';
     }) || {};
-    state.quizSettings = settings.style_quiz || {};
+    state.quizSettings = settings.curvafit_picks || {};
   }
 
   /* ──────────────────────────────────────────────────────────────
@@ -1330,7 +1353,7 @@ document.addEventListener('click', function (e) {
     (
       el.id === 'bbwFindYourBestLink' ||
       el.getAttribute('data-open-quiz') ||
-      (el.textContent && el.textContent.trim().toLowerCase().includes('find your best'))
+      (el.textContent && el.textContent.trim().toLowerCase() === 'curvafit picks')
     )
   ) {
     e.preventDefault();
@@ -1452,7 +1475,7 @@ document.addEventListener('click', function (e) {
     allLinks.forEach(function (el) {
       if (el._bbwsStyleBound) return;
       var txt = (el.textContent || '').trim().toLowerCase();
-      if (txt === 'bbw4life style') {
+      if (['bbw4life style', 'bbw4life styles', 'curvafit essentials'].indexOf(txt) !== -1) {
         el._bbwsStyleBound = true;
         el.addEventListener('click', function (e) {
           e.preventDefault();
@@ -1482,7 +1505,7 @@ document.addEventListener('click', function (e) {
     var txt = (el.textContent || '').trim().toLowerCase();
     if (
       el.getAttribute('data-open-style-popup') !== null ||
-      txt === 'bbw4life style'
+      ['bbw4life style', 'bbw4life styles', 'curvafit essentials'].indexOf(txt) !== -1
     ) {
       e.preventDefault();
       openStylePopup();
@@ -1771,7 +1794,7 @@ document.addEventListener('click', function (e) {
 
   if (!overlay || !modal) return;
 
-  var COLLECTION_URL = '/collections/bbw4life-all-product.html';
+  var COLLECTION_URL = '/#curvafit-guides';
   var CD_KEY         = 'bd_countdown_end';
 
   function openPopup() {
@@ -1811,8 +1834,9 @@ document.addEventListener('click', function (e) {
       var id   = el.id || '';
       if (
         id === 'openBigDealsPopup' ||
-        txt === 'big deals' ||
-        (href === '#' && txt === 'big deals')
+      ['big deals', 'big deal', 'special offers'].indexOf(txt) !== -1 ||
+        txt.indexOf('special offers') !== -1 ||
+        (href === '#' && ['big deals', 'big deal', 'special offers'].indexOf(txt) !== -1)
       ) {
         el._bdBound = true;
         el.addEventListener('click', function (e) {
@@ -1827,11 +1851,11 @@ document.addEventListener('click', function (e) {
     var el = e.target.closest('a, button, li');
     if (!el) return;
     var txt = (el.textContent || '').trim().toLowerCase();
-    if (txt === 'big deals') {
+    if (['big deals', 'big deal', 'special offers'].indexOf(txt) !== -1 || txt.indexOf('special offers') !== -1) {
       e.preventDefault();
       openPopup();
     }
-  });
+  }, true);
 
   bindTriggers();
   setTimeout(bindTriggers, 800);
@@ -1907,9 +1931,9 @@ document.addEventListener('click', function (e) {
     var listEl = document.getElementById('bdPromosList');
     if (!listEl) return;
 
-    var promos = settings.promos || [];
+    var promos = settings.curvafit_promos || [];
     if (!promos.length) {
-      listEl.innerHTML = '<span style="font-size:12px;color:rgba(255,255,255,.40)">Check our site for active promo codes</span>';
+      listEl.innerHTML = '<span style="font-size:12px;color:rgba(255,255,255,.62)">Bundle savings are available with the three Curvafit guides.</span>';
       return;
     }
 
@@ -1984,9 +2008,9 @@ document.addEventListener('click', function (e) {
     var valEl = document.getElementById('bdShipVal');
     if (!valEl) return;
 
-    var cd        = settings.cart_drawer || {};
-    var threshold = parseFloat(cd.free_shipping_threshold) || 140;
-    valEl.textContent = '$' + threshold.toFixed(0);
+    var cd        = settings.curvafit_shipping || {};
+    var threshold = parseFloat(cd.free_shipping_threshold);
+    valEl.textContent = threshold > 0 ? '$' + threshold.toFixed(0) : 'At checkout';
   }
 
   function buildBuyGetCard(settings) {
@@ -1994,12 +2018,8 @@ document.addEventListener('click', function (e) {
     var descEl = document.getElementById('bdBuyGetDesc');
     if (!valEl || !descEl) return;
 
-    var cd  = settings.cart_drawer || {};
-    var buy = parseInt(cd.promo_buy_quantity) || 3;
-    var get = parseInt(cd.promo_get_quantity)  || 1;
-
-    valEl.textContent  = buy + ' + ' + get;
-    descEl.textContent = 'Buy ' + buy + ' item' + (buy > 1 ? 's' : '') + ', get ' + get + ' absolutely free';
+    valEl.textContent  = '3 + gift';
+    descEl.textContent = 'Save on the three-guide bundle and receive Back on Track as a free gift.';
   }
 
   function loadSettings() {
@@ -2078,7 +2098,7 @@ document.addEventListener('click', function (e) {
       var txt     = (el.textContent || '').trim().toLowerCase();
       var hasAttr = el.getAttribute && el.getAttribute('data-open-commitment') !== null;
 
-      if (hasAttr || txt === 'commitment') {
+      if (hasAttr || txt === 'commitment' || txt === 'our approach') {
         el._bbwcBound = true;
         el.addEventListener('click', function (e) {
           e.preventDefault();
@@ -2100,7 +2120,7 @@ document.addEventListener('click', function (e) {
     var txt     = (anchor.textContent || '').trim().toLowerCase();
     var hasAttr = anchor.getAttribute && anchor.getAttribute('data-open-commitment') !== null;
 
-    if (hasAttr || txt === 'commitment') {
+    if (hasAttr || txt === 'commitment' || txt === 'our approach') {
       e.preventDefault();
       bbwcOpen();
     }
@@ -2308,11 +2328,11 @@ document.addEventListener('click', function (e) {
      RISING PARTICLES (ambient)
   ────────────────────────────────────────────────────────── */
   var PTCL_COLORS = [
-    'rgba(201,150,62,0.55)',
-    'rgba(192,56,94,0.45)',
-    'rgba(232,188,106,0.40)',
-    'rgba(123,63,110,0.35)',
-    'rgba(255,215,0,0.30)'
+    'rgba(232,67,135,0.48)',
+    'rgba(112,65,181,0.40)',
+    'rgba(166,61,145,0.36)',
+    'rgba(217,197,233,0.48)',
+    'rgba(255,143,190,0.34)'
   ];
 
   function spawnParticles() {
@@ -2345,7 +2365,7 @@ document.addEventListener('click', function (e) {
   function fireConfetti() {
     if (!confettiEl) return;
     confettiEl.innerHTML = '';
-    var colors = ['#c9963e','#c0385e','#e8bc6a','#7b3f6e','#FFD700','#fff','#d4506e'];
+    var colors = ['#7041b5','#e84387','#a63d91','#d9c5e9','#ff8fbe','#fcf8fd'];
     for (var i = 0; i < 42; i++) {
       var piece = document.createElement('div');
       piece.className = 'bbwnl-confetti-piece';
@@ -2631,7 +2651,7 @@ document.addEventListener('click', function (e) {
 window.BbwNlSpinWheel = (function () {
   'use strict';
 
-  var WHEEL_COLORS = ['#15110E', '#F6EFE5', '#B8925A'];
+  var WHEEL_COLORS = ['#7041B5', '#FCF8FD', '#E84387'];
 
   function getSettings() {
     var allProducts = window.__allProducts || [];
@@ -2781,12 +2801,12 @@ window.BbwNlSpinWheel = (function () {
         ' A' + r + ',' + r + ' 0 ' + largeArc + ',1 ' + p2.x.toFixed(2) + ',' + p2.y.toFixed(2) +
         ' Z');
       path.setAttribute('fill', WHEEL_COLORS[i % WHEEL_COLORS.length]);
-      path.setAttribute('stroke', '#B8925A');
+      path.setAttribute('stroke', 'rgba(112,65,181,0.36)');
       path.setAttribute('stroke-width', '1');
       svg.appendChild(path);
 
       var midAngle = startAngle + sliceAngle / 2;
-      var isDarkSlice = WHEEL_COLORS[i % WHEEL_COLORS.length] === '#15110E';
+      var isLightSlice = WHEEL_COLORS[i % WHEEL_COLORS.length] === '#FCF8FD';
       var label = getSegmentLabel(seg);
 
       /* Radial (vertical) text — runs from near the center out toward the
@@ -2813,7 +2833,7 @@ window.BbwNlSpinWheel = (function () {
       defs.appendChild(pathDef);
 
       var text = document.createElementNS(ns, 'text');
-      text.setAttribute('fill', isDarkSlice ? '#F6EFE5' : '#15110E');
+      text.setAttribute('fill', isLightSlice ? '#321B45' : '#FFFFFF');
       text.setAttribute('font-size', segments.length > 6 ? '13' : '15');
       text.setAttribute('font-weight', '700');
       text.setAttribute('font-family', 'Inter, system-ui, sans-serif');
@@ -2880,7 +2900,7 @@ window.BbwNlSpinWheel = (function () {
     var wrap = document.getElementById('bbwNlConfetti');
     if (!wrap) return;
     wrap.innerHTML = '';
-    var colors = ['#c9963e', '#c0385e', '#e8bc6a', '#7b3f6e', '#FFD700', '#fff', '#d4506e'];
+    var colors = ['#7041b5', '#e84387', '#a63d91', '#d9c5e9', '#ff8fbe', '#fcf8fd'];
     for (var i = 0; i < 42; i++) {
       var piece = document.createElement('div');
       piece.className = 'bbwnl-confetti-piece';

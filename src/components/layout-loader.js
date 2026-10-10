@@ -72,6 +72,20 @@
     document.body.appendChild(s);
   }
 
+  function loadCurvafitPicksCheckout() {
+    if (!document.getElementById('bbw-quiz-overlay')) return;
+    var cssHref = '/products/paypal-shipping-modal.css?v=curvafit-picks-checkout-1';
+    if (!Array.prototype.some.call(document.querySelectorAll('link[rel="stylesheet"]'), function (link) { return link.href.indexOf('/products/paypal-shipping-modal.css') >= 0; })) {
+      var css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = cssHref;
+      document.head.appendChild(css);
+    }
+    if (!Array.prototype.some.call(document.scripts, function (script) { return script.src.indexOf('/products/paypal-shipping-modal.js') >= 0; })) {
+      appendScript('/products/paypal-shipping-modal.js?v=curvafit-picks-checkout-1');
+    }
+  }
+
   // ── Header ──
   // loadFragment peut appeler ce callback deux fois (injection immédiate
   // depuis un cache périmé, puis re-injection après revalidation réseau
@@ -136,11 +150,12 @@
   // footer.js deux fois créerait deux jeux de listeners/IIFE concurrents
   // sur le nouveau DOM du footer.
   var footerScriptLoaded = false;
-  loadFragment('/src/components/footer.html?v=footer-curvafit-copy-1', 'footer-container', function () {
+  loadFragment('/src/components/footer.html?v=curvafit-picks-2', 'footer-container', function () {
     document.dispatchEvent(new Event('footer:loaded'));
+    loadCurvafitPicksCheckout();
     if (footerScriptLoaded) return;
     footerScriptLoaded = true;
-    appendScript('/src/components/footer.js?v=footer-curvafit-copy-1');
+    appendScript('/src/components/footer.js?v=curvafit-picks-2');
   });
 
   // ── Newsletter ──

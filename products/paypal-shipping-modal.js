@@ -133,17 +133,26 @@
   </div>
 </div>`;
 
-  document.addEventListener('DOMContentLoaded', function () {
-    if (!document.querySelector('.buy-paypal')) return; // pas de bouton PayPal sur cette page
+  function bootstrapPaypalShippingModal() {
+    if (window.__curvafitPaypalShippingModalBootstrapped) return;
+    var hasProductButton = !!document.querySelector('.buy-paypal');
+    var hasCurvafitPicks = !!document.getElementById('bbw-quiz-overlay');
+    if (!hasProductButton && !hasCurvafitPicks) return;
+    window.__curvafitPaypalShippingModalBootstrapped = true;
     var productSection = document.querySelector('.product-section');
     var productId = productSection ? productSection.dataset.productId : '';
-    var isDigitalProduct = DIGITAL_PRODUCT_IDS.has(productId);
+    var isDigitalProduct = DIGITAL_PRODUCT_IDS.has(productId) || hasCurvafitPicks;
     var container = document.createElement('div');
     container.innerHTML = HTML;
     document.body.appendChild(container);
-    if (isDigitalProduct) configureDigitalProductModal(container, productId);
+    if (isDigitalProduct) configureDigitalProductModal(container, productId || 'Pdg-Francenel-product1');
     initModal(isDigitalProduct);
-  });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrapPaypalShippingModal, { once: true });
+  } else {
+    bootstrapPaypalShippingModal();
+  }
 
   function configureDigitalProductModal(container, productId) {
     var modal = container.querySelector('.ppsm-modal');

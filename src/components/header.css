@@ -5319,3 +5319,57 @@ body:not(.home-page) #bc-nav.bc-nav--scrolled .bc-item.bc-active a {
     stroke: currentColor !important;
   }
 }
+
+/* Curvafit blog submenu icons: clear line icons in the brand palette. */
+@media (min-width: 993px) {
+  .cf-submenu#cf-nav-blog a > svg {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    fill: none !important;
+    stroke: #e84387 !important;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke .18s ease, transform .18s ease;
+  }
+  .cf-submenu#cf-nav-blog a:hover > svg,
+  .cf-submenu#cf-nav-blog a:focus-visible > svg {
+    stroke: #7041b5 !important;
+    transform: translateY(-1px);
+  }
+
+  .cf-submenu#cf-nav-policies a > svg {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    fill: none !important;
+    stroke: #e84387 !important;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke .18s ease, transform .18s ease;
+  }
+  .cf-submenu#cf-nav-policies a:hover > svg,
+  .cf-submenu#cf-nav-policies a:focus-visible > svg {
+    stroke: #7041b5 !important;
+    transform: translateY(-1px);
+  }
+
+  .cf-submenu#cf-nav-pages a > svg {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    fill: none !important;
+    stroke: #e84387 !important;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke .18s ease, transform .18s ease;
+  }
+  .cf-submenu#cf-nav-pages a:hover > svg,
+  .cf-submenu#cf-nav-pages a:focus-visible > svg {
+    stroke: #7041b5 !important;
+    transform: translateY(-1px);
+  }
+}

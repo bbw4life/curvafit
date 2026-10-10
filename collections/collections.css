@@ -5,24 +5,24 @@
 :root {
 
   /* Collection palette: warm ivory, berry, plum and soft rose. */
-  --col-bg:          #fbf7f9;
-  --col-surface:     #fffdfd;
-  --col-surface-2:   #f7edf3;
-  --col-border:      rgba(113, 52, 119, 0.15);
-  --col-text:        #3c2636;
-  --col-text-2:      rgba(60, 38, 54, 0.72);
-  --col-text-3:      rgba(60, 38, 54, 0.48);
-  --col-accent:      #b83279;
-  --col-accent-2:    #e06b9a;
-  --col-accent-soft: rgba(214, 69, 143, 0.08);
-  --col-dark:        #532044;
-  --col-gold:        #985779;
-  --col-gold-light:  #d982a9;
+  --col-bg:          #fbf9fc;
+  --col-surface:     #fffefe;
+  --col-surface-2:   #f3ecfb;
+  --col-border:      rgba(59, 27, 125, 0.14);
+  --col-text:        #30243a;
+  --col-text-2:      rgba(48, 36, 58, 0.72);
+  --col-text-3:      rgba(48, 36, 58, 0.48);
+  --col-accent:      #3b1b7d;
+  --col-accent-2:    #e84387;
+  --col-accent-soft: rgba(232, 67, 135, 0.08);
+  --col-dark:        #351847;
+  --col-gold:        #e84387;
+  --col-gold-light:  #f2a9c7;
   --col-radius:      3px;
   --col-radius-sm:   2px;
   --col-radius-lg:   4px;
-  --col-shadow:      0 4px 24px rgba(83, 32, 68, 0.08);
-  --col-shadow-lg:   0 16px 48px rgba(83, 32, 68, 0.14);
+  --col-shadow:      0 4px 24px rgba(53, 24, 71, 0.08);
+  --col-shadow-lg:   0 16px 48px rgba(53, 24, 71, 0.14);
   --col-transition:  var(--bbw-transition);
   --col-drawer-w:    360px;
   /* --font-display / --font-body → déplacées dans /tokens.css */
@@ -367,7 +367,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 16px 24px;
-  background: rgba(246,239,229,0.95);
+  background: linear-gradient(105deg, #f3ecfb 0%, #fff8fc 52%, #f7f1fb 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--col-border);
@@ -375,7 +375,7 @@
   top: 0;
   z-index: 30;
   flex-wrap: wrap;
-  box-shadow: 0 2px 16px rgba(21,17,14,0.04);
+  box-shadow: 0 2px 16px rgba(53,24,71,0.04);
 }
 
 .col-toolbar__left,
@@ -4694,121 +4694,6 @@ body.bbw-sets-popup-open [class*="skeleton"] {
 
 
 /* ================================================================
-   COLLECTION HERO — bandeau d'introduction pleine largeur
-   (contenu rempli dynamiquement par collections.js → injectCollectionHero())
-   ids consommés par le JS : #colHeroImage, #colHeroEyebrow,
-   #colHeroTitle, #colHeroSubtitle — ne pas renommer.
-================================================================ */
-.col-hero {
-  position: relative;
-  min-height: 52vh;
-  display: flex;
-  align-items: flex-end;
-  overflow: hidden;
-  background: var(--col-dark);
-  margin: 0;
-}
-
-.col-hero__media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.col-hero__img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 5%;
-  display: block;
-}
-
-.col-hero__overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(180deg,
-    rgba(21,17,14,0.18) 0%,
-    rgba(21,17,14,0.42) 55%,
-    rgba(21,17,14,0.86) 100%);
-}
-
-.col-hero__inner {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 0 48px 54px;
-  opacity: 0;
-  transform: translateY(16px);
-  animation: colHeroFadeUp 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
-}
-
-.col-hero__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--col-gold-light);
-  margin: 0 0 16px;
-}
-
-.col-hero__eyebrow:empty { display: none; }
-
-.col-hero__eyebrow::before {
-  content: '';
-  display: inline-block;
-  width: 26px;
-  height: 1px;
-  background: var(--bbw-gold-border-hi);
-  flex-shrink: 0;
-}
-
-.col-hero__title {
-  font-family: var(--font-display);
-  font-size: clamp(32px, 5vw, 62px);
-  font-style: italic;
-  font-weight: 600;
-  line-height: 1.06;
-  letter-spacing: -0.01em;
-  color: var(--bbw-white);
-  margin: 0 0 14px;
-}
-
-.col-hero__subtitle {
-  font-family: var(--font-body);
-  font-size: clamp(14px, 1.3vw, 16px);
-  line-height: 1.7;
-  color: rgba(255,255,255,0.72);
-  max-width: 54ch;
-  margin: 0;
-}
-
-.col-hero__subtitle:empty { display: none; }
-
-@keyframes colHeroFadeUp {
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 900px) {
-  .col-hero { min-height: 40vh; }
-  .col-hero__inner { padding: 0 28px 40px; }
-  .col-hero__img { object-position: center 14%; }
-}
-
-@media (max-width: 600px) {
-  .col-hero { min-height: 32vh; }
-  .col-hero__inner { padding: 0 18px 30px; }
-  .col-hero__eyebrow { font-size: 10px; letter-spacing: 0.22em; margin-bottom: 12px; }
-  .col-hero__subtitle { max-width: none; }
-}
-
-/* ================================================================
    BBW ORIGINALS PAGE — "exhibition" grid dress-up (scoped, additive)
    Cette page (bbw-features-products.html) montre les créations propres
    BBW4LIFE : on lui donne plus d'air qu'une grille catalogue classique,
@@ -4835,23 +4720,156 @@ body.bbw-originals-page .col-product-card:hover {
   body.bbw-originals-page .col-grid.grid-view { gap: 18px 12px; }
 }
 
-/* Replace the former blue-violet legacy aliases on this collection page
-   so components still using bbw-* tokens inherit the berry/plum palette. */
+/* Replace the former blue-violet aliases on this collection page. */
 body:has(#collection-page) {
-  --bbw-black: #532044;
-  --bbw-black-soft: #713477;
-  --bbw-gold: #985779;
-  --bbw-gold-light: #d982a9;
-  --bbw-gold-vivid: #d6458f;
-  --bbw-gold-pale: #f7edf3;
-  --bbw-gold-pale-mid: #f8c8e2;
-  --bbw-gold-border: rgba(113, 52, 119, 0.15);
-  --bbw-gold-border-hi: rgba(184, 50, 121, 0.34);
-  --bbw-gold-glow: rgba(214, 69, 143, 0.16);
-  --bbw-rose: #b83279;
-  --bbw-rose-light: #e06b9a;
+  --bbw-black: #351847;
+  --bbw-black-soft: #55316b;
+  --bbw-gold: #e84387;
+  --bbw-gold-light: #f2a9c7;
+  --bbw-gold-vivid: #e84387;
+  --bbw-gold-pale: #f3ecfb;
+  --bbw-gold-pale-mid: #eadcf6;
+  --bbw-gold-border: rgba(59, 27, 125, 0.14);
+  --bbw-gold-border-hi: rgba(232, 67, 135, 0.34);
+  --bbw-gold-glow: rgba(232, 67, 135, 0.16);
+  --bbw-rose: #3b1b7d;
+  --bbw-rose-light: #e84387;
   --bbw-white: #fffdfd;
-  --bbw-white-mid: #fbf2f7;
-  --bbw-white-mist: #fff8fb;
-  --bbw-white-soft: #fff8fb;
+  --bbw-white-mid: #f7f2fa;
+  --bbw-white-mist: #fbf9fc;
+  --bbw-white-soft: #fbf9fc;
+}
+
+/* Curvafit colors for the collection controls and product labels. */
+body:has(#collection-page) .col-toolbar {
+  background: linear-gradient(105deg, #dfcceb 0%, #f1dce9 54%, #e4d3ef 100%) !important;
+  border-bottom-color: rgba(59, 27, 125, .16);
+}
+
+body:has(#collection-page) .col-filter-btn {
+  background: #3b1b7d;
+  border-color: #3b1b7d;
+  color: #fff;
+}
+
+body:has(#collection-page) .col-filter-btn:hover {
+  background: #f3ecfb;
+  border-color: #3b1b7d;
+  color: #3b1b7d;
+}
+
+body:has(#collection-page) .col-morpho-btn {
+  background: #e84387;
+  border-color: #e84387;
+  color: #fff;
+}
+
+body:has(#collection-page) .col-morpho-btn:hover {
+  background: #cf2d72;
+  border-color: #cf2d72;
+  color: #fff;
+}
+
+body:has(#collection-page) .col-cat-tab {
+  color: #695a75;
+}
+
+body:has(#collection-page) .col-cat-tab.active {
+  color: #3b1b7d;
+  border-bottom-color: #e84387;
+}
+
+body:has(#collection-page) .col-cat-tab:hover:not(.active) {
+  color: #e84387;
+}
+
+body:has(#collection-page) .col-sort-btn {
+  background: #fffefe;
+  border-color: rgba(59, 27, 125, .18);
+  color: #3b1b7d;
+}
+
+body:has(#collection-page) .col-sort-btn:hover {
+  border-color: #e84387;
+  color: #e84387;
+}
+
+body:has(#collection-page) .col-view-toggle {
+  background: #eee5f8;
+  border-color: rgba(59, 27, 125, .16);
+}
+
+body:has(#collection-page) .col-view-btn.active {
+  background: #fffefe;
+  color: #e84387;
+  box-shadow: 0 1px 4px rgba(59, 27, 125, .14);
+}
+
+body:has(#collection-page) .col-view-btn:hover:not(.active) {
+  color: #3b1b7d;
+}
+
+body:has(#collection-page) .col-card__quick-view,
+body:has(#collection-page) .col-card__wishlist {
+  background: rgba(59, 27, 125, .76);
+  border-color: rgba(255, 255, 255, .78);
+  color: #fff;
+}
+
+body:has(#collection-page) .col-card__quick-view:hover,
+body:has(#collection-page) .col-card__wishlist:hover,
+body:has(#collection-page) .col-card__wishlist.active {
+  background: #e84387;
+  border-color: #fff;
+  color: #fff;
+}
+
+body:has(#collection-page) .col-card__wishlist:not(.active) {
+  background: rgba(255, 255, 255, .94);
+  border-color: rgba(59, 27, 125, .24);
+}
+
+body:has(#collection-page) .col-card__wishlist.active {
+  background: #fff1f7;
+  border-color: rgba(232, 67, 135, .36);
+}
+
+body:has(#collection-page) .col-card__badge--custom {
+  background: #3b1b7d;
+  border-color: rgba(232, 67, 135, .55);
+  color: #fff;
+}
+
+body:has(#collection-page) .col-card__badge--color[title="English"],
+body:has(#collection-page) .col-card__badge--color[title="French"],
+body:has(#collection-page) .col-card__badge--color[title="Spanish"] {
+  background: #f3ecfb !important;
+  border-color: rgba(59, 27, 125, .18);
+  color: #3b1b7d !important;
+}
+
+body:has(#collection-page) .col-card__color-name {
+  color: #e84387;
+}
+
+body:has(#collection-page) .col-card__btn--cart {
+  background: #3b1b7d;
+  border-color: #3b1b7d;
+  color: #fff;
+}
+
+body:has(#collection-page) .col-card__btn--cart:hover {
+  background: #e84387;
+  border-color: #e84387;
+  color: #fff;
+}
+
+body:has(#collection-page) .col-card__btn--view {
+  border-color: rgba(59, 27, 125, .2);
+  color: #3b1b7d;
+}
+
+body:has(#collection-page) .col-card__btn--view:hover {
+  border-color: #e84387;
+  color: #e84387;
 }

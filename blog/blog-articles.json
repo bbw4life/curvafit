@@ -1,39 +1,229 @@
 {
-    "featured":  {
-                     "image":  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Card_article_featured.png?v=1779052639",
-                     "imageAlt":  "Curvy woman building healthy habits through journaling and gentle exercise",
-                     "badge":  "Body Positivity",
-                     "title":  "Beauty Has No Sizes: The Movement That Is Redefining Beauty for Every Woman",
-                     "excerpt":  "Discover how thousands of BBW women around the world are reclaiming their confidence, celebrating their curves, and building a life they truly love â€” without changing who they are.",
-                     "author":  {
-                                    "name":  "Dr. Camille Fontaine",
-                                    "role":  "Body Positivity Coach \u0026 Wellness Expert",
-                                    "image":  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Card_article_featured_1.png?v=1779052638"
-                                },
-                     "date":  "March 9, 2025",
-                     "views":  "8.2k",
-                     "readTime":  "7 min read",
-                     "url":  "/blog/article-featured.html"
-                 },
-    "cards":  [
-                  {
-                      "id":  "card-1",
-                      "category":  "weight-loss-science",
-                      "image":  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_1.1.png?v=1779050358",
-                      "imageAlt":  "Curvy woman understanding sustainable weight loss through science",
-                      "badge":  "Self-Care \u0026 Wellness",
-                      "isNew":  false,
-                      "title":  "Stop Dieting â€” Here Is How BBW Women Actually Take Care of Themselves",
-                      "excerpt":  "Forget crash diets and toxic fitness culture. Discover the real, science-backed approach to well-being that honors your curvy body, boosts your energy, and makes you feel unstoppable every single day.",
-                      "author":  {
-                                     "name":  "Isabelle Marchand",
-                                     "role":  "Certified Nutritionist \u0026 Wellness Coach",
-                                     "image":  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_1.png?v=1779050358"
-                                 },
-                      "views":  "4.1k",
-                      "date":  "Feb 28, 2026",
-                      "readTime":  "6 min",
-                      "url":  "/blog/article1.html"
-                  }
-              ]
+  "stats": [
+    {
+      "icon": "fa-solid fa-book-open",
+      "target": 10400,
+      "suffix": "+",
+      "label": "Curvafit Article Reads"
+    },
+    {
+      "icon": "fa-solid fa-users",
+      "target": 59000,
+      "suffix": "+",
+      "label": "Curvafit Readers"
+    },
+    {
+      "icon": "fa-solid fa-book-open",
+      "target": 4,
+      "suffix": "",
+      "label": "Digital Guides"
+    },
+    {
+      "icon": "fa-solid fa-globe",
+      "target": 3,
+      "suffix": "",
+      "label": "Guide Languages"
+    }
+  ],
+  "cards": [
+    {
+      "id": "card-1",
+      "category": "beginner-guides",
+      "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_1.1.png?v=1779050358",
+      "imageAlt": "Plus-size woman exploring a gentle walking routine",
+      "badge": "Gentle Walking",
+      "isNew": false,
+      "title": "How to Start Walking When You're Plus Size: A Gentle 4-Week Plan",
+      "excerpt": "A calm four-week walking plan with three planned walks each week, an optional short walk, and simple reflections. Start with a pace that feels manageable, and repeat a week whenever you need more time. Explore the Gentle Walking guide.",
+      "author": {
+        "name": "F. Paul",
+        "role": "Curvafit Owner & Wellness Blogger",
+        "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_1.png?v=1779050358"
+      },
+      "views": "4.1k",
+      "date": "Oct 10, 2026",
+      "readTime": "6 min",
+      "url": "/blog/article1.html"
+    },
+    {
+      "id": "card-2",
+      "category": "nutrition-for-curvy-women",
+      "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_2.1.png?v=1779050358",
+      "imageAlt": "Plus-size woman planning simple meals for the week",
+      "badge": "Simple Meal Planning",
+      "isNew": false,
+      "title": "Simple Meal Prep for Busy Weeks: 10 Easy Ideas, No Strict Diet Needed",
+      "excerpt": "Ten flexible meal-prep ideas for busy weeks, with simple ways to plan ahead and make a shopping list. Use what suits your schedule, preferences, and needs—no strict diet rules. Explore Simple Meal Planner.",
+      "author": {
+        "name": "F. Paul",
+        "role": "Curvafit Owner & Wellness Blogger",
+        "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_2.png?v=1779050356"
+      },
+      "views": "3.8k",
+      "date": "Oct 12, 2026",
+      "readTime": "5 min",
+      "url": "/blog/article2.html"
+    },
+    {
+      "id": "card-3",
+      "category": "beginner-guides",
+      "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_3.1.png?v=1779050358",
+      "imageAlt": "Woman following a gentle chair-based movement at home",
+      "badge": "Gentle Movement",
+      "isNew": false,
+      "title": "Chair Workouts for Beginners: 8 Gentle Moves You Can Do at Home",
+      "excerpt": "Explore eight gentle movements you can do at home, with a chair option for each. The four-week guide offers a simple structure and room to choose the level that feels appropriate for you—no equipment needed. Meet Move at Home.",
+      "author": {
+        "name": "F. Paul",
+        "role": "Curvafit Owner & Wellness Blogger",
+        "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_3.png?v=1779050357"
+      },
+      "views": "6.3k",
+      "date": "Oct 14, 2026",
+      "readTime": "4 min",
+      "url": "/blog/article3.html"
+    },
+    {
+      "id": "card-4",
+      "category": "mindset-confidence",
+      "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_4.1.png?v=1779050358",
+      "imageAlt": "Person using a journal to reflect and choose a next step",
+      "badge": "Habits Without Guilt",
+      "isNew": true,
+      "title": "How to Restart Your Routine After a Setback, Without Guilt",
+      "excerpt": "A 14-day guide for returning to routines after a pause. Reflect on what got in the way, prepare a small Plan B, and choose one manageable next step—without punishment or trying to make up for missed days. Explore Back on Track.",
+      "author": {
+        "name": "F. Paul",
+        "role": "Curvafit Owner & Wellness Blogger",
+        "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_4.png?v=1779050355"
+      },
+      "views": "2.9k",
+      "date": "Oct 16, 2026",
+      "readTime": "6 min",
+      "url": "/blog/article4.html"
+    },
+    {
+      "id": "card-5",
+      "category": "sustainable-habits",
+      "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_5.1.png?v=1779050358",
+      "imageAlt": "Walking shoes and a notebook set out for a weekly routine",
+      "badge": "Steady Habits",
+      "isNew": true,
+      "title": "Staying Consistent When Motivation Disappears: 7 Habits That Actually Work",
+      "excerpt": "Seven practical ways to make a routine easier to return to when motivation feels low: choose a smaller starting step, link an action to an existing cue, and keep a flexible Plan B. Explore the Curvafit three-guide bundle for walking, meal planning, and at-home movement.",
+      "author": {
+        "name": "F. Paul",
+        "role": "Curvafit Owner & Wellness Blogger",
+        "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_5.png?v=1779050357"
+      },
+      "views": "7.1k",
+      "date": "Oct 18, 2026",
+      "readTime": "8 min",
+      "url": "/blog/article5.html"
+    },
+    {
+      "id": "card-6",
+      "category": "sustainable-habits",
+      "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_6.1.png?v=1779050358",
+      "imageAlt": "Comfortable activewear layers for everyday movement",
+      "badge": "Everyday Comfort",
+      "isNew": false,
+      "title": "Anti-Chafing Tips for Plus-Size Women: What to Wear and What to Avoid",
+      "excerpt": "A practical look at comfortable layers: choose a smooth feel and a fit that stays in place without digging in, and look for fabrics that move moisture away from the skin. Avoid rough or irritating seams. When Curvafit leggings and anti-chafing shorts become available, check their product pages for details.",
+      "author": {
+        "name": "F. Paul",
+        "role": "Curvafit Owner & Wellness Blogger",
+        "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_6.png?v=1779050355"
+      },
+      "views": "8.4k",
+      "date": "Oct 20, 2026",
+      "readTime": "5 min",
+      "url": "/blog/article6.html"
+    },
+    {
+      "id": "card-7",
+      "category": "beginner-guides",
+      "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_7.1.png?v=1779050358",
+      "imageAlt": "Plus-size woman preparing for a calm first gym visit",
+      "badge": "Gym Confidence",
+      "isNew": false,
+      "title": "Your First Day at the Gym: A Calm, Confidence-Building Guide",
+      "excerpt": "A calm walkthrough for planning your first visit: decide what feels comfortable, start with a simple activity, take breaks, and ask gym staff questions. Prefer to begin at home? Explore gentle, equipment-free routines in Move at Home.",
+      "author": {
+        "name": "F. Paul",
+        "role": "Curvafit Owner & Wellness Blogger",
+        "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_7.png?v=1779050357"
+      },
+      "views": "5.7k",
+      "date": "Oct 22, 2026",
+      "readTime": "7 min",
+      "url": "/blog/article7.html"
+    },
+    {
+      "id": "card-8",
+      "category": "nutrition-for-curvy-women",
+      "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_8.1.png?v=1779050357",
+      "imageAlt": "Plus-size woman exploring flexible meal-planning ideas",
+      "badge": "Balanced Meal Planning",
+      "isNew": false,
+      "title": "The Plate Method Explained: Balanced Meals Without Counting Calories",
+      "excerpt": "A flexible visual starting point for planning meals with vegetables, protein, and grains or starches, adapted to your preferences and needs. It is an idea, not a strict rule, and does not require calorie counting. Explore Simple Meal Planner for meal grids and shopping-list prompts.",
+      "author": {
+        "name": "F. Paul",
+        "role": "Curvafit Owner & Wellness Blogger",
+        "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_8.png?v=1779050358"
+      },
+      "views": "9.2k",
+      "date": "Oct 25, 2026",
+      "readTime": "5 min",
+      "url": "/blog/article8.html"
+    }  ],
+
+  "popular": [
+    {
+      "rank": "01",
+      "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_5.1.png?v=1779050358",
+      "imageAlt": "Walking shoes and a notebook set out for a weekly routine",
+      "category": "Steady Habits",
+      "title": "Staying Consistent When Motivation Disappears: 7 Habits That Actually Work",
+      "views": "7.1k",
+      "readTime": "8 min",
+      "url": "/blog/article5.html"
+    },
+    {
+      "rank": "02",
+      "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_3.1.png?v=1779050358",
+      "imageAlt": "Woman following a gentle chair-based movement at home",
+      "category": "Gentle Movement",
+      "title": "Chair Workouts for Beginners: 8 Gentle Moves You Can Do at Home",
+      "views": "6.3k",
+      "readTime": "4 min",
+      "url": "/blog/article3.html"
+    },
+    {
+      "rank": "03",
+      "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_1.1.png?v=1779050358",
+      "imageAlt": "Plus-size woman exploring a gentle walking routine",
+      "category": "Gentle Walking",
+      "title": "How to Start Walking When You're Plus Size: A Gentle 4-Week Plan",
+      "views": "4.1k",
+      "readTime": "6 min",
+      "url": "/blog/article1.html"
+    },
+    {
+      "rank": "04",
+      "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_2.1.png?v=1779050358",
+      "imageAlt": "Plus-size woman planning simple meals for the week",
+      "category": "Simple Meal Planning",
+      "title": "Simple Meal Prep for Busy Weeks: 10 Easy Ideas, No Strict Diet Needed",
+      "views": "3.8k",
+      "readTime": "5 min",
+      "url": "/blog/article2.html"
+    }
+  ],
+
+    "authors": [],
+
+  "editorsPicks": [
+  ]
 }
