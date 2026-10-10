@@ -160,7 +160,7 @@ html:not(.has-scroll-reveal) [data-scroll-reveal] {
 ════════════════════════════ */
 .product-section {
     position: relative;
-    background: #ffffff;
+    background: linear-gradient(135deg, #fcf9fd 0%, #f8f4fb 52%, #fcf8fb 100%);
     overflow: hidden;
     isolation: isolate;
 }
@@ -168,10 +168,18 @@ html:not(.has-scroll-reveal) [data-scroll-reveal] {
     content: '';
     position: absolute;
     inset: 0;
-    background-image:
-        linear-gradient(rgba(93,60,144,0.055) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(93,60,144,0.055) 1px, transparent 1px);
-    background-size: 60px 60px;
+    background:
+        radial-gradient(circle at 3% 16%, transparent 0 92px, rgba(93,60,144,.07) 93px 94px, transparent 95px 121px, rgba(93,60,144,.04) 122px 123px, transparent 124px),
+        radial-gradient(circle at 97% 30%, transparent 0 112px, rgba(232,67,135,.07) 113px 114px, transparent 115px 145px, rgba(232,67,135,.04) 146px 147px, transparent 148px),
+        radial-gradient(circle at 5% 52%, transparent 0 102px, rgba(232,67,135,.06) 103px 104px, transparent 105px 133px, rgba(93,60,144,.04) 134px 135px, transparent 136px),
+        radial-gradient(circle at 96% 68%, transparent 0 94px, rgba(93,60,144,.07) 95px 96px, transparent 97px 125px, rgba(93,60,144,.04) 126px 127px, transparent 128px),
+        radial-gradient(circle at 15% 92%, transparent 0 78px, rgba(93,60,144,.06) 79px 80px, transparent 81px 106px, rgba(232,67,135,.04) 107px 108px, transparent 109px),
+        radial-gradient(circle at 84% 96%, transparent 0 122px, rgba(232,67,135,.06) 123px 124px, transparent 125px 158px, rgba(93,60,144,.04) 159px 160px, transparent 161px),
+        radial-gradient(ellipse at 10% 4%, rgba(232, 67, 135, 0.055), transparent 34%),
+        radial-gradient(ellipse at 94% 22%, rgba(93, 60, 144, 0.065), transparent 37%),
+        radial-gradient(ellipse at 48% 100%, rgba(190, 157, 119, 0.055), transparent 42%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
     pointer-events: none;
     z-index: 0;
 }
@@ -1804,15 +1812,15 @@ html:not(.has-scroll-reveal) [data-scroll-reveal] {
 .bundle-add-btn {
     margin-top: 12px; width: 100%;
     padding: 12px;
-    background: #24133f;
-    color: var(--bbw-gold);
+    background: linear-gradient(110deg, #3b1b7d 0%, #6940a2 52%, #d6458f 100%);
+    color: #fff;
     font-size: 13px; font-weight: 800;
-    border: 1.5px solid rgba(93,60,144,0.50);
+    border: 1.5px solid rgba(255,255,255,0.48);
     border-radius: 100px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
     letter-spacing: 0.08em;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+    box-shadow: 0 5px 16px rgba(93,60,144,0.24), inset 0 1px 0 rgba(255,255,255,0.18);
     text-transform: uppercase;
     position: relative;
     overflow: hidden;
@@ -1827,11 +1835,11 @@ html:not(.has-scroll-reveal) [data-scroll-reveal] {
     border-radius: 100px;
 }
 .bundle-add-btn:hover {
-    background: var(--bbw-black);
-    color: var(--bbw-gold-light);
-    border-color: rgba(93,60,144,0.75);
+    background: linear-gradient(110deg, #2e0f6b 0%, #5d3296 52%, #c9347e 100%);
+    color: #fff;
+    border-color: rgba(255,255,255,0.72);
     transform: translateY(-2px);
-    box-shadow: 0 10px 28px rgba(0,0,0,0.28);
+    box-shadow: 0 9px 22px rgba(59,27,125,0.30), inset 0 1px 0 rgba(255,255,255,0.22);
 }
 .bundle-selection {
     transition: all 0.22s ease;
@@ -6604,11 +6612,16 @@ body:has(.product-section) .bbw-footer {
 .rv-section::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(93,60,144,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(93,60,144,0.04) 1px, transparent 1px);
-  background-size: 52px 52px;
+  top: -280px;
+  left: 42%;
+  width: 470px;
+  height: 470px;
+  border: 1px solid rgba(93,60,144,.10);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 32px rgba(93,60,144,.025),
+    0 0 0 68px rgba(93,60,144,.02),
+    0 0 0 106px rgba(232,67,135,.018);
   pointer-events: none;
   z-index: 0;
 }
@@ -7301,6 +7314,45 @@ body:has(.product-section) .bbw-footer {
     animation: ppImageSkeletonShimmer 1.5s ease-in-out infinite;
     pointer-events: none;
 }
+.pp-image-block:not(.pp-image-block--loaded) {
+    min-height: clamp(220px, 38vw, 420px);
+}
+
+/* Compact premium two-image feature used below product4's Curvafit marquee. */
+.p4-image-duo {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(10px, 1.5vw, 18px);
+    width: min(1280px, calc(100% - 32px));
+    margin: 14px auto 18px;
+}
+.p4-image-duo__item {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1.42 / 1;
+    margin: 0;
+    border: 1px solid rgba(123,79,184,.18);
+    border-radius: 18px;
+    background: linear-gradient(135deg, #faf6fe, #fff5fa);
+    box-shadow: 0 10px 28px rgba(46,15,107,.09), 0 1px 0 rgba(255,255,255,.9) inset;
+}
+.p4-image-duo__item img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .6s cubic-bezier(.2,.7,.2,1);
+}
+.p4-image-duo__item:hover img { transform: scale(1.025); }
+@media (max-width: 700px) {
+    .p4-image-duo {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+        width: calc(100% - 28px);
+        margin: 12px auto 16px;
+    }
+    .p4-image-duo__item { aspect-ratio: 1.3 / 1; border-radius: 15px; }
+}
 @keyframes ppImageSkeletonShimmer {
     0% { background-position: 100% 0; }
     100% { background-position: -120% 0; }
@@ -7582,10 +7634,38 @@ body:has(#reviews-section) #reviews-section {
     border-top-color: rgba(93,60,144,.18);
 }
 body:has(#reviews-section) #reviews-section::before {
-    background: radial-gradient(circle, rgba(145,105,196,.12) 0%, transparent 70%);
+    border: 1px solid rgba(93,60,144,.11);
+    background:
+        radial-gradient(circle at center, transparent 0 59%, rgba(93,60,144,.12) 59.2% 59.45%, transparent 59.7%),
+        radial-gradient(circle at center, transparent 0 72%, rgba(93,60,144,.08) 72.2% 72.4%, transparent 72.7%),
+        radial-gradient(circle, rgba(145,105,196,.12) 0%, transparent 70%);
+    box-shadow:
+        0 0 0 30px rgba(93,60,144,.025),
+        0 0 0 66px rgba(93,60,144,.018);
 }
 body:has(#reviews-section) #reviews-section::after {
-    background: radial-gradient(circle, rgba(232,67,135,.09) 0%, transparent 70%);
+    background:
+        radial-gradient(circle at center, transparent 0 60%, rgba(232,67,135,.11) 60.2% 60.5%, transparent 60.8%),
+        radial-gradient(circle at center, transparent 0 74%, rgba(232,67,135,.07) 74.2% 74.45%, transparent 74.8%),
+        radial-gradient(circle, rgba(232,67,135,.09) 0%, transparent 70%);
+}
+@media (max-width: 768px) {
+    body:has(#reviews-section) #reviews-section::before,
+    body:has(#reviews-section) #reviews-section::after {
+        display: block;
+    }
+    body:has(#reviews-section) #reviews-section::before {
+        width: 340px;
+        height: 340px;
+        top: -110px;
+        left: -185px;
+    }
+    body:has(#reviews-section) #reviews-section::after {
+        width: 300px;
+        height: 300px;
+        right: -165px;
+        bottom: -90px;
+    }
 }
 body:has(#reviews-section) .reviews-header h2,
 body:has(#reviews-section) #review-modal h3,
