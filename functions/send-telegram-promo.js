@@ -30,7 +30,7 @@ function pickRandomProducts(products, count) {
 export async function onRequestGet(context) {
   const { env } = context;
   const BASE_URL = env.BASE_URL || 'https://bbw4life.com';
-  const ALL_PRODUCTS_URL = `${BASE_URL}/collections/bbw4life-all-product.html`;
+  const ALL_PRODUCTS_URL = `${BASE_URL}/collections/curvafit-all-products.html`;
 
   try {
     const { settings, products } = await getSettings(env);

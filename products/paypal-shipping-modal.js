@@ -26,6 +26,11 @@
     'Pdg-Francenel-product15': 'A missed day is not a failure. Skip punishment and catch-up plans; restart with one small step, without guilt.'
   };
   var EBOOK_CART_STORAGE_KEY = 'curvafit_ebook_order_cart';
+  var modalInstances = { physical: null, digital: null };
+  var modalOpeners = { physical: null, digital: null };
+  var activeModalMode = null;
+  var defaultDigitalMode = false;
+  var modalProductId = '';
 
   var HTML = `
 <div class="ppsm-overlay" id="ppsmOverlay">
@@ -137,17 +142,52 @@
     if (window.__curvafitPaypalShippingModalBootstrapped) return;
     var hasProductButton = !!document.querySelector('.buy-paypal');
     var hasCurvafitPicks = !!document.getElementById('bbw-quiz-overlay');
-    if (!hasProductButton && !hasCurvafitPicks) return;
-    window.__curvafitPaypalShippingModalBootstrapped = true;
+    var hasSearchResults = !!document.getElementById('srGrid');
+    if (!hasProductButton && !hasCurvafitPicks && !hasSearchResults) return;
     var productSection = document.querySelector('.product-section');
     var productId = productSection ? productSection.dataset.productId : '';
     var isDigitalProduct = DIGITAL_PRODUCT_IDS.has(productId) || hasCurvafitPicks;
-    var container = document.createElement('div');
-    container.innerHTML = HTML;
-    document.body.appendChild(container);
-    if (isDigitalProduct) configureDigitalProductModal(container, productId || 'Pdg-Francenel-product1');
-    initModal(isDigitalProduct);
+    defaultDigitalMode = isDigitalProduct;
+    modalProductId = DIGITAL_PRODUCT_IDS.has(productId) ? productId : 'Pdg-Francenel-product1';
+    window.__curvafitPaypalShippingModalBootstrapped = true;
+    // Prepare the dedicated ebook popup on search results too. Physical
+    // product checkout continues to use its ordinary cart flow there.
+    activateModalMode(isDigitalProduct || hasSearchResults);
   }
+
+  function activateModalMode(isDigitalProduct) {
+    var mode = isDigitalProduct ? 'digital' : 'physical';
+    if (activeModalMode && activeModalMode !== mode) {
+      var previous = modalInstances[activeModalMode];
+      if (previous && previous.parentNode) previous.parentNode.removeChild(previous);
+    }
+
+    var container = modalInstances[mode];
+    if (!container) {
+      container = document.createElement('div');
+      container.innerHTML = HTML;
+      modalInstances[mode] = container;
+      document.body.appendChild(container);
+      if (isDigitalProduct) configureDigitalProductModal(container, modalProductId);
+      activeModalMode = mode;
+      initModal(isDigitalProduct);
+      return;
+    }
+
+    if (!container.parentNode) document.body.appendChild(container);
+    activeModalMode = mode;
+  }
+
+  function openModalMode(isDigitalProduct) {
+    if (!window.__curvafitPaypalShippingModalBootstrapped) bootstrapPaypalShippingModal();
+    activateModalMode(isDigitalProduct);
+    var opener = modalOpeners[isDigitalProduct ? 'digital' : 'physical'];
+    if (opener) opener();
+  }
+
+  // Keep the ordinary product checkout and the ebook payment popup distinct.
+  window.openPaypalShippingModal = function () { openModalMode(defaultDigitalMode); };
+  window.openCurvafitEbookPaymentModal = function () { openModalMode(true); };
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', bootstrapPaypalShippingModal, { once: true });
   } else {
@@ -1069,7 +1109,7 @@
     loadCountries();
 
     // ── Exposé globalement pour que script.js (buyWithPaypal) puisse l'ouvrir ──
-    window.openPaypalShippingModal = function () {
+    modalOpeners[isDigitalProduct ? 'digital' : 'physical'] = function () {
       if (isDigitalProduct) {
         var additions = Array.isArray(window.__curvafitDirectPurchaseCart) ? window.__curvafitDirectPurchaseCart : [];
         var savedCart = mergeEbookCarts(readSavedEbookCart(), additions);

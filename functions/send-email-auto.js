@@ -746,7 +746,7 @@ function buildCEOFooter(settings, env) {
 </td></tr>
 <tr><td style="padding:15px 20px 22px;text-align:center;border-top:1px solid #e3d9ee;">
 <p style="margin:0 0 10px;font-family:Arial,sans-serif;font-size:11px;line-height:1.65;color:${BBW.textLight};">You are receiving this email from Curvafit. You can <a href="${BASE_URL}/unsubscribe" style="color:${BBW.black};text-decoration:underline;">manage your email preferences</a>.</p>
-<p style="margin:0;font-family:Arial,sans-serif;font-size:11px;line-height:2;color:${BBW.textMid};"><a href="${BASE_URL}/collections/bbw4life-all-product.html" style="color:${BBW.textMid};text-decoration:none;">Explore Curvafit</a> &nbsp;|&nbsp; <a href="${BASE_URL}/policies/privacy.html" style="color:${BBW.textMid};text-decoration:none;">Privacy</a> &nbsp;|&nbsp; <a href="${BASE_URL}/page/contact.html" style="color:${BBW.textMid};text-decoration:none;">Contact</a> &nbsp;|&nbsp; <a href="${BASE_URL}/policies/refund.html" style="color:${BBW.textMid};text-decoration:none;">Returns</a></p>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:11px;line-height:2;color:${BBW.textMid};"><a href="${BASE_URL}/collections/curvafit-all-products.html" style="color:${BBW.textMid};text-decoration:none;">Explore Curvafit</a> &nbsp;|&nbsp; <a href="${BASE_URL}/policies/privacy.html" style="color:${BBW.textMid};text-decoration:none;">Privacy</a> &nbsp;|&nbsp; <a href="${BASE_URL}/page/contact.html" style="color:${BBW.textMid};text-decoration:none;">Contact</a> &nbsp;|&nbsp; <a href="${BASE_URL}/policies/refund.html" style="color:${BBW.textMid};text-decoration:none;">Returns</a></p>
 <p style="margin:10px 0 0;font-family:Arial,sans-serif;font-size:10px;color:#9d92a9;">&copy; ${new Date().getFullYear()} Curvafit. All rights reserved.</p>
 </td></tr></table></td></tr>`;
 }
@@ -1026,7 +1026,7 @@ async function composeWelcome(firstName, settings, env) {
     ${cHighlightBox('01', 'Gentle movement', 'Approachable ideas for everyday activity, at your pace.')}
     ${cHighlightBox('02', 'Flexible planning', 'Simple tools to make everyday planning more manageable.', BBW.offWhite)}
     ${cHighlightBox('03', 'Movement at home', 'Gentle routines with room to choose your own pace.', BBW.pinkPale)}
-    ${cCTA('EXPLORE CURVAFIT', `${BASE_URL}/collections/bbw4life-all-product.html`)}
+    ${cCTA('EXPLORE CURVAFIT', `${BASE_URL}/collections/curvafit-all-products.html`)}
     <div style="height:24px;"></div>`;
   return {
     subject: `Welcome to Curvafit, ${name}`,
@@ -1289,7 +1289,7 @@ async function composeNewsletter1(firstName, settings, env) {
     <p style="margin:0 0 4px;font:700 26px Georgia,serif;color:${BBW.textDark};">Hi ${name},</p>
     <p style="margin:0 0 22px;font:700 12px Arial,sans-serif;color:${BBW.pink};letter-spacing:.08em;text-transform:uppercase;">You are subscribed</p>
     ${cParagraphs(copy)}
-    ${cCTA('EXPLORE CURVAFIT', `${BASE_URL}/collections/bbw4life-all-product.html`)}
+    ${cCTA('EXPLORE CURVAFIT', `${BASE_URL}/collections/curvafit-all-products.html`)}
     ${promo ? cPromoBlock(promo.code, promo.percent, promo.items, 'Subscriber offer') : ''}
     <div style="height:24px;"></div>`;
   return {
@@ -1310,7 +1310,7 @@ async function composeNewsletter2(firstName, settings, env) {
     ${cDivider()}
     ${cHighlightBox('?', 'Need a hand?', 'Reply to this email or contact the Curvafit support team.', BBW.pinkPale)}
     ${cCTA('CONTACT SUPPORT', `mailto:${support}`)}
-    ${cCTA('EXPLORE CURVAFIT', `${BASE_URL}/collections/bbw4life-all-product.html`, BBW.pinkDark)}
+    ${cCTA('EXPLORE CURVAFIT', `${BASE_URL}/collections/curvafit-all-products.html`, BBW.pinkDark)}
     <div style="height:24px;"></div>`;
   return {
     subject: 'A quick check-in from Curvafit',
@@ -1351,7 +1351,7 @@ async function composeNewsletter4Buyer(firstName, settings, env) {
     ${cParagraphs(copy)}
     ${cDivider()}
     ${cHighlightBox('01', 'Share your experience', 'Your feedback helps us improve the information and support we provide.')}
-    ${cCTA('EXPLORE CURVAFIT', `${BASE_URL}/collections/bbw4life-all-product.html`, BBW.pinkDark)}
+    ${cCTA('EXPLORE CURVAFIT', `${BASE_URL}/collections/curvafit-all-products.html`, BBW.pinkDark)}
     <div style="height:24px;"></div>`;
   return {
     subject: `Thank you for choosing Curvafit`,
@@ -1370,7 +1370,7 @@ async function composeNewsletter4New(firstName, settings, env) {
     <p style="margin:0 0 22px;font:700 12px Arial,sans-serif;color:${BBW.pink};letter-spacing:.08em;text-transform:uppercase;">A Curvafit note</p>
     ${cParagraphs(copy)}
     ${promo ? cPromoBlock(promo.code, promo.percent, promo.items, 'Subscriber offer') : ''}
-    ${cCTA('EXPLORE CURVAFIT', `${BASE_URL}/collections/bbw4life-all-product.html`)}
+    ${cCTA('EXPLORE CURVAFIT', `${BASE_URL}/collections/curvafit-all-products.html`)}
     ${cDivider()}
     <p style="margin:0;font:13px/1.6 Arial,sans-serif;color:${BBW.textLight};text-align:center;">Browse whenever it suits you. No rush.</p>
     <div style="height:24px;"></div>`;
@@ -1462,7 +1462,7 @@ async function composePlanRequest(data, settings, env) {
         </td>
       </tr>
     </table>
-    ${cCTA('BROWSE THE SHOP &nbsp;›', `${BASE_URL}/collections/bbw4life-all-product.html`)}
+    ${cCTA('BROWSE THE SHOP &nbsp;›', `${BASE_URL}/collections/curvafit-all-products.html`)}
     <div style="height:32px;"></div>`;
 
   return {
@@ -1515,7 +1515,7 @@ async function composeCustomProduct(data, settings, env) {
       We evaluate every personalized product request carefully.<br>
       If your idea becomes a product, you'll be the first to know. 👑
     </p>
-    ${cCTA('EXPLORE EXISTING PRODUCTS &nbsp;›', `${BASE_URL}/collections/bbw4life-all-product.html`)}
+    ${cCTA('EXPLORE EXISTING PRODUCTS &nbsp;›', `${BASE_URL}/collections/curvafit-all-products.html`)}
     <div style="height:32px;"></div>`;
 
   return {
@@ -1580,7 +1580,7 @@ async function composeReviewResponse(data, settings, env) {
     </p>
     ${cParagraphs(copy)}
     ${promoBlock}
-    ${sentiment === 'positive' ? cCTA('SHOP NOW &nbsp;›', `${BASE_URL}/collections/bbw4life-all-product.html`) : ''}
+    ${sentiment === 'positive' ? cCTA('SHOP NOW &nbsp;›', `${BASE_URL}/collections/curvafit-all-products.html`) : ''}
     <div style="height:32px;"></div>`;
 
   const isPositive = sentiment === 'positive';

@@ -81,8 +81,8 @@
       css.href = cssHref;
       document.head.appendChild(css);
     }
-    if (!Array.prototype.some.call(document.scripts, function (script) { return script.src.indexOf('/products/paypal-shipping-modal.js') >= 0; })) {
-      appendScript('/products/paypal-shipping-modal.js?v=curvafit-picks-checkout-1');
+    if (!Array.prototype.some.call(document.scripts, function (script) { return script.src.indexOf('/products/paypal-shipping-modal.js?v=ebook-payment-dispatch-2') >= 0; })) {
+      appendScript('/products/paypal-shipping-modal.js?v=ebook-payment-dispatch-2');
     }
   }
 
@@ -150,12 +150,12 @@
   // footer.js deux fois créerait deux jeux de listeners/IIFE concurrents
   // sur le nouveau DOM du footer.
   var footerScriptLoaded = false;
-  loadFragment('/src/components/footer.html?v=curvafit-picks-2', 'footer-container', function () {
+  loadFragment('/src/components/footer.html?v=curvafit-footer-premium-3', 'footer-container', function () {
     document.dispatchEvent(new Event('footer:loaded'));
     loadCurvafitPicksCheckout();
     if (footerScriptLoaded) return;
     footerScriptLoaded = true;
-    appendScript('/src/components/footer.js?v=curvafit-picks-2');
+    appendScript('/src/components/footer.js?v=curvafit-footer-premium-3');
   });
 
   // ── Newsletter ──

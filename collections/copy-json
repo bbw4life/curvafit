@@ -18,8 +18,8 @@
     "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "4-Week PDF Guide"
+      "icon": "fi-rr-book-open",
+      "text": "Digital Guide"
     },
     "title": "Gentle Walking - 4-Week Walking Guide",
     "description": "A gentle 4-week walking PDF with gradual weekly plans, optional short walks, progress tracking, Sunday reflections, and a kind plan for missed days. Choose English, French, or Spanish.",
@@ -63,8 +63,8 @@
     "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "4-Week PDF Planner"
+      "icon": "fi-rr-book-open",
+      "text": "Digital Guide"
     },
     "title": "Simple Meal Planner - 4 Weeks of Easy Meals and Shopping Lists",
     "description": "A 20-page English PDF for four weeks of practical meal planning: weekly grids, categorized shopping lists, simple meal ideas, prep-ahead prompts, and a gentle reset for off-track days. No strict diet or forbidden foods. Choose English, French, or Spanish.",
@@ -108,8 +108,8 @@
     "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "4-Week Movement Guide"
+      "icon": "fi-rr-book-open",
+      "text": "Digital Guide"
     },
     "title": "Move at Home - 4 Weeks of Gentle Workouts, No Equipment Needed",
     "description": "A 31-page English PDF for four weeks of gentle at-home movement, with no equipment needed. Choose your pace, with a chair variation for every movement, planned rest days, and a flexible schedule. English, French, and Spanish editions.",
@@ -153,8 +153,8 @@
     "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-sparkles",
+      "text": "New Arrival"
     },
     "title": "High-Waisted Plus-Size Yoga Pants",
     "description": "Opaque high-waisted yoga pants with a smooth, supportive fit, made to move with you from workout to everyday wear.",
@@ -216,11 +216,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-crown",
+      "text": "Best Seller"
     },
     "title": "Plus-Size Shockproof Sports Bra",
     "description": "High-support shockproof sports bra designed for curves, keeping you secure and comfortable through every run, lift and stretch.",
@@ -290,11 +290,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-sparkles",
+      "text": "New Arrival"
     },
     "title": "Curvafit Nylon Yoga Vest",
     "description": "A solid-color green yoga vest made from nylon, with a sponge pad and no steel support.",
@@ -340,11 +340,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-badge-percent",
+      "text": "Weekly Sale"
     },
     "title": "Curvafit Tennis Skort",
     "description": "A black or white polyester-fiber skort with a spandex lining. Available in sizes 0XL to 4XL.",
@@ -397,11 +397,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-chart-line-up",
+      "text": "Top Sale"
     },
     "title": "Curvafit Sports Shorts",
     "description": "Breathable, quick-drying polyester-fiber shorts in black or pink. Available in sizes S to 5XL.",
@@ -459,11 +459,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-badge-percent",
+      "text": "Weekly Sale"
     },
     "title": "Curvafit Shaping Hip Belt",
     "description": "A flexible hip belt made with polyester cotton, latex silk, and elastic for yoga and strength-training routines. Available in sizes S, M, and L.",
@@ -526,11 +526,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-crown",
+      "text": "Best Seller"
     },
     "title": "Printed Non-Slip Yoga Mat",
     "description": "A 72.1 x 24 in yoga mat with a soft suede top, dual-texture non-slip TPE base and colorful Pink Flower print for yoga, Pilates, stretching and floor workouts.",
@@ -571,11 +571,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-sparkles",
+      "text": "New Arrival"
     },
     "title": "Fitness Water Bottle 1.3L",
     "description": "Stay hydrated during workouts with this 1.3L fitness bottle, featuring measurement marks, a screw-pattern lid and a leak-resistant closure.",
@@ -622,11 +622,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-chart-line-up",
+      "text": "Top Sale"
     },
     "title": "Longway Colorful Fitness Dumbbells",
     "description": "A pair of colorful fitness dumbbells made with PE material, an iron-sand mixture and a reinforcing steel bar. Choose from 1, 1.5, 2, 3 or 5 kg pairs for home training.",
@@ -671,11 +671,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-crown",
+      "text": "Best Seller"
     },
     "title": "M4 Smart Bracelet",
     "description": "Lightweight M4 smart bracelet with a 1-inch touch display and step counting. Compatible with Android and iOS devices.",
@@ -715,11 +715,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-sparkles",
+      "text": "New Arrival"
     },
     "title": "Pocket Leggings for Every Move",
     "description": "Cropped polyester leggings with practical pockets, a supportive fit and five versatile colors for running, training and everyday movement.",
@@ -795,8 +795,8 @@
     "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-gift",
-      "text": "14-Day Restart Guide"
+      "icon": "fi-rr-book-open",
+      "text": "Digital Guide"
     },
     "title": "Back on Track - A 14-Day Restart Guide",
     "description": "A 15-page PDF guide with gentle prompts to understand a setback, identify triggers, create a five-minute Plan B, practice kind self-talk, and choose one small next step. Available in English, French, and Spanish.",
@@ -823,6 +823,12 @@
   },
   {
     "type": "settings",
+    "digital_ebook_product_ids": [
+      "Pdg-Francenel-product1",
+      "Pdg-Francenel-product2",
+      "Pdg-Francenel-product3",
+      "Pdg-Francenel-product15"
+    ],
     "maintenance_mode": "no",
     "show_promo_bar": "no",
     "stripe_public_key": "pk_live_51PMDwoF9QAVBUyaU9ffneo6gWLCCPP94en6PPapDPawI9mnKqWBnJUjTbjUzjw3B8Et2ZWLBQHfCxm2djyCkzvXw00sP60H2NX",
@@ -837,6 +843,7 @@
     "thumbnails_mobile_vertical_left": "no",
     "sticky_media_mobile": "no",
     "media_auto_slider": "yes",
+    "media_next_preview": "no",
     "swatch_scroll_mobile": "no",
     "sticky_atc_mobile_threshold": 7,
     "sticky_atc_mobile_threshold_bbw_features": 7.5,
@@ -844,61 +851,51 @@
     "theme_color": "#000000",
     "allowed_languages": [ "en", "fr", "es", "ar", "zh", "ht", "hi", "pt", "ru", "de", "ja" ],
     "chat_widget": {
-      "agent_name": "Berline",
-      "agent_title": "BBW4LIFE Style Expert",
+      "agent_name": "Sherline",
+      "agent_title": "Curvafit Shopping Assistant",
       "agent_badge": "Style Support",
       "agent_logo": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/curva_AI.png?v=1775586792",
       "hero_image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bbw.email.png?v=1782613828",
-      "input_placeholder": "Ask Berline anything — style advice, beauty tips, sizing help…",
-      "typing_label": "Berline is typing…",
-      "powered_by": "Powered by BBW4LIFE AI · Press Enter to send"
+      "input_placeholder": "Ask Sherline about Curvafit guides, products, sizing or orders…",
+      "typing_label": "Sherline is typing…",
+      "powered_by": "Curvafit assistant · Press Enter to send"
     },
     "account_restrictions": {
       "allow_multiple_accounts_per_device": "no"
     },
     "founder": {
-      "name": "Francenel",
+      "name": "Paul",
       "full_name": "Paul Francenel",
-      "title": "CEO & Founder — BBW4LIFE",
+      "title": "Founder of Curvafit",
       "age": 26,
       "photo": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Pdg_Francenel.jpg?v=1778926866",
       "hero_image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bbw.email.png?v=1782613828",
-      "founded": "June 18, 2025",
+      "founded": "October 02 18, 2026",
       "nationality": "Haitian",
-      "bio": "Paul Francenel is a 26-year-old young entrepreneur deeply passionate about the beauty of plus-size women. His inspiration came from a real and deeply personal story — his relationship with a plus-size woman who was radiant, confident, and full of life. Despite her inner strength, the weight of society's judgment slowly began to affect her. That moment changed everything for him. He created BBW4LIFE with one clear purpose: to tell plus-size women that they are the beauty of this world, that they have nothing to be ashamed of, that their size is not a flaw — it is their power.",
-      "mission": "To celebrate every curve, fight imposed beauty standards, and build a family where every woman is loved exactly as she is — because Beauty Has No Sizes.",
-      "personality": "Warm, sincere, motivating, and visionary. He speaks from the heart, not from a script. He believes every woman deserves to feel seen, loved, and celebrated.",
+      "bio": "Paul Francenel created Curvafit to make everyday wellness feel more approachable. The brand offers practical guides for gentle walking, flexible meal planning, and at-home movement, alongside selected fitness essentials. Each guide uses clear steps, options to adapt, and encouragement to return after a pause, without pressure to be perfect.",
+      "mission": "To make practical wellness guidance approachable, flexible, and kind, so people can build routines that fit their real lives one small step at a time.",
+      "personality": "Warm, thoughtful, practical, and encouraging. He values clear guidance, realistic choices, and progress without pressure.",
       "values": [
-        "Authenticity — everything at BBW4LIFE comes from a real story",
-        "Inclusion — every size, every color, every background is welcome",
-        "Empowerment — every woman has the right to feel powerful in her own body",
-        "Community — no one should feel alone in their journey"
+        "Practicality — clear steps and useful tools for everyday routines",
+        "Flexibility — room to adapt a guide to your needs, pace, and schedule",
+        "Kindness — a missed day is a chance to restart gently, without guilt",
+        "Respect — no one-size-fits-all promises or pressure"
       ],
       "fun_facts": [
-        "He founded BBW4LIFE at age 25",
-        "The inspiration came from a real love story",
-        "He speaks French, Haitian Creole, English and Spanish",
-        "He believes beauty has absolutely no size",
-        "He created BBW4LIFE not just to sell — but to change lives"
+        "Curvafit guides cover walking, meal planning, and at-home movement",
+        "Core digital guides are available in English, French, and Spanish",
+        "Back on Track is a 14-day guide for returning to simple routines",
+        "Move at Home includes a chair option for each movement",
+        "Simple Meal Planner focuses on flexible planning, not strict diet rules"
       ],
-      "quote": "I want every woman who discovers BBW4LIFE to feel one thing: that she is loved, respected, and valued. I didn't create this to sell. I created it to change lives."
+      "quote": "At Curvafit, we believe a useful plan should support your real life. Start small, make it your own, and return whenever you are ready."
     },
     "chat_quick_chips": [
-      { "icon": "fi fi-sr-dress", "label": "Find my style", "msg": "Help me find an outfit that fits my curves and makes me feel confident." },
-      { "icon": "fi fi-sr-star", "label": "Best sellers", "msg": "What are your best selling plus size products right now?" },
-      { "icon": "fi fi-sr-heart", "label": "Body positivity", "msg": "I need some encouragement and style tips to feel beautiful in my body." },
-      { "icon": "fi fi-sr-badge-dollar", "label": "Under $50", "msg": "What are your most affordable plus size pieces under $50?" },
-      { "icon": "fi fi-sr-flower", "label": "Curvy beauty", "msg": "What beauty products do you recommend for curvy women?" },
-      { "icon": "fi fi-sr-swimsuit", "label": "Swimwear", "msg": "Show me your best plus size bikinis and swimsuits." },
-      { "icon": "fi fi-sr-diamond", "label": "Glamour looks", "msg": "I want a glamorous outfit for a special evening — what do you recommend?" },
-      { "icon": "fi fi-sr-shoes-heels", "label": "Shoes & heels", "msg": "What heels and sandals do you have for plus size women?" },
-      { "icon": "fi fi-sr-palette", "label": "Colors & sizes", "msg": "What colors and sizes are available for your products?" },
-      { "icon": "fi fi-sr-skin-care", "label": "Skincare", "msg": "What skincare products do you recommend to glow and feel beautiful?" },
-      { "icon": "fi fi-sr-hair", "label": "Hair care", "msg": "Which hair care products do you sell for curvy women?" },
-      { "icon": "fi fi-sr-makeup", "label": "Makeup tips", "msg": "Give me makeup tips and product recommendations for a bold curvy look." },
-      { "icon": "fi fi-sr-ticket", "label": "Promo codes", "msg": "Do you have any active discount or promo codes today?" },
-      { "icon": "fi fi-sr-truck-side", "label": "Delivery info", "msg": "How long does delivery take and what is the shipping cost?" },
-      { "icon": "fi fi-sr-gift", "label": "Gift ideas", "msg": "I want to buy a gift for a curvy woman I love — what do you suggest?" },
+      { "icon": "fi fi-sr-book-open-cover", "label": "Digital guides", "msg": "What do the Curvafit guides cover, and which one might suit my goal?" },
+      { "icon": "fi fi-sr-dumbbell", "label": "Workout equipment", "msg": "What equipment can help me get started with movement at home?" },
+      { "icon": "fi fi-sr-ruler", "label": "Size help", "msg": "Can you help me find the size chart and choose a size for this product?" },
+      { "icon": "fi fi-sr-download", "label": "Download an ebook", "msg": "How do I access and download my ebook after payment?" },
+      { "icon": "fi fi-sr-truck-side", "label": "Shipping details", "msg": "How long does shipping take for physical products, and what options are available?" },
       { "icon": "fi fi-sr-headset", "label": "Human support", "msg": "I need to speak with a real person from your team." }
     ],
     "tax_rate": 0.1,
@@ -1013,7 +1010,7 @@
       "effect_petals": "no",
       "effect_gifts": "no",
       "effect_bubbles": "no",
-      "color": "#FFD700",
+      "color": "#FFFFFF",
       "size_min": 4,
       "size_max": 5,
       "duration_min": 5,
@@ -1142,11 +1139,11 @@
     },
     "curvafit_product_shelf": {
       "product_ids": [
-        "Pdg-Francenel-product4",
+        "Pdg-Francenel-product14",
+        "Pdg-Francenel-product11",
+        "Pdg-Francenel-product9",
         "Pdg-Francenel-product5",
-        "Pdg-Francenel-product6",
-        "Pdg-Francenel-product7",
-        "Pdg-Francenel-product8"
+        "Pdg-Francenel-product13"
       ]
     },
     "top_starter_products": {
@@ -1174,14 +1171,14 @@
       "newsletter": "newsletter@bbw4life.com"
     },
     "bundle_deal": {
-      "title": "Everyday Movement Essentials",
-      "subtitle": "A thoughtful set of practical picks to support your routine, at your own pace.",
+      "title": "A More Complete Workout Routine",
+      "subtitle": "Pair high-support coverage with smooth, high-waisted leggings and a 1.3L bottle to keep hydration close from warm-up through cool-down.",
       "savings_label": "Bundle savings:",
       "cta_label": "Discover the Curvafit Bundle →",
       "products": [
-        { "id": "Pdg-Francenel-product6", "subtitle": "Comfort for your everyday movement routine." },
-        { "id": "Pdg-Francenel-product10", "subtitle": "A steady surface for gentle movement at home." },
-        { "id": "Pdg-Francenel-product13", "subtitle": "A simple way to keep track of everyday activity." }
+        { "id": "Pdg-Francenel-product4", "subtitle": "Smooth, opaque coverage for training and everyday movement." },
+        { "id": "Pdg-Francenel-product11", "subtitle": "Measurement marks and a leak-resistant lid keep hydration close." },
+        { "id": "Pdg-Francenel-product5", "subtitle": "Supportive coverage for runs, lifts and stretches." }
       ]
     },
     "widget_visibility": {
@@ -1201,69 +1198,185 @@
       "floating_nav": "yes",
       "audio_player": "yes"
     },
-    "product_upsell": {
+    "product_upsell":     {
       "auto_apply_to_checkout": "yes",
-      "product1": {
-        "discount_percent": 20,
-        "items": [
-          { "product_id": "Pdg-Francenel-product8" },
-          { "product_id": "Pdg-Francenel-product7" },
-          { "product_id": "Pdg-Francenel-product13" }
-        ]
-      },
-      "product2": {
-        "discount_percent": 20,
-        "items": [
-          { "product_id": "Pdg-Francenel-product15" },
-          { "product_id": "Pdg-Francenel-product34" },
-          { "product_id": "Pdg-Francenela-product32" }
-        ]
-      },
-      "product3": {
-        "discount_percent": 20,
-        "items": [
-          { "product_id": "Pdg-Francenel-product27" },
-          { "product_id": "Pdg-Francenel-product28" },
-          { "product_id": "Pdg-Francenel-product29" }
-        ]
-      },
       "product4": {
         "discount_percent": 20,
         "items": [
-          { "product_id": "Pdg-Francenel-product11" },
-          { "product_id": "Pdg-Francenel-product16" },
-          { "product_id": "Pdg-Francenel-product18" }
+          {
+            "product_id": "Pdg-Francenel-product5"
+          },
+          {
+            "product_id": "Pdg-Francenel-product10"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          }
         ]
       },
       "product5": {
         "discount_percent": 20,
         "items": [
-          { "product_id": "Pdg-Francenel-product9" },
-          { "product_id": "Pdg-Francenel-product34" },
-          { "product_id": "Pdg-Francenel-product16" }
+          {
+            "product_id": "Pdg-Francenel-product4"
+          },
+          {
+            "product_id": "Pdg-Francenel-product6"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          }
+        ]
+      },
+      "product6": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product4"
+          },
+          {
+            "product_id": "Pdg-Francenel-product10"
+          },
+          {
+            "product_id": "Pdg-Francenel-product12"
+          }
+        ]
+      },
+      "product7": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product5"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          },
+          {
+            "product_id": "Pdg-Francenel-product13"
+          }
+        ]
+      },
+      "product8": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product5"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          },
+          {
+            "product_id": "Pdg-Francenel-product13"
+          }
+        ]
+      },
+      "product9": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product10"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          },
+          {
+            "product_id": "Pdg-Francenel-product12"
+          }
+        ]
+      },
+      "product10": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product6"
+          },
+          {
+            "product_id": "Pdg-Francenel-product9"
+          },
+          {
+            "product_id": "Pdg-Francenel-product12"
+          }
+        ]
+      },
+      "product11": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product8"
+          },
+          {
+            "product_id": "Pdg-Francenel-product12"
+          },
+          {
+            "product_id": "Pdg-Francenel-product13"
+          }
+        ]
+      },
+      "product12": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product6"
+          },
+          {
+            "product_id": "Pdg-Francenel-product10"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          }
+        ]
+      },
+      "product13": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product7"
+          },
+          {
+            "product_id": "Pdg-Francenel-product8"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          }
+        ]
+      },
+      "product14": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product5"
+          },
+          {
+            "product_id": "Pdg-Francenel-product6"
+          },
+          {
+            "product_id": "Pdg-Francenel-product10"
+          }
         ]
       }
     },
     "cart_page_upsell": {
       "discount_percent": 20,
       "items": [
-        { "product_id": "Pdg-Francenel-product60" },
-        { "product_id": "Pdg-Francenel-product56" },
-        { "product_id": "Pdg-Francenel-product54" }
+        { "product_id": "Pdg-Francenel-product14" },
+        { "product_id": "Pdg-Francenel-product13" },
+        { "product_id": "Pdg-Francenel-product11" },
+        { "product_id": "Pdg-Francenel-product6" }
       ]
     },
     "cart_extra_products": {
       "btn_text": "Add to Cart",
       "product_ids": [
-        "Pdg-Francenel-product133",
-        "Pdg-Francenel-product134",
-        "Pdg-Francenel-product132",
-        "Pdg-Francenel-product124",
-        "Pdg-Francenel-product127",
-        "Pdg-Francenel-product129",
-        "Pdg-Francenel-product157",
-        "Pdg-Francenel-product78",
-        "Pdg-Francenel-product76"
+        "Pdg-Francenel-product14",
+        "Pdg-Francenel-product8",
+        "Pdg-Francenel-product9",
+        "Pdg-Francenel-product11",
+        "Pdg-Francenel-product7",
+        "Pdg-Francenel-product5",
+        "Pdg-Francenel-product10",
+        "Pdg-Francenel-product1",
+        "Pdg-Francenel-product2",
+        "Pdg-Francenel-product3"
       ]
     },
     "drawer_bg_image": {
@@ -1272,19 +1385,13 @@
     },
     "footer_new_gems": {
       "collection_ids": [
-        "bbw-features-products",
-        "men-plus-size",
-        "curvy-woman",
-        "curvy-bags",
-        "curvy-beauty",
-        "curvy-dresses"
       ],
       "product_ids": [
-        "Pdg-Francenel-product101",
-        "Pdg-Francenel-product77",
-        "Pdg-Francenel-product47",
-        "Pdg-Francenel-product119",
-        "Pdg-Francenel-product106"
+        "Pdg-Francenel-product14",
+        "Pdg-Francenel-product11",
+        "Pdg-Francenel-product9",
+        "Pdg-Francenel-product7",
+        "Pdg-Francenel-product13"
       ]
     },
     "mobile_links_behavior": {
@@ -1365,25 +1472,36 @@
     "jrgq_collections": {
       "collections": [
         {
-          "id": "bbw4life-all-product",
-          "title": "BBW4LIFE — All Products",
-          "subtitle": "The complete BBW4LIFE catalog — Women, Men & Beauty",
-          "url": "/collections/bbw4life-all-product.html",
+          "id": "curvafit-all-products",
+          "title": "Curvafit | All Products",
+          "subtitle": "The complete Curvafit collection of digital guides and fitness essentials.",
+          "url": "/collections/curvafit-all-products.html",
           "cta_label": "Shop All Products →",
-          "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/BBW4LIFE_All_Products.png?v=1777936945",
+          "image": "/img/curva-banner-1.png",
           "page_size": 16,
           "max_price": 100,
           "product_ids": [
-            "Pdg-Francenel-product2",
-            "Pdg-Francenel-product3",
+            "Pdg-Francenel-product14",
+            "Pdg-Francenel-product13",
             "Pdg-Francenel-product4",
             "Pdg-Francenel-product5",
-            "Pdg-Francenel-product6"
+            "Pdg-Francenel-product6",
+            "Pdg-Francenel-product7",
+            "Pdg-Francenel-product8",
+            "Pdg-Francenel-product9",
+            "Pdg-Francenel-product10",
+            "Pdg-Francenel-product11",
+            "Pdg-Francenel-product12",
+            "--ebooks--",
+            "Pdg-Francenel-product1",
+            "Pdg-Francenel-product2",
+            "Pdg-Francenel-product3",
+            "Pdg-Francenel-product15"
           ],
           "stat_label": "Happy Curvy Shoppers",
           "stat_value": "Born To Shine",
-          "name": "BBW4LIFE — All Products",
-          "quote": "One store. Every curve. Every style. Everything you need."
+          "name": "Curvafit | All Products",
+          "quote": "Useful guides and everyday essentials, all in one place."
         }
       ]
     },
@@ -1572,9 +1690,9 @@
     },
     "inactive_tab_cta": {
       "enabled": "yes",
-      "message": "💔 YOUR CART MISSES YOU!",
+      "message": "👟 YOUR NEXT GENTLE STEP IS WAITING",
       "speed": 150,
-      "catchy_addon": "⏳ COME BACK!",
+      "catchy_addon": "💗 MOVE AT YOUR OWN PACE",
       "animation": {
         "typewriter": "no",
         "fade": "no",
@@ -1625,53 +1743,27 @@
         "Pdg-Francenel-product1",
         "Pdg-Francenel-product2",
         "Pdg-Francenel-product3",
-        "Pdg-Francenel-product4",
+        "Pdg-Francenel-product14",
         "Pdg-Francenel-product5",
-        "Pdg-Francenel-product3",
+        "Pdg-Francenel-product13",
         "Pdg-Francenel-product4",
-        "Pdg-Francenel-product5"
+        "Pdg-Francenel-product15",
+        "Pdg-Francenel-product6",
+        "Pdg-Francenel-product10",
+        "Pdg-Francenel-product9",
+        "Pdg-Francenel-product8",
+        "Pdg-Francenel-product11"
       ]
     },
     "watermark": {
       "show": "yes",
-      "text": "Curvafit",
-      "color": "rgba(59, 27, 125, 0.42)"
+      "text": "curvafit.com",
+      "color": "rgba(59, 27, 125, 0.30)"
     },
     "card_preload_logo": {
       "show": "yes",
       "logo_url": "/public/Logo-Curvafit.png",
       "bg_color": "rgba(184,146,90,0.07)"
-    },
-    "birthday_gift": {
-      "show": "yes",
-      "promo_code": "MYBIRTHDAY",
-      "promo_discount": "20%",
-      "allow_combine": "yes",
-      "marquee_texts": [
-        "🎂 Happy Birthday Dear Customer!",
-        "🎉 Today Is All For You!",
-        "💝 Special Discount Just For You!",
-        "👑 Beauty Has No Size!",
-        "✨ Celebrate You Today!"
-      ],
-      "birthday_message_template": "Today is your day — enjoy every moment and don't let life's challenges dim your shine.",
-      "subscribe_btn_text": "My Birthday Is Coming — Subscribe!",
-      "copy_label": "Copy Code",
-      "copied_label": "Copied!",
-      "default_customers": [
-        { "firstName": "Tanya", "lastName": "Moore" },
-        { "firstName": "Rashida", "lastName": "Vaughn" },
-        { "firstName": "Aaliyah", "lastName": "Coleman" },
-        { "firstName": "Brianna", "lastName": "Foster" },
-        { "firstName": "Nadia", "lastName": "Reyes" },
-        { "firstName": "Simone", "lastName": "Bennett" },
-        { "firstName": "Yolanda", "lastName": "Price" },
-        { "firstName": "Camille", "lastName": "Russell" },
-        { "firstName": "Talia", "lastName": "Morgan" },
-        { "firstName": "Priscilla", "lastName": "Hayes" },
-        { "firstName": "Renata", "lastName": "Sanders" },
-        { "firstName": "Marisol", "lastName": "Ortega" }
-      ]
     },
     "use_pretty_urls": "yes"
   }

@@ -5320,6 +5320,28 @@ body:not(.home-page) #bc-nav.bc-nav--scrolled .bc-item.bc-active a {
   }
 }
 
+/* Homepage desktop action icons: white glyphs with transparent button faces. */
+@media (min-width: 993px) {
+  body.home-page .bbw-header__right .bbw-icon-btn {
+    color: #fff !important;
+    background: rgba(48, 30, 57, .025) !important;
+    border-color: rgba(255, 255, 255, .42) !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+  }
+  body.home-page .bbw-header__right .bbw-icon-btn > svg {
+    color: #fff !important;
+    stroke: currentColor !important;
+  }
+  body.home-page .bbw-header__right .bbw-icon-btn:hover,
+  body.home-page .bbw-header__right .bbw-icon-btn:focus-visible {
+    color: #fff !important;
+    background: rgba(48, 30, 57, .08) !important;
+    border-color: rgba(255, 255, 255, .68) !important;
+  }
+}
+
 /* Curvafit blog submenu icons: clear line icons in the brand palette. */
 @media (min-width: 993px) {
   .cf-submenu#cf-nav-blog a > svg {
@@ -5372,4 +5394,142 @@ body:not(.home-page) #bc-nav.bc-nav--scrolled .bc-item.bc-active a {
     stroke: #7041b5 !important;
     transform: translateY(-1px);
   }
+}
+
+/* Curvafit premium free-shipping marquee. Social links sit above the moving text. */
+.ann-bar {
+  background: linear-gradient(105deg, #fffaf7 0%, #fff7fb 48%, #f7eef8 100%);
+  border-bottom: 1px solid rgba(111, 79, 111, 0.2);
+  box-shadow: 0 3px 14px rgba(48, 29, 48, 0.08);
+}
+.ann-bar__inner {
+  position: relative;
+  justify-content: initial;
+  overflow: hidden;
+}
+.ann-bar__track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+}
+.ann-bar__marquee {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  flex: 0 0 auto;
+  animation: curvafit-ann-marquee 45s linear infinite;
+  will-change: transform;
+}
+.ann-bar__message {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  flex: 0 0 auto;
+  padding-right: 2rem;
+  color: #35243d;
+  font-family: var(--font-heading, Poppins, sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -.045em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ann-bar__message--soft {
+  color: var(--pink-500, #e84387);
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -.035em;
+}
+.ann-bar__amount {
+  color: #bd397f;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+.ann-bar__ornament {
+  margin-left: 0.55rem;
+  color: #b49562;
+  font-size: 13px;
+}
+.ann-bar__socials { display: none; }
+@keyframes curvafit-ann-marquee {
+  to { transform: translateX(-50%); }
+}
+@media (min-width: 993px) {
+  .ann-bar__inner {
+    width: 100%;
+    max-width: none;
+    padding-right: 14px;
+  }
+  .ann-bar__message { font-size: 14px; }
+  .ann-bar__socials {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    flex: 0 0 auto;
+    margin-left: auto;
+    margin-right: -14px;
+    padding: 5px 22px 5px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 13px 0 0 13px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 3px 12px rgba(62, 38, 59, 0.12);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+  .ann-bar__social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    border: 1px solid rgba(114, 80, 116, 0.14);
+    border-radius: 50%;
+    color: #573d61;
+    background: #fff;
+    font-size: 11px;
+    line-height: 1;
+    text-decoration: none;
+    transition: color 180ms ease, background 180ms ease, border-color 180ms ease, transform 180ms ease;
+  }
+  .ann-bar__social:hover {
+    color: #fff;
+    background: linear-gradient(135deg, #d94c91, #87539a);
+    border-color: transparent;
+    transform: translateY(-1px);
+  }
+}
+@media (max-width: 992px) {
+  .ann-bar__message { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ann-bar__marquee { animation-duration: 90s; }
+}
+
+/* Announcement text sizing and alternating Curvafit tones. */
+.ann-bar__message {
+  color: #49384b;
+  font-size: 12px;
+}
+.ann-bar__message:nth-of-type(even) {
+  color: #765c78;
+}
+.ann-bar__message.ann-bar__message--soft {
+  color: var(--pink-500, #e84387);
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -.035em;
+}
+@media (min-width: 993px) {
+  .ann-bar__message { font-size: 14px; }
 }

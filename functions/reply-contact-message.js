@@ -262,7 +262,7 @@ function buildCEOFooter(settings, env) {
     </td></tr>
     <tr><td style="padding:14px 20px 20px;text-align:center;border-top:1px solid #e3d9ee;">
       <p style="margin:0;font:11px/1.7 Arial,sans-serif;color:${BBW.textLight};">You are receiving this message because you contacted Curvafit support.</p>
-      <p style="margin:8px 0 0;font:11px/2 Arial,sans-serif;color:${BBW.textMid};"><a href="${baseUrl}/collections/bbw4life-all-product.html" style="color:${BBW.textMid};text-decoration:none;">Explore Curvafit</a> &nbsp;|&nbsp; <a href="${baseUrl}/policies/privacy.html" style="color:${BBW.textMid};text-decoration:none;">Privacy</a> &nbsp;|&nbsp; <a href="${baseUrl}/page/contact.html" style="color:${BBW.textMid};text-decoration:none;">Contact</a> &nbsp;|&nbsp; <a href="${baseUrl}/policies/refund.html" style="color:${BBW.textMid};text-decoration:none;">Returns</a></p>
+      <p style="margin:8px 0 0;font:11px/2 Arial,sans-serif;color:${BBW.textMid};"><a href="${baseUrl}/collections/curvafit-all-products.html" style="color:${BBW.textMid};text-decoration:none;">Explore Curvafit</a> &nbsp;|&nbsp; <a href="${baseUrl}/policies/privacy.html" style="color:${BBW.textMid};text-decoration:none;">Privacy</a> &nbsp;|&nbsp; <a href="${baseUrl}/page/contact.html" style="color:${BBW.textMid};text-decoration:none;">Contact</a> &nbsp;|&nbsp; <a href="${baseUrl}/policies/refund.html" style="color:${BBW.textMid};text-decoration:none;">Returns</a></p>
       <p style="margin:8px 0 0;font:10px Arial,sans-serif;color:#9d92a9;">&copy; ${new Date().getFullYear()} Curvafit. All rights reserved.</p>
     </td></tr>
   </table>

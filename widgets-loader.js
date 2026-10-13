@@ -72,7 +72,7 @@
       <div class="empty-cart__icon" aria-hidden="true"><i class="fa-solid fa-basket-shopping"></i></div>
       <h3>Your cart is empty</h3>
       <p>Add products to start shopping.</p>
-      <a href="/collections/bbw4life-all-product.html" class="cta button-3d">Shop Now</a>
+      <a href="/collections/curvafit-all-products.html" class="cta button-3d">Shop Now</a>
     </div>
     <div class="cart-gender-picker" id="cart-gender-picker">
       <div class="cart-gender-picker__bar" id="cart-gender-picker-bar">
@@ -96,12 +96,22 @@
       </div>
     </div>
     <div class="reviews-carousel" id="cart-reviews-carousel"></div>
-    <div class="marquee-container cart-marquee">
+    <div class="marquee-container cart-marquee cf-cart-marquee">
       <div class="marquee-content">
-        <span>Free Shipping on Orders Over <span class="col-marquee-free-shipping"></span>+</span>
-        <span>Secure Checkout Guaranteed!</span>
-        <span>30-Day Returns (Conditions Apply)</span>
-        <span>Shop Now and Save Big!</span>
+        <div class="cart-marquee__group">
+          <span class="cart-marquee__item"><i class="fi fi-rr-truck-side" aria-hidden="true"></i><span>Complimentary shipping over $<span class="col-marquee-free-shipping"></span>+</span></span>
+          <span class="cart-marquee__item"><i class="fi fi-rr-lock" aria-hidden="true"></i><span>Secure checkout</span></span>
+          <span class="cart-marquee__item"><i class="fi fi-rr-book-open-cover" aria-hidden="true"></i><span>Digital guides in English, French &amp; Spanish</span></span>
+          <span class="cart-marquee__item"><i class="fi fi-rr-heart" aria-hidden="true"></i><span>Practical wellness, at your pace</span></span>
+          <span class="cart-marquee__item"><i class="fi fi-rr-sparkles" aria-hidden="true"></i><span>Thoughtful fitness essentials</span></span>
+        </div>
+        <div class="cart-marquee__group" aria-hidden="true">
+          <span class="cart-marquee__item"><i class="fi fi-rr-truck-side"></i><span>Complimentary shipping over $<span class="col-marquee-free-shipping"></span>+</span></span>
+          <span class="cart-marquee__item"><i class="fi fi-rr-lock"></i><span>Secure checkout</span></span>
+          <span class="cart-marquee__item"><i class="fi fi-rr-book-open-cover"></i><span>Digital guides in English, French &amp; Spanish</span></span>
+          <span class="cart-marquee__item"><i class="fi fi-rr-heart"></i><span>Practical wellness, at your pace</span></span>
+          <span class="cart-marquee__item"><i class="fi fi-rr-sparkles"></i><span>Thoughtful fitness essentials</span></span>
+        </div>
       </div>
     </div>
    <div class="payment-icons">

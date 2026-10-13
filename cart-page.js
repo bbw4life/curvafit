@@ -60,7 +60,7 @@
     if (typeof window.getProductUrl === 'function') return window.getProductUrl(id);
     const prods = window.__allProducts || [];
     const idx = prods.findIndex(function (p) { return String(p.id) === String(id); });
-    if (idx === -1) return '/collections/bbw4life-all-product.html';
+    if (idx === -1) return '/collections/curvafit-all-products.html';
     return '/products/product' + (idx + 1) + '.html';
   }
 
@@ -1511,7 +1511,7 @@
   function getProductUrl(id, allProducts) {
     if (typeof window.getProductUrl === 'function') return window.getProductUrl(id);
     var idx = (allProducts || []).findIndex(function (p) { return p.id === id; });
-    return idx === -1 ? '/collections/bbw4life-all-product.html' : '/products/product' + (idx + 1) + '.html';
+    return idx === -1 ? '/collections/curvafit-all-products.html' : '/products/product' + (idx + 1) + '.html';
   }
 
   function fmt(price) {

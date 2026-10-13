@@ -2890,3 +2890,141 @@ button[type="submit"].cta:active {
 @media (prefers-reduced-motion: reduce) {
   .fq-hero__contact, .fq-categories a, .fq-item, .fq-item__icon::before, .fq-item__icon::after, .fq-contact-card > a { transition: none; }
 }
+/* Curvafit About page */
+.cf-about-page {
+  --about-ink: #281443;
+  --about-muted: #746a79;
+  --about-rose: #d6458f;
+  --about-lilac: #8b69b4;
+  --about-cream: #fffaf5;
+  --about-line: rgba(65, 39, 83, .13);
+  color: var(--about-ink);
+  overflow: hidden;
+  background: #fffdfc;
+  font-family: var(--font-body, inherit);
+}
+.cf-about-page *, .cf-about-page *::before, .cf-about-page *::after { box-sizing: border-box; }
+.cf-about-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, .94fr) minmax(0, 1.06fr);
+  min-height: clamp(600px, 48vw, 760px);
+  background: linear-gradient(135deg, #fffaf5 0%, #fff7fa 72%, #f7eff9 100%);
+}
+.cf-about-hero__copy { z-index: 1; align-self: center; max-width: 720px; padding: clamp(30px, 3.8vw, 54px) clamp(28px, 7.4vw, 112px); }
+.cf-about-eyebrow { display: inline-flex; align-items: center; gap: 9px; color: #9b7042; font-size: 11px; font-weight: 750; letter-spacing: .17em; line-height: 1.5; text-transform: uppercase; }
+.cf-about-eyebrow > span { color: var(--about-rose); font-size: 17px; }
+.cf-about-page h1, .cf-about-page h2, .cf-about-page h3, .cf-about-page p { margin-top: 0; }
+.cf-about-hero h1 { max-width: 650px; margin: 24px 0 22px; font-family: var(--font-heading, Georgia, serif); font-size: clamp(48px, 6vw, 84px); font-weight: 500; letter-spacing: -.055em; line-height: .99; }
+.cf-about-page h1 em, .cf-about-page h2 em { color: var(--about-rose); font-family: var(--font-heading, Georgia, serif); font-weight: 500; }
+.cf-about-hero__copy > p { max-width: 525px; margin-bottom: 29px; color: #63596b; font-size: clamp(16px, 1.35vw, 19px); line-height: 1.8; }
+.cf-about-hero__actions { display: flex; align-items: center; flex-wrap: wrap; gap: 25px; }
+.cf-about-button { display: inline-flex; min-height: 51px; align-items: center; justify-content: center; gap: 14px; padding: 0 23px; border: 1px solid transparent; border-radius: 999px; font-size: 13px; font-weight: 700; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
+.cf-about-button:hover { transform: translateY(-2px); }
+.cf-about-button--primary { color: #fff; background: linear-gradient(110deg, #cc3e83, #9b60ae); box-shadow: 0 10px 23px rgba(155, 69, 132, .22); }
+.cf-about-button--primary:hover { box-shadow: 0 13px 28px rgba(155, 69, 132, .3); }
+.cf-about-text-link { color: var(--about-ink); font-size: 13px; font-weight: 700; text-decoration: none; }
+.cf-about-text-link span { margin-left: 5px; color: var(--about-rose); }
+.cf-about-signature { display: flex; align-items: center; gap: 11px; margin-top: 55px; color: #8c8190; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.cf-about-signature__mark { display: grid; width: 29px; height: 29px; place-items: center; border: 1px solid #dcbdd1; border-radius: 50%; color: var(--about-rose); font-family: Georgia, serif; font-size: 17px; }
+.cf-about-hero__visual { position: relative; min-height: 520px; margin: 32px 32px 32px 0; overflow: hidden; border-radius: 5px 34% 5px 5px; background: #eadde1; box-shadow: 0 28px 65px rgba(56, 33, 59, .15); }
+.cf-about-hero__visual::after { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(39, 23, 47, .08), transparent 40%), linear-gradient(0deg, rgba(39, 23, 47, .28), transparent 27%); content: ""; pointer-events: none; }
+.cf-about-hero__visual img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; object-position: 58% center; }
+.cf-about-hero__note { position: absolute; z-index: 1; top: 9%; left: -1px; display: flex; align-items: center; gap: 13px; padding: 15px 21px 15px 16px; border: 1px solid rgba(255,255,255,.62); border-left: 0; border-radius: 0 50px 50px 0; color: var(--about-ink); background: rgba(255, 251, 249, .88); box-shadow: 0 10px 28px rgba(47, 28, 46, .1); font-family: var(--font-heading, Georgia, serif); font-size: 15px; line-height: 1.25; }
+.cf-about-hero__note-icon { display: grid; width: 35px; height: 35px; place-items: center; border-radius: 50%; color: var(--about-rose); background: #f9eaf1; font-size: 19px; }
+.cf-about-hero__caption { position: absolute; z-index: 1; right: 25px; bottom: 23px; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.cf-about-hero__ornament { position: absolute; right: 45%; bottom: 6%; width: 110px; height: 110px; border: 1px solid rgba(214,69,143,.18); border-radius: 50%; pointer-events: none; }
+.cf-about-hero__ornament::after { position: absolute; inset: 13px; border: 1px solid rgba(214,69,143,.14); border-radius: inherit; content: ""; }
+.cf-about-intro { max-width: 900px; margin: 0 auto; padding: clamp(38px, 4.5vw, 60px) 25px clamp(30px, 3.8vw, 48px); text-align: center; }
+.cf-about-intro h2, .cf-about-guides h2, .cf-about-founder h2 { margin: 17px auto 18px; font-family: var(--font-heading, Georgia, serif); font-size: clamp(37px, 5vw, 62px); font-weight: 500; letter-spacing: -.045em; line-height: 1.08; }
+.cf-about-intro > p { max-width: 720px; margin: 0 auto; color: var(--about-muted); font-size: 16px; line-height: 1.9; }
+.cf-about-intro__rule { display: flex; width: 150px; align-items: center; gap: 12px; margin: 29px auto 0; color: var(--about-rose); }
+.cf-about-intro__rule i { height: 1px; flex: 1; background: #e4cad8; }
+.cf-about-intro__rule b { font-size: 11px; }
+.cf-about-pillars { display: grid; max-width: 1320px; grid-template-columns: repeat(3, 1fr); gap: 17px; margin: 0 auto; padding: 0 28px clamp(38px, 4vw, 54px); }
+.cf-about-pillar { position: relative; min-height: 255px; padding: 35px 33px 31px; border: 1px solid var(--about-line); border-radius: 4px 32px 4px 4px; background: linear-gradient(145deg, #fff 35%, #fff8fb); box-shadow: 0 16px 38px rgba(53, 33, 58, .045); }
+.cf-about-pillar__number { position: absolute; top: 26px; right: 28px; color: #c8bbc9; font-family: Georgia, serif; font-size: 13px; }
+.cf-about-pillar__icon { display: grid; width: 49px; height: 49px; place-items: center; margin-bottom: 28px; border: 1px solid #f1d5e2; border-radius: 50%; color: var(--about-rose); background: #fff6fa; font-size: 25px; }
+.cf-about-pillar h3 { margin-bottom: 11px; font-family: var(--font-heading, Georgia, serif); font-size: 23px; font-weight: 500; }
+.cf-about-pillar p { margin-bottom: 0; color: var(--about-muted); font-size: 14px; line-height: 1.75; }
+.cf-about-guides { padding: clamp(34px, 4vw, 50px) max(28px, calc((100vw - 1260px) / 2)); background: #f8f3f7; }
+.cf-about-guides__heading { display: flex; align-items: end; justify-content: space-between; gap: 40px; margin-bottom: 35px; }
+.cf-about-guides h2 { margin: 13px 0 0; }
+.cf-about-guides__heading > p { max-width: 365px; margin: 0 0 6px; color: var(--about-muted); font-size: 14px; line-height: 1.8; }
+.cf-about-guide-list { border-top: 1px solid #ded2df; }
+.cf-about-guide { display: grid; min-height: 102px; grid-template-columns: 70px 1fr 40px; align-items: center; gap: 20px; border-bottom: 1px solid #ded2df; color: inherit; text-decoration: none; transition: padding .2s ease, background .2s ease; }
+.cf-about-guide:hover { padding-right: 13px; padding-left: 13px; background: rgba(255,255,255,.55); }
+.cf-about-guide__index { color: #ac8eaa; font-family: Georgia, serif; font-size: 14px; }
+.cf-about-guide__body { display: grid; gap: 6px; }
+.cf-about-guide__body strong { font-family: var(--font-heading, Georgia, serif); font-size: 22px; font-weight: 500; }
+.cf-about-guide__body small { color: var(--about-muted); font-size: 13px; line-height: 1.55; }
+.cf-about-guide__arrow { color: var(--about-rose); font-size: 20px; text-align: right; transition: transform .2s ease; }
+.cf-about-guide:hover .cf-about-guide__arrow { transform: translate(3px, -3px); }
+.cf-about-guides__note { margin: 20px 0 0; color: #827686; font-size: 12px; }
+.cf-about-founder { display: grid; max-width: 1160px; grid-template-columns: minmax(260px, .8fr) 1.2fr; align-items: center; gap: clamp(45px, 9vw, 120px); margin: 0 auto; padding: clamp(40px, 5vw, 62px) 28px 18px; }
+.cf-about-founder__photo-wrap { position: relative; max-width: 390px; padding: 15px 15px 38px; border: 1px solid #ead9e2; border-radius: 46% 46% 5px 5px; background: #fff9fb; box-shadow: 0 25px 55px rgba(53, 33, 58, .11); }
+.cf-about-founder__photo-wrap img { display: block; width: 100%; aspect-ratio: .88; border-radius: 44% 44% 3px 3px; object-fit: cover; object-position: center 27%; }
+.cf-about-founder__photo-caption { position: absolute; right: 0; bottom: 13px; left: 0; color: #8b7483; font-family: var(--font-heading, Georgia, serif); font-size: 13px; font-style: italic; text-align: center; }
+.cf-about-founder__copy h2 { margin: 17px 0 22px; }
+.cf-about-founder__copy > p { color: var(--about-muted); font-size: 15px; line-height: 1.9; }
+.cf-about-founder__signoff { display: grid; gap: 4px; margin-top: 25px; }
+.cf-about-founder__signoff span { color: #8e4d79; font-family: var(--font-heading, Georgia, serif); font-size: 24px; font-style: italic; }
+.cf-about-founder__signoff small { color: #827686; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.cf-about-close { position: relative; overflow: hidden; padding: 22px 24px 24px; color: #fff; background: radial-gradient(ellipse at 82% 7%, rgba(218,158,195,.28), transparent 34%), linear-gradient(120deg, #392346, #57334e 65%, #704462); text-align: center; }
+.cf-about-close::before, .cf-about-close::after { position: absolute; width: 360px; height: 360px; border: 1px solid rgba(255,255,255,.1); border-radius: 50%; content: ""; pointer-events: none; }
+.cf-about-close::before { top: -220px; left: 7%; box-shadow: 0 0 0 24px rgba(255,255,255,.025), 0 0 0 48px rgba(255,255,255,.02); }
+.cf-about-close::after { right: 2%; bottom: -280px; }
+.cf-about-close .cf-about-eyebrow { color: #f1c8d8; }
+.cf-about-close__spark { display: block; margin-bottom: 4px; color: #eab8ce; font-size: 16px; }
+.cf-about-close h2 { position: relative; margin: 8px auto 9px; font-family: var(--font-heading, Georgia, serif); font-size: clamp(34px, 4.2vw, 50px); font-weight: 500; letter-spacing: -.04em; line-height: 1.02; }
+.cf-about-close h2 em { color: #f1bad1; }
+.cf-about-close p { position: relative; margin-bottom: 13px; color: rgba(255,255,255,.76); font-size: 14px; }
+.cf-about-button--light { position: relative; color: #40243e; background: #fff9f7; box-shadow: 0 8px 24px rgba(21, 10, 25, .18); }
+.cf-about-button--light span { color: var(--about-rose); }
+@media (max-width: 900px) {
+  .cf-about-hero { grid-template-columns: 1fr 1fr; min-height: 580px; }
+  .cf-about-hero__copy { padding: 38px 30px 38px 6vw; }
+  .cf-about-hero__visual { min-height: 420px; margin: 16px 20px 16px 0; }
+  .cf-about-pillars { gap: 12px; padding-right: 20px; padding-left: 20px; }
+  .cf-about-pillar { padding: 28px 22px; }
+  .cf-about-founder { gap: 50px; }
+}
+@media (max-width: 640px) {
+  .cf-about-hero { display: flex; flex-direction: column; }
+  .cf-about-hero__copy { padding: 32px 25px 21px; }
+  .cf-about-hero h1 { max-width: 540px; margin-top: 18px; font-size: clamp(46px, 12vw, 64px); }
+  .cf-about-hero__copy > p { font-size: 15px; }
+  .cf-about-signature { margin-top: 33px; }
+  .cf-about-hero__visual { min-height: 320px; margin: 0 15px 12px; border-radius: 5px 28% 5px 5px; }
+  .cf-about-hero__visual img { object-position: 61% center; }
+  .cf-about-hero__note { top: 12%; }
+  .cf-about-hero__ornament { display: none; }
+  .cf-about-intro { padding: 36px 25px 28px; }
+  .cf-about-intro h2, .cf-about-guides h2, .cf-about-founder h2 { font-size: clamp(36px, 9.4vw, 48px); }
+  .cf-about-intro > p { font-size: 14px; }
+  .cf-about-pillars { grid-template-columns: 1fr; gap: 12px; padding: 0 18px 36px; }
+  .cf-about-pillar { min-height: auto; padding: 25px 25px 27px; }
+  .cf-about-pillar__icon { margin-bottom: 18px; }
+  .cf-about-guides { padding: 34px 22px 38px; }
+  .cf-about-guides__heading { display: block; margin-bottom: 23px; }
+  .cf-about-guides__heading > p { margin-top: 13px; }
+  .cf-about-guide { min-height: 99px; grid-template-columns: 34px 1fr 24px; gap: 10px; }
+  .cf-about-guide__body strong { font-size: 19px; }
+  .cf-about-guide__body small { font-size: 12px; }
+  .cf-about-founder { grid-template-columns: 1fr; gap: 25px; padding: 38px 26px 12px; }
+  .cf-about-founder__photo-wrap { width: min(82%, 330px); margin: 0 auto; }
+  .cf-about-founder__copy > p { font-size: 14px; }
+  .cf-about-close { padding: 24px 20px 26px; }
+  .cf-about-close h2 { margin: 7px auto 8px; font-size: clamp(32px, 8vw, 43px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-about-page *, .cf-about-page *::before, .cf-about-page *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
+.cf-about-wave { height: clamp(34px, 4.5vw, 58px); background: #faf6fe; }
+.cf-about-wave svg { display: block; width: 100%; height: 100%; }
+.cf-about-wave__color { fill: url(#cf-about-wave-gradient); }
+.cf-about-wave__fade { fill: url(#cf-about-wave-fade); }
+.cf-about-pillars, .cf-about-founder { background-color: #faf6fe; }
+@media (max-width: 767px) {
+  .cf-about-wave { height: 34px; }
+}

@@ -394,12 +394,15 @@
       function clearImageSkeleton() {
         block.classList.add('pp-image-block--loaded');
       }
-      if (image.complete) {
-        clearImageSkeleton();
-        return;
-      }
       image.addEventListener('load', clearImageSkeleton, { once: true });
       image.addEventListener('error', clearImageSkeleton, { once: true });
+      // A lazy image may report complete before its request starts. Keep its
+      // placeholder until it really loads instead of clearing the skeleton early.
+      if (image.complete && image.naturalWidth > 0) {
+        clearImageSkeleton();
+      } else if (image.complete && image.loading !== 'lazy') {
+        clearImageSkeleton();
+      }
     });
   }
 

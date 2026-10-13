@@ -5,7 +5,7 @@
 ## Core Pages
 
 - [Home](https://bbw4life.com/): Accueil — présentation de la marque, collections phares et mission Beauty Has No Sizes
-- [All Products](https://bbw4life.com/collections/bbw4life-all-product.html): Catalogue complet — toute la mode taille plus BBW4LIFE en un seul endroit
+- [Curvafit All Products](https://curvafit.com/collections/curvafit-all-products.html): Browse Curvafit digital guides and fitness essentials in one catalog.
 - [All Collections](https://bbw4life.com/collections/bbw4life-all-collections.html): Toutes les collections — dresses, beauté, maillots, pantalons, chaussures et plus
 - [Our Story](https://bbw4life.com/page/our-story.html): L'histoire de BBW4LIFE — née d'un amour sincère, construite pour les femmes qui méritent d'être vues
 - [About](https://bbw4life.com/page/about.html): À propos — mission, valeurs et identité de la marque
@@ -17,7 +17,7 @@
 - [Curvy Dresses](https://bbw4life.com/collections/curvy-dresses.html): Robes taille plus — maxi, bodycon, wrap, soirée, cocktail, tailles XL–6XL
 - [Curvy Woman](https://bbw4life.com/collections/curvy-woman.html): Mode femme — tops, bottoms, sets, tenues du quotidien, XL–6XL
 - [Pants & Skirts](https://bbw4life.com/collections/bbw4life-pants-skirts.html): Pantalons et jupes taille plus — wide leg, flare, midi, crayon, S–6XL
-- [Swimwear](https://bbw4life.com/collections/bbw4life-all-product.html): Maillots et bikinis taille plus — haute taille, bandage, une pièce, XL–4XL (voir le catalogue complet, filtre swimwear)
+- [Curvafit Essentials](https://curvafit.com/collections/curvafit-all-products.html): Browse Curvafit guides and practical fitness essentials.
 - [Shoes & Sandals](https://bbw4life.com/collections/shoes-sandals.html): Chaussures taille plus — stilettos, sandales, sneakers, boots, pointures 35–48
 - [Curvy Beauty](https://bbw4life.com/collections/curvy-beauty.html): Beauté — soins, maquillage, cheveux, bien-être pour femmes aux courbes
 - [Men Plus Size](https://bbw4life.com/collections/men-plus-size.html): Mode homme grande taille — pantalons, chemises, pulls, chaussures, M–5XL

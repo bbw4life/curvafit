@@ -61,7 +61,7 @@
       tiktok:    ''
     },
 
-    novelty_title:          'DISCOVER CURVAFIT FAVORITES',
+    novelty_title:          'CURVAFIT FAVORITES',
     new_in_autoplay_enable: true,
     new_in_autoplay_delay:  5,
 
@@ -1110,8 +1110,8 @@
         cj_variant_id: vid
       }];
       closeQuiz();
-      if (typeof window.openPaypalShippingModal === 'function') {
-        window.openPaypalShippingModal();
+      if (typeof window.openCurvafitEbookPaymentModal === 'function') {
+        window.openCurvafitEbookPaymentModal();
       } else {
         window.__curvafitDirectPurchaseCart = null;
         if (typeof window.showErrorPopup === 'function') window.showErrorPopup('Secure ebook checkout is still loading. Please try again in a moment.');
@@ -2083,7 +2083,8 @@ document.addEventListener('click', function (e) {
     overlay.setAttribute('aria-hidden', 'true');
     
     var otherOpen = document.querySelector(
-      '#bbw-quiz-overlay.bbq-active, #bbwStyleOverlay.bbws-active, #bbwLookOverlay.bbwl-active, #bdOverlay.bd-active'
+      '#bbw-quiz-overlay.bbq-active, #bbwStyleOverlay.bbws-active, #bbwLookOverlay.bbwl-active, #bdOverlay.bd-active, ' +
+      '#bbwCommitmentOverlay.bbwc-active, #bbwMissionOverlay.bbwm-active'
     );
     if (!otherOpen) {
       document.body.style.overflow = '';
@@ -2129,20 +2130,24 @@ document.addEventListener('click', function (e) {
   
   function bbwcInit() {
     var overlay  = document.getElementById(BBWC_OVERLAY_ID);
-    var closeBtn = document.getElementById(BBWC_CLOSE_ID);
-
     if (!overlay) return; 
 
-    if (closeBtn) {
-      closeBtn.addEventListener('click', bbwcClose);
-    }
-
-    overlay.addEventListener('click', function (e) {
-      if (e.target === overlay) bbwcClose();
-    });
+    // Delegate to document so the close control still works if the footer
+    // fragment is replaced after its cache revalidation.
+    document.addEventListener('click', function (e) {
+      var close = e.target.closest && e.target.closest('#' + BBWC_CLOSE_ID);
+      var currentOverlay = document.getElementById(BBWC_OVERLAY_ID);
+      if (close) {
+        e.preventDefault();
+        bbwcClose();
+      } else if (currentOverlay && e.target === currentOverlay) {
+        bbwcClose();
+      }
+    }, true);
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && overlay.classList.contains('bbwc-active')) {
+      var currentOverlay = document.getElementById(BBWC_OVERLAY_ID);
+      if (e.key === 'Escape' && currentOverlay && currentOverlay.classList.contains('bbwc-active')) {
         bbwcClose();
       }
     });
@@ -3123,23 +3128,24 @@ window.BbwNlSpinWheel = (function () {
   
   function bbwmInit() {
     var overlay  = document.getElementById(BBWM_OVERLAY_ID);
-    var closeBtn = document.getElementById(BBWM_CLOSE_ID);
-
     if (!overlay) return;
 
-    
-    if (closeBtn) {
-      closeBtn.addEventListener('click', bbwmClose);
-    }
-
-    
-    overlay.addEventListener('click', function (e) {
-      if (e.target === overlay) bbwmClose();
-    });
+    // Delegated listeners survive footer fragment replacement/revalidation.
+    document.addEventListener('click', function (e) {
+      var close = e.target.closest && e.target.closest('#' + BBWM_CLOSE_ID);
+      var currentOverlay = document.getElementById(BBWM_OVERLAY_ID);
+      if (close) {
+        e.preventDefault();
+        bbwmClose();
+      } else if (currentOverlay && e.target === currentOverlay) {
+        bbwmClose();
+      }
+    }, true);
 
     
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && overlay.classList.contains('bbwm-active')) {
+      var currentOverlay = document.getElementById(BBWM_OVERLAY_ID);
+      if (e.key === 'Escape' && currentOverlay && currentOverlay.classList.contains('bbwm-active')) {
         bbwmClose();
       }
     });

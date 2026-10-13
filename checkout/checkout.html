@@ -456,7 +456,7 @@
 
 
 
-<div id="refund-modal" class="modal">
+<div id="refund-modal" class="modal policy-modal policy-modal--refund">
     <div class="modal-content">
         <div class="modal-shimmer-bar"></div>
         <div class="modal-orb modal-orb--1"></div>
@@ -467,22 +467,26 @@
         <span class="close">&times;</span>
         <div class="modal-header-badge">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            <span>Policy</span>
+            <span>Curvafit · Physical &amp; Digital Orders</span>
         </div>
-        <h2>Refund Policy</h2>
+        <h2>Returns &amp; Refunds</h2>
         <div class="modal-divider"><span class="modal-divider-gem"></span></div>
         <div class="modal-body">
-            <p><strong>Product Returns</strong> — Items must be returned in their original condition (unworn, unwashed, in original packaging with tags). Submit your request within 14 days of reception. Our team responds within <strong>5 business days</strong> with return instructions. Refunds are processed within <strong>up to 30 days</strong> after validation.</p>
-            <p><strong>Damaged or Incorrect Item</strong> — Photograph the item and packaging immediately upon delivery and contact us within <strong>7 days</strong>. If validated, we offer a replacement or full refund — your choice. No return shipping required for damaged items.</p>
-            <p><strong>Order Cancellation</strong> — You may cancel before dispatch at any time. Once dispatched, cancellation is no longer possible. Full refund issued within up to 30 days.</p>
-            <p>Please check your selected options and delivery address carefully before placing your order. If anything looks incorrect, contact Curvafit Support before checkout.</p>
-            <p>For refund questions, <a href="/page/contact.html">contact Curvafit Support</a> and include your purchase email and order number. We respond within <strong>48 hours</strong>.</p>
+            <p class="policy-modal-intro">A quick guide to Curvafit returns. Physical products and digital guides have different terms.</p>
+            <div class="policy-summary-grid">
+                <section class="policy-summary-card"><span class="policy-summary-kicker">PHYSICAL PRODUCTS</span><h3>Returns within 30 days</h3><p>Request a return within <strong>30 days of delivery</strong>. Items must be unused, unwashed and in their original condition, with packaging and tags where applicable. Include your order number.</p></section>
+                <section class="policy-summary-card"><span class="policy-summary-kicker">DAMAGED OR INCORRECT</span><h3>Tell us within 7 days</h3><p>Photograph the item and packaging, then contact us within <strong>7 days of delivery</strong>. We will review the details and explain the available resolution.</p></section>
+                <section class="policy-summary-card"><span class="policy-summary-kicker">CANCELLATIONS</span><h3>Before dispatch</h3><p>Contact us promptly to request cancellation of a physical order. Once dispatched, use the return process instead.</p></section>
+                <section class="policy-summary-card policy-summary-card--accent"><span class="policy-summary-kicker">DIGITAL GUIDES</span><h3>Review before purchase</h3><p>Ebooks are generally non-refundable once access or download is provided, except where applicable law requires otherwise.</p></section>
+            </div>
+            <p class="policy-modal-note">Approved refunds are initiated within up to <strong>30 days after validation</strong>. Your bank or payment provider may need another 3–10 business days to post the funds.</p>
+            <p class="policy-modal-contact">Need help? Email <a href="mailto:billing@bbw4life.com" data-email-key="billing">Curvafit Billing</a> with your order number and purchase email.</p>
         </div>
         <div class="modal-footer-bar"></div>
     </div>
 </div>
 
-<div id="shipping-modal" class="modal">
+<div id="shipping-modal" class="modal policy-modal policy-modal--shipping">
     <div class="modal-content">
         <div class="modal-shimmer-bar"></div>
         <div class="modal-orb modal-orb--1"></div>
@@ -493,20 +497,20 @@
         <span class="close">&times;</span>
         <div class="modal-header-badge">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14"/><path d="M15 6l6 6-6 6"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="17.5" cy="17.5" r="1.5"/><path d="M3 8h13l2 6H3z"/></svg>
-            <span>Policy</span>
+            <span>Curvafit · Delivery Information</span>
         </div>
-        <h2>Shipping Policy</h2>
+        <h2>Shipping &amp; Delivery</h2>
         <div class="modal-divider"><span class="modal-divider-gem"></span></div>
         <div class="modal-body">
-            <p>Products are sourced from <strong>trusted partner suppliers</strong> and dispatched within 1 business day of order confirmation. You receive a tracking number by email once your order is shipped.</p>
-            <p><strong>Standard Shipping</strong> — <span id="modal-delay-standard">—</span></p>
-            <p><strong>Express DHL</strong> — <span id="modal-delay-dhl">—</span></p>
-            <p><strong>Priority FedEx</strong> — <span id="modal-delay-priority">—</span></p>
-            <p><strong>Economy Shipping</strong> — <span id="modal-delay-economy">—</span></p>
-            <p><strong>Customs & Duties</strong> — International orders may be subject to import taxes levied by your country. These charges are the recipient's responsibility and are not included in your order total.</p>
-            <p><strong>Lost or damaged order?</strong> Contact us within 30 days of estimated delivery. We open a carrier investigation and offer a full refund or replacement if confirmed.</p>
-            <p>⚠️ Double-check your delivery address before confirming — address changes after dispatch are not possible.</p>
-            <p>For shipping questions, <a href="/page/contact.html">contact Curvafit Support</a>. We respond within <strong>48 hours</strong>.</p>
+            <p class="policy-modal-intro">Delivery options and rates depend on your destination. Available methods, charges and estimated timing are shown at checkout before payment.</p>
+            <div class="policy-summary-grid policy-summary-grid--shipping">
+                <section class="policy-summary-card"><span class="policy-summary-kicker">STANDARD</span><h3>Estimated 10–20 days</h3><p>The shipping rate for your address appears at checkout. Orders are processed Monday to Friday, excluding public holidays.</p></section>
+                <section class="policy-summary-card"><span class="policy-summary-kicker">FASTER SHIPPING</span><h3>Estimated 2–10 days</h3><p>This paid option varies by distance. The available rate and estimate are shown at checkout.</p></section>
+                <section class="policy-summary-card"><span class="policy-summary-kicker">TRACKING</span><h3>Updates after dispatch</h3><p>When available, tracking is sent after dispatch. Updates can take 24–48 hours to appear.</p></section>
+                <section class="policy-summary-card policy-summary-card--accent"><span class="policy-summary-kicker">INTERNATIONAL ORDERS</span><h3>Customs may apply</h3><p>Import duties and taxes are set by local authorities, are not included in your order total and may be payable by the recipient.</p></section>
+            </div>
+            <p class="policy-modal-note"><strong>Ebooks:</strong> Download your guide from the Thank You page after payment. Digital guides have no shipping fee or delivery wait.</p>
+            <p class="policy-modal-contact">Check your address before ordering. For delivery help, email <a href="mailto:support@bbw4life.com" data-email-key="general">Curvafit Support</a> with your order number.</p>
         </div>
         <div class="modal-footer-bar"></div>
     </div>

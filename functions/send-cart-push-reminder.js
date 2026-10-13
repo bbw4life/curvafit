@@ -46,9 +46,9 @@ function pickRandomPromo(settings) {
 // ── Messages marketing pour les abonnés sans panier ──
 function pickMarketingMessage(settings) {
   const pool = settings.marketing_push_messages || [
-    { body: "New arrivals just dropped 👑 Come see what's new!", url: '/collections/bbw4life-all-product.html' },
-    { body: "Flash sale — up to 40% off today only! 🔥", url: '/collections/bbw4life-all-product.html' },
-    { body: "Beauty Has No Sizes 💕 Your next favorite piece is waiting.", url: '/collections/bbw4life-all-product.html' }
+    { body: "New arrivals just dropped 👑 Come see what's new!", url: '/collections/curvafit-all-products.html' },
+    { body: "Flash sale — up to 40% off today only! 🔥", url: '/collections/curvafit-all-products.html' },
+    { body: "Beauty Has No Sizes 💕 Your next favorite piece is waiting.", url: '/collections/curvafit-all-products.html' }
   ];
   return pool[Math.floor(Math.random() * pool.length)];
 }

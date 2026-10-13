@@ -242,7 +242,7 @@
           <i class="fi fi-rr-sparkles"></i>
           While this design waits for more votes, discover what's already live — fashion, beauty and swimwear designed for every beautiful curve.
         </p>
-        <a href="/collections/bbw4life-all-product.html" class="plan-close-thanks-btn" id="plan-close-thanks">
+        <a href="/collections/curvafit-all-products.html" class="plan-close-thanks-btn" id="plan-close-thanks">
           <i class="fi fi-rr-heart"></i>
           Explore All Products
         </a>

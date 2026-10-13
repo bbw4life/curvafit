@@ -19,12 +19,12 @@ const SEO_MAP = {
     // ─────────────────────────────────────────────────────
     // COLLECTIONS
     // ─────────────────────────────────────────────────────
-    '/collections/bbw4life-all-product.html': {
+    '/collections/curvafit-all-products.html': {
         title: 'Curvafit Wellness & Fitness Products | Shop All',
         description: 'Browse Curvafit digital wellness guides and fitness essentials, from walking and meal-planning PDFs to movement and workout products.',
         keywords: 'Curvafit wellness products, fitness essentials, walking guide, meal planner PDF, workout products, movement guides',
         og_image: 'https://curvafit.com/img/curva-banner-1.png',
-        canonical: 'https://curvafit.com/collections/bbw4life-all-product.html',
+        canonical: 'https://curvafit.com/collections/curvafit-all-products.html',
         site_name: 'Curvafit',
     },
 
@@ -689,7 +689,7 @@ function injectBreadcrumbSchema() {
     const items = [{ name: 'Home', url: siteOrigin + '/' }];
 
     if (/^\/products\/product\d+\.html/.test(path)) {
-        items.push({ name: isCurvafitPage ? 'Guides' : 'Shop', url: isCurvafitPage ? 'https://curvafit.com/#curvafit-guides' : 'https://bbw4life.com/collections/bbw4life-all-product.html' });
+        items.push({ name: isCurvafitPage ? 'Guides' : 'Shop', url: isCurvafitPage ? 'https://curvafit.com/#curvafit-guides' : 'https://curvafit.com/collections/curvafit-all-products.html' });
         items.push({ name: pageName, url: canonicalUrl });
     } else if (/^\/blog\/blog\.html/.test(path)) {
         items.push({ name: 'Journal', url: canonicalUrl });

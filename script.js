@@ -834,7 +834,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const PAGE_ORDER = [
         '/',
-        '/collections/bbw4life-all-product.html',
+        '/collections/curvafit-all-products.html',
         '/curvafit/gentle-walking-4-week-guide',
         '/curvafit/simple-meal-planner-4-weeks-easy-meals-shopping-lists',
         '/curvafit/move-at-home-gentle-workouts-no-equipment',
@@ -1056,9 +1056,9 @@ function showErrorPopup(message) {
 
   // ====================== GET PRODUCT URL ======================
   function getProductUrl(id) {
-  if (!products || !Array.isArray(products) || products.length === 0) { return '/collections/bbw4life-all-product.html'; }
+  if (!products || !Array.isArray(products) || products.length === 0) { return '/collections/curvafit-all-products.html'; }
   const productIndex = products.findIndex(p => String(p.id) === String(id));
-  if (productIndex === -1) { return '/collections/bbw4life-all-product.html'; }
+  if (productIndex === -1) { return '/collections/curvafit-all-products.html'; }
   return `/products/product${productIndex + 1}.html`;
 }
 
@@ -1110,6 +1110,9 @@ function showErrorPopup(message) {
     // ~1300px de large réel, donc demander 1800px partout gonfle
     // inutilement le poids téléchargé sur réseau lent.
     const mainImageSize = window.innerWidth <= 768 ? 900 : 1800;
+    const settings = (window.__allProducts || []).find(item => item.type === 'settings') || {};
+    const showNextImagePreview = String(settings.media_next_preview || 'yes').toLowerCase().trim() !== 'no';
+    mainSlider.classList.toggle('media-next-preview-off', !showNextImagePreview);
     media.forEach((src, index) => {
       const isVideo = isVideoMediaSrc(src);
 
@@ -1491,7 +1494,7 @@ function showErrorPopup(message) {
 }
 
   // ====================== FETCH PRODUCTS ======================
-  fetch('/products.data.json')
+  fetch('/products.data.json?v=media-next-preview-1')
     .then(response => response.json())
     .then(data => {
       products = data;
@@ -3009,6 +3012,13 @@ function showErrorPopup(message) {
           const discHTML    = discPct > 0 ? `<span class="sr-card__discount">-${discPct}%</span>` : '';
           const compareHTML = hasDiscount ? `<span class="sr-card__compare">$${parseFloat(prod.compare_price).toFixed(2)}</span>` : '';
           const imgMain     = upgradeShopifyImageUrl(prod.image, 600);
+          const isDigitalEbook = isCurvafitDigitalEbookProduct(prod);
+          const cartButtonClass = isDigitalEbook
+            ? 'sr-card__cart mini-ebook-payment-btn'
+            : 'sr-card__cart add-to-cart';
+          const wishlistHTML = isDigitalEbook
+            ? ''
+            : `<span class="mini-wishlist-icon sr-card__wishlist" data-id="${prod.id}"></span>`;
 
           const card = document.createElement('div');
           card.className  = 'sr-card product-card';
@@ -3018,8 +3028,8 @@ function showErrorPopup(message) {
             <a href="${productUrl}" class="sr-card__media">
               <img class="sr-card__img" src="${imgMain}" alt="${prod.title}" loading="lazy">
               ${discHTML}
-              <span class="mini-wishlist-icon sr-card__wishlist" data-id="${prod.id}"></span>
-              <button type="button" class="sr-card__cart add-to-cart" aria-label="Add to cart"><i class="fi fi-rr-shopping-cart"></i></button>
+              ${wishlistHTML}
+              <button type="button" class="${cartButtonClass}" aria-label="${isDigitalEbook ? 'Continue to payment' : 'Add to cart'}"><i class="fi fi-rr-shopping-cart"></i></button>
             </a>
             <div class="sr-card__body">
               <a href="${productUrl}" class="sr-card__title">${prod.title}</a>
@@ -3030,11 +3040,23 @@ function showErrorPopup(message) {
             </div>`;
 
           const wishIcon = card.querySelector('.sr-card__wishlist');
-          wishIcon.innerHTML = PDP_WISHLIST_SVG;
-          wishIcon.addEventListener('click', function (e) { e.preventDefault(); toggleWishlist(e); });
+          if (wishIcon) {
+            wishIcon.innerHTML = PDP_WISHLIST_SVG;
+            wishIcon.addEventListener('click', function (e) { e.preventDefault(); toggleWishlist(e); });
+          }
 
           const cartBtn = card.querySelector('.sr-card__cart');
-          cartBtn.addEventListener('click', function (e) { e.preventDefault(); addToCart(e); });
+          cartBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (isDigitalEbook) {
+              e.stopPropagation();
+              const language = (prod.colors || []).find(color => color.active)?.name ||
+                (prod.variants || []).find(variant => variant.color)?.color || null;
+              openDirectEbookPurchase(prod, language, null, 1);
+              return;
+            }
+            addToCart(e);
+          });
 
           return card;
         }
@@ -7485,7 +7507,7 @@ if (rcCheckoutBtn) {
 
     const url      = typeof window.getProductUrl === 'function'
                      ? window.getProductUrl(id)
-                     : '/collections/bbw4life-all-product.html';
+                     : '/collections/curvafit-all-products.html';
     const img      = upgradeShopifyImageUrl(prod.image, 400);
     const imgHover = prod.image_hover
                      ? upgradeShopifyImageUrl(prod.image_hover, 400)
@@ -9291,12 +9313,12 @@ document.dispatchEvent(new Event('wishlist:change'));
       cj_variant_id: variant ? variant.vid : null
     }];
 
-    if (typeof window.openPaypalShippingModal !== 'function') {
+    if (typeof window.openCurvafitEbookPaymentModal !== 'function') {
       window.__curvafitDirectPurchaseCart = null;
       showErrorPopup('Secure checkout is not ready yet. Please try again in a moment.');
       return false;
     }
-    window.openPaypalShippingModal();
+    window.openCurvafitEbookPaymentModal();
     return true;
   }
 
@@ -9315,12 +9337,12 @@ document.dispatchEvent(new Event('wishlist:change'));
       return false;
     }
     window.__curvafitDirectPurchaseCart = items.map(item => ({ ...item }));
-    if (typeof window.openPaypalShippingModal !== 'function') {
+    if (typeof window.openCurvafitEbookPaymentModal !== 'function') {
       window.__curvafitDirectPurchaseCart = null;
       showErrorPopup('Secure checkout is not ready yet. Please try again in a moment.');
       return false;
     }
-    window.openPaypalShippingModal();
+    window.openCurvafitEbookPaymentModal();
     return true;
   }
 
@@ -9578,13 +9600,13 @@ window.BBW_WISHLIST_SLUG_MAP = BBW_WISHLIST_SLUG_MAP;
         const slug = BBW_WISHLIST_SLUG_MAP[id];
         return slug
             ? window.location.origin + '/curvafit/' + slug
-            : window.location.origin + (typeof window.getProductUrl === 'function' ? window.getProductUrl(id) : '/collections/bbw4life-all-product.html');
+            : window.location.origin + (typeof window.getProductUrl === 'function' ? window.getProductUrl(id) : '/collections/curvafit-all-products.html');
     }
 
     function buildShareUrl() {
         if (!wishlist || wishlist.length === 0) return null;
         const slugs = wishlist.map(id => BBW_WISHLIST_SLUG_MAP[id] || id).join(',');
-        return window.location.origin + '/collections/bbw4life-all-product?wishlist_share=' + encodeURIComponent(slugs);
+        return window.location.origin + '/collections/curvafit-all-products?wishlist_share=' + encodeURIComponent(slugs);
     }
 
     function buildShareMessage(platform) {
@@ -9844,7 +9866,7 @@ window.BBW_WISHLIST_SLUG_MAP = BBW_WISHLIST_SLUG_MAP;
   if (announcementItems.length > 0) setInterval(() => showAnnouncementItem((announcementCurrent + 1) % announcementItems.length), 4000);
 
   // ====================== AUTO OPEN CART ======================
-  if ((window.location.pathname.toLowerCase().includes('bbw4life-all-product.html') || window.location.pathname.toLowerCase().includes('bbw4life-all-product.html')) && localStorage.getItem('autoOpenCart') === 'true') {
+  if (window.location.pathname.toLowerCase().includes('curvafit-all-products.html') && localStorage.getItem('autoOpenCart') === 'true') {
     localStorage.removeItem('autoOpenCart');
     setTimeout(() => { if (typeof openCartDrawer === 'function') openCartDrawer(); }, 1200);
   }
@@ -10806,7 +10828,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     localStorage.setItem('autoOpenCart', 'true');
-    window.location.href = '/collections/bbw4life-all-product.html';
+    window.location.href = '/collections/curvafit-all-products.html';
   };
 
   async function loadAccountStats() {
@@ -12859,9 +12881,9 @@ window.addEventListener('load', () => {
 
   window.handleOrderItemClick = function(id) {
     if (!id) return;
-    const url = window.getProductUrl ? window.getProductUrl(id) : '/collections/bbw4life-all-product.html';
+    const url = window.getProductUrl ? window.getProductUrl(id) : '/collections/curvafit-all-products.html';
     console.log(`🖱️ Order History click → ID=${id} | URL=${url}`);
-    if (!url || url === '/collections/bbw4life-all-product.html') {
+    if (!url || url === '/collections/curvafit-all-products.html') {
       console.error(`❌ Product ID=${id} not found`);
       return;
     }
@@ -13627,13 +13649,12 @@ document.addEventListener('DOMContentLoaded', function () {
       return 'en';
     }
 
-    /* Welcome messages per language — Berline / BBW4LIFE */
+    /* Short Curvafit chat greeting in each supported language. */
     const welcomeMessages = {
-      fr: `Salut ! 👋 Je suis **Berline**, ta styliste personnelle BBW4LIFE !\n\nJe suis là pour t'aider avec :\n- 👗 Mode & style plus size\n- 💄 Beauté & soins\n- 👟 Chaussures & accessoires\n- 🛍️ Recommandations de produits\n\nComment puis-je t'aider aujourd'hui ? 😊`,
-      es: `¡Hola! 👋 Soy **Berline**, tu estilista personal de BBW4LIFE!\n\nEstoy aquí para ayudarte con:\n- 👗 Moda & estilo plus size\n- 💄 Belleza & cuidado personal\n- 👟 Zapatos & accesorios\n- 🛍️ Recomendaciones de productos\n\n¿En qué puedo ayudarte hoy? 😊`,
-      en: `Hi! 👋 I'm **Berline**, your personal BBW4LIFE stylist!\n\nI'm here to help you with:\n- 👗 Plus size fashion & style\n- 💄 Beauty & skincare\n- 👟 Shoes & accessories\n- 🛍️ Product recommendations\n\nWhat can I help you with today? 😊`
+      fr: `Salut ! 👋 Moi, c’est Sherline. Comment puis-je vous aider ?`,
+      es: `¡Hola! 👋 Soy Sherline. ¿En qué puedo ayudarte?`,
+      en: `Hi! 👋 I'm Sherline. How can I help you?`
     };
-
     /* ══════════════════════════════════════
        DRAG — inchangé
     ══════════════════════════════════════ */
@@ -13754,7 +13775,7 @@ document.addEventListener('DOMContentLoaded', function () {
       input.focus();
 
       if (messages.children.length === 0) {
-        const savedHTML = sessionStorage.getItem('cf_messages_html') || '';
+        const savedHTML = sessionStorage.getItem('cf_messages_html_v2') || '';
         if (savedHTML) {
           messages.innerHTML = savedHTML;
           reattachCardEvents();
@@ -13842,11 +13863,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
       /* Auto-linkify current Curvafit product and customer-page paths */
       out = out.replace(
-        /(\/products\/product\d+\.html|\/curvafit\/[a-z0-9/-]+|\/page\/(contact|faq|order-tracking|medical-disclaimer)\.html|\/collections\/bbw4life-all-product\.html|\/account\.html)/g,
+        /(\/products\/product\d+\.html|\/curvafit\/[a-z0-9/-]+|\/page\/(contact|faq|order-tracking|medical-disclaimer)\.html|\/collections\/curvafit-all-products\.html|\/account\.html)/g,
         (url) => {
           const labels = {
             '/page/contact.html':                      'Contact us',
-            '/collections/bbw4life-all-product.html':  'Shop All',
+            '/collections/curvafit-all-products.html':  'Shop All',
             '/page/faq.html':                          'Frequently Asked Questions',
             '/page/medical-disclaimer.html':           'Wellness Disclaimer',
             '/account.html':                           'My Account',
@@ -14140,7 +14161,7 @@ document.addEventListener('DOMContentLoaded', function () {
       messages.appendChild(msgEl);
       scrollToBottom();
 
-      try { sessionStorage.setItem('cf_messages_html', messages.innerHTML); } catch(e) {}
+      try { sessionStorage.setItem('cf_messages_html_v2', messages.innerHTML); } catch(e) {}
     }
 
     function scrollToBottom() {
@@ -14324,7 +14345,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       messages.appendChild(msgEl);
       scrollToBottom();
-      try { sessionStorage.setItem('cf_messages_html', messages.innerHTML); } catch(e) {}
+      try { sessionStorage.setItem('cf_messages_html_v2', messages.innerHTML); } catch(e) {}
     }
 
     /* ── Send message ── */
@@ -14559,7 +14580,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isOpen && !widget.contains(e.target) && !toggle.contains(e.target)) closeChat();
     });
 
-    console.log('✅ BBW4LIFE Chatbot ready — Berline is online (EN/FR/ES + multilingual)');
+    console.log('✅ Curvafit Chatbot ready — Sherline is online (EN/FR/ES + multilingual)');
   })();
 });
 
@@ -16756,7 +16777,7 @@ function injectColFbt() {
       const el = document.createElement('span');
       el.className    = 'bbw-watermark';
       el.textContent  = TEXT;
-      el.style.color  = wm.color || 'rgba(59, 27, 125, 0.42)';
+      el.style.color  = wm.color || 'rgba(59, 27, 125, 0.30)';
       el.setAttribute('aria-hidden', 'true');
       return el;
     }
@@ -16872,7 +16893,7 @@ function injectColFbt() {
       const el = document.createElement('span');
       el.className   = 'bbw-watermark';
       el.textContent = TEXT;
-      el.style.color = wm.color || 'rgba(59, 27, 125, 0.42)';
+      el.style.color = wm.color || 'rgba(59, 27, 125, 0.30)';
       el.setAttribute('aria-hidden', 'true');
       return el;
     }

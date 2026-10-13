@@ -373,7 +373,7 @@ function buildBlogContext(blogData) {
 const PAGE_MAP = {
   '/': { label: 'Home', icon: '🏠' },
   '/index.html': { label: 'Home', icon: '🏠' },
-  '/collections/bbw4life-all-product.html': { label: 'Shop All Curvafit Products', icon: '🛍️' },
+  '/collections/curvafit-all-products.html': { label: 'Shop All Curvafit Products', icon: '🛍️' },
   '/cart.html': { label: 'Cart', icon: '🛒' },
   '/account.html': { label: 'My Account', icon: '👤' },
   '/search-results.html': { label: 'Search', icon: '🔎' },

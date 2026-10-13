@@ -192,12 +192,6 @@
   let settings     = {};
   let colSettings  = {};
   let filtered     = [];
-  // Onglet "New Arrivals" (data-cat="new") : 12 produits piochés (mélange
-  // stable, calculé une seule fois) dans la vraie collection New Arrivals
-  // (settings.jrgq_collections.collections id="bbw4life-new-arrivals"),
-  // au lieu d'une approximation par position dans le tableau produits.
-  let newArrivalsIds = null;
-
   let activeFilters = {
     category: 'all', availability: [],
     priceMin: 0, priceMax: 150,
@@ -272,6 +266,7 @@
       shirts:     'fas fa-shirt',
       sweaters:   'fas fa-mitten',
       // Generic
+      ebooks:     'fas fa-book-open',
       default:    'fas fa-tag'
     };
 
@@ -646,6 +641,18 @@
       
       buildCategoryMap(productIds);
 
+      const requestedCategory = (new URLSearchParams(window.location.search).get('category') || '').trim().toLowerCase();
+      const requestedCategoryExists = requestedCategory === 'all' ||
+        requestedCategory === 'bestsellers' ||
+        requestedCategory === 'new' ||
+        Array.isArray(CATEGORY_MAP[requestedCategory]);
+      if (requestedCategoryExists) {
+        activeFilters.category = requestedCategory;
+        $$('.col-cat-tab').forEach(tab => {
+          tab.classList.toggle('active', tab.dataset.cat === requestedCategory);
+        });
+      }
+
       
       const maxPrice = parseInt(colSettings.max_price) ||
         (allProducts.length > 0
@@ -792,16 +799,10 @@
     return Math.round(((prod.compare_price - prod.price) / prod.compare_price) * 100);
   }
 
-  // Tous les IDs de la vraie collection New Arrivals (settings.jrgq_collections),
-  // dans l'ordre du JSON — pas de mélange aléatoire, pas de nombre fixe imposé :
-  // affiche tout ce qu'il y a, ni plus ni moins, sans dupliquer pour compléter
-  // un quota.
-  function getNewArrivalsIds() {
-    if (newArrivalsIds) return newArrivalsIds;
-    const jrgq = (settings.jrgq_collections && settings.jrgq_collections.collections) || [];
-    const col = jrgq.find(c => c.id === 'bbw4life-new-arrivals');
-    newArrivalsIds = (col && col.product_ids || []).slice();
-    return newArrivalsIds;
+  function getProductBadgeKey(prod) {
+    const badge = prod && prod.badge;
+    const label = typeof badge === 'string' ? badge : (badge && badge.text) || '';
+    return String(label).toLowerCase().replace(/[^a-z]/g, '');
   }
 
   function productMatchesFilters(prod) {
@@ -810,9 +811,11 @@
 
     const cat = activeFilters.category;
     if (cat === 'bestsellers') {
-      if ((prod.rating || 0) < 4.5 && (prod.reviews_count || 0) < 100) return false;
+      const badgeKey = getProductBadgeKey(prod);
+      if (badgeKey !== 'bestseller' && badgeKey !== 'bestsellers') return false;
     } else if (cat === 'new') {
-      if (!getNewArrivalsIds().includes(prod.id)) return false;
+      const badgeKey = getProductBadgeKey(prod);
+      if (badgeKey !== 'newarrival' && badgeKey !== 'newarrivals') return false;
     } else if (cat !== 'all') {
       const ids = CATEGORY_MAP[cat];
       if (ids && !ids.includes(prod.id)) return false;
@@ -2310,7 +2313,7 @@
     if (typeof window.getProductUrl === 'function') return window.getProductUrl(id);
     const prods = window.__allProducts || [];
     const idx = prods.findIndex(function (p) { return String(p.id) === String(id); });
-    if (idx === -1) return '/collections/bbw4life-all-product.html';
+    if (idx === -1) return '/collections/curvafit-all-products.html';
     return '/products/product' + (idx + 1) + '.html';
   }
 
@@ -3463,7 +3466,7 @@
   function getProductUrl(id, allProducts) {
     if (typeof window.getProductUrl === 'function') return window.getProductUrl(id);
     var idx = (allProducts || []).findIndex(function (p) { return p.id === id; });
-    return idx === -1 ? '/collections/bbw4life-all-product.html' : '/products/product' + (idx + 1) + '.html';
+    return idx === -1 ? '/collections/curvafit-all-products.html' : '/products/product' + (idx + 1) + '.html';
   }
 
   function fmt(price) {

@@ -18,19 +18,19 @@
     "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "4-Week PDF Guide"
+      "icon": "fi-rr-book-open",
+      "text": "Digital Guide"
     },
     "title": "Gentle Walking - 4-Week Walking Guide",
     "description": "A gentle 4-week walking PDF with gradual weekly plans, optional short walks, progress tracking, Sunday reflections, and a kind plan for missed days. Choose English, French, or Spanish.",
     "price": 1,
     "compare_price": 39.99,
-    "image": "/img/Curvafit%20-%20Gentle%20Walking%20ENG.png",
-    "image_hover": "/img/Gentle%20Walking-hover.png",
+    "image": "/img/ebook1-paul-1-eng.png",
+    "image_hover": "/img/ebook1-hover-paul.png",
     "colors": [
-      { "name": "English", "image": "/img/Curvafit%20-%20Gentle%20Walking%20ENG.png", "active": true },
-      { "name": "French", "image": "/img/Curvafit%20%E2%80%93%20Marche%20Douce%20FR.png", "active": true },
-      { "name": "Spanish", "image": "/img/Curvafit%20%E2%80%93%20Caminata%20Suave%20ES.png", "active": true }
+      { "name": "English", "image": "/img/ebook1-paul-1-eng.png", "active": true },
+      { "name": "French", "image": "/img/ebook1-paul-2-fr.png", "active": true },
+      { "name": "Spanish", "image": "/img/ebook1-paul-3-es.png", "active": true }
     ],
     "variants": [
       { "vid": "348860196", "color": "English", "price": 1, "active": true },
@@ -41,7 +41,10 @@
       "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Gentle-Walking-Francenel-1.png?v=1791307497",
       "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Gentle-Walking-Francenel-2.png?v=1791307497",
       "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Gentle-Walking-Francenel-3.png?v=1791307496",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Gentle-Walking-Francenel-banner-1.png?v=1791307496"
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Gentle-Walking-Francenel-banner-1.png?v=1791307496",
+      "/img/ebook1-paul-1-eng.png",
+      "/img/ebook1-paul-2-fr.png",
+      "/img/ebook1-paul-3-es.png"
     ]
   },
   {
@@ -63,19 +66,19 @@
     "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "4-Week PDF Planner"
+      "icon": "fi-rr-book-open",
+      "text": "Digital Guide"
     },
     "title": "Simple Meal Planner - 4 Weeks of Easy Meals and Shopping Lists",
     "description": "A 20-page English PDF for four weeks of practical meal planning: weekly grids, categorized shopping lists, simple meal ideas, prep-ahead prompts, and a gentle reset for off-track days. No strict diet or forbidden foods. Choose English, French, or Spanish.",
     "price": 27.83,
     "compare_price": 38.99,
-    "image": "/img/Simple%20Meal%20Planner%20vers%20ENG.png",
-    "image_hover": "/img/Simple%20Meal%20Planner-hover.png",
+    "image": "/img/ebook2-paul-1-eng.png",
+    "image_hover": "/img/ebook2-hover-paul.png",
     "colors": [
-      { "name": "English", "image": "/img/Simple%20Meal%20Planner%20vers%20ENG.png", "active": true },
-      { "name": "French", "image": "/img/Planificateur%20de%20repas%20simple%20vers%20FR.png", "active": true },
-      { "name": "Spanish", "image": "/img/Planificador%20de%20Comidas%20Simple-vers%20ES.png", "active": true }
+      { "name": "English", "image": "/img/ebook2-paul-1-eng.png", "active": true },
+      { "name": "French", "image": "/img/ebook2-paul-2-fr.png", "active": true },
+      { "name": "Spanish", "image": "/img/ebook2-paul-3-es.png", "active": true }
     ],
     "variants": [
       { "vid": "346688130", "color": "English", "price": 27.83, "active": true },
@@ -86,7 +89,10 @@
       "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Simple-Meal-Planner-Francenel-1.png?v=1791307498",
       "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Simple-Meal-Planner-Francenel-2.png?v=1791307498",
       "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Simple-Meal-Planner-Francenel-3.png?v=1791307498",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Simple-Meal-Planner-Francenel-banner-1.png?v=1791307499"
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Simple-Meal-Planner-Francenel-banner-1.png?v=1791307499",
+      "/img/ebook2-paul-1-eng.png",
+      "/img/ebook2-paul-2-fr.png",
+      "/img/ebook2-paul-3-es.png"
     ]
   },
   {
@@ -108,19 +114,19 @@
     "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "4-Week Movement Guide"
+      "icon": "fi-rr-book-open",
+      "text": "Digital Guide"
     },
     "title": "Move at Home - 4 Weeks of Gentle Workouts, No Equipment Needed",
     "description": "A 31-page English PDF for four weeks of gentle at-home movement, with no equipment needed. Choose your pace, with a chair variation for every movement, planned rest days, and a flexible schedule. English, French, and Spanish editions.",
     "price": 19.09,
     "compare_price": 31.79,
-    "image": "/img/Move%20at%20home%20vers%20ENG.png",
-    "image_hover": "/img/Move%20at%20Home-hover.png",
+    "image": "/img/ebook3-paul-1-eng.png",
+    "image_hover": "/img/ebook3-hover-paul.png",
     "colors": [
-      { "name": "English", "image": "/img/Move%20at%20home%20vers%20ENG.png", "active": true },
-      { "name": "French", "image": "/img/Curvafit%20%E2%80%93%20Bouger%20%C3%A0%20la%20maison%20FR.png", "active": true },
-      { "name": "Spanish", "image": "/img/Curvafit%20%E2%80%93%20Mu%C3%A9vete%20en%20casa%20ES.png", "active": true }
+      { "name": "English", "image": "/img/ebook3-paul-1-eng.png", "active": true },
+      { "name": "French", "image": "/img/ebook3-paul-2-fr.png", "active": true },
+      { "name": "Spanish", "image": "/img/ebook3-paul-3-es.png", "active": true }
     ],
     "variants": [
       { "vid": "725838780", "color": "English", "price": 19.09, "active": true },
@@ -131,7 +137,10 @@
       "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Move-at-Home-Francenel-1.png?v=1791307497",
       "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Move-at-Home-Francenel-2.png?v=1791307496",
       "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Move-at-Home-Francenel-3.png?v=1791307497",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Move-at-Home-Francenel-banner-1.png?v=1791307498"
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Move-at-Home-Francenel-banner-1.png?v=1791307498",
+      "/img/ebook3-paul-1-eng.png",
+      "/img/ebook3-paul-2-fr.png",
+      "/img/ebook3-paul-3-es.png"
     ]
   },
   {
@@ -153,8 +162,8 @@
     "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-sparkles",
+      "text": "New Arrival"
     },
     "title": "High-Waisted Plus-Size Yoga Pants",
     "description": "Opaque high-waisted yoga pants with a smooth, supportive fit, made to move with you from workout to everyday wear.",
@@ -216,11 +225,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-crown",
+      "text": "Best Seller"
     },
     "title": "Plus-Size Shockproof Sports Bra",
     "description": "High-support shockproof sports bra designed for curves, keeping you secure and comfortable through every run, lift and stretch.",
@@ -290,11 +299,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-sparkles",
+      "text": "New Arrival"
     },
     "title": "Curvafit Nylon Yoga Vest",
     "description": "A solid-color green yoga vest made from nylon, with a sponge pad and no steel support.",
@@ -340,11 +349,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-badge-percent",
+      "text": "Weekly Sale"
     },
     "title": "Curvafit Tennis Skort",
     "description": "A black or white polyester-fiber skort with a spandex lining. Available in sizes 0XL to 4XL.",
@@ -397,11 +406,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-chart-line-up",
+      "text": "Top Sale"
     },
     "title": "Curvafit Sports Shorts",
     "description": "Breathable, quick-drying polyester-fiber shorts in black or pink. Available in sizes S to 5XL.",
@@ -459,11 +468,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-badge-percent",
+      "text": "Weekly Sale"
     },
     "title": "Curvafit Shaping Hip Belt",
     "description": "A flexible hip belt made with polyester cotton, latex silk, and elastic for yoga and strength-training routines. Available in sizes S, M, and L.",
@@ -526,11 +535,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-crown",
+      "text": "Best Seller"
     },
     "title": "Printed Non-Slip Yoga Mat",
     "description": "A 72.1 x 24 in yoga mat with a soft suede top, dual-texture non-slip TPE base and colorful Pink Flower print for yoga, Pilates, stretching and floor workouts.",
@@ -571,11 +580,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-sparkles",
+      "text": "New Arrival"
     },
     "title": "Fitness Water Bottle 1.3L",
     "description": "Stay hydrated during workouts with this 1.3L fitness bottle, featuring measurement marks, a screw-pattern lid and a leak-resistant closure.",
@@ -622,11 +631,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-chart-line-up",
+      "text": "Top Sale"
     },
     "title": "Longway Colorful Fitness Dumbbells",
     "description": "A pair of colorful fitness dumbbells made with PE material, an iron-sand mixture and a reinforcing steel bar. Choose from 1, 1.5, 2, 3 or 5 kg pairs for home training.",
@@ -671,11 +680,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-crown",
+      "text": "Best Seller"
     },
     "title": "M4 Smart Bracelet",
     "description": "Lightweight M4 smart bracelet with a 1-inch touch display and step counting. Compatible with Android and iOS devices.",
@@ -715,11 +724,11 @@
     "single_discount": 5,
     "duo_discount": 10,
     "trio_discount": 20,
-    "rating": 0.1,
+    "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-flame",
-      "text": "In Promotion"
+      "icon": "fi-rr-sparkles",
+      "text": "New Arrival"
     },
     "title": "Pocket Leggings for Every Move",
     "description": "Cropped polyester leggings with practical pockets, a supportive fit and five versatile colors for running, training and everyday movement.",
@@ -795,19 +804,19 @@
     "rating": 0,
     "reviews_count": 0,
     "badge": {
-      "icon": "fi-rr-gift",
-      "text": "14-Day Restart Guide"
+      "icon": "fi-rr-book-open",
+      "text": "Digital Guide"
     },
     "title": "Back on Track - A 14-Day Restart Guide",
     "description": "A 15-page PDF guide with gentle prompts to understand a setback, identify triggers, create a five-minute Plan B, practice kind self-talk, and choose one small next step. Available in English, French, and Spanish.",
     "price": 28.93,
     "compare_price": 39.99,
-    "image": "/img/Back%20on%20Track%20Vers%20ENG.png",
-    "image_hover": "/img/Back%20on%20Track-hover.png",
+    "image": "/img/ebook4-paul-1-eng.png",
+    "image_hover": "/img/ebook4-hover-paul.png",
     "colors": [
-      { "name": "English", "image": "/img/Back%20on%20Track%20Vers%20ENG.png", "active": true },
-      { "name": "French", "image": "/img/Reprendre%20le%20Cap-Vers%20FR.png", "active": true },
-      { "name": "Spanish", "image": "/img/Retoma%20el%20Rumbo%20vers%20ES.png", "active": true }
+      { "name": "English", "image": "/img/ebook4-paul-1-eng.png", "active": true },
+      { "name": "French", "image": "/img/ebook4-paul-2-fr.png", "active": true },
+      { "name": "Spanish", "image": "/img/ebook4-paul-3-es.png", "active": true }
     ],
     "variants": [
       { "vid": "149626760", "color": "English", "price": 28.93, "active": true },
@@ -818,7 +827,10 @@
       "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Back-on-Track-Francenel-1.png?v=1791307497",
       "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Back-on-Track-Francenel-2.png?v=1791307497",
       "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Back-on-Track-Francenel-3.png?v=1791307498",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Back-on-Track-Francenel-baner-1.png?v=1791307498"
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Back-on-Track-Francenel-baner-1.png?v=1791307498",
+      "/img/ebook4-paul-1-eng.png",
+      "/img/ebook4-paul-2-fr.png",
+      "/img/ebook4-paul-3-es.png"
     ]
   },
   {
@@ -843,6 +855,7 @@
     "thumbnails_mobile_vertical_left": "no",
     "sticky_media_mobile": "no",
     "media_auto_slider": "yes",
+    "media_next_preview": "no",
     "swatch_scroll_mobile": "no",
     "sticky_atc_mobile_threshold": 7,
     "sticky_atc_mobile_threshold_bbw_features": 7.5,
@@ -863,31 +876,31 @@
       "allow_multiple_accounts_per_device": "no"
     },
     "founder": {
-      "name": "Francenel",
+      "name": "Paul",
       "full_name": "Paul Francenel",
-      "title": "CEO & Founder — BBW4LIFE",
+      "title": "Founder of Curvafit",
       "age": 26,
       "photo": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Pdg_Francenel.jpg?v=1778926866",
       "hero_image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bbw.email.png?v=1782613828",
-      "founded": "June 18, 2025",
+      "founded": "October 02 18, 2026",
       "nationality": "Haitian",
-      "bio": "Paul Francenel is a 26-year-old young entrepreneur deeply passionate about the beauty of plus-size women. His inspiration came from a real and deeply personal story — his relationship with a plus-size woman who was radiant, confident, and full of life. Despite her inner strength, the weight of society's judgment slowly began to affect her. That moment changed everything for him. He created BBW4LIFE with one clear purpose: to tell plus-size women that they are the beauty of this world, that they have nothing to be ashamed of, that their size is not a flaw — it is their power.",
-      "mission": "To celebrate every curve, fight imposed beauty standards, and build a family where every woman is loved exactly as she is — because Beauty Has No Sizes.",
-      "personality": "Warm, sincere, motivating, and visionary. He speaks from the heart, not from a script. He believes every woman deserves to feel seen, loved, and celebrated.",
+      "bio": "Paul Francenel created Curvafit to make everyday wellness feel more approachable. The brand offers practical guides for gentle walking, flexible meal planning, and at-home movement, alongside selected fitness essentials. Each guide uses clear steps, options to adapt, and encouragement to return after a pause, without pressure to be perfect.",
+      "mission": "To make practical wellness guidance approachable, flexible, and kind, so people can build routines that fit their real lives one small step at a time.",
+      "personality": "Warm, thoughtful, practical, and encouraging. He values clear guidance, realistic choices, and progress without pressure.",
       "values": [
-        "Authenticity — everything at BBW4LIFE comes from a real story",
-        "Inclusion — every size, every color, every background is welcome",
-        "Empowerment — every woman has the right to feel powerful in her own body",
-        "Community — no one should feel alone in their journey"
+        "Practicality — clear steps and useful tools for everyday routines",
+        "Flexibility — room to adapt a guide to your needs, pace, and schedule",
+        "Kindness — a missed day is a chance to restart gently, without guilt",
+        "Respect — no one-size-fits-all promises or pressure"
       ],
       "fun_facts": [
-        "He founded BBW4LIFE at age 25",
-        "The inspiration came from a real love story",
-        "He speaks French, Haitian Creole, English and Spanish",
-        "He believes beauty has absolutely no size",
-        "He created BBW4LIFE not just to sell — but to change lives"
+        "Curvafit guides cover walking, meal planning, and at-home movement",
+        "Core digital guides are available in English, French, and Spanish",
+        "Back on Track is a 14-day guide for returning to simple routines",
+        "Move at Home includes a chair option for each movement",
+        "Simple Meal Planner focuses on flexible planning, not strict diet rules"
       ],
-      "quote": "I want every woman who discovers BBW4LIFE to feel one thing: that she is loved, respected, and valued. I didn't create this to sell. I created it to change lives."
+      "quote": "At Curvafit, we believe a useful plan should support your real life. Start small, make it your own, and return whenever you are ready."
     },
     "chat_quick_chips": [
       { "icon": "fi fi-sr-book-open-cover", "label": "Digital guides", "msg": "What do the Curvafit guides cover, and which one might suit my goal?" },
@@ -1009,7 +1022,7 @@
       "effect_petals": "no",
       "effect_gifts": "no",
       "effect_bubbles": "no",
-      "color": "#FFD700",
+      "color": "#FFFFFF",
       "size_min": 4,
       "size_max": 5,
       "duration_min": 5,
@@ -1384,19 +1397,13 @@
     },
     "footer_new_gems": {
       "collection_ids": [
-        "bbw-features-products",
-        "men-plus-size",
-        "curvy-woman",
-        "curvy-bags",
-        "curvy-beauty",
-        "curvy-dresses"
       ],
       "product_ids": [
-        "Pdg-Francenel-product101",
-        "Pdg-Francenel-product77",
-        "Pdg-Francenel-product47",
-        "Pdg-Francenel-product119",
-        "Pdg-Francenel-product106"
+        "Pdg-Francenel-product14",
+        "Pdg-Francenel-product11",
+        "Pdg-Francenel-product9",
+        "Pdg-Francenel-product7",
+        "Pdg-Francenel-product13"
       ]
     },
     "mobile_links_behavior": {
@@ -1477,12 +1484,12 @@
     "jrgq_collections": {
       "collections": [
         {
-          "id": "bbw4life-all-product",
-          "title": "BBW4LIFE — All Products",
-          "subtitle": "The complete BBW4LIFE catalog — Women, Men & Beauty",
-          "url": "/collections/bbw4life-all-product.html",
+          "id": "curvafit-all-products",
+          "title": "Curvafit | All Products",
+          "subtitle": "The complete Curvafit collection of digital guides and fitness essentials.",
+          "url": "/collections/curvafit-all-products.html",
           "cta_label": "Shop All Products →",
-          "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/BBW4LIFE_All_Products.png?v=1777936945",
+          "image": "/img/curva-banner-1.png",
           "page_size": 16,
           "max_price": 100,
           "product_ids": [
@@ -1496,12 +1503,17 @@
             "Pdg-Francenel-product9",
             "Pdg-Francenel-product10",
             "Pdg-Francenel-product11",
-            "Pdg-Francenel-product12"
+            "Pdg-Francenel-product12",
+            "--ebooks--",
+            "Pdg-Francenel-product1",
+            "Pdg-Francenel-product2",
+            "Pdg-Francenel-product3",
+            "Pdg-Francenel-product15"
           ],
           "stat_label": "Happy Curvy Shoppers",
           "stat_value": "Born To Shine",
-          "name": "BBW4LIFE — All Products",
-          "quote": "One store. Every curve. Every style. Everything you need."
+          "name": "Curvafit | All Products",
+          "quote": "Useful guides and everyday essentials, all in one place."
         }
       ]
     },
@@ -1690,9 +1702,9 @@
     },
     "inactive_tab_cta": {
       "enabled": "yes",
-      "message": "💔 YOUR CART MISSES YOU!",
+      "message": "👟 YOUR NEXT GENTLE STEP IS WAITING",
       "speed": 150,
-      "catchy_addon": "⏳ COME BACK!",
+      "catchy_addon": "💗 MOVE AT YOUR OWN PACE",
       "animation": {
         "typewriter": "no",
         "fade": "no",
@@ -1757,44 +1769,13 @@
     },
     "watermark": {
       "show": "yes",
-      "text": "Curvafit",
-      "color": "rgba(59, 27, 125, 0.42)"
+      "text": "curvafit.com",
+      "color": "rgba(59, 27, 125, 0.30)"
     },
     "card_preload_logo": {
       "show": "yes",
       "logo_url": "/public/Logo-Curvafit.png",
       "bg_color": "rgba(184,146,90,0.07)"
-    },
-    "birthday_gift": {
-      "show": "yes",
-      "promo_code": "MYBIRTHDAY",
-      "promo_discount": "20%",
-      "allow_combine": "yes",
-      "marquee_texts": [
-        "🎂 Happy Birthday Dear Customer!",
-        "🎉 Today Is All For You!",
-        "💝 Special Discount Just For You!",
-        "👑 Beauty Has No Size!",
-        "✨ Celebrate You Today!"
-      ],
-      "birthday_message_template": "Today is your day — enjoy every moment and don't let life's challenges dim your shine.",
-      "subscribe_btn_text": "My Birthday Is Coming — Subscribe!",
-      "copy_label": "Copy Code",
-      "copied_label": "Copied!",
-      "default_customers": [
-        { "firstName": "Tanya", "lastName": "Moore" },
-        { "firstName": "Rashida", "lastName": "Vaughn" },
-        { "firstName": "Aaliyah", "lastName": "Coleman" },
-        { "firstName": "Brianna", "lastName": "Foster" },
-        { "firstName": "Nadia", "lastName": "Reyes" },
-        { "firstName": "Simone", "lastName": "Bennett" },
-        { "firstName": "Yolanda", "lastName": "Price" },
-        { "firstName": "Camille", "lastName": "Russell" },
-        { "firstName": "Talia", "lastName": "Morgan" },
-        { "firstName": "Priscilla", "lastName": "Hayes" },
-        { "firstName": "Renata", "lastName": "Sanders" },
-        { "firstName": "Marisol", "lastName": "Ortega" }
-      ]
     },
     "use_pretty_urls": "yes"
   }
