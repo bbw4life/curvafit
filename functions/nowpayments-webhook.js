@@ -100,7 +100,7 @@ export async function onRequestPost(context) {
                 `💰 <b>Montant:</b> $${body.price_amount} USD\n` +
                 `🪙 <b>Crypto:</b> ${body.pay_amount} ${body.pay_currency?.toUpperCase()}\n` +
                 `✅ <b>Status:</b> ${body.payment_status}\n\n` +
-                `👑 <i>BBW4LIFE — Beauty Has No Sizes</i>`
+                `👑 <i>Curvafit — Move at your own pace</i>`
         })
       });
     } catch (e) {

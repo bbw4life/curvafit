@@ -7,7 +7,7 @@ const { notifyCustomerTelegram } = require('./_lib/telegram-broadcast');
 const { getGoogleAuthClient } = require('./_lib/google-auth');
 
 function getBaseUrl(env)   { return env.BASE_URL   || 'https://bbw4life.com'; }
-function getFromEmail(env) { return env.FROM_EMAIL || 'BBW4LIFE <hello@bbw4life.com>'; }
+function getFromEmail(env) { return env.FROM_EMAIL || 'Curvafit <hello@bbw4life.com>'; }
 
 // ⚠️ Anciens modèles tous décommissionnés par Groq (confirmé via /v1/models
 // — même problème que send-email-auto.js). qwen/qwen3.8-27b est le seul
@@ -22,19 +22,10 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 // ── Brand colors ───────────────────────────────────────────────
 const BBW = {
-  pink:      '#e8245a',
-  pinkDark:  '#c0385e',
-  pinkLight: '#f9e0e8',
-  pinkPale:  '#fdf0f4',
-  black:     '#0d0d0d',
-  darkBg:    '#1a0812',
-  white:     '#ffffff',
-  offWhite:  '#fdf8fb',
-  textDark:  '#1a1618',
-  textMid:   '#42383e',
-  textLight: '#9e8e96',
-  gold:      '#c9963e',
-  goldL:     '#e8bc6a',
+  pink: '#e84387', pinkDark: '#bd3475', pinkLight: '#f6d9eb', pinkPale: '#fbf3fa',
+  black: '#32165f', darkBg: '#28124d', white: '#ffffff', offWhite: '#f7f3fb',
+  textDark: '#2d2140', textMid: '#5e526c', textLight: '#837991',
+  gold: '#9a78c7', goldL: '#c6a8ed',
 };
 
 // ── Base CSS ───────────────────────────────────────────────────
@@ -42,7 +33,7 @@ const BASE_CSS = `
   body,table,td,a{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
   table,td{mso-table-lspace:0pt;mso-table-rspace:0pt}
   img{-ms-interpolation-mode:bicubic;border:0;height:auto;line-height:100%;outline:none;text-decoration:none}
-  body{margin:0!important;padding:0!important;background-color:#f9eef3}
+  body{margin:0!important;padding:0!important;background-color:#f5f1fa}
   a{color:inherit}
   @media only screen and (max-width:620px){
     .ew{width:100%!important;border-radius:0!important}
@@ -57,24 +48,15 @@ const BASE_CSS = `
   }
 `;
 
-const SUPPORT_SYSTEM_PROMPT = `You are the senior customer support email writer for BBW4LIFE — a premium plus-size fashion and lifestyle brand with the tagline "Beauty Has No Sizes".
+const SUPPORT_SYSTEM_PROMPT = `You write clear, considerate customer-support emails for Curvafit, a brand offering practical movement guides and selected fitness essentials.
 
-BRAND VOICE:
-- Warm, professional, deeply human — like a best friend who genuinely cares
-- Never condescending, never robotic, never generic
-
-WRITING RULES:
-1. Write ONLY the email body — no subject line, no extra commentary
-2. Stay STRICTLY on the topic of the support notes provided — do not add unrelated information
-3. NO bullet points, NO markdown, NO asterisks
-4. Maximum 3 sentences per paragraph
-5. Every sentence must feel intentional — no filler
-6. NEVER use: "embark on", "unleash", "game-changer"
-7. ALWAYS use: conversational contractions (you're, we're, it's)
-8. Output: Plain text only. Separate paragraphs with a blank line.
-9. Start with a warm personal greeting using the customer's first name
-10. End with a warm sign-off from the BBW4LIFE team
-11. IMPORTANT: Only address what is in the support notes. Do not invent details, promises, or topics not mentioned.`;
+RULES:
+1. Write only the email body, with no subject line or commentary.
+2. Use support notes as the sole source of case-specific facts. Never invent an outcome, refund, delivery date, policy, or promise.
+3. Keep the response focused, warm, professional, and human.
+4. Use short paragraphs and natural contractions. No markdown or bullet points.
+5. Address the customer by first name when provided and sign off as the Curvafit Support Team.
+6. Keep the message specific to Curvafit resources and customer support.`;
 
 // ── Groq ───────────────────────────────────────────────────────
 async function callGroq(userPrompt, env) {
@@ -243,7 +225,7 @@ function buildSocialIcons(settings) {
           ? `<img src="${icons[l.key]}" alt="${l.label}" width="38" height="38"
                style="width:38px;height:38px;display:block;border-radius:50%;object-fit:cover;">`
           : `<span style="display:inline-flex;align-items:center;justify-content:center;
-               width:38px;height:38px;border-radius:50%;background:#333;
+               width:38px;height:38px;border-radius:50%;background:#5d3c90;
                font-family:Arial,sans-serif;font-size:11px;color:#fff;font-weight:700;">
                ${l.label.charAt(0)}
              </span>`
@@ -256,7 +238,7 @@ function buildSocialIcons(settings) {
   <tr>
     ${links.map(l => `
     <td style="padding:0 4px;text-align:center;min-width:46px;">
-      <span style="font-family:Arial,sans-serif;font-size:9px;color:rgba(255,255,255,0.55);">${l.label}</span>
+      <span style="font-family:Arial,sans-serif;font-size:9px;color:#706480;">${l.label}</span>
     </td>`).join('')}
   </tr>
 </table>`;
@@ -264,117 +246,36 @@ function buildSocialIcons(settings) {
 
 // ── CEO Footer ─────────────────────────────────────────────────
 function buildCEOFooter(settings, env) {
-  const BASE_URL = getBaseUrl(env);
-  const ceo      = settings.founder || settings.ceo || {};
-  const support  = (settings.contact_emails || {}).general || 'support@bbw4life.com';
+  const baseUrl = getBaseUrl(env);
+  const support = (settings.contact_emails || {}).general || 'support@bbw4life.com';
   const whatsapp = (settings.contact || {}).whatsapp_url || 'https://wa.me/18292677434';
-
-  const photoHTML = (ceo.photo || 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Pdg_Francenel.jpg?v=1778926866')
-    ? `<img src="${ceo.photo || 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Pdg_Francenel.jpg?v=1778926866'}" alt="${ceo.name || 'Francenel'}" width="90" height="90"
-         style="width:90px;height:90px;border-radius:50%;object-fit:cover;
-                border:3px solid ${BBW.pink};display:block;margin:0 auto 14px;">`
-    : '';
-
   return `
-<!-- CEO + SOCIAL FOOTER -->
-<tr>
-  <td style="background:${BBW.black};padding:0;">
-
-    <!-- CEO Section -->
-    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-      <tr>
-        <!-- Left: CEO Info -->
-        <td width="50%" style="padding:36px 20px 36px 36px;vertical-align:middle;">
-          ${photoHTML}
-          <p style="margin:0 0 2px;font-family:Georgia,serif;font-size:11px;
-              color:rgba(255,255,255,0.55);font-style:italic;letter-spacing:0.05em;">
-            From the CEO &amp; Founder,
-          </p>
-          <p style="margin:0 0 14px;font-family:Georgia,serif;font-size:20px;
-              font-weight:700;color:${BBW.pink};letter-spacing:0.03em;">
-            ${ceo.name || 'FRANCENEL'}
-          </p>
-          <p style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:12px;
-              color:rgba(255,255,255,0.65);line-height:1.65;font-style:italic;">
-            "${ceo.quote
-              ? ceo.quote.substring(0, 120) + (ceo.quote.length > 120 ? '...' : '')
-              : 'My mission is simple: to empower curvy women to love themselves unapologetically and live their best life, every single day.'}"
-          </p>
-          <p style="margin:0;font-family:Georgia,serif;font-size:15px;
-              color:${BBW.white};font-style:italic;">${ceo.name || 'Francenel'} ♡</p>
-        </td>
-
-        <!-- Right: Logo + Social -->
-        <td width="50%" style="padding:36px 36px 36px 20px;vertical-align:middle;text-align:center;
-            border-left:1px solid rgba(255,255,255,0.08);">
-          <p style="margin:0 0 4px;font-family:Georgia,serif;font-size:26px;font-weight:700;
-              color:${BBW.white};letter-spacing:0.05em;">
-            BBW<span style="color:${BBW.pink};">4</span>LIFE
-          </p>
-          <div style="width:40px;height:1px;background:${BBW.pink};margin:0 auto 6px;"></div>
-          <p style="margin:0 0 18px;font-family:Arial,sans-serif;font-size:10px;
-              color:rgba(255,255,255,0.45);letter-spacing:0.15em;text-transform:uppercase;">
-            Stay Connected
-          </p>
-          ${buildSocialIcons(settings)}
-          <p style="margin:18px 0 0;font-family:Arial,sans-serif;font-size:11px;color:rgba(255,255,255,0.35);">
-            <a href="mailto:${support}" style="color:${BBW.pink};text-decoration:none;">${support}</a>
-            &nbsp;·&nbsp;
-            <a href="${whatsapp}" style="color:${BBW.pink};text-decoration:none;">WhatsApp</a>
-          </p>
-        </td>
-      </tr>
-    </table>
-
-    <!-- Bottom bar -->
-    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-      <tr>
-        <td style="padding:16px 36px;border-top:1px solid rgba(255,255,255,0.07);text-align:center;">
-          <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:11px;
-              color:rgba(255,255,255,0.30);line-height:1.6;">
-            You are receiving this email because you contacted BBW4LIFE support.<br>
-          </p>
-          <table cellpadding="0" cellspacing="0" role="presentation" style="margin:10px auto 0;">
-            <tr>
-              <td style="padding:0 8px;">
-                <a href="${BASE_URL}/collections/bbw4life-all-product.html"
-                   style="font-family:Arial,sans-serif;font-size:10px;color:rgba(255,255,255,0.30);text-decoration:none;">Shop</a>
-              </td>
-              <td style="padding:0 8px;border-left:1px solid rgba(255,255,255,0.12);">
-                <a href="${BASE_URL}/policies/privacy.html"
-                   style="font-family:Arial,sans-serif;font-size:10px;color:rgba(255,255,255,0.30);text-decoration:none;">Privacy</a>
-              </td>
-              <td style="padding:0 8px;border-left:1px solid rgba(255,255,255,0.12);">
-                <a href="${BASE_URL}/page/contact.html"
-                   style="font-family:Arial,sans-serif;font-size:10px;color:rgba(255,255,255,0.30);text-decoration:none;">Contact</a>
-              </td>
-              <td style="padding:0 8px;border-left:1px solid rgba(255,255,255,0.12);">
-                <a href="${BASE_URL}/policies/refund.html"
-                   style="font-family:Arial,sans-serif;font-size:10px;color:rgba(255,255,255,0.30);text-decoration:none;">Refunds</a>
-              </td>
-            </tr>
-          </table>
-          <p style="margin:10px 0 0;font-family:Arial,sans-serif;font-size:10px;color:rgba(255,255,255,0.18);">
-            &copy; ${new Date().getFullYear()} BBW4LIFE. All rights reserved.
-          </p>
-        </td>
-      </tr>
-    </table>
-
-  </td>
-</tr>`;
+<tr><td style="padding:0;background:#f3eef9;border-top:1px solid #e7ddef;">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+    <tr><td style="padding:28px 28px 8px;text-align:center;">
+      <p style="margin:0;font-family:Arial,sans-serif;font-size:23px;font-weight:800;letter-spacing:.13em;color:${BBW.black};">CURVA<span style="color:${BBW.pink};">FIT</span></p>
+      <p style="margin:9px 0 0;font:13px/1.6 Arial,sans-serif;color:${BBW.textMid};">Practical guidance for movement and everyday wellbeing, at your pace.</p>
+      <p style="margin:7px 0 0;font:11px/1.5 Arial,sans-serif;color:${BBW.textLight};">Support from the team of Pdg Francenel</p>
+    </td></tr>
+    <tr><td style="padding:8px 20px 16px;text-align:center;">${buildSocialIcons(settings)}
+      <p style="margin:12px 0 0;font:12px/1.8 Arial,sans-serif;color:${BBW.textMid};"><a href="mailto:${support}" style="color:${BBW.black};">${support}</a> &nbsp;|&nbsp; <a href="${whatsapp}" style="color:${BBW.black};">WhatsApp support</a></p>
+    </td></tr>
+    <tr><td style="padding:14px 20px 20px;text-align:center;border-top:1px solid #e3d9ee;">
+      <p style="margin:0;font:11px/1.7 Arial,sans-serif;color:${BBW.textLight};">You are receiving this message because you contacted Curvafit support.</p>
+      <p style="margin:8px 0 0;font:11px/2 Arial,sans-serif;color:${BBW.textMid};"><a href="${baseUrl}/collections/bbw4life-all-product.html" style="color:${BBW.textMid};text-decoration:none;">Explore Curvafit</a> &nbsp;|&nbsp; <a href="${baseUrl}/policies/privacy.html" style="color:${BBW.textMid};text-decoration:none;">Privacy</a> &nbsp;|&nbsp; <a href="${baseUrl}/page/contact.html" style="color:${BBW.textMid};text-decoration:none;">Contact</a> &nbsp;|&nbsp; <a href="${baseUrl}/policies/refund.html" style="color:${BBW.textMid};text-decoration:none;">Returns</a></p>
+      <p style="margin:8px 0 0;font:10px Arial,sans-serif;color:#9d92a9;">&copy; ${new Date().getFullYear()} Curvafit. All rights reserved.</p>
+    </td></tr>
+  </table>
+</td></tr>`;
 }
 
-// ── Master Template ────────────────────────────────────────────
 function buildEmailHTML(subjectResp, aiBody, settings, env) {
-  const founder = settings.founder || settings.ceo || {};
-  const heroImg = founder.hero_image
-    || 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bbw.email.png?v=1782613828';
+  const heroImg = `${getBaseUrl(env)}/img/curva-banner-2.png`;
 
   const logoHTML = `
 <p style="margin:0;font-family:Georgia,serif;font-size:48px;font-weight:700;
     color:${BBW.white};letter-spacing:0.02em;line-height:1;">
-  BBW<span style="color:${BBW.pink};">4</span>LIFE<span style="color:${BBW.pink};font-size:28px;">♡</span>
+  CURVA<span style="color:${BBW.pink};">FIT</span>
 </p>
 <div style="width:60px;height:2px;background:${BBW.pink};margin:10px 0 16px;"></div>`;
 
@@ -388,22 +289,22 @@ function buildEmailHTML(subjectResp, aiBody, settings, env) {
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>BBW4LIFE</title>
+  <title>Curvafit Support</title>
   <style>${BASE_CSS}</style>
 </head>
-<body style="margin:0;padding:0;background-color:#f9eef3;">
+<body style="margin:0;padding:0;background-color:#f5f1fa;">
 
 <!-- Preheader -->
-<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;color:#f9eef3;line-height:1px;">
-  ${subjectResp} — BBW4LIFE Support&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;color:#f5f1fa;line-height:1px;">
+  ${subjectResp} — Curvafit Support&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;
 </div>
 
 <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
-       style="background:#f9eef3;padding:24px 16px;">
+       style="background:#f5f1fa;padding:24px 16px;">
   <tr><td align="center">
     <table class="ew" width="600" cellpadding="0" cellspacing="0" role="presentation"
-           style="max-width:600px;width:100%;border-radius:0;overflow:hidden;
-                  box-shadow:0 16px 48px rgba(192,56,94,0.20);">
+           style="max-width:600px;width:100%;border:1px solid #e7ddef;border-radius:18px;overflow:hidden;background:#ffffff;
+                  box-shadow:0 16px 48px rgba(93,60,144,0.12);">
 
       <!-- HEADER -->
       <tr>
@@ -415,7 +316,7 @@ function buildEmailHTML(subjectResp, aiBody, settings, env) {
               <td style="padding:12px 32px 0;text-align:center;">
                 <p style="margin:0;font-family:Arial,sans-serif;font-size:10px;
                     color:rgba(255,255,255,0.55);letter-spacing:0.20em;text-transform:uppercase;">
-                  CONFIDENCE. BEAUTY. EMPOWERMENT. &nbsp;♥
+                  PRACTICAL GUIDANCE - EVERYDAY MOVEMENT &nbsp;♥
                 </p>
               </td>
             </tr>
@@ -439,7 +340,7 @@ function buildEmailHTML(subjectResp, aiBody, settings, env) {
               <!-- Right: Hero image -->
               ${heroImg ? `
               <td class="hero-img" width="45%" style="padding:0;vertical-align:bottom;text-align:right;">
-                <img src="${heroImg}" alt="BBW4LIFE" width="260"
+                <img src="${heroImg}" alt="Curvafit everyday movement" width="260"
                      style="width:260px;max-width:260px;height:auto;display:block;
                             border-radius:0;object-fit:cover;object-position:top center;">
               </td>` : `<td width="45%"></td>`}
@@ -570,7 +471,7 @@ export async function onRequestGet(context) {
 
         console.log(`[reply-contact-message] Row ${i + 1} — ${minutesSincePending.toFixed(1)} min elapsed, sending to ${email}`);
 
-        const aiPrompt = `You are replying to a customer support message for BBW4LIFE.
+        const aiPrompt = `You are replying to a customer support message for Curvafit. Use only the supplied support notes; do not invent policy, outcomes, delivery dates, or promises. Keep the answer clear, calm, and focused.
 
 CUSTOMER: ${firstName} ${lastName}
 ORIGINAL SUBJECT: ${originalSubject}
@@ -601,7 +502,7 @@ Write a warm, professional email body. Use ONLY the support notes as your basis.
             email,
             (accountFirstName) =>
               `${accountFirstName}, we heard you! 💬\n\n` +
-              `<b>You got a reply from BBW4LIFE!</b>\n` +
+              `<b>You got a reply from Curvafit!</b>\n` +
               `Re: <b>${subjectResp}</b>\n\n` +
               `Check your email for our full reply — we've sent it to ${email}.`,
             undefined,

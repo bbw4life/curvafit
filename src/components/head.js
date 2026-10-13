@@ -20,11 +20,12 @@ const SEO_MAP = {
     // COLLECTIONS
     // ─────────────────────────────────────────────────────
     '/collections/bbw4life-all-product.html': {
-        title: 'Shop All — Complete Plus Size Fashion Catalog | BBW4LIFE',
-        description: 'Browse the complete BBW4LIFE catalog — hundreds of plus size styles for curvy women. Dresses, swimwear, tops, pants, beauty & more in sizes XL to 6XL. Free shipping. 30-day returns; conditions apply. New arrivals every week.',
-        keywords: 'shop plus size, curvy fashion catalog, BBW4LIFE all products, plus size collection, curvy women shop, BBW clothing catalog, plus size dresses shop, curvy fashion store, BBW boutique, plus size swimwear shop, curvy woman outfits, size XL 6XL shop',
-        og_image: 'https://bbw4life.com/public/og-shop.jpg',
-        canonical: 'https://bbw4life.com/collections/bbw4life-all-product.html'
+        title: 'Curvafit Wellness & Fitness Products | Shop All',
+        description: 'Browse Curvafit digital wellness guides and fitness essentials, from walking and meal-planning PDFs to movement and workout products.',
+        keywords: 'Curvafit wellness products, fitness essentials, walking guide, meal planner PDF, workout products, movement guides',
+        og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        canonical: 'https://curvafit.com/collections/bbw4life-all-product.html',
+        site_name: 'Curvafit',
     },
 
 
@@ -51,8 +52,8 @@ const SEO_MAP = {
     },
 
     '/page/order-tracking.html': {
-        title: 'Track Your Order | Curvafit',
-        description: 'Track your Curvafit physical order with the tracking number in your shipping email and view the latest carrier updates.',
+        title: 'Track Your Curvafit Order | Shipment Updates',
+        description: 'Check the latest carrier updates for your Curvafit physical product order using your tracking number.',
         keywords: 'Curvafit order tracking, track Curvafit order, shipment tracking, delivery updates',
         og_image: 'https://curvafit.com/img/curva-banner-1.png',
         site_name: 'Curvafit',
@@ -64,11 +65,13 @@ const SEO_MAP = {
     // ACCOUNT & CHECKOUT
     // ─────────────────────────────────────────────────────
     '/account.html': {
-        title: 'My Account | BBW4LIFE',
-        description: 'Manage your BBW4LIFE account — track orders, manage addresses, view your wishlist and update your preferences. Your curvy fashion hub.',
-        keywords: 'BBW4LIFE account, my orders BBW4LIFE, my wishlist BBW4LIFE, BBW4LIFE login, account BBW4LIFE, BBW4LIFE order history, curvy fashion account, manage BBW4LIFE account, BBW4LIFE profile, plus size account, BBW4LIFE my account, curvy woman account',
-        og_image: 'https://bbw4life.com/public/og-home.jpg',
-        canonical: 'https://bbw4life.com/account.html'
+        title: 'My Curvafit Account',
+        description: 'Sign in to manage your Curvafit account, saved details, and order information.',
+        keywords: 'Curvafit account, sign in, order information',
+        og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        canonical: 'https://curvafit.com/account.html',
+        site_name: 'Curvafit',
+        robots: 'noindex, follow',
     },
 
     '/checkout/checkout': {
@@ -80,9 +83,9 @@ const SEO_MAP = {
     },
 
     '/cart.html': {
-        title: 'Your Cart | Curvafit',
-        description: 'Review your Curvafit digital guides and wellness products before checkout.',
-        keywords: 'Curvafit cart, Curvafit shopping cart, review Curvafit order, Curvafit checkout',
+        title: 'Your Curvafit Cart',
+        description: 'Review the digital guides and fitness products in your Curvafit cart before checkout.',
+        keywords: 'Curvafit cart, shopping cart, review order',
         og_image: 'https://curvafit.com/img/curva-banner-1.png',
         site_name: 'Curvafit',
         canonical: 'https://curvafit.com/cart.html',
@@ -90,11 +93,12 @@ const SEO_MAP = {
     },
 
     '/search-results.html': {
-        title: 'Search Results | BBW4LIFE',
-        description: 'Search the complete BBW4LIFE catalog — plus size dresses, shoes, beauty and accessories for every curvy woman.',
-        keywords: 'BBW4LIFE search, search plus size fashion, find products BBW4LIFE, curvy fashion search',
-        og_image: 'https://bbw4life.com/public/og-home.jpg',
-        canonical: 'https://bbw4life.com/search-results.html',
+        title: 'Search Curvafit',
+        description: 'Search Curvafit wellness guides, fitness products, and practical movement resources.',
+        keywords: 'Curvafit search, wellness guides, fitness products',
+        og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        canonical: 'https://curvafit.com/search-results.html',
+        site_name: 'Curvafit',
         robots: 'noindex, follow'
     },
 
@@ -102,64 +106,52 @@ const SEO_MAP = {
     // POLICIES
     // ─────────────────────────────────────────────────────
     '/policies/privacy.html': {
-        title: 'Privacy Policy — Your Data is Protected | BBW4LIFE',
-        description: 'Read the BBW4LIFE privacy policy. We protect your personal data, respect your privacy and never share your information without your consent. Shop with complete confidence.',
-        keywords: 'privacy policy BBW4LIFE, data protection BBW4LIFE, BBW4LIFE privacy, personal data BBW4LIFE, BBW4LIFE GDPR, curvy fashion privacy policy, plus size brand privacy, BBW4LIFE data security, secure shopping BBW4LIFE, privacy BBW4LIFE, customer data protection, BBW4LIFE confidentiality',
-        og_image: 'https://bbw4life.com/public/og-home.jpg',
-        canonical: 'https://bbw4life.com/policies/privacy.html'
+        title: 'Curvafit Privacy Policy | How We Handle Your Data',
+        description: 'Learn how Curvafit handles account, order, and website data, why information is used, and how to make a privacy request.',
+        keywords: 'Curvafit privacy policy, personal data, wellness guides, digital downloads, order information, data rights',
+        og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/policies/privacy.html'
     },
 
     '/policies/refund.html': {
-        title: 'Returns & Refund Policy | BBW4LIFE',
-        description: 'Read the BBW4LIFE return policy, including the usual 30-day request period, item condition requirements, exclusions, and refund processing times.',
-        keywords: 'refund policy BBW4LIFE, return policy BBW4LIFE, 14 day return request BBW4LIFE, plus size return policy, curvy fashion returns, BBW4LIFE refund, plus size refund policy, BBW4LIFE money back',
-        og_image: 'https://bbw4life.com/public/og-home.jpg',
-        canonical: 'https://bbw4life.com/policies/refund.html'
+        title: 'Curvafit Refund Policy | Digital Guides and Physical Products',
+        description: 'See Curvafit’s refund rules: ebooks are non-refundable for unmet expectations, while eligible physical products can be returned under the stated conditions.',
+        keywords: 'Curvafit refund policy, ebook refund policy, digital guide returns, physical product returns, Curvafit order cancellation',
+        og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/policies/refund.html'
     },
 
     '/policies/shipping.html': {
-        title: 'Shipping Information — Worldwide Delivery | BBW4LIFE',
-        description: 'Everything you need to know about BBW4LIFE shipping — delivery times, shipping costs, free shipping threshold, international shipping to 54 countries, and order tracking. Fast, reliable worldwide delivery.',
-        keywords: 'shipping BBW4LIFE, delivery times BBW4LIFE, free shipping BBW4LIFE, BBW4LIFE shipping info, international shipping BBW4LIFE, BBW4LIFE worldwide delivery, plus size shipping, curvy fashion delivery, BBW4LIFE shipping cost, shipping policy BBW4LIFE, BBW4LIFE express delivery, plus size free shipping',
-        og_image: 'https://bbw4life.com/public/og-home.jpg',
-        canonical: 'https://bbw4life.com/policies/shipping.html'
+        title: 'Curvafit Shipping | Physical Products and Ebook Delivery',
+        description: 'Curvafit standard shipping takes an estimated 10–20 days. Paid faster shipping takes 2–10 days, depending on distance. Download ebooks from the Thank You page after payment.',
+        keywords: 'Curvafit shipping, standard delivery time, express shipping, ebook download, physical book request, order tracking',
+        og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/policies/shipping.html'
     },
 
     '/policies/terms.html': {
-        title: 'Terms & Conditions — Clear, Honest & No Legal Traps | BBW4LIFE',
-        description: 'Read the BBW4LIFE Terms & Conditions. Your rights, our responsibilities, return policy, order cancellation, payment security, and how BBW4LIFE works — explained in plain English. No surprises.',
-        keywords: 'terms and conditions BBW4LIFE, BBW4LIFE terms, legal terms BBW4LIFE, BBW4LIFE user agreement, plus size brand terms, curvy fashion terms conditions, BBW4LIFE refund terms, BBW4LIFE return policy terms, order cancellation BBW4LIFE, BBW4LIFE payment terms, BBW4LIFE legal page, curvy fashion legal terms',
-        og_image: 'https://bbw4life.com/public/og-home.jpg',
-        canonical: 'https://bbw4life.com/policies/terms.html'
+        title: 'Curvafit Terms & Conditions | Guides, Products and Orders',
+        description: 'Read Curvafit’s terms for ebook downloads, physical wellness products, payments, shipping, returns, and acceptable use of our website.',
+        keywords: 'Curvafit terms and conditions, ebook terms, digital guide purchase, physical product orders, shipping and returns, wellness products',
+        og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/policies/terms.html'
     },
 
     // ─────────────────────────────────────────────────────
     // BLOG
     // ─────────────────────────────────────────────────────
     '/blog/blog.html': {
-        title: 'BBW4LIFE Journal — Style, Beauty & Confidence for Curvy Women',
-        description: 'The BBW4LIFE Journal: expert articles on plus size fashion, body confidence, curvy beauty tips, BBW lifestyle, self-love stories and the Beauty Has No Sizes movement. Updated every week.',
-        keywords: 'BBW4LIFE blog, plus size fashion blog, curvy woman confidence blog, body positive articles, BBW beauty tips, plus size outfit ideas, self love curvy women, BBW lifestyle blog, beauty has no sizes, plus size fashion 2026, curvy woman empowerment articles, BBW community blog',
-        og_image: 'https://bbw4life.com/public/og-blog.jpg',
-        canonical: 'https://bbw4life.com/blog/blog.html'
+        title: 'Curvafit Journal | Gentle Wellness, Movement & Everyday Habits',
+        description: 'Explore practical, supportive ideas for gentle movement, walking, simple meal planning, body comfort, and building routines at your own pace.',
+        keywords: 'Curvafit journal, gentle wellness articles, walking tips, meal planning ideas, beginner workouts, healthy routines',
+        og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        canonical: 'https://curvafit.com/blog/blog.html',
+        site_name: 'Curvafit',
     },
-
-    '/blog/article-featured.html': {
-        title: 'Beauty Has No Sizes: The Movement That Is Redefining Beauty for Every Woman | BBW4LIFE Journal',
-        description: 'Discover how thousands of BBW women around the world are reclaiming their confidence, celebrating their curves, and building a life they truly love — without changing who they are. Beauty Has No Sizes.',
-        keywords: 'BBW beauty movement, plus size confidence, body positive curvy women, beauty has no sizes, BBW4LIFE, curvy woman self love, plus size body confidence, BBW movement 2026, body positive revolution, curvy woman empowerment, BBW self acceptance, plus size women confidence',
-        og_image: 'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/article_1.png?v=1775497369',
-        canonical: 'https://bbw4life.com/blog/article-featured.html'
-    },
-
-    '/blog/article1.html': {
-        title: 'Stop Dieting — Here Is How BBW Women Actually Take Care of Themselves | BBW4LIFE Journal',
-        description: 'Forget crash diets and toxic fitness culture. Discover the real, science-backed approach to well-being that honors your curvy body, boosts your energy, and makes you feel unstoppable every single day.',
-        keywords: 'BBW wellness, plus size self care, curvy women health, stop dieting BBW, body positive wellness, BBW4LIFE wellness, anti-diet plus size, curvy woman health tips, BBW self care routine, plus size wellness guide, body positive health, curvy woman body care',
-        og_image: 'https://cdn.shopify.com/s/files/1/0978/0353/4627/files/article2.png?v=1775497367',
-        canonical: 'https://bbw4life.com/blog/article1.html'
-    },
-
 
     // ─────────────────────────────────────────────────────
     // PRODUCTS
@@ -167,7 +159,7 @@ const SEO_MAP = {
 
     '/products/product1.html': {
         title: 'Gentle Walking: 4-Week Walking Guide | Curvafit',
-        description: 'Build a steady walking routine with a four-week PDF guide featuring gradual walking plans, weekly check-ins, a progress tracker, and a kind reset for missed days.',
+        description: 'Build a steady walking routine with Gentle Walking, a 4-week PDF guide featuring gradual plans, weekly check-ins, a progress tracker, and a kind reset for missed days.',
         keywords: 'Gentle Walking PDF, four-week walking guide, walking habit planner, gentle walking routine, Curvafit',
         og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Gentle-Walking-Francenel-1.png?v=1791307497',
         site_name: 'Curvafit',
@@ -176,7 +168,7 @@ const SEO_MAP = {
 
     '/products/product2.html': {
         title: 'Simple Meal Planner: 4 Weeks of Easy Meals and Shopping Lists | Curvafit',
-        description: 'Plan four weeks of simple meals with weekly grids, practical shopping lists, easy meal ideas, and prep-ahead prompts. No strict diet or calorie targets.',
+        description: 'Plan four weeks of simple meals with flexible meal grids, categorized shopping lists, easy ideas, and prep-ahead prompts. No strict diet or forbidden foods.',
         keywords: 'Simple Meal Planner PDF, four-week meal planner, easy meal ideas, shopping lists, meal prep planner, Curvafit',
         og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Simple-Meal-Planner-Francenel-1.png?v=1791307498',
         site_name: 'Curvafit',
@@ -185,7 +177,7 @@ const SEO_MAP = {
 
     '/products/product3.html': {
         title: 'Move at Home: 4 Weeks of Gentle Workouts, No Equipment | Curvafit',
-        description: 'A gentle four-week movement guide with no equipment, chair variations for every movement, flexible levels, and planned rest days. Move at your own pace.',
+        description: 'Try a gentle four-week movement plan at home with no equipment, chair variations for every movement, flexible levels, and planned rest days.',
         keywords: 'Move at Home PDF, gentle workouts at home, no-equipment movement guide, chair exercise variations, four-week movement plan, Curvafit',
         og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Move-at-Home-Francenel-1.png?v=1791307497',
         site_name: 'Curvafit',
@@ -194,11 +186,202 @@ const SEO_MAP = {
 
     '/products/product15.html': {
         title: 'Back on Track: A 14-Day Restart Guide Without Guilt | Curvafit',
-        description: 'A 15-page PDF guide with gentle prompts, a five-minute Plan B, kind self-talk, and practical ways to return to simple routines one day at a time.',
+        description: 'A 15-page PDF guide with gentle prompts, a five-minute Plan B, and practical ways to return to simple routines one day at a time. Available in English, French, and Spanish.',
         keywords: 'Back on Track PDF, 14-day restart guide, five-minute Plan B, gentle habit guide, restart without guilt, Curvafit',
         og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Back-on-Track-Francenel-1.png?v=1791307497',
         site_name: 'Curvafit',
         canonical: 'https://curvafit.com/curvafit/back-on-track-14-day-restart-guide'
+    },
+
+    // PHYSICAL PRODUCTS — Curvafit
+    '/products/product4.html': {
+        title: 'High-Waisted Yoga Pants for Comfortable Movement | Curvafit',
+        description: 'Move through yoga, walks, and everyday activity with high-waisted pants designed for comfortable coverage and a flexible feel.',
+        keywords: 'high-waisted yoga pants, plus-size activewear, workout pants for women, yoga clothing, Curvafit',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product4-principale.png?v=1791735640', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/high-waisted-plus-size-yoga-pants'
+    },
+    '/products/product5.html': {
+        title: 'High-Support Sports Bra for Active Movement | Curvafit',
+        description: 'Feel more supported during workouts with a wire-free sports bra featuring a full-cup fit, fixed straps, and a soft sponge insert.',
+        keywords: 'high-support sports bra, wire-free workout bra, full-cup sports bra, Curvafit',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product5-principale.png?v=1791735621', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/plus-size-shockproof-sports-bra'
+    },
+    '/products/product6.html': {
+        title: 'Wire-Free Yoga Vest with Sponge Pad | Curvafit',
+        description: 'Move comfortably through yoga and daily activity in a wire-free vest with an included sponge pad for coverage.',
+        keywords: 'wire-free yoga vest, sports bra vest, yoga top with sponge pad, Curvafit',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product6-principale.png?v=1791735519', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/nylon-yoga-vest'
+    },
+    '/products/product7.html': {
+        title: 'Tennis Skort with Flexible Lining | Curvafit',
+        description: 'Move freely on court with a tennis skort designed with a flexible spandex lining for coverage during active play.',
+        keywords: 'women tennis skort, tennis skirt with shorts, activewear for court, Curvafit',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product7-principale.png?v=1791735485', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/tennis-skort'
+    },
+    '/products/product8.html': {
+        title: 'Quick-Dry Sports Shorts for Workouts | Curvafit',
+        description: 'Stay focused on your workout in breathable, quick-drying shorts made for training and warm-weather movement.',
+        keywords: 'quick-dry sports shorts, women workout shorts, breathable training shorts, Curvafit',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product8-principale.png?v=1791735530', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/quick-dry-sports-shorts'
+    },
+    '/products/product9.html': {
+        title: 'Shaping Hip Belt for Yoga and Training | Curvafit',
+        description: 'Add focused resistance to glute exercises, yoga, and strength sessions with a flexible shaping band for home or gym workouts.',
+        keywords: 'hip resistance band, glute training band, yoga shaping belt, strength training accessory, Curvafit',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-principale.png?v=1791735596', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/shaping-hip-belt'
+    },
+    '/products/product10.html': {
+        title: 'Printed Non-Slip Yoga Mat for Home Workouts | Curvafit',
+        description: 'Practice with more confidence on a yoga mat with a sweat-absorbing suede-like top and a wave-textured TPE base designed for floor grip.',
+        keywords: 'non-slip yoga mat, printed exercise mat, TPE yoga mat, Pilates mat, Curvafit',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product10-principale.png?v=1791735506', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/printed-non-slip-yoga-mat'
+    },
+    '/products/product11.html': {
+        title: '1.3L Fitness Water Bottle with Twist-Lock Lid | Curvafit',
+        description: 'Keep water close during workouts and busy days with a 1.3L sports bottle, easy-to-read intake markings, and a twist-lock lid.',
+        keywords: '1.3L fitness water bottle, sports water bottle, workout hydration bottle, Curvafit',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-principale.png?v=1791735581', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/fitness-water-bottle-1-3l'
+    },
+    '/products/product12.html': {
+        title: 'Fitness Dumbbells for Home Strength Training | Curvafit',
+        description: 'Add simple strength training to your home routine with compact dumbbells available in several weight options.',
+        keywords: 'fitness dumbbells, home workout weights, strength training dumbbells, Curvafit',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product12-principale.png?v=1791735497', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/colorful-fitness-dumbbells'
+    },
+    '/products/product13.html': {
+        title: 'M4 Smart Bracelet with Step Counter | Curvafit',
+        description: 'Keep a simple activity check-in close with the M4 bracelet?s step-counting feature and touch display, compatible with Android and iOS.',
+        keywords: 'M4 smart bracelet, step counter bracelet, activity tracker, Android iOS fitness bracelet, Curvafit',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-principale.png?v=1791735492', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/m4-step-counting-smart-bracelet'
+    },
+    '/products/product14.html': {
+        title: 'Pocket Leggings for Walking and Workouts | Curvafit',
+        description: 'Keep small essentials close while moving through walks, workouts, and errands in comfortable cropped leggings with practical pockets.',
+        keywords: 'leggings with pockets, women active leggings, workout leggings with pockets, Curvafit',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-principale.png?v=1791735650', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/pocket-leggings-for-every-move'
+    },
+
+    // CURVAFIT JOURNAL ARTICLES
+    '/blog/article1.html': {
+        title: 'Gentle 4-Week Walking Plan for Beginners | Curvafit',
+        description: 'Start walking gradually with a flexible four-week plan, manageable walks, progress check-ins, and a kind approach to missed days.',
+        keywords: 'beginner walking plan, gentle walking routine, four-week walking plan, Curvafit Journal',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_1.1.png?v=1779050358', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/journal/how-to-start-walking-plus-size-gentle-4-week-plan'
+    },
+    '/blog/article2.html': {
+        title: 'Easy Meal Prep for Busy Weeks: 10 Ideas | Curvafit',
+        description: 'Plan busy-week meals with 10 flexible prep ideas, simple shopping-list prompts, and no strict diet rules.',
+        keywords: 'easy meal prep ideas, weekly meal planning, busy-week meals, Curvafit Journal',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_2.1.png?v=1779050358', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/journal/simple-meal-prep-busy-weeks-easy-ideas-no-strict-diet'
+    },
+    '/blog/article3.html': {
+        title: '8 Gentle Chair Workouts to Try at Home | Curvafit',
+        description: 'Try eight beginner-friendly movements at home, each with a chair option and no equipment needed.',
+        keywords: 'chair workouts for beginners, gentle exercise at home, seated movement, Curvafit Journal',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_3.1.png?v=1779050358', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/journal/chair-workouts-beginners-gentle-moves-home'
+    },
+    '/blog/article4.html': {
+        title: 'How to Restart a Routine After a Setback | Curvafit',
+        description: 'Return to healthy routines without guilt using reflection prompts, a small Plan B, and one manageable next step.',
+        keywords: 'restart healthy routine, rebuild habits after setback, getting back on track, Curvafit Journal',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_4.1.png?v=1779050358', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/journal/restart-routine-after-setback-without-guilt'
+    },
+    '/blog/article5.html': {
+        title: '7 Habits for Consistency When Motivation Is Low | Curvafit',
+        description: 'Use small starts, helpful cues, and a flexible backup plan to make routines easier to return to.',
+        keywords: 'stay consistent with habits, low motivation routine, build sustainable habits, Curvafit Journal',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_5.1.png?v=1779050358', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/journal/stay-consistent-when-motivation-disappears-7-habits'
+    },
+    '/blog/article6.html': {
+        title: 'Plus-Size Anti-Chafing Tips for Everyday Comfort | Curvafit',
+        description: 'Learn how smoother fabrics, comfortable fits, and practical layers can help reduce chafing during movement.',
+        keywords: 'anti-chafing tips, prevent thigh chafing, plus-size clothing comfort, Curvafit Journal',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_6.1.png?v=1779050358', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/journal/anti-chafing-tips-plus-size-women'
+    },
+    '/blog/article7.html': {
+        title: 'First Day at the Gym: A Calm Beginner Guide | Curvafit',
+        description: 'Prepare for a first gym visit with a simple plan, an easy starting activity, breaks, and questions for staff.',
+        keywords: 'first day at the gym, beginner gym guide, gym confidence tips, Curvafit Journal',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_7.1.png?v=1779050358', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/journal/first-day-gym-confidence-building-guide'
+    },
+    '/blog/article8.html': {
+        title: 'Plate Method: Balanced Meals Without Calorie Counting | Curvafit',
+        description: 'Use a flexible plate as a visual starting point for meals with vegetables, protein, and grains, without calorie counting.',
+        keywords: 'plate method meals, balanced meals without calorie counting, flexible meal planning, Curvafit Journal',
+        og_image: 'https://cdn.shopify.com/s/files/1/0746/5346/6724/files/Article_card_8.1.png?v=1779050357', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/journal/plate-method-balanced-meals-without-calorie-counting'
+    },
+
+    // SUPPORT PAGES
+    '/page/faq.html': {
+        title: 'Curvafit FAQ | Guides, Downloads and Orders',
+        description: 'Find answers about Curvafit wellness guides, language options, digital downloads, physical products, and order support.',
+        keywords: 'Curvafit FAQ, guide download help, wellness guide questions, Curvafit order support',
+        og_image: 'https://curvafit.com/img/curva-banner-1.png', site_name: 'Curvafit', canonical: 'https://curvafit.com/page/faq.html'
+    },
+    '/page/medical-disclaimer.html': {
+        title: 'Wellness Guide Safety and Medical Disclaimer | Curvafit',
+        description: 'Review Curvafit’s health and safety information before using movement or meal-planning resources. Our guides are educational and not medical advice.',
+        keywords: 'Curvafit safety, wellness guide disclaimer, exercise safety guidance, nutrition information disclaimer',
+        og_image: 'https://curvafit.com/img/curva-banner-1.png', site_name: 'Curvafit', canonical: 'https://curvafit.com/page/medical-disclaimer.html'
+    },
+
+    '/paul-product.html': {
+        title: 'Gentle Walking: 4-Week Walking Guide | Curvafit',
+        description: 'Build a steady walking routine with a four-week PDF guide featuring gradual walking plans, weekly check-ins, a progress tracker, and a kind reset for missed days.',
+        keywords: 'Gentle Walking PDF, four-week walking guide, beginner walking plan, walking habit planner, Curvafit',
+        og_image: 'https://curvafit.com/img/curva-banner-1.png', site_name: 'Curvafit',
+        canonical: 'https://curvafit.com/curvafit/gentle-walking-4-week-guide', robots: 'noindex, follow'
+    },
+
+    // NON-INDEXABLE UTILITY PAGES
+    '/404.html': {
+        title: 'Page Not Found | Curvafit', description: 'The page you requested could not be found. Return to Curvafit to explore wellness guides and products.',
+        keywords: 'Curvafit page not found', og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        site_name: 'Curvafit', canonical: 'https://curvafit.com/404.html', robots: 'noindex, nofollow'
+    },
+    '/coming-soon.html': {
+        title: 'Coming Soon | Curvafit', description: 'Curvafit is preparing something new. Visit the site to explore current wellness guides and products.',
+        keywords: 'Curvafit, coming soon', og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        site_name: 'Curvafit', canonical: 'https://curvafit.com/coming-soon.html', robots: 'noindex, nofollow'
+    },
+    '/bbw4life-analytiques.html': {
+        title: 'Site Analytics | Curvafit', description: 'Internal Curvafit analytics dashboard.',
+        keywords: 'Curvafit analytics', og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        site_name: 'Curvafit', canonical: 'https://curvafit.com/bbw4life-analytiques.html', robots: 'noindex, nofollow'
+    },
+    '/cj-viewer.html': {
+        title: 'Product Inventory Viewer | Curvafit', description: 'Internal product inventory and catalog viewer.',
+        keywords: 'Curvafit inventory viewer', og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        site_name: 'Curvafit', canonical: 'https://curvafit.com/cj-viewer.html', robots: 'noindex, nofollow'
+    },
+    '/eprolo-viewer.html': {
+        title: 'Product Catalog Viewer | Curvafit', description: 'Internal product catalog viewer.',
+        keywords: 'Curvafit product catalog viewer', og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        site_name: 'Curvafit', canonical: 'https://curvafit.com/eprolo-viewer.html', robots: 'noindex, nofollow'
+    },
+    '/telegram-signup.html': {
+        title: 'Curvafit Account Signup', description: 'Create or connect your Curvafit account.',
+        keywords: 'Curvafit account signup', og_image: 'https://curvafit.com/img/curva-banner-1.png',
+        site_name: 'Curvafit', canonical: 'https://curvafit.com/telegram-signup.html', robots: 'noindex, nofollow'
     },
 
 
@@ -380,11 +563,12 @@ function injectGlobalHead() {
 
     let seo = SEO_MAP[path] || SEO_MAP[pathWithHtml];
     let rawPath = SEO_MAP[path] ? path : (SEO_MAP[pathWithHtml] ? pathWithHtml : null);
+    const slugMap = window.CURVAFIT_SLUGS || window.BBW_SLUGS;
 
-    // ── Fallback : path est une pretty URL → retrouver l'URL réelle via BBW_SLUGS ──
-    if (!seo && window.BBW_SLUGS) {
-        const realPath = Object.keys(window.BBW_SLUGS).find(
-            key => window.BBW_SLUGS[key] === path
+    // Pretty URL → retrouver le fichier HTML correspondant.
+    if (!seo && slugMap) {
+        const realPath = Object.keys(slugMap).find(
+            key => slugMap[key] === path
         );
         if (realPath) {
             seo = SEO_MAP[realPath];
@@ -392,15 +576,21 @@ function injectGlobalHead() {
         }
     }
 
-    if (!seo && /\/products\/product\d+\.html/.test(path)) {
+    const seoSourcePath = rawPath || path;
+    const isProductPage = /^\/products\/product\d+\.html$/.test(seoSourcePath);
+    const isJournalArticle = /^\/blog\/article\d+\.html$/.test(seoSourcePath);
+    if (!seo && (isProductPage || isJournalArticle)) {
+        const descriptionMeta = document.querySelector('meta[name="description"]');
+        const keywordsMeta = document.querySelector('meta[name="keywords"]');
+        const imageMeta = document.querySelector('meta[property="og:image"]');
         seo = {
-            title: 'Wellness Guide | Curvafit',
-            description: 'Explore a practical Curvafit digital guide designed to support gentle routines and steady habits at your own pace.',
-            keywords: 'Curvafit wellness guide, digital wellness PDF, gentle routines, healthy habits',
-            og_image: 'https://curvafit.com/img/curva-banner-1.png',
+            title: document.title || 'Curvafit',
+            description: descriptionMeta ? descriptionMeta.content : '',
+            keywords: keywordsMeta ? keywordsMeta.content : '',
+            og_image: imageMeta ? imageMeta.content : 'https://curvafit.com/img/curva-banner-1.png',
             site_name: 'Curvafit'
         };
-        rawPath = path;
+        rawPath = seoSourcePath;
     }
 
     if (!seo) {
@@ -415,8 +605,8 @@ function injectGlobalHead() {
 
     // ── CANONICAL DYNAMIQUE : toujours la version pretty si elle existe ──
     let canonicalPath = path;
-    if (rawPath && window.BBW_SLUGS && window.BBW_SLUGS[rawPath]) {
-        canonicalPath = window.BBW_SLUGS[rawPath];
+    if (rawPath && slugMap && slugMap[rawPath]) {
+        canonicalPath = slugMap[rawPath];
     }
     const isHomePage = rawPath === '/' || rawPath === '/index' || rawPath === '/index.html';
     const canonicalUrl = isHomePage
@@ -473,9 +663,10 @@ function resolveRealPath() {
     if (SEO_MAP[path]) return path;
     const pathWithHtml = path.endsWith('.html') ? path : path + '.html';
     if (SEO_MAP[pathWithHtml]) return pathWithHtml;
-    if (window.BBW_SLUGS) {
-        const realPath = Object.keys(window.BBW_SLUGS).find(
-            key => window.BBW_SLUGS[key] === path
+    const slugMap = window.CURVAFIT_SLUGS || window.BBW_SLUGS;
+    if (slugMap) {
+        const realPath = Object.keys(slugMap).find(
+            key => slugMap[key] === path
         );
         if (realPath) return realPath;
     }

@@ -1526,6 +1526,13 @@
     var prefix   = context === 'drawer' ? 'drawer-extra' : 'cp-extra';
     var imgSrc   = upgradeImg(prod.image, context === 'drawer' ? 500 : 700);
     var hoverSrc = prod.image_hover ? upgradeImg(prod.image_hover, context === 'drawer' ? 500 : 700) : '';
+    var settings = allProducts.find(function (item) { return item.type === 'settings'; }) || {};
+    var ebookIds = settings.digital_ebook_product_ids || [];
+    var isDigitalEbook = ebookIds.indexOf(prod.id) !== -1;
+    var actionText = isDigitalEbook ? 'Download Now' : btnText;
+    var actionIcon = isDigitalEbook
+      ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>'
+      : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>';
 
     var discountPct = 0;
     if (prod.compare_price && parseFloat(prod.compare_price) > parseFloat(prod.price)) {
@@ -1554,6 +1561,7 @@
     var card = document.createElement('div');
     card.className = prefix + '-card';
     card.dataset.id = prod.id;
+    card.dataset.digitalEbook = isDigitalEbook ? 'true' : 'false';
 
     card.innerHTML =
       '<a href="' + url + '" class="' + prefix + '-card__img-wrap" tabindex="-1" aria-hidden="true">' +
@@ -1568,12 +1576,9 @@
           '<span class="' + prefix + '-card__price">' + fmt(prod.price) + '</span>' +
           compareHTML +
         '</div>' +
-        '<button class="' + prefix + '-card__btn" data-product-id="' + prod.id + '">' +
-          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
-            '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>' +
-            '<path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>' +
-          '</svg>' +
-          btnText +
+        '<button class="' + prefix + '-card__btn' + (isDigitalEbook ? ' is-ebook-download' : '') + '" data-product-id="' + prod.id + '">' +
+          actionIcon +
+          actionText +
         '</button>' +
       '</div>';
 
@@ -1582,6 +1587,14 @@
     btn.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
+      if (isDigitalEbook) {
+        var language = (prod.colors || []).find(function (color) { return color.active; });
+        language = (language && language.name) || ((prod.variants || []).find(function (variant) { return variant.color; }) || {}).color || null;
+        if (typeof window.openCurvafitDirectEbookPurchase === 'function') {
+          window.openCurvafitDirectEbookPurchase(prod, language);
+        }
+        return;
+      }
       handleAddToCart(prod, btn, allProducts);
     });
 

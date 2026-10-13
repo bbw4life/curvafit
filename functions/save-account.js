@@ -765,7 +765,7 @@ export async function onRequestPost(context) {
           valueInputOption: "RAW",
           resource: { values: [[String(telegramChatId)]] }
         });
-        await sendTelegramConfirmation(telegramChatId, "✅ You're all set! Your existing BBW4LIFE account is now linked to Telegram — order confirmations, tracking numbers, new arrivals and exclusive promos will be sent here.", undefined, env);
+        await sendTelegramConfirmation(telegramChatId, "✅ You're all set! Your existing Curvafit account is now linked to Telegram — order confirmations, tracking numbers, new arrivals and exclusive promos will be sent here.", undefined, env);
 
         const genderAlreadySet = (rows[rowIndex][37] || '').trim(); // AL - A = index 37
         if (!genderAlreadySet) {
@@ -805,7 +805,7 @@ export async function onRequestPost(context) {
         console.warn('[signup_via_telegram] notifyWelcome failed:', e.message);
       });
 
-      await sendTelegramConfirmation(telegramChatId, `🎉 Welcome to BBW4LIFE, ${normalize(firstName)}! Your account has been created successfully and is now linked to Telegram — order confirmations, tracking numbers, new arrivals and exclusive promos will be sent right here.`, undefined, env);
+      await sendTelegramConfirmation(telegramChatId, `🎉 Welcome to Curvafit, ${normalize(firstName)}! Your account has been created successfully and is now linked to Telegram — order confirmations, tracking numbers, new arrivals and exclusive promos will be sent right here.`, undefined, env);
 
       await sendGenderSelectMenu(telegramChatId, env);
 

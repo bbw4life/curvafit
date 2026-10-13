@@ -431,7 +431,7 @@ export async function onRequestPost(context) {
             `Order: <b>${orderNumber}</b>\n` +
             `${itemsList}\n\n` +
             `💰 Total: <b>$${totalAmount.toFixed(2)}</b>\n\n` +
-            `We'll notify you here as soon as it ships. Thank you for shopping with BBW4LIFE! 💕`,
+            `We'll notify you here as soon as it ships. Thank you for shopping with Curvafit! 💕`,
           undefined,
           env
         ).catch(e => console.warn('[Telegram] order_confirm failed:', e.message))

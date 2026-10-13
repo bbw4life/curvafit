@@ -69,7 +69,7 @@ export async function onRequestPost(context) {
     );
 
     await notifyTelegram(
-    `⏳ <b>Pdg Francenel, un client vient de mettre en attente un des design BBW4LIFE!</b>\n\n` +
+    `⏳ <b>Pdg Francenel, un client vient de mettre en attente un des designs Curvafit !</b>\n\n` +
     `👤 <b>Nom:</b> ${firstName} ${lastName}\n` +
     `📧 <b>Email:</b> ${email}\n` +
     `🎨 <b>Produit:</b> ${program}`,

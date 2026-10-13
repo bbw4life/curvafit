@@ -25,7 +25,12 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      var canonicalUrl = new URL(cardData.url, window.location.origin).href;
+      var articlePath = new URL(cardData.url, window.location.origin).pathname;
+      var slugMap = window.CURVAFIT_SLUGS || window.BBW_SLUGS || {};
+      var canonicalPath = slugMap[articlePath] || articlePath;
+      var canonicalUrl = new URL(canonicalPath, window.location.origin).href;
+      var seoTitle = cardData.seoTitle || (cardData.title + ' | Curvafit Journal');
+      var seoDescription = cardData.seoDescription || cardData.excerpt;
       var canonicalLink = document.querySelector('link[rel="canonical"]');
       if (canonicalLink) canonicalLink.href = canonicalUrl;
       var ogUrl = document.querySelector('meta[property="og:url"]');
@@ -33,25 +38,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // ── Inject meta tags dynamically ────────────────────────
       var pageTitle = document.getElementById('page-title');
-      if (pageTitle) pageTitle.textContent = cardData.title + ' | Curvafit Journal';
-      else document.title = cardData.title + ' | Curvafit Journal';
+      if (pageTitle) pageTitle.textContent = seoTitle;
+      else document.title = seoTitle;
 
       var metaDesc = document.getElementById('meta-description');
-      if (metaDesc) metaDesc.setAttribute('content', cardData.excerpt);
+      if (metaDesc) metaDesc.setAttribute('content', seoDescription);
 
       var metaOgTitle = document.getElementById('meta-og-title');
-      if (metaOgTitle) metaOgTitle.setAttribute('content', cardData.title + ' — Curvafit Journal');
+      if (metaOgTitle) metaOgTitle.setAttribute('content', seoTitle);
 
       var metaOgDesc = document.getElementById('meta-og-desc');
-      if (metaOgDesc) metaOgDesc.setAttribute('content', cardData.excerpt);
+      if (metaOgDesc) metaOgDesc.setAttribute('content', seoDescription);
 
       var metaOgImage = document.getElementById('meta-og-image');
       if (metaOgImage) metaOgImage.setAttribute('content', cardData.image);
 
       var metaTwitterTitle = document.getElementById('meta-twitter-title');
-      if (metaTwitterTitle) metaTwitterTitle.setAttribute('content', cardData.title + ' | Curvafit Journal');
+      if (metaTwitterTitle) metaTwitterTitle.setAttribute('content', seoTitle);
       var metaTwitterDesc = document.getElementById('meta-twitter-desc');
-      if (metaTwitterDesc) metaTwitterDesc.setAttribute('content', cardData.excerpt);
+      if (metaTwitterDesc) metaTwitterDesc.setAttribute('content', seoDescription);
       var metaTwitterImage = document.getElementById('meta-twitter-image');
       if (metaTwitterImage) metaTwitterImage.setAttribute('content', cardData.image);
 
@@ -61,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
           '@context': 'https://schema.org',
           '@type': 'Article',
           'headline': cardData.title,
-          'description': cardData.excerpt,
+          'description': seoDescription,
           'image': cardData.image,
           'author': {
             '@type': 'Person',
@@ -92,6 +97,12 @@ document.addEventListener('DOMContentLoaded', function () {
         heroImg.style.display = 'block';
       }
       var articleHero = document.getElementById('article-hero');
+      if (articleHero && document.body.classList.contains('a2-page')) {
+        articleHero.style.setProperty('--a2-hero-image', 'url("' + cardData.image.replace(/"/g, '\\"') + '")');
+      }
+      if (articleHero && document.body.classList.contains('a1-page')) {
+        articleHero.style.setProperty('--a1-hero-image', 'url("' + cardData.image.replace(/"/g, '\\"') + '")');
+      }
       if (articleHero && document.body.classList.contains('a4-page')) {
         articleHero.style.backgroundImage = 'url("' + cardData.image.replace(/"/g, '\\"') + '")';
         articleHero.style.backgroundColor = 'transparent';

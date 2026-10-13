@@ -47,7 +47,7 @@ export async function onRequestGet(context) {
         email,
         (firstName) =>
           `${firstName}, the wait is over! 🌟\n\n` +
-          `<b>Your BBW4LIFE story is live!</b>\n` +
+          `<b>Your Curvafit story is live!</b>\n` +
           `Your story just got approved and published on our site — thank you for sharing your journey with the community! 💕\n\n` +
           `Check it out on the site.`,
         undefined,

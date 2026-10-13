@@ -1,5 +1,13 @@
 const BBW_VAPID_PUBLIC_KEY = 'BPAy2x7jsTHvHMYA5uLWKZAbmwpAtUlFtCbgSiALsYFH4EKhSTxUemonrVf-xzg5FxsQIB4GXZdA_N5gwvLWF8Y';
 
+function isCurvafitDigitalEbookProduct(productOrId) {
+  const productId = typeof productOrId === 'string' ? productOrId : productOrId?.id;
+  if (!productId) return false;
+  const settings = (window.__allProducts || []).find(item => item.type === 'settings') || {};
+  return Array.isArray(settings.digital_ebook_product_ids) &&
+    settings.digital_ebook_product_ids.includes(productId);
+}
+
 // ══════════════════════════════════════════════════════════════
 //  DESKTOP — liens de pages (page/, products/, collections/, blog/) en
 //  nouvel onglet. Sur mobile (≤768px, même seuil que le reste du
@@ -826,51 +834,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const PAGE_ORDER = [
         '/',
-        '/collections/all',
-        '/collections/all-collections',
-        '/collections/featured',
-        '/collections/most-popular',
-        '/collections/dresses',
-        '/collections/curvy-woman',
-        '/collections/beauty',
-        '/collections/men',
-        '/collections/shoes',
-        '/collections/pants-skirts',
-        '/blog',
-        '/blog/beauty-has-no-sizes-the-movement-redefining-beauty',
-        '/blog/stop-dieting-how-bbw-women-take-care-of-themselves',
-        '/blog/nutrition-for-curvy-women-eat-to-feel-amazing',
-        '/blog/7-body-positive-affirmations-that-change-how-you-see-yourself',
-        '/blog/how-to-stop-letting-opinions-destroy-your-body-confidence',
-        '/blog/pcos-and-the-plus-size-body-understanding-your-hormones',
-        '/blog/move-without-injury-gentle-exercises-for-plus-size-women',
-        '/blog/plus-size-fashion-2026-outfits-that-turn-heads',
-        '/blog/how-i-stopped-being-ashamed-of-my-body',
-        '/blog/10-must-have-wardrobe-pieces-for-plus-size-women',
-        '/blog/bbw-style-guide-how-to-dress-confidently',
-        '/blog/plus-size-dresses-how-to-find-the-one-that-flatters',
-        '/blog/bbw-and-seduction-your-body-is-a-gift',
-        '/blog/how-to-dress-as-a-bbw-and-feel-beautiful',
-        '/blog/bbw-and-seduction-your-body-is-a-power',
-        '/blog/bbw4life-being-a-big-beautiful-woman-is-a-lifestyle',
-        '/pages/our-story',
-        '/pages/about',
-        '/pages/contact',
-        '/pages/faq',
-        '/pages/order-tracking',
-        '/pages/product-care',
-        '/pages/disclaimer',
-        '/policies/privacy',
-        '/policies/refund',
-        '/policies/shipping',
-        '/policies/terms',
-        '/account',
-        '/checkout',
-        '/cart',
+        '/collections/bbw4life-all-product.html',
         '/curvafit/gentle-walking-4-week-guide',
         '/curvafit/simple-meal-planner-4-weeks-easy-meals-shopping-lists',
         '/curvafit/move-at-home-gentle-workouts-no-equipment',
+        '/curvafit/high-waisted-plus-size-yoga-pants',
+        '/curvafit/plus-size-shockproof-sports-bra',
+        '/curvafit/nylon-yoga-vest',
+        '/curvafit/tennis-skort',
+        '/curvafit/quick-dry-sports-shorts',
+        '/curvafit/shaping-hip-belt',
+        '/curvafit/printed-non-slip-yoga-mat',
+        '/curvafit/fitness-water-bottle-1-3l',
+        '/curvafit/colorful-fitness-dumbbells',
+        '/curvafit/m4-step-counting-smart-bracelet',
+        '/curvafit/pocket-leggings-for-every-move',
         '/curvafit/back-on-track-14-day-restart-guide',
+        '/blog/blog.html',
+        '/curvafit/journal/how-to-start-walking-plus-size-gentle-4-week-plan',
+        '/curvafit/journal/simple-meal-prep-busy-weeks-easy-ideas-no-strict-diet',
+        '/curvafit/journal/chair-workouts-beginners-gentle-moves-home',
+        '/curvafit/journal/restart-routine-after-setback-without-guilt',
+        '/curvafit/journal/stay-consistent-when-motivation-disappears-7-habits',
+        '/curvafit/journal/anti-chafing-tips-plus-size-women',
+        '/curvafit/journal/first-day-gym-confidence-building-guide',
+        '/curvafit/journal/plate-method-balanced-meals-without-calorie-counting',
+        '/page/contact.html',
+        '/page/faq.html',
+        '/page/order-tracking.html',
+        '/page/medical-disclaimer.html',
+        '/policies/privacy.html',
+        '/policies/refund.html',
+        '/policies/shipping.html',
+        '/policies/terms.html',
+        '/account.html',
+        '/cart.html',
     ];
 
     document.getElementById('fnav-next').addEventListener('click', () => {
@@ -1828,10 +1826,14 @@ function showErrorPopup(message) {
 
       // ══ THEME COLOR META ══
       const themeColor = settings.theme_color || '#c0385e';
-      const themeMeta = document.createElement('meta');
+      const themeMetas = document.querySelectorAll('meta[name="theme-color"]');
+      const themeMeta = themeMetas[0] || document.createElement('meta');
       themeMeta.name = 'theme-color';
       themeMeta.content = themeColor;
-      document.head.appendChild(themeMeta);
+      if (!themeMeta.isConnected) document.head.appendChild(themeMeta);
+      themeMetas.forEach((meta, index) => {
+        if (index > 0) meta.remove();
+      });
 
 
       // ══ SANAICA BANNER ══
@@ -2041,8 +2043,7 @@ function showErrorPopup(message) {
         if (!btn.closest('.bundle-save-container')) btn.innerHTML = `<i class="fi fi-rr-shopping-cart"></i> ${L.addToCart}`;
       });
       document.querySelectorAll('.buy-now').forEach(btn => {
-        const digitalEbookProductIds = ['Pdg-Francenel-product1', 'Pdg-Francenel-product2', 'Pdg-Francenel-product3', 'Pdg-Francenel-product15'];
-        const isDigitalEbookProduct = digitalEbookProductIds.includes(document.querySelector('.product-section')?.dataset.productId);
+        const isDigitalEbookProduct = isCurvafitDigitalEbookProduct(document.querySelector('.product-section')?.dataset.productId);
         if (isDigitalEbookProduct) {
           btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg><span>Download Now</span>';
           btn.setAttribute('aria-label', 'Download Now');
@@ -2888,6 +2889,7 @@ function showErrorPopup(message) {
         sliderIds.forEach(pid => {
           const prod = products.find(p => p.id === pid);
           if (!prod) return;
+          const isDigitalEbook = isCurvafitDigitalEbookProduct(prod);
 
           const productUrl = getProductUrl(pid);
           const item = document.createElement('div');
@@ -2906,8 +2908,8 @@ function showErrorPopup(message) {
                 <div class="mini-media-slider" id="mini-slider-${pid}"></div>
               </a>
               <div class="mini-discount-badge"></div>
-              <span class="mini-wishlist-icon" data-id="${pid}"></span>
-              <button type="button" class="mini-cart-btn add-to-cart" aria-label="Add to cart"><i class="fi fi-rr-shopping-cart"></i></button>
+              ${isDigitalEbook ? '' : `<span class="mini-wishlist-icon" data-id="${pid}"></span>`}
+              <button type="button" class="mini-cart-btn ${isDigitalEbook ? 'mini-ebook-payment-btn' : 'add-to-cart'}" aria-label="${isDigitalEbook ? 'Continue to payment' : 'Add to cart'}"><i class="fi fi-rr-shopping-cart"></i></button>
             </div>
             <div class="product-info">
               <p class="product-price">
@@ -2922,11 +2924,20 @@ function showErrorPopup(message) {
           const wishlistIcon = item.querySelector('.mini-wishlist-icon');
           if (wishlistIcon) wishlistIcon.innerHTML = WISHLIST_SVG;
 
-          /* Ajout panier — même système que pdp-grid-card__cart (bouton
-             .add-to-cart, listener addToCart qui lit .product-card
-             le plus proche via closest()). */
+          /* Les cartes physiques gardent le flux panier. Les ebooks appellent
+             directement le paiement avec leur langue configurée par défaut. */
           const cartBtn = item.querySelector('.mini-cart-btn');
-          if (cartBtn) cartBtn.addEventListener('click', function (e) { e.preventDefault(); addToCart(e); });
+          if (cartBtn && isDigitalEbook) {
+            cartBtn.addEventListener('click', function (e) {
+              e.preventDefault();
+              e.stopPropagation();
+              const language = (prod.colors || []).find(color => color.active)?.name ||
+                (prod.variants || []).find(variant => variant.color)?.color || null;
+              openDirectEbookPurchase(prod, language, null, 1);
+            });
+          } else if (cartBtn) {
+            cartBtn.addEventListener('click', function (e) { e.preventDefault(); addToCart(e); });
+          }
 
           /* Prix + badge */
           const currentPriceEl = item.querySelector('.current-price');
@@ -3286,10 +3297,21 @@ function showErrorPopup(message) {
 
 
               const PRODUCT_SLUGS = {
-              'Pdg-Francenel-product1': 'gentle-walking-4-week-guide',
-              'Pdg-Francenel-product2': 'simple-meal-planner-4-weeks-easy-meals-shopping-lists',
-              'Pdg-Francenel-product3': 'move-at-home-gentle-workouts-no-equipment',
-              'Pdg-Francenel-product15': 'back-on-track-14-day-restart-guide'
+                'Pdg-Francenel-product1': 'gentle-walking-4-week-guide',
+                'Pdg-Francenel-product2': 'simple-meal-planner-4-weeks-easy-meals-shopping-lists',
+                'Pdg-Francenel-product3': 'move-at-home-gentle-workouts-no-equipment',
+                'Pdg-Francenel-product4': 'high-waisted-plus-size-yoga-pants',
+                'Pdg-Francenel-product5': 'plus-size-shockproof-sports-bra',
+                'Pdg-Francenel-product6': 'nylon-yoga-vest',
+                'Pdg-Francenel-product7': 'tennis-skort',
+                'Pdg-Francenel-product8': 'quick-dry-sports-shorts',
+                'Pdg-Francenel-product9': 'shaping-hip-belt',
+                'Pdg-Francenel-product10': 'printed-non-slip-yoga-mat',
+                'Pdg-Francenel-product11': 'fitness-water-bottle-1-3l',
+                'Pdg-Francenel-product12': 'colorful-fitness-dumbbells',
+                'Pdg-Francenel-product13': 'm4-step-counting-smart-bracelet',
+                'Pdg-Francenel-product14': 'pocket-leggings-for-every-move',
+                'Pdg-Francenel-product15': 'back-on-track-14-day-restart-guide'
               };
 
               // ── Récupérer les données du produit courant
@@ -3302,6 +3324,7 @@ function showErrorPopup(message) {
                 if (!prod) return null;
 
                 const slug     = PRODUCT_SLUGS[pid];
+                const isDigitalGuide = isCurvafitDigitalEbookProduct(pid);
                 const pageUrl  = slug
                   ? window.location.origin + '/curvafit/' + slug
                   : window.location.origin + (typeof getProductUrl === 'function' ? getProductUrl(pid) : window.location.pathname);
@@ -3311,18 +3334,16 @@ function showErrorPopup(message) {
                 const imgSrc   = (typeof upgradeShopifyImageUrl === 'function') ? upgradeShopifyImageUrl(prod.image, 200) : prod.image;
 
                 // Message pré-rempli identique pour toutes les plateformes
-                const message = slug
+                const message = isDigitalGuide
                   ? 'I found this Curvafit guide and thought you might like it.\n\n' +
-                    '✨ ' + title + '\n' +
-                    '🔗 Explore it here: ' + pageUrl + '\n\n' +
-                    'Curvafit — small steps, at your own pace.'
-                  : 'Hi friend! 👋 I\'m browsing BBW4LIFE — a store that celebrates every curve 💕\n\n' +
-                    'I just found this amazing product and had to share it with you!\n\n' +
-                    '✨ ' + title + '\n' +
-                    '💰 Price: ' + price + (badge ? '\n🏷️ ' + badge : '') + '\n\n' +
-                    '🔗 Check it out here: ' + pageUrl + '\n\n' +
-                    'Beauty Has No Sizes 👑 — bbw4life.com';
-
+                    title + '\n' +
+                    'Explore it here: ' + pageUrl + '\n\n' +
+                    'Curvafit - small steps, at your own pace.'
+                  : 'I found this Curvafit product and thought you might like it.\n\n' +
+                    title + '\n' +
+                    'Price: ' + price + (badge ? '\n' + badge : '') + '\n\n' +
+                    'Explore it here: ' + pageUrl + '\n\n' +
+                    'Curvafit - small steps, real progress.';
                 return { title: title, price: price, badge: badge, imgSrc: imgSrc, pageUrl: pageUrl, message: message };
               }
 
@@ -3612,12 +3633,7 @@ function showErrorPopup(message) {
           const colorContainer = document.querySelector('.color-swatches');
           if (colorContainer && prod.colors && prod.colors.length) {
             colorContainer.innerHTML = '';
-            const useProductImageSwatches = [
-              'Pdg-Francenel-product1',
-              'Pdg-Francenel-product2',
-              'Pdg-Francenel-product3',
-              'Pdg-Francenel-product15'
-            ].includes(prod.id);
+            const useProductImageSwatches = isCurvafitDigitalEbookProduct(prod);
             if (useProductImageSwatches) {
               const colorLabel = document.querySelector('label[for="color-select"]');
               if (colorLabel) colorLabel.textContent = 'Select Your Language:';
@@ -4009,7 +4025,7 @@ function showErrorPopup(message) {
         const productId = productSection.dataset.productId;
         const product = products.find(p => p.id === productId);
         if (product) {
-          const isDirectEbookBundle = DIRECT_EBOOK_PRODUCT_IDS.has(productId);
+          const isDirectEbookBundle = isCurvafitDigitalEbookProduct(productId);
           if (isDirectEbookBundle) {
             bundleContainer.classList.add('bundle-save-container--ebook');
             bundleContainer.querySelectorAll('.bundle-add-btn').forEach(btn => {
@@ -6971,21 +6987,11 @@ if (rcCheckoutBtn) {
 
         const hasColors = product.colors && product.colors.length > 0;
         const hasSizes  = product.sizes  && product.sizes.length  > 0;
-        const isLanguageImageProduct = [
-            'Pdg-Francenel-product1',
-            'Pdg-Francenel-product2',
-            'Pdg-Francenel-product3',
-            'Pdg-Francenel-product15'
-        ].includes(product.id);
+        const isLanguageImageProduct = isCurvafitDigitalEbookProduct(product);
 
         // ── Libellé Buy Now (identique au bouton buy-now principal) ──
         if (satcBuyBtn) {
-            const isDigitalEbookProduct = [
-                'Pdg-Francenel-product1',
-                'Pdg-Francenel-product2',
-                'Pdg-Francenel-product3',
-                'Pdg-Francenel-product15'
-            ].includes(product.id);
+            const isDigitalEbookProduct = isCurvafitDigitalEbookProduct(product);
             const buyNowLabel = isDigitalEbookProduct
                 ? 'Download Now'
                 : (settings.button_labels || {}).buy_now || 'Buy Now';
@@ -9249,15 +9255,8 @@ document.dispatchEvent(new Event('wishlist:change'));
 //    ajoute ce produit et on redirige vers le checkout classique, comme le
 //    bouton Shop Now — un paiement PayPal direct ne concernerait alors
 //    qu'un seul article et laisserait le reste du panier de côté.
-  const DIRECT_EBOOK_PRODUCT_IDS = new Set([
-    'Pdg-Francenel-product1',
-    'Pdg-Francenel-product2',
-    'Pdg-Francenel-product3',
-    'Pdg-Francenel-product15'
-  ]);
-
   function openDirectEbookPurchase(product, selectedColor, selectedSize, quantity) {
-    if (!product || !DIRECT_EBOOK_PRODUCT_IDS.has(product.id)) return false;
+    if (!product || !isCurvafitDigitalEbookProduct(product)) return false;
     if (product.colors && product.colors.length && !selectedColor) {
       showErrorPopup('Please select your language.');
       return false;
@@ -9301,9 +9300,13 @@ document.dispatchEvent(new Event('wishlist:change'));
     return true;
   }
 
+  window.openCurvafitDirectEbookPurchase = function (product, selectedLanguage) {
+    return openDirectEbookPurchase(product, selectedLanguage, null, 1);
+  };
+
   function openDirectEbookBundlePurchase(items) {
     if (!Array.isArray(items) || !items.length ||
-        items.some(item => !item || !DIRECT_EBOOK_PRODUCT_IDS.has(item.id))) {
+        items.some(item => !item || !isCurvafitDigitalEbookProduct(item.id))) {
       showErrorPopup('This bundle could not be prepared. Please refresh and try again.');
       return false;
     }
@@ -9324,7 +9327,7 @@ document.dispatchEvent(new Event('wishlist:change'));
   function openDirectEbookPurchaseFromButton(e) {
     const section = e.target.closest('.product-section');
     const productId = section && section.dataset.productId;
-    if (!DIRECT_EBOOK_PRODUCT_IDS.has(productId)) return false;
+    if (!isCurvafitDigitalEbookProduct(productId)) return false;
     e.preventDefault();
     const product = products.find(item => item.id === productId);
     if (!product) {
@@ -9474,6 +9477,17 @@ const BBW_WISHLIST_SLUG_MAP = {
   'Pdg-Francenel-product1': 'gentle-walking-4-week-guide',
   'Pdg-Francenel-product2': 'simple-meal-planner-4-weeks-easy-meals-shopping-lists',
   'Pdg-Francenel-product3': 'move-at-home-gentle-workouts-no-equipment',
+  'Pdg-Francenel-product4': 'high-waisted-plus-size-yoga-pants',
+  'Pdg-Francenel-product5': 'plus-size-shockproof-sports-bra',
+  'Pdg-Francenel-product6': 'nylon-yoga-vest',
+  'Pdg-Francenel-product7': 'tennis-skort',
+  'Pdg-Francenel-product8': 'quick-dry-sports-shorts',
+  'Pdg-Francenel-product9': 'shaping-hip-belt',
+  'Pdg-Francenel-product10': 'printed-non-slip-yoga-mat',
+  'Pdg-Francenel-product11': 'fitness-water-bottle-1-3l',
+  'Pdg-Francenel-product12': 'colorful-fitness-dumbbells',
+  'Pdg-Francenel-product13': 'm4-step-counting-smart-bracelet',
+  'Pdg-Francenel-product14': 'pocket-leggings-for-every-move',
   'Pdg-Francenel-product15': 'back-on-track-14-day-restart-guide'
 };
 // Exposé sur window : un `const` de niveau script n'est visible que dans
@@ -13536,7 +13550,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const chips    = document.querySelectorAll('.cf-chip');
     const iconOpen  = toggle ? toggle.querySelector('.cf-icon-open')  : null;
     const iconClose = toggle ? toggle.querySelector('.cf-icon-close') : null;
-    const notifDot  = toggle ? toggle.querySelector('.cf-notif-dot')  : null;
 
     const imageBtn       = document.getElementById('cf-image-btn');
     const imageInput     = document.getElementById('cf-image-input');
@@ -13567,7 +13580,6 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ── State ── */
     let isOpen    = false;
     let isLoading = false;
-    let notifShown = false;
     let pendingImageBase64 = null;
 
     /* Persistance sessionStorage */
@@ -13739,7 +13751,6 @@ document.addEventListener('DOMContentLoaded', function () {
       window_.setAttribute('aria-hidden', 'false');
       if (iconOpen)  iconOpen.style.display  = 'none';
       if (iconClose) iconClose.style.display = '';
-      if (notifDot)  notifDot.style.display  = 'none';
       input.focus();
 
       if (messages.children.length === 0) {
@@ -13765,14 +13776,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (closeBtn) closeBtn.addEventListener('click', closeChat);
-
-    /* Notif dot after 3s */
-    setTimeout(() => {
-      if (!isOpen && !notifShown && notifDot) {
-        notifDot.style.display = 'block';
-        notifShown = true;
-      }
-    }, 3000);
 
     /* ── Welcome ── */
     function addWelcomeMessage() {
@@ -13837,14 +13840,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       );
 
-      /* Auto-linkify known BBW4LIFE page paths */
+      /* Auto-linkify current Curvafit product and customer-page paths */
       out = out.replace(
-        /(\/products\/product\d+\.html|\/page\/contact\.html|\/collections\/bbw4life-all-product\.html|\/page\/about\.html|\/account\.html|\/page\/order-tracking\.html)/g,
+        /(\/products\/product\d+\.html|\/curvafit\/[a-z0-9/-]+|\/page\/(contact|faq|order-tracking|medical-disclaimer)\.html|\/collections\/bbw4life-all-product\.html|\/account\.html)/g,
         (url) => {
           const labels = {
             '/page/contact.html':                      'Contact us',
             '/collections/bbw4life-all-product.html':  'Shop All',
-            '/page/about.html':                        'About Us',
+            '/page/faq.html':                          'Frequently Asked Questions',
+            '/page/medical-disclaimer.html':           'Wellness Disclaimer',
             '/account.html':                           'My Account',
             '/page/order-tracking.html':               'Order Tracking',
           };
@@ -14596,7 +14600,7 @@ document.addEventListener('DOMContentLoaded', function () {
     el.id = 'cf-cookie-popup';
     el.setAttribute('role', 'dialog');
     el.setAttribute('aria-modal', 'true');
-    el.setAttribute('aria-label', 'Cookie preferences');
+    el.setAttribute('aria-label', 'Curvafit cookie preferences');
     el.innerHTML = `
       <div id="cf-cookie-bar">
 
@@ -14611,17 +14615,17 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
 
         <p class="cfck-bar-text">
-          We use cookies to improve your experience and — with your permission — personalize content. Read our
-          <a href="/policies/privacy.html" class="cfck-link">Privacy Policy</a>.
+          Curvafit uses essential cookies to keep the site working. With your permission, optional cookies help us improve your experience and tailor content. Read our
+          <a href="/policies/privacy.html" class="cfck-link">Curvafit Privacy Policy</a>.
         </p>
 
         <div class="cfck-bar-actions">
-          <button class="cfck-btn cfck-btn--ghost" id="cfck-reject">Reject all</button>
-          <button class="cfck-btn cfck-btn--outline" id="cfck-customize">Customize</button>
+          <button class="cfck-btn cfck-btn--ghost" id="cfck-reject">Reject optional</button>
+          <button class="cfck-btn cfck-btn--outline" id="cfck-customize">Cookie settings</button>
           <button class="cfck-btn cfck-btn--primary" id="cfck-accept">Accept all</button>
         </div>
 
-        <button class="cfck-close-x" id="cfck-close-x" aria-label="Close">
+        <button class="cfck-close-x" id="cfck-close-x" aria-label="Close cookie preferences">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
@@ -14631,7 +14635,7 @@ document.addEventListener('DOMContentLoaded', function () {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
-          <span id="cfck-confirm-text">Preferences saved!</span>
+          <span id="cfck-confirm-text">Your Curvafit preferences have been saved.</span>
         </div>
       </div>
 
@@ -14650,11 +14654,11 @@ document.addEventListener('DOMContentLoaded', function () {
               </svg>
             </div>
             <div>
-              <h2 class="cfck-title">Cookie preferences</h2>
-              <p class="cfck-subtitle">Choose what you're comfortable sharing</p>
+              <h2 class="cfck-title">Curvafit Cookie Preferences</h2>
+              <p class="cfck-subtitle">Choose which optional cookies Curvafit may use</p>
             </div>
           </div>
-          <button class="cfck-modal-close-x" id="cfck-modal-close-x" aria-label="Close">
+          <button class="cfck-modal-close-x" id="cfck-modal-close-x" aria-label="Close cookie preferences">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
@@ -14672,8 +14676,8 @@ document.addEventListener('DOMContentLoaded', function () {
                   </svg>
                 </div>
                 <div>
-                  <span class="cfck-panel-name">Necessary</span>
-                  <span class="cfck-panel-desc">Login, cart, checkout — the site cannot function without these.</span>
+                  <span class="cfck-panel-name">Essential</span>
+                  <span class="cfck-panel-desc">These keep core Curvafit features working, including your cart and checkout.</span>
                 </div>
               </div>
               <span class="cfck-always-badge">Always on</span>
@@ -14688,11 +14692,11 @@ document.addEventListener('DOMContentLoaded', function () {
                   </svg>
                 </div>
                 <div>
-                  <span class="cfck-panel-name">Analytics</span>
-                  <span class="cfck-panel-desc">Google Analytics — anonymized traffic data to improve our site.</span>
+                  <span class="cfck-panel-name">Site analytics</span>
+                  <span class="cfck-panel-desc">Help us understand site visits so we can improve the Curvafit experience.</span>
                 </div>
               </div>
-              <label class="cfck-toggle" aria-label="Toggle analytics cookies">
+              <label class="cfck-toggle" aria-label="Allow Curvafit site analytics cookies">
                 <input type="checkbox" id="cfck-analytics" checked>
                 <span class="cfck-toggle-track"><span class="cfck-toggle-thumb"></span></span>
               </label>
@@ -14706,11 +14710,11 @@ document.addEventListener('DOMContentLoaded', function () {
                   </svg>
                 </div>
                 <div>
-                  <span class="cfck-panel-name">Marketing</span>
-                  <span class="cfck-panel-desc">Personalized content and relevant offers based on your interests.</span>
+                  <span class="cfck-panel-name">Personalized content</span>
+                  <span class="cfck-panel-desc">Allow Curvafit to tailor content and offers to your interests.</span>
                 </div>
               </div>
-              <label class="cfck-toggle" aria-label="Toggle marketing cookies">
+              <label class="cfck-toggle" aria-label="Allow Curvafit personalized content cookies">
                 <input type="checkbox" id="cfck-marketing">
                 <span class="cfck-toggle-track"><span class="cfck-toggle-thumb"></span></span>
               </label>
@@ -14720,7 +14724,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
 
         <div class="cfck-footer">
-          <button class="cfck-btn cfck-btn--ghost" id="cfck-reject-modal">Reject all</button>
+          <button class="cfck-btn cfck-btn--ghost" id="cfck-reject-modal">Reject optional</button>
           <button class="cfck-btn cfck-btn--outline" id="cfck-save">Save preferences</button>
           <button class="cfck-btn cfck-btn--primary" id="cfck-accept-modal">Accept all</button>
         </div>
@@ -14786,13 +14790,13 @@ document.addEventListener('DOMContentLoaded', function () {
     /* Bar: close X → reject and dismiss */
     document.getElementById('cfck-close-x').addEventListener('click', () => {
       saveConsent({ analytics: false, marketing: false });
-      showConfirmAndClose('Preferences saved!');
+      showConfirmAndClose('Your Curvafit preferences have been saved.');
     });
 
     /* Bar: reject all */
     document.getElementById('cfck-reject').addEventListener('click', () => {
       saveConsent({ analytics: false, marketing: false });
-      showConfirmAndClose('All optional cookies rejected.');
+      showConfirmAndClose('Optional cookies were rejected. Essential cookies remain active.');
     });
 
     /* Bar: customize → open detailed modal */
@@ -14802,7 +14806,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('cfck-accept').addEventListener('click', () => {
       saveConsent({ analytics: true, marketing: true });
       if (typeof bbwSubscribeGeneral === 'function') bbwSubscribeGeneral();
-      showConfirmAndClose('All cookies accepted. Thank you! 🎉');
+      showConfirmAndClose('Your cookie preferences are saved. Thanks for supporting Curvafit!');
     });
 
     /* Modal: close X → back to bar (no consent saved yet) */
@@ -14818,7 +14822,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (analyticsEl) analyticsEl.checked = false;
       if (marketingEl) marketingEl.checked = false;
       saveConsent({ analytics: false, marketing: false });
-      showConfirmAndClose('All optional cookies rejected.');
+      showConfirmAndClose('Optional cookies were rejected. Essential cookies remain active.');
     });
 
     /* Modal: save preferences */
@@ -14827,7 +14831,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const marketing = document.getElementById('cfck-marketing')?.checked ?? false;
       saveConsent({ analytics, marketing });
       if (marketing && typeof bbwSubscribeGeneral === 'function') bbwSubscribeGeneral();
-      showConfirmAndClose('Your preferences have been saved!');
+      showConfirmAndClose('Your Curvafit preferences have been saved.');
     });
 
     /* Modal: accept all */
@@ -14838,7 +14842,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (marketingEl) marketingEl.checked = true;
       saveConsent({ analytics: true, marketing: true });
       if (typeof bbwSubscribeGeneral === 'function') bbwSubscribeGeneral();
-      showConfirmAndClose('All cookies accepted. Thank you! 🎉');
+      showConfirmAndClose('Your cookie preferences are saved. Thanks for supporting Curvafit!');
     });
 
     /* Escape key: close modal if open, else reject and dismiss */
@@ -16549,6 +16553,7 @@ document.addEventListener('DOMContentLoaded', function () {
       track.querySelectorAll('.drawer-extra-card, .cp-extra-card').forEach(function(card) {
         var imgWrap = card.querySelector('.drawer-extra-card__img-wrap, .cp-extra-card__img-wrap');
         if (!imgWrap || imgWrap.querySelector('.bbw-mini-wish')) return;
+        if (card.dataset.digitalEbook === 'true') return;
         var productId = card.dataset.id;
         if (!productId) return;
         imgWrap.appendChild(makeBtn(productId));

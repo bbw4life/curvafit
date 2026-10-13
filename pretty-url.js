@@ -10,26 +10,30 @@
     '/products/product1.html': '/curvafit/gentle-walking-4-week-guide',
     '/products/product2.html': '/curvafit/simple-meal-planner-4-weeks-easy-meals-shopping-lists',
     '/products/product3.html': '/curvafit/move-at-home-gentle-workouts-no-equipment',
+    '/products/product4.html': '/curvafit/high-waisted-plus-size-yoga-pants',
+    '/products/product5.html': '/curvafit/plus-size-shockproof-sports-bra',
+    '/products/product6.html': '/curvafit/nylon-yoga-vest',
+    '/products/product7.html': '/curvafit/tennis-skort',
+    '/products/product8.html': '/curvafit/quick-dry-sports-shorts',
+    '/products/product9.html': '/curvafit/shaping-hip-belt',
+    '/products/product10.html': '/curvafit/printed-non-slip-yoga-mat',
+    '/products/product11.html': '/curvafit/fitness-water-bottle-1-3l',
+    '/products/product12.html': '/curvafit/colorful-fitness-dumbbells',
+    '/products/product13.html': '/curvafit/m4-step-counting-smart-bracelet',
+    '/products/product14.html': '/curvafit/pocket-leggings-for-every-move',
     '/products/product15.html': '/curvafit/back-on-track-14-day-restart-guide',
-    // ── BLOG ARTICLES ─────────────────────────────────────
-    '/blog/article-featured.html': '/bbw4life/journal/beauty-has-no-sizes-movement-redefining-beauty',
-    '/blog/article1.html':  '/bbw4life/journal/stop-dieting-how-bbw-women-take-care-of-themselves',
-    '/blog/article2.html':  '/bbw4life/journal/nutrition-curvy-women-eat-to-feel-amazing-not-to-shrink',
-    '/blog/article3.html':  '/bbw4life/journal/7-body-positive-affirmations-that-change-how-you-see-yourself',
-    '/blog/article4.html':  '/bbw4life/journal/stop-letting-opinions-destroy-your-body-confidence',
-    '/blog/article5.html':  '/bbw4life/journal/pcos-plus-size-body-understanding-your-hormones',
-    '/blog/article6.html':  '/bbw4life/journal/gentle-home-exercises-plus-size-women-move-without-injury',
-    '/blog/article7.html':  '/bbw4life/journal/plus-size-fashion-2026-outfits-that-turn-heads',
-    '/blog/article8.html':  '/bbw4life/journal/how-i-stopped-being-ashamed-of-my-body-and-started-loving-it',
-    '/blog/article9.html':  '/bbw4life/journal/10-must-have-wardrobe-pieces-plus-size-women',
-    '/blog/article10.html': '/bbw4life/journal/bbw-style-guide-dress-confidently-for-every-occasion',
-    '/blog/article11.html': '/bbw4life/journal/plus-size-dresses-find-the-model-that-flatters-every-curve',
-    '/blog/article12.html': '/bbw4life/journal/bbw-and-seduction-your-body-is-a-gift-not-an-obstacle',
-    '/blog/article13.html': '/bbw4life/journal/how-to-dress-as-bbw-and-feel-beautiful-not-just-covered',
-    '/blog/article14.html': '/bbw4life/journal/bbw-and-seduction-your-body-is-a-power-not-a-problem',
-    '/blog/article15.html': '/bbw4life/journal/bbw4life-big-beautiful-woman-lifestyle-pride-family',
+    // ── CURVAFIT JOURNAL ──────────────────────────────────
+    '/blog/article1.html': '/curvafit/journal/how-to-start-walking-plus-size-gentle-4-week-plan',
+    '/blog/article2.html': '/curvafit/journal/simple-meal-prep-busy-weeks-easy-ideas-no-strict-diet',
+    '/blog/article3.html': '/curvafit/journal/chair-workouts-beginners-gentle-moves-home',
+    '/blog/article4.html': '/curvafit/journal/restart-routine-after-setback-without-guilt',
+    '/blog/article5.html': '/curvafit/journal/stay-consistent-when-motivation-disappears-7-habits',
+    '/blog/article6.html': '/curvafit/journal/anti-chafing-tips-plus-size-women',
+    '/blog/article7.html': '/curvafit/journal/first-day-gym-confidence-building-guide',
+    '/blog/article8.html': '/curvafit/journal/plate-method-balanced-meals-without-calorie-counting',
   };
 
+  window.CURVAFIT_SLUGS = SLUGS;
   window.BBW_SLUGS = SLUGS;
   var path = window.location.pathname;
   var pretty = SLUGS[path];

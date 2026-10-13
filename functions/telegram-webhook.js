@@ -165,7 +165,7 @@ async function handleStart(telegramChatId, payload, env) {
   if (payload && payload.startsWith('acct_')) {
     const email = decodeAccountPayload(payload);
     if (!email) {
-      await sendTelegramMessage(telegramChatId, "Sorry, that link seems invalid. Please try the “Add me on Telegram” button again from the BBW4LIFE menu.", undefined, env);
+      await sendTelegramMessage(telegramChatId, "Sorry, that link seems invalid. Please try the “Add me on Telegram” button again from the Curvafit menu.", undefined, env);
       return;
     }
     try {
@@ -176,9 +176,9 @@ async function handleStart(telegramChatId, payload, env) {
       });
       const data = await res.json().catch(() => ({}));
       if (data && data.success) {
-        await sendTelegramMessage(telegramChatId, "✅ You're all set! Your BBW4LIFE account is now linked to Telegram — order confirmations, tracking numbers, new arrivals and exclusive promos will be sent here.", undefined, env);
+        await sendTelegramMessage(telegramChatId, "✅ You're all set! Your Curvafit account is now linked to Telegram — order confirmations, tracking numbers, new arrivals and exclusive promos will be sent here.", undefined, env);
       } else {
-        await sendTelegramMessage(telegramChatId, "We couldn't find a BBW4LIFE account for you just yet. Please make sure you're logged in on the site, then try the button again.", undefined, env);
+        await sendTelegramMessage(telegramChatId, "We couldn't find a Curvafit account for you just yet. Please make sure you're logged in on the site, then try the button again.", undefined, env);
       }
     } catch (e) {
       console.error('[telegram-webhook] link_telegram failed:', e.message);
@@ -188,15 +188,15 @@ async function handleStart(telegramChatId, payload, env) {
   }
 
   // payload === 'new' (ou tout autre cas non reconnu) — le client n'a pas
-  // encore de compte BBW4LIFE, on lui propose de le créer via un formulaire
+  // encore de compte Curvafit, on lui propose de le créer via un formulaire
   // ouvert en Web App directement dans Telegram (pas de redirection externe).
   const signupUrl = `${BASE_URL}/telegram-signup.html?chat_id=${telegramChatId}`;
   await sendTelegramMessage(
     telegramChatId,
-    "Welcome to BBW4LIFE! 💛\n\nYou don't have a BBW4LIFE account linked yet, so we can't send you order confirmations, tracking numbers, new arrivals or promo codes here.\n\nTap the button below to create your account in a few seconds — right here in Telegram.",
+    "Welcome to Curvafit! 💛\n\nYou don't have a Curvafit account linked yet, so we can't send you order confirmations, tracking numbers, new arrivals or promo codes here.\n\nTap the button below to create your account in a few seconds — right here in Telegram.",
     {
       inline_keyboard: [[
-        { text: 'Create my BBW4LIFE account', web_app: { url: signupUrl } }
+        { text: 'Create my Curvafit account', web_app: { url: signupUrl } }
       ]]
     },
     env

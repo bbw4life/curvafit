@@ -4900,25 +4900,6 @@ body {
   margin: 0;
 }
 
-.cf-notif-dot {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 10px;
-  height: 10px;
-  background: #c9963e;
-  border-radius: 50%;
-  border: 2px solid #0d0d0d;
-  animation: cf-pulse-dot 2s infinite;
-  display: none;
-}
-
-@keyframes cf-pulse-dot {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.3); opacity: 0.75; }
-}
-
-
 .cf-chat-window {
   position: absolute;
   bottom: -60px;
@@ -7923,7 +7904,8 @@ body.sr-page .bbw-search-dropdown {
 .bd-product-item img {
     width: 72px !important;
     height: 72px !important;
-    object-fit: cover !important;
+    object-fit: contain !important;
+    background: #fff !important;
     border-radius: 2px !important;
     flex-shrink: 0 !important;
     border: 1px solid var(--bbw-gold-border) !important;
@@ -12708,7 +12690,8 @@ body.bbw-sets-popup-open .skel-shimmer {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background: #fff;
 }
 .cf-product-card__image[hidden] { display: none; }
 .cf-product-card__visual.has-image::before,
@@ -13269,7 +13252,7 @@ body.home-page #bundle-deal .bd-cta:hover {
   body.home-page #bundle-deal.bundle-deal-section { padding: 24px 16px 0 !important; }
   body.home-page #bundle-deal .bd-header { margin-bottom: 22px !important; }
   body.home-page #bundle-deal .bd-product-item { gap: 12px !important; padding: 12px !important; }
-  body.home-page #bundle-deal .bd-product-item img { width: 64px !important; height: 64px !important; }
+  body.home-page #bundle-deal .bd-product-item img { width: 64px !important; height: 64px !important; object-fit: contain !important; background: #fff !important; }
   body.home-page #bundle-deal .bd-product-info strong { font-size: 0.86rem !important; }
   body.home-page #bundle-deal .bd-product-info span { font-size: 0.7rem !important; }
   body.home-page #bundle-deal .bd-product-price { font-size: 0.88rem !important; }

@@ -656,8 +656,8 @@
     ]
   },
   {
-    "cj_product_id": "1956230523859935233",
-    "sku_internal": "CJLX245693901AZ",
+    "cj_product_id": "1419549295782268928",
+    "sku_internal": "CJZN122776001AZ",
     "id": "Pdg-Francenel-product13",
     "url": "/products/product13.html",
     "active": true,
@@ -677,29 +677,26 @@
       "icon": "fi-rr-flame",
       "text": "In Promotion"
     },
-    "title": "M4 Smart Fitness Band",
-    "description": "Sleek smart wristband for tracking heart rate, blood pressure and daily activity to support your wellness goals.",
+    "title": "M4 Smart Bracelet",
+    "description": "Lightweight M4 smart bracelet with a 1-inch touch display and step counting. Compatible with Android and iOS devices.",
     "price": 9.51,
     "compare_price": 15.6,
-    "image": "",
-    "image_hover": "",
+    "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-principale.png?v=1791735492",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-hover.png?v=1791735544",
     "colors": [
-      { "name": "Black", "hex": "#000000", "image": "", "active": true }
+      { "name": "Black", "hex": "#000000", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-black.png?v=1791735490", "active": true }
     ],
     "variants": [
-      { "vid": "1956230523943821314", "color": "Black", "price": 9.51, "active": true }
+      { "vid": "1419549298407903232", "color": "Black", "price": 9.51, "active": true }
     ],
     "media": [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-1.png?v=1791735568",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-2.png?v=1791735576",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-3.png?v=1791735581",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-4.png?v=1791735508",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-principale.png?v=1791735492",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-hover.png?v=1791735544",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-black.png?v=1791735490"
     ]
   },
   {
@@ -724,19 +721,19 @@
       "icon": "fi-rr-flame",
       "text": "In Promotion"
     },
-    "title": "Pocket Cropped Plus-Size Yoga Leggings",
-    "description": "Cropped high-stretch yoga leggings with handy pockets, shaping and supporting you through every move.",
+    "title": "Pocket Leggings for Every Move",
+    "description": "Cropped polyester leggings with practical pockets, a supportive fit and five versatile colors for running, training and everyday movement.",
     "price": 3.52,
     "compare_price": 5.77,
-    "image": "",
-    "image_hover": "",
+    "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-principale.png?v=1791735650",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-hover.png?v=1791735649",
     "sizes": [ "1XL", "2XL", "3XL", "4XL", "5XL" ],
     "colors": [
-      { "name": "Black", "hex": "#000000", "image": "", "active": true },
-      { "name": "Wine Red", "hex": "#722F37", "image": "", "active": true },
-      { "name": "Dark Gray", "hex": "#4A4A4A", "image": "", "active": true },
-      { "name": "Navy Blue", "hex": "#001F5B", "image": "", "active": true },
-      { "name": "Army Green", "hex": "#4B5320", "image": "", "active": true }
+      { "name": "Black", "hex": "#171717", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-black.png?v=1791735645", "active": true },
+      { "name": "Wine Red", "hex": "#722F37", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-wine_red.png?v=1791735641", "active": true },
+      { "name": "Dark Gray", "hex": "#454545", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-gray.png?v=1791735649", "active": true },
+      { "name": "Navy Blue", "hex": "#172A4A", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-navy_blue.png?v=1791735643", "active": true },
+      { "name": "Army Green", "hex": "#556B2F", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-army_green.png?v=1791735649", "active": true }
     ],
     "variants": [
       { "vid": "2504160709561605600", "color": "Black", "size": "1XL", "price": 3.52, "active": true },
@@ -766,16 +763,17 @@
       { "vid": "2504160709571603600", "color": "Army Green", "size": "5XL", "price": 3.52, "active": true }
     ],
     "media": [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-1.png?v=1791735650",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-2.png?v=1791735650",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-3.png?v=1791735650",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-4.png?v=1791735646",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-principale.png?v=1791735650",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-hover.png?v=1791735649",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-black.png?v=1791735645",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-wine_red.png?v=1791735641",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-gray.png?v=1791735649",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-navy_blue.png?v=1791735643",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-army_green.png?v=1791735649"
     ]
   },
   {
@@ -825,6 +823,12 @@
   },
   {
     "type": "settings",
+    "digital_ebook_product_ids": [
+      "Pdg-Francenel-product1",
+      "Pdg-Francenel-product2",
+      "Pdg-Francenel-product3",
+      "Pdg-Francenel-product15"
+    ],
     "maintenance_mode": "no",
     "show_promo_bar": "no",
     "stripe_public_key": "pk_live_51PMDwoF9QAVBUyaU9ffneo6gWLCCPP94en6PPapDPawI9mnKqWBnJUjTbjUzjw3B8Et2ZWLBQHfCxm2djyCkzvXw00sP60H2NX",
@@ -846,14 +850,14 @@
     "theme_color": "#000000",
     "allowed_languages": [ "en", "fr", "es", "ar", "zh", "ht", "hi", "pt", "ru", "de", "ja" ],
     "chat_widget": {
-      "agent_name": "Berline",
-      "agent_title": "BBW4LIFE Style Expert",
+      "agent_name": "Sherline",
+      "agent_title": "Curvafit Shopping Assistant",
       "agent_badge": "Style Support",
       "agent_logo": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/curva_AI.png?v=1775586792",
       "hero_image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bbw.email.png?v=1782613828",
-      "input_placeholder": "Ask Berline anything — style advice, beauty tips, sizing help…",
-      "typing_label": "Berline is typing…",
-      "powered_by": "Powered by BBW4LIFE AI · Press Enter to send"
+      "input_placeholder": "Ask Sherline about Curvafit guides, products, sizing or orders…",
+      "typing_label": "Sherline is typing…",
+      "powered_by": "Curvafit assistant · Press Enter to send"
     },
     "account_restrictions": {
       "allow_multiple_accounts_per_device": "no"
@@ -886,21 +890,11 @@
       "quote": "I want every woman who discovers BBW4LIFE to feel one thing: that she is loved, respected, and valued. I didn't create this to sell. I created it to change lives."
     },
     "chat_quick_chips": [
-      { "icon": "fi fi-sr-dress", "label": "Find my style", "msg": "Help me find an outfit that fits my curves and makes me feel confident." },
-      { "icon": "fi fi-sr-star", "label": "Best sellers", "msg": "What are your best selling plus size products right now?" },
-      { "icon": "fi fi-sr-heart", "label": "Body positivity", "msg": "I need some encouragement and style tips to feel beautiful in my body." },
-      { "icon": "fi fi-sr-badge-dollar", "label": "Under $50", "msg": "What are your most affordable plus size pieces under $50?" },
-      { "icon": "fi fi-sr-flower", "label": "Curvy beauty", "msg": "What beauty products do you recommend for curvy women?" },
-      { "icon": "fi fi-sr-swimsuit", "label": "Swimwear", "msg": "Show me your best plus size bikinis and swimsuits." },
-      { "icon": "fi fi-sr-diamond", "label": "Glamour looks", "msg": "I want a glamorous outfit for a special evening — what do you recommend?" },
-      { "icon": "fi fi-sr-shoes-heels", "label": "Shoes & heels", "msg": "What heels and sandals do you have for plus size women?" },
-      { "icon": "fi fi-sr-palette", "label": "Colors & sizes", "msg": "What colors and sizes are available for your products?" },
-      { "icon": "fi fi-sr-skin-care", "label": "Skincare", "msg": "What skincare products do you recommend to glow and feel beautiful?" },
-      { "icon": "fi fi-sr-hair", "label": "Hair care", "msg": "Which hair care products do you sell for curvy women?" },
-      { "icon": "fi fi-sr-makeup", "label": "Makeup tips", "msg": "Give me makeup tips and product recommendations for a bold curvy look." },
-      { "icon": "fi fi-sr-ticket", "label": "Promo codes", "msg": "Do you have any active discount or promo codes today?" },
-      { "icon": "fi fi-sr-truck-side", "label": "Delivery info", "msg": "How long does delivery take and what is the shipping cost?" },
-      { "icon": "fi fi-sr-gift", "label": "Gift ideas", "msg": "I want to buy a gift for a curvy woman I love — what do you suggest?" },
+      { "icon": "fi fi-sr-book-open-cover", "label": "Digital guides", "msg": "What do the Curvafit guides cover, and which one might suit my goal?" },
+      { "icon": "fi fi-sr-dumbbell", "label": "Workout equipment", "msg": "What equipment can help me get started with movement at home?" },
+      { "icon": "fi fi-sr-ruler", "label": "Size help", "msg": "Can you help me find the size chart and choose a size for this product?" },
+      { "icon": "fi fi-sr-download", "label": "Download an ebook", "msg": "How do I access and download my ebook after payment?" },
+      { "icon": "fi fi-sr-truck-side", "label": "Shipping details", "msg": "How long does shipping take for physical products, and what options are available?" },
       { "icon": "fi fi-sr-headset", "label": "Human support", "msg": "I need to speak with a real person from your team." }
     ],
     "tax_rate": 0.1,
@@ -1144,11 +1138,11 @@
     },
     "curvafit_product_shelf": {
       "product_ids": [
-        "Pdg-Francenel-product4",
+        "Pdg-Francenel-product14",
+        "Pdg-Francenel-product11",
+        "Pdg-Francenel-product9",
         "Pdg-Francenel-product5",
-        "Pdg-Francenel-product6",
-        "Pdg-Francenel-product7",
-        "Pdg-Francenel-product8"
+        "Pdg-Francenel-product13"
       ]
     },
     "top_starter_products": {
@@ -1176,14 +1170,14 @@
       "newsletter": "newsletter@bbw4life.com"
     },
     "bundle_deal": {
-      "title": "Everyday Movement Essentials",
-      "subtitle": "A thoughtful set of practical picks to support your routine, at your own pace.",
+      "title": "A More Complete Workout Routine",
+      "subtitle": "Pair high-support coverage with smooth, high-waisted leggings and a 1.3L bottle to keep hydration close from warm-up through cool-down.",
       "savings_label": "Bundle savings:",
       "cta_label": "Discover the Curvafit Bundle →",
       "products": [
-        { "id": "Pdg-Francenel-product6", "subtitle": "Comfort for your everyday movement routine." },
-        { "id": "Pdg-Francenel-product10", "subtitle": "A steady surface for gentle movement at home." },
-        { "id": "Pdg-Francenel-product13", "subtitle": "A simple way to keep track of everyday activity." }
+        { "id": "Pdg-Francenel-product4", "subtitle": "Smooth, opaque coverage for training and everyday movement." },
+        { "id": "Pdg-Francenel-product11", "subtitle": "Measurement marks and a leak-resistant lid keep hydration close." },
+        { "id": "Pdg-Francenel-product5", "subtitle": "Supportive coverage for runs, lifts and stretches." }
       ]
     },
     "widget_visibility": {
@@ -1203,69 +1197,185 @@
       "floating_nav": "yes",
       "audio_player": "yes"
     },
-    "product_upsell": {
+    "product_upsell":     {
       "auto_apply_to_checkout": "yes",
-      "product1": {
-        "discount_percent": 20,
-        "items": [
-          { "product_id": "Pdg-Francenel-product8" },
-          { "product_id": "Pdg-Francenel-product7" },
-          { "product_id": "Pdg-Francenel-product13" }
-        ]
-      },
-      "product2": {
-        "discount_percent": 20,
-        "items": [
-          { "product_id": "Pdg-Francenel-product15" },
-          { "product_id": "Pdg-Francenel-product34" },
-          { "product_id": "Pdg-Francenela-product32" }
-        ]
-      },
-      "product3": {
-        "discount_percent": 20,
-        "items": [
-          { "product_id": "Pdg-Francenel-product27" },
-          { "product_id": "Pdg-Francenel-product28" },
-          { "product_id": "Pdg-Francenel-product29" }
-        ]
-      },
       "product4": {
         "discount_percent": 20,
         "items": [
-          { "product_id": "Pdg-Francenel-product11" },
-          { "product_id": "Pdg-Francenel-product16" },
-          { "product_id": "Pdg-Francenel-product18" }
+          {
+            "product_id": "Pdg-Francenel-product5"
+          },
+          {
+            "product_id": "Pdg-Francenel-product10"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          }
         ]
       },
       "product5": {
         "discount_percent": 20,
         "items": [
-          { "product_id": "Pdg-Francenel-product9" },
-          { "product_id": "Pdg-Francenel-product34" },
-          { "product_id": "Pdg-Francenel-product16" }
+          {
+            "product_id": "Pdg-Francenel-product4"
+          },
+          {
+            "product_id": "Pdg-Francenel-product6"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          }
+        ]
+      },
+      "product6": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product4"
+          },
+          {
+            "product_id": "Pdg-Francenel-product10"
+          },
+          {
+            "product_id": "Pdg-Francenel-product12"
+          }
+        ]
+      },
+      "product7": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product5"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          },
+          {
+            "product_id": "Pdg-Francenel-product13"
+          }
+        ]
+      },
+      "product8": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product5"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          },
+          {
+            "product_id": "Pdg-Francenel-product13"
+          }
+        ]
+      },
+      "product9": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product10"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          },
+          {
+            "product_id": "Pdg-Francenel-product12"
+          }
+        ]
+      },
+      "product10": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product6"
+          },
+          {
+            "product_id": "Pdg-Francenel-product9"
+          },
+          {
+            "product_id": "Pdg-Francenel-product12"
+          }
+        ]
+      },
+      "product11": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product8"
+          },
+          {
+            "product_id": "Pdg-Francenel-product12"
+          },
+          {
+            "product_id": "Pdg-Francenel-product13"
+          }
+        ]
+      },
+      "product12": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product6"
+          },
+          {
+            "product_id": "Pdg-Francenel-product10"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          }
+        ]
+      },
+      "product13": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product7"
+          },
+          {
+            "product_id": "Pdg-Francenel-product8"
+          },
+          {
+            "product_id": "Pdg-Francenel-product11"
+          }
+        ]
+      },
+      "product14": {
+        "discount_percent": 20,
+        "items": [
+          {
+            "product_id": "Pdg-Francenel-product5"
+          },
+          {
+            "product_id": "Pdg-Francenel-product6"
+          },
+          {
+            "product_id": "Pdg-Francenel-product10"
+          }
         ]
       }
     },
     "cart_page_upsell": {
       "discount_percent": 20,
       "items": [
-        { "product_id": "Pdg-Francenel-product60" },
-        { "product_id": "Pdg-Francenel-product56" },
-        { "product_id": "Pdg-Francenel-product54" }
+        { "product_id": "Pdg-Francenel-product14" },
+        { "product_id": "Pdg-Francenel-product13" },
+        { "product_id": "Pdg-Francenel-product11" },
+        { "product_id": "Pdg-Francenel-product6" }
       ]
     },
     "cart_extra_products": {
       "btn_text": "Add to Cart",
       "product_ids": [
-        "Pdg-Francenel-product133",
-        "Pdg-Francenel-product134",
-        "Pdg-Francenel-product132",
-        "Pdg-Francenel-product124",
-        "Pdg-Francenel-product127",
-        "Pdg-Francenel-product129",
-        "Pdg-Francenel-product157",
-        "Pdg-Francenel-product78",
-        "Pdg-Francenel-product76"
+        "Pdg-Francenel-product14",
+        "Pdg-Francenel-product8",
+        "Pdg-Francenel-product9",
+        "Pdg-Francenel-product11",
+        "Pdg-Francenel-product7",
+        "Pdg-Francenel-product5",
+        "Pdg-Francenel-product10",
+        "Pdg-Francenel-product1",
+        "Pdg-Francenel-product2",
+        "Pdg-Francenel-product3"
       ]
     },
     "drawer_bg_image": {
@@ -1376,11 +1486,17 @@
           "page_size": 16,
           "max_price": 100,
           "product_ids": [
-            "Pdg-Francenel-product2",
-            "Pdg-Francenel-product3",
+            "Pdg-Francenel-product14",
+            "Pdg-Francenel-product13",
             "Pdg-Francenel-product4",
             "Pdg-Francenel-product5",
-            "Pdg-Francenel-product6"
+            "Pdg-Francenel-product6",
+            "Pdg-Francenel-product7",
+            "Pdg-Francenel-product8",
+            "Pdg-Francenel-product9",
+            "Pdg-Francenel-product10",
+            "Pdg-Francenel-product11",
+            "Pdg-Francenel-product12"
           ],
           "stat_label": "Happy Curvy Shoppers",
           "stat_value": "Born To Shine",
@@ -1627,11 +1743,16 @@
         "Pdg-Francenel-product1",
         "Pdg-Francenel-product2",
         "Pdg-Francenel-product3",
-        "Pdg-Francenel-product4",
+        "Pdg-Francenel-product14",
         "Pdg-Francenel-product5",
-        "Pdg-Francenel-product3",
+        "Pdg-Francenel-product13",
         "Pdg-Francenel-product4",
-        "Pdg-Francenel-product5"
+        "Pdg-Francenel-product15",
+        "Pdg-Francenel-product6",
+        "Pdg-Francenel-product10",
+        "Pdg-Francenel-product9",
+        "Pdg-Francenel-product8",
+        "Pdg-Francenel-product11"
       ]
     },
     "watermark": {

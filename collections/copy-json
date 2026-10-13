@@ -497,22 +497,18 @@
       { "vid": "CF417EC4-1435-4F7E-A9A6-E8D3E390463F", "color": "Orange", "size": "S", "price": 2.16, "active": true }
     ],
     "media": [
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-1.png?v=1791735590",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-2.png?v=1791735558",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-3.png?v=1791735585",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-4.png?v=1791735572",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-principale.png?v=1791735596",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-hover.png?v=1791735559",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-gray.png?v=1791735630",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-orange.png?v=1791735625",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-blue.png?v=1791735618",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-star.png?v=1791735618",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-orange-set.png?v=1791735594",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-bloc-1.png?v=1791735574",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-bloc-2.png?v=1791735558",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-double-1.png?v=1791735532",
-      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-double-2.png?v=1791735542"
-    ]
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-1.png?v=1791735590",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-2.png?v=1791735558",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-3.png?v=1791735585",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-4.png?v=1791735572",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-principale.png?v=1791735596",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-hover.png?v=1791735559",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-gray.png?v=1791735630",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-orange.png?v=1791735625",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-blue.png?v=1791735618",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-star.png?v=1791735618",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product9-orange-set.png?v=1791735594"
+]
   },
   {
     "cj_product_id": "2013505576683794433",
@@ -537,30 +533,27 @@
       "text": "In Promotion"
     },
     "title": "Printed Non-Slip Yoga Mat",
-    "description": "Extra-long 72 x 24 in TPE mat with a non-slip surface and pretty floral print for yoga, pilates and floor workouts.",
+    "description": "A 72.1 x 24 in yoga mat with a soft suede top, dual-texture non-slip TPE base and colorful Pink Flower print for yoga, Pilates, stretching and floor workouts.",
     "price": 16.92,
     "compare_price": 27.75,
-    "image": "",
-    "image_hover": "",
+    "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product10-principale.png?v=1791735506",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product10-hover.png?v=1791735538",
     "sizes": [ "72 x 24" ],
     "colors": [
-      { "name": "Pink Flower", "hex": "#FFB6C1", "image": "", "active": true }
+      { "name": "Pink Flower", "hex": "#FFB6C1", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product10-pink.png?v=1791735580", "active": true }
     ],
     "variants": [
       { "vid": "2013505576792846338", "color": "Pink Flower", "size": "72 x 24", "price": 16.92, "active": true }
     ],
     "media": [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
-    ]
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product10-1.png?v=1791735572",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product10-2.png?v=1791735588",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product10-3.png?v=1791735566",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product10-4.png?v=1791735549",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product10-principale.png?v=1791735506",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product10-hover.png?v=1791735538",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product10-pink.png?v=1791735580"
+]
   },
   {
     "cj_product_id": "6CF0CF8A-0485-4393-AFA3-92E8B64ADB7A",
@@ -585,16 +578,16 @@
       "text": "In Promotion"
     },
     "title": "Fitness Water Bottle 1.3L",
-    "description": "Large-capacity 1.3L bottle with measurement marks to keep you hydrated and on track all day.",
+    "description": "Stay hydrated during workouts with this 1.3L fitness bottle, featuring measurement marks, a screw-pattern lid and a leak-resistant closure.",
     "price": 14.71,
     "compare_price": 24.12,
-    "image": "",
-    "image_hover": "",
+    "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-principale.png?v=1791735581",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-hover.png?v=1791735575",
     "sizes": [ "1.3L" ],
     "colors": [
-      { "name": "Matte Pale Pink", "hex": "#F4C2C2", "image": "", "active": true },
-      { "name": "Matte Sky Blue", "hex": "#87CEEB", "image": "", "active": true },
-      { "name": "Black", "hex": "#000000", "image": "", "active": true }
+      { "name": "Matte Pale Pink", "hex": "#F4C2C2", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-pink.png?v=1791735542", "active": true },
+      { "name": "Matte Sky Blue", "hex": "#87CEEB", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-blue.png?v=1791735529", "active": true },
+      { "name": "Black", "hex": "#000000", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-black.png?v=1791735572", "active": true }
     ],
     "variants": [
       { "vid": "5AC4D9A6-4C99-47F8-A559-EC1CB51AA16D", "color": "Matte Pale Pink", "size": "1.3L", "price": 14.71, "active": true },
@@ -602,17 +595,16 @@
       { "vid": "9DA1DC33-852E-494C-9FBE-6CBD8A126F66", "color": "Black", "size": "1.3L", "price": 14.71, "active": true }
     ],
     "media": [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
-    ]
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-1.png?v=1791735587",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-2.png?v=1791735583",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-3.png?v=1791735583",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-4.png?v=1791735542",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-principale.png?v=1791735581",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-hover.png?v=1791735575",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-pink.png?v=1791735542",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-blue.png?v=1791735529",
+  "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product11-black.png?v=1791735572"
+]
   },
   {
     "cj_product_id": "5B18D26B-4337-4F82-8B6F-D377E6E3B9B5",
@@ -636,15 +628,15 @@
       "icon": "fi-rr-flame",
       "text": "In Promotion"
     },
-    "title": "Women's Home Dumbbell Set",
-    "description": "A pair of easy-grip dumbbells in a bold red finish for toning and strength training at home.",
+    "title": "Longway Colorful Fitness Dumbbells",
+    "description": "A pair of colorful fitness dumbbells made with PE material, an iron-sand mixture and a reinforcing steel bar. Choose from 1, 1.5, 2, 3 or 5 kg pairs for home training.",
     "price": 1.99,
     "compare_price": 3.26,
-    "image": "",
-    "image_hover": "",
+    "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product12-principale.png?v=1791735497",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product12-hover.png?v=1791735522",
     "sizes": [ "1kg (pair)", "1.5kg (pair)", "2kg (pair)", "3kg (pair)", "5kg (pair)" ],
     "colors": [
-      { "name": "Red", "hex": "#D32F2F", "image": "", "active": true }
+      { "name": "Red", "hex": "#D32F2F", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product12-red.png?v=1791735525", "active": true }
     ],
     "variants": [
       { "vid": "6A1767A6-BE4E-4E14-BA08-7110B36037C0", "color": "Red", "size": "2kg (pair)", "price": 5.21, "active": true },
@@ -654,21 +646,18 @@
       { "vid": "FD30A6E5-C020-4F94-B50A-BC72DF13659A", "color": "Red", "size": "5kg (pair)", "price": 11.16, "active": true }
     ],
     "media": [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product12-1.png?v=1791735569",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product12-2.png?v=1791735572",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product12-3.png?v=1791735565",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product12-4.png?v=1791735542",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product12-principale.png?v=1791735497",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product12-hover.png?v=1791735522",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product12-red.png?v=1791735525"
     ]
   },
   {
-    "cj_product_id": "1956230523859935233",
-    "sku_internal": "CJLX245693901AZ",
+    "cj_product_id": "1419549295782268928",
+    "sku_internal": "CJZN122776001AZ",
     "id": "Pdg-Francenel-product13",
     "url": "/products/product13.html",
     "active": true,
@@ -688,29 +677,26 @@
       "icon": "fi-rr-flame",
       "text": "In Promotion"
     },
-    "title": "M4 Smart Fitness Band",
-    "description": "Sleek smart wristband for tracking heart rate, blood pressure and daily activity to support your wellness goals.",
+    "title": "M4 Smart Bracelet",
+    "description": "Lightweight M4 smart bracelet with a 1-inch touch display and step counting. Compatible with Android and iOS devices.",
     "price": 9.51,
     "compare_price": 15.6,
-    "image": "",
-    "image_hover": "",
+    "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-principale.png?v=1791735492",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-hover.png?v=1791735544",
     "colors": [
-      { "name": "Black", "hex": "#000000", "image": "", "active": true }
+      { "name": "Black", "hex": "#000000", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-black.png?v=1791735490", "active": true }
     ],
     "variants": [
-      { "vid": "1956230523943821314", "color": "Black", "price": 9.51, "active": true }
+      { "vid": "1419549298407903232", "color": "Black", "price": 9.51, "active": true }
     ],
     "media": [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-1.png?v=1791735568",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-2.png?v=1791735576",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-3.png?v=1791735581",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-4.png?v=1791735508",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-principale.png?v=1791735492",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-hover.png?v=1791735544",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product13-black.png?v=1791735490"
     ]
   },
   {
@@ -735,19 +721,19 @@
       "icon": "fi-rr-flame",
       "text": "In Promotion"
     },
-    "title": "Pocket Cropped Plus-Size Yoga Leggings",
-    "description": "Cropped high-stretch yoga leggings with handy pockets, shaping and supporting you through every move.",
+    "title": "Pocket Leggings for Every Move",
+    "description": "Cropped polyester leggings with practical pockets, a supportive fit and five versatile colors for running, training and everyday movement.",
     "price": 3.52,
     "compare_price": 5.77,
-    "image": "",
-    "image_hover": "",
+    "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-principale.png?v=1791735650",
+    "image_hover": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-hover.png?v=1791735649",
     "sizes": [ "1XL", "2XL", "3XL", "4XL", "5XL" ],
     "colors": [
-      { "name": "Black", "hex": "#000000", "image": "", "active": true },
-      { "name": "Wine Red", "hex": "#722F37", "image": "", "active": true },
-      { "name": "Dark Gray", "hex": "#4A4A4A", "image": "", "active": true },
-      { "name": "Navy Blue", "hex": "#001F5B", "image": "", "active": true },
-      { "name": "Army Green", "hex": "#4B5320", "image": "", "active": true }
+      { "name": "Black", "hex": "#171717", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-black.png?v=1791735645", "active": true },
+      { "name": "Wine Red", "hex": "#722F37", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-wine_red.png?v=1791735641", "active": true },
+      { "name": "Dark Gray", "hex": "#454545", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-gray.png?v=1791735649", "active": true },
+      { "name": "Navy Blue", "hex": "#172A4A", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-navy_blue.png?v=1791735643", "active": true },
+      { "name": "Army Green", "hex": "#556B2F", "image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-army_green.png?v=1791735649", "active": true }
     ],
     "variants": [
       { "vid": "2504160709561605600", "color": "Black", "size": "1XL", "price": 3.52, "active": true },
@@ -777,16 +763,17 @@
       { "vid": "2504160709571603600", "color": "Army Green", "size": "5XL", "price": 3.52, "active": true }
     ],
     "media": [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-1.png?v=1791735650",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-2.png?v=1791735650",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-3.png?v=1791735650",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-4.png?v=1791735646",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-principale.png?v=1791735650",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-hover.png?v=1791735649",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-black.png?v=1791735645",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-wine_red.png?v=1791735641",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-gray.png?v=1791735649",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-navy_blue.png?v=1791735643",
+      "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/curvafit-francenel-product14-army_green.png?v=1791735649"
     ]
   },
   {

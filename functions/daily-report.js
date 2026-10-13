@@ -149,7 +149,7 @@ export async function onRequestGet(context) {
 
     // ── Envoyer le rapport ──
     const rapport =
-      `📊 <b>Rapport Quotidien BBW4LIFE</b>\n` +
+      `📊 <b>Rapport Quotidien Curvafit</b>\n` +
       `📅 <b>${today}</b>\n\n` +
       `🛍️ <b>Commandes:</b> ${ordersToday}\n` +
       `💰 <b>Chiffre d'affaires:</b> $${revenueToday.toFixed(2)}\n` +
@@ -159,7 +159,7 @@ export async function onRequestGet(context) {
       `📖 <b>Stories soumises:</b> ${storiesToday}\n` +
       `🎨 <b>Produits personnalisés:</b> ${customToday}\n` +
       `⏳ <b>Plan requests:</b> ${plansToday}\n\n` +
-      `👑 <i>Beauty Has No Sizes — BBW4LIFE</i>`;
+      `👑 <i>Curvafit — bouger à son rythme</i>`;
 
     await notifyTelegram(rapport, env);
 
