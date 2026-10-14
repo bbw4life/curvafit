@@ -492,6 +492,21 @@
   width: 100%;
 }
 
+.bbw-footer__links li a.bbw-footer__external-link {
+  color: #d33f88;
+  font-weight: 700;
+}
+.bbw-footer__links li a.bbw-footer__external-link:hover {
+  color: #8b3f91;
+}
+.bbw-footer__external-arrow {
+  display: inline-block;
+  margin-left: 3px;
+  font-size: 0.9em;
+  font-weight: 700;
+  line-height: 1;
+}
+
 /* ══════════════════════════════════════════════════════════════
    5. COL 3 — INFO BOX — Crème avec bordure or
 ══════════════════════════════════════════════════════════════ */

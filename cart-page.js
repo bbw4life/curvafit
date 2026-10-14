@@ -598,6 +598,13 @@
     var wrap     = document.getElementById('cp-gender-picker');
     if (!wrap) return;
 
+    var genderSelectorEnabled = (cd.show_promo_gender_selector || 'yes').trim().toLowerCase() === 'yes';
+    wrap.classList.toggle('is-disabled', !genderSelectorEnabled);
+    if (!genderSelectorEnabled) {
+      wrap.classList.remove('is-visible', 'is-open');
+      return;
+    }
+
     var cart = getCart();
     var buyQty = parseInt(cd.promo_buy_quantity) || 0;
     var getQty = parseInt(cd.promo_get_quantity)  || 0;

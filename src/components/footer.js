@@ -24,7 +24,7 @@
     links1: [
       { text: 'Find Your Pick', url: '#', action: 'curvafit-picks' },
       { text: 'Curvafit essentials', url: '#' },
-      { text: 'Wellness journal',    url: '/blog/blog.html' },
+      { text: 'bbw4life.com',    url: 'https://bbw4life.com' },
       { text: 'Special offers',      url: '#' },
       { text: 'Our approach',        url: '#' },
       { text: 'Our mission',         url: '#' }
@@ -128,6 +128,16 @@
       const a  = document.createElement('a');
       a.href        = item.url || '#';
       a.textContent = item.text;
+      if (/^https?:\/\//i.test(a.href) && new URL(a.href, window.location.href).origin !== window.location.origin) {
+        a.classList.add('bbw-footer__external-link');
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        const arrow = document.createElement('span');
+        arrow.className = 'bbw-footer__external-arrow';
+        arrow.setAttribute('aria-hidden', 'true');
+        arrow.textContent = ' ↗';
+        a.appendChild(arrow);
+      }
       if (colNum === 1 && (item.action === 'curvafit-picks' || item.text.trim().toLowerCase() === 'curvafit picks')) {
         a.setAttribute('data-open-quiz', 'true');
         a.classList.add('bbw-footer__quiz-link');

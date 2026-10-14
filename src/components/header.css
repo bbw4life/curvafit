@@ -5472,7 +5472,8 @@ body:not(.home-page) #bc-nav.bc-nav--scrolled .bc-item.bc-active a {
 }
 .ann-bar__socials { display: none; }
 @keyframes curvafit-ann-marquee {
-  to { transform: translateX(-50%); }
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
 }
 @media (min-width: 993px) {
   .ann-bar__inner {

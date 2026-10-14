@@ -1159,8 +1159,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // copie indépendante de la logique écrasait toujours le cadeau
         // gratuit avec la liste femme par défaut, même après un choix
         // "man" fait dans le drawer.
-        const genderChoice = window.getCartGenderChoice ? window.getCartGenderChoice() : 'woman';
-        const freeIds = (genderChoice === 'man' && manIds) ? manIds : womanIds;
+        const genderSelectorEnabled = (cd.show_promo_gender_selector || 'yes').trim().toLowerCase() === 'yes';
+        const genderChoice = genderSelectorEnabled && window.getCartGenderChoice ? window.getCartGenderChoice() : 'woman';
+        const freeIds = (genderSelectorEnabled && genderChoice === 'man' && manIds) ? manIds : womanIds;
 
         const paidQty = cart.filter(i => !i.isFreePromo).reduce((sum, i) => sum + i.quantity, 0);
         cart = cart.filter(i => !i.isFreePromo);

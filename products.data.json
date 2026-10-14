@@ -927,12 +927,13 @@
       "progress_success_message": "🎉You've unlocked FREE shipping!",
       "promo_buy_quantity": 9,
       "promo_get_quantity": 3,
-      "show_promo_message": "Yes",
+      "show_promo_message": "Yes", 
+      "show_promo_gender_selector": "no",
       "show_banner_bxgx_widget": "yes",
       "show_media_counter": "yes",
       "show_mobile_zoom_icon": "yes",
-      "promo_free_product_ids_man": [ "Pdg-Francenel-product118", "Pdg-Francenel-product43", "Pdg-Francenel-product36" ],
-      "promo_free_product_ids": [ "Pdg-Francenel-product78", "Pdg-Francenel-product86", "Pdg-Francenel-product34" ],
+      "promo_free_product_ids_man": [ "Pdg-Francenel-product4", "Pdg-Francenel-product5", "Pdg-Francenel-product6" ],
+      "promo_free_product_ids": [ "Pdg-Francenel-product10", "Pdg-Francenel-product8", "Pdg-Francenel-product9" ],
       "promo_gender_select_image_woman": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/women.png?v=1788535552",
       "promo_gender_select_image_man": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/men.png?v=1788535534",
       "promo_initial_message": "Buy paul {buy} items, get {get} FREE!",
@@ -1407,9 +1408,9 @@
       ]
     },
     "mobile_links_behavior": {
-      "hide_completely": "yes",
+      "hide_completely": "no",
       "show_all_centered": "no",
-      "two_columns_mobile": "no"
+      "two_columns_mobile": "yes"
     },
     "newsletter_auto_popup": {
       "show": "yes",

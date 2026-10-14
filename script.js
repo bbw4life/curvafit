@@ -977,9 +977,10 @@ function applyPromoFreeItems() {
     const womanIds = Array.isArray(cd.promo_free_product_ids) && cd.promo_free_product_ids.length > 0
         ? cd.promo_free_product_ids
         : null;
+    const genderSelectorEnabled = (cd.show_promo_gender_selector || 'yes').trim().toLowerCase() === 'yes';
     // 'man' seulement si explicitement choisi ET que le setting homme existe ;
     // sinon on garde le sens actuel (femme) — woman explicite ou pas de choix.
-    const freeIds = (getCartGenderChoice() === 'man' && manIds) ? manIds : womanIds;
+    const freeIds = (genderSelectorEnabled && getCartGenderChoice() === 'man' && manIds) ? manIds : womanIds;
 
     const paidQty = cart.filter(i => !i.isFreePromo).reduce((sum, i) => sum + i.quantity, 0);
     cart = cart.filter(i => !i.isFreePromo);
@@ -1787,8 +1788,8 @@ function showErrorPopup(message) {
     const msgEl     = document.getElementById('bbwBxgxMsg');
 
     const giftWord  = getQty > 1 ? 'FREE Gifts' : 'FREE Gift';
-    const titleDefault = `Buy ${buyQty}, Get ${getQty} ${giftWord}!`;
-    const titleUnlocked = `Congratulations! Your ${getQty} ${giftWord} ${getQty > 1 ? 'are' : 'is'} waiting — checkout now!`;
+    const titleDefault = `Shop ${buyQty} Curvafit picks, get ${getQty} ${giftWord}!`;
+    const titleUnlocked = `Congratulations! Your ${getQty} free Curvafit ${getQty > 1 ? 'gifts are' : 'gift is'} waiting — checkout now!`;
 
     if (titleEl) titleEl.textContent = titleDefault;
 
@@ -1813,10 +1814,10 @@ function showErrorPopup(message) {
         if (msgEl) {
             const giftLabel = getQty > 1 ? `${getQty} free gifts` : 'free gift';
             if (unlocked) {
-                msgEl.textContent = `You've unlocked your ${giftLabel} from BBW4LIFE!`;
+                msgEl.textContent = `You've unlocked your ${giftLabel} from Curvafit!`;
             } else {
                 const remaining = buyQty - paidQty;
-                msgEl.textContent = `Get ${getQty} FREE — only ${remaining} more to go!`;
+                msgEl.textContent = `Get ${getQty} Curvafit gifts FREE — only ${remaining} more to go!`;
             }
         }
 
@@ -8969,6 +8970,13 @@ document.dispatchEvent(new Event('wishlist:change'));
     if (!body) return;
     const wrap = body.querySelector('#cart-gender-picker');
     if (!wrap) return;
+
+    const genderSelectorEnabled = (cd.show_promo_gender_selector || 'yes').trim().toLowerCase() === 'yes';
+    wrap.classList.toggle('is-disabled', !genderSelectorEnabled);
+    if (!genderSelectorEnabled) {
+      wrap.classList.remove('is-visible', 'is-open');
+      return;
+    }
 
     const buyQty = parseInt(cd.promo_buy_quantity) || 0;
     const getQty = parseInt(cd.promo_get_quantity)  || 0;
