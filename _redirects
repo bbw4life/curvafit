@@ -32,7 +32,8 @@
 # ─────────────────────────────────────────────
 # ACCOUNT
 # ─────────────────────────────────────────────
-/bbw4life/my-account    /account.html   200
+/curvafit/my-account    /account.html   200
+/bbw4life/my-account    /curvafit/my-account   301
 
 # ─────────────────────────────────────────────
 # PRODUCT FEED — Google Merchant / Meta / Pinterest / TikTok Shop

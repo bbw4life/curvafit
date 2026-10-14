@@ -1,7 +1,7 @@
 (function () {
   var SLUGS = {
     // ── ACCOUNT ───────────────────────────────────────────
-    '/account.html': '/bbw4life/my-account',
+    '/account.html': '/curvafit/my-account',
 
     // ── CART ──────────────────────────────────────────────
     '/cart.html': '/bbw4life/cart',

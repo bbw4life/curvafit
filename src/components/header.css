@@ -569,6 +569,19 @@ body {
   justify-content: center;
   text-decoration: none;
   pointer-events: all;
+  isolation: isolate;
+}
+
+/* A borderless, translucent pearl glow keeps the logo distinct over page imagery. */
+.bbw-logo::before {
+  content: '';
+  position: absolute;
+  inset: 0 -10%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 248, 253, 0.52) 0%, rgba(255, 244, 251, 0.34) 42%, rgba(248, 226, 243, 0.14) 72%, rgba(248, 226, 243, 0) 100%);
+  filter: blur(6px);
+  pointer-events: none;
 }
 
 .bbw-logo__img {
@@ -5532,4 +5545,32 @@ body:not(.home-page) #bc-nav.bc-nav--scrolled .bc-item.bc-active a {
 }
 @media (min-width: 993px) {
   .ann-bar__message { font-size: 14px; }
+}
+
+/* Consistent mobile search-open colors on the homepage and inner pages. */
+@media (max-width: 768px) {
+  body .bbw-search .bbw-search__bar.is-open {
+    background: linear-gradient(110deg, #3b1c55 0%, #51266b 56%, #652b67 100%) !important;
+    border-color: rgba(255, 224, 239, 0.88) !important;
+    box-shadow: 0 8px 24px rgba(36, 13, 48, 0.28) !important;
+  }
+  body .bbw-search .bbw-search__bar.is-open .bbw-search__input,
+  body .bbw-search .bbw-search__bar.is-open .bbw-search__input::placeholder {
+    color: #fff9fc !important;
+  }
+  body .bbw-search .bbw-search__bar.is-open .bbw-search__mic {
+    color: #fff !important;
+    background: #c94288 !important;
+    border-color: transparent !important;
+  }
+  body .bbw-search .bbw-search__bar.is-open .bbw-search__submit {
+    color: #51234f !important;
+    background: #fff4fa !important;
+    border-color: transparent !important;
+  }
+  body .bbw-search .bbw-search__bar.is-open .bbw-search__close {
+    color: #fff6fb !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.22) !important;
+  }
 }

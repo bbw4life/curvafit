@@ -1418,7 +1418,10 @@
     },
     "hero_banner": {
       "video_url": "",
-      "images": [ "/img/curva-banner-1.png", "/img/curva-banner-2.png", "/img/curva-banner-3.png" ],
+      "images": [
+      "/img/curva-banner-1.png", 
+      "/img/curva-banner-2.png", 
+      "/img/curva-banner-3.png" ],
       "mobile_images": [
         "/img/curva-banner-mobiles-1.png",
         "/img/curva-banner-mobiles-2.png",
@@ -1430,15 +1433,15 @@
       "show_individual_buttons": "yes",
       "button_1": {
         "text": "Explore Gentle Walking",
-        "url": "#curvafit-guides"
+        "url": "/products/product1.html"
       },
       "button_2": {
         "text": "See the Meal Planner",
-        "url": "#curvafit-guides"
+        "url": "/products/product2.html"
       },
       "button_3": {
-        "text": "Explore All Three Ebooks",
-        "url": "#curvafit-guides"
+        "text": "Explore Move at Home",
+        "url": "/products/product3.html"
       },
       "main_button": {
         "text": "Add the 3-Ebook Bundle to Cart",
