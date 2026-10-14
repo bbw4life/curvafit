@@ -12,12 +12,12 @@
   <link rel="stylesheet" href="/account.css">
   <script src="/src/components/head.js" defer></script>
   <link rel="stylesheet" href="/src/components/footer.css?v=curvafit-footer-premium-3">
-  <title>My Curvafit Account</title>
-  <meta name="description" content="Sign in to manage your Curvafit account, saved details, and order information.">
+  <title>Your Curvafit Account | Profile &amp; Orders</title>
+  <meta name="description" content="Manage your Curvafit profile, order history, rewards, and wellness routine in one place.">
   <meta name="keywords" content="Curvafit account, sign in, order information">
   <link rel="canonical" href="https://curvafit.com/account.html">
-  <meta property="og:title" content="My Curvafit Account">
-  <meta property="og:description" content="Sign in to manage your Curvafit account, saved details, and order information.">
+  <meta property="og:title" content="Your Curvafit Account | Profile &amp; Orders">
+  <meta property="og:description" content="Manage your Curvafit profile, order history, rewards, and wellness routine in one place.">
   <meta property="og:url" content="https://curvafit.com/account.html">
   <meta name="robots" content="noindex, follow">
 </head>
@@ -132,17 +132,17 @@
             <input type="file" id="profile-photo-input" accept="image/*" style="display:none;">
             </div>
             <div class="profile-photo-meta">
-            <h1 class="customer__title">My Account</h1>
-            <p class="profile-photo-hint">Click the pencil to update your photo</p>
+            <h1 class="customer__title">Your Curvafit Account</h1>
+            <p class="profile-photo-hint">Make your profile feel like yours</p>
           </div>
 
           <div class="profile-birthday-block" id="profile-birthday-block">
             <label for="profile-birthday-input" class="profile-birthday-label">
-              <i class="fi fi-rr-gift"></i> Your Birthday
+              <i class="fi fi-rr-gift"></i> Birthday &amp; rewards
             </label>
             <div class="profile-birthday-row">
               <input type="date" id="profile-birthday-input" class="profile-birthday-input" placeholder="dd/mm/yyyy">
-              <button type="button" id="profile-birthday-save-btn" class="profile-birthday-save-btn">Save</button>
+              <button type="button" id="profile-birthday-save-btn" class="profile-birthday-save-btn">Save birthday</button>
             </div>
             <p class="profile-birthday-msg" id="profile-birthday-msg"></p>
           </div>
@@ -154,7 +154,7 @@
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12"></line>
             </svg>
-            Log out
+            Sign out
         </a>
         </div>
 
@@ -164,7 +164,7 @@
 
             
             <div class="membership-greeting">
-              <h3>Hello, <span id="user-name"></span> Welcome back</h3>
+              <h3>Welcome back, <span id="user-name"></span></h3>
               <p id="member-since"></p>
             </div>
 
@@ -186,7 +186,25 @@
 
       </div>
     </div>
-    
+
+    <div class="cf-home-wave account-home-wave" aria-hidden="true">
+      <svg viewBox="0 0 1440 90" preserveAspectRatio="none" focusable="false">
+        <defs>
+          <linearGradient id="cf-home-wave-gradient" x1="0" y1="0" x2="1" y2="0.7">
+            <stop offset="0%" stop-color="#d6458f"/>
+            <stop offset="48%" stop-color="#7b4fb8"/>
+            <stop offset="100%" stop-color="#e84387"/>
+          </linearGradient>
+          <linearGradient id="cf-home-wave-fade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#fff" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#faf6fe" stop-opacity="1"/>
+          </linearGradient>
+        </defs>
+        <path class="cf-home-wave__color" d="M0 34c190 45 322-18 510 5s290 49 470 12 302-24 460 9v30H0Z"/>
+        <path class="cf-home-wave__fade" d="M0 34c190 45 322-18 510 5s290 49 470 12 302-24 460 9v30H0Z"/>
+        <path class="cf-home-wave__shine" d="M0 34c190 45 322-18 510 5s290 49 470 12 302-24 460 9"/>
+      </svg>
+    </div>
 
 
     
@@ -200,7 +218,7 @@
           </svg>
         </div>
         <p class="stat-value">0</p>
-        <p class="stat-label">Orders</p>
+        <p class="stat-label">Orders placed</p>
       </div>
 
       
@@ -215,7 +233,7 @@
           </svg>
         </div>
         <p class="stat-value">$0.00</p>
-        <p class="stat-label">Total Spent</p>
+        <p class="stat-label">Curvafit total</p>
       </div>
 
       
@@ -230,7 +248,7 @@
           </svg>
         </div>
         <p class="stat-value" data-wishlist-count>0</p>
-        <p class="stat-label">Items In cart</p>
+        <p class="stat-label">Cart items</p>
       </a>
 
       
@@ -244,7 +262,7 @@
           </svg>
         </div>
         <p class="stat-value">0</p>
-        <p class="stat-label">Reviews Written</p>
+        <p class="stat-label">Reviews shared</p>
       </div>
 
     </div>
@@ -252,10 +270,18 @@
 
 
     
+    <div class="cf-home-wave account-home-wave account-home-wave--compact" aria-hidden="true">
+      <svg viewBox="0 0 1440 90" preserveAspectRatio="none" focusable="false">
+        <path class="cf-home-wave__color" d="M0 34c190 45 322-18 510 5s290 49 470 12 302-24 460 9v30H0Z"/>
+        <path class="cf-home-wave__fade" d="M0 34c190 45 322-18 510 5s290 49 470 12 302-24 460 9v30H0Z"/>
+        <path class="cf-home-wave__shine" d="M0 34c190 45 322-18 510 5s290 49 470 12 302-24 460 9"/>
+      </svg>
+    </div>
+
     <div class="main-grid">
 
       <div class="details-section">
-        <h2>Account Details</h2>
+        <h2>Your Curvafit details</h2>
         <p><strong>Name</strong> <span id="user-full-name"></span></p>
         <p><strong>Email</strong> <span id="user-email"></span></p>
         <p><strong>Address</strong> <span id="user-address">No default address set</span></p>
@@ -263,8 +289,8 @@
 
       <div class="history-address-section">
         <div class="order-history">
-          <h2>Order History</h2>
-          <p>No orders yet</p>
+          <h2>Your recent orders</h2>
+          <p>Your Curvafit orders will appear here when you place your first order.</p>
         </div>
       </div>
 
@@ -273,8 +299,16 @@
 
 
     
+    <div class="cf-home-wave account-home-wave account-home-wave--compact" aria-hidden="true">
+      <svg viewBox="0 0 1440 90" preserveAspectRatio="none" focusable="false">
+        <path class="cf-home-wave__color" d="M0 34c190 45 322-18 510 5s290 49 470 12 302-24 460 9v30H0Z"/>
+        <path class="cf-home-wave__fade" d="M0 34c190 45 322-18 510 5s290 49 470 12 302-24 460 9v30H0Z"/>
+        <path class="cf-home-wave__shine" d="M0 34c190 45 322-18 510 5s290 49 470 12 302-24 460 9"/>
+      </svg>
+    </div>
+
     <div class="quick-actions-section">
-      <h2 class="quick-actions-title">Quick Actions</h2>
+      <h2 class="quick-actions-title">Your Curvafit shortcuts</h2>
       <div class="quick-actions-grid">
 
        
@@ -283,7 +317,7 @@
           <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
         </div>
         <h4>Track Order</h4>
-        <p>Check the status of your deliveries</p>
+        <p>Follow your delivery updates in one place.</p>
       </div>
 
         
@@ -292,7 +326,7 @@
             <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
           </div>
           <h4>Addresses</h4>
-          <p>Manage your delivery addresses</p>
+          <p>Keep your delivery details up to date.</p>
         </div>
 
         
@@ -301,7 +335,7 @@
             <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
           </div>
           <h4>Payment Methods</h4>
-          <p>Manage your cards and accounts</p>
+          <p>Review your saved payment options.</p>
         </div>
 
         
@@ -310,7 +344,7 @@
             <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
           </div>
           <h4>Security</h4>
-          <p>Change your password</p>
+          <p>Keep your sign-in details current.</p>
         </div>
 
         
@@ -322,7 +356,7 @@
             </svg>
           </div>
           <h4>Contact Support</h4>
-          <p>Reach out to our customer service</p>
+          <p>Get help from the Curvafit support team.</p>
         </div>
 
         
@@ -334,7 +368,7 @@
             </svg>
           </div>
           <h4>Reorder</h4>
-          <p>Shop and reorder your favorites</p>
+          <p>Explore guides and essentials for your routine.</p>
         </div>
 
       </div>
@@ -444,7 +478,7 @@
     </div>
     <h2 class="aff-hero__title">Earn money by sharing<br>what you love</h2>
     <p class="aff-hero__sub">
-      Join the BBW4LIFE affiliate program and earn
+      Join the Curvafit affiliate program and earn
       <strong id="aff-txt-commission"></strong> commission on every order
       placed through your unique link.
     </p>
@@ -496,7 +530,7 @@
     <div class="aff-create-card__right">
       <div class="aff-input-row">
         <div class="aff-input-fields">
-          <div class="aff-input-prefix">bbw4life.com/?ref=</div>
+          <div class="aff-input-prefix">curvafit.com/?ref=</div>
           <input
             type="text"
             id="aff-username-input"

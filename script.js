@@ -10469,7 +10469,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.openAccountPopup = (id) => {
     const popup = document.getElementById(id);
-    if (popup) popup.classList.add('open');
+    if (popup) {
+      // Account dialogs live inside <main>; portal them to <body> so their
+      // fixed overlay can layer above the header and escape page overflow.
+      if (popup.parentElement !== document.body) document.body.appendChild(popup);
+      popup.classList.add('account-page-popup', 'open');
+    }
     if (id === 'address-popup') {
       document.getElementById('addr-email').value = localStorage.getItem('userEmail') || '';
       document.getElementById('addr-first').value = localStorage.getItem('userFirstName') || '';

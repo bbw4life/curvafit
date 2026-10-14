@@ -354,7 +354,7 @@
 </div>
 
 
-<button id="cf-chat-toggle" aria-label="Open Bbw4life Support Chat">
+<button id="cf-chat-toggle" aria-label="Open Curvafit Support Chat">
   <div class="cf-toggle-inner">
     <span class="cf-toggle-icon cf-icon-open">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -377,7 +377,7 @@
   <div id="cf-chat-window" class="cf-chat-window" aria-hidden="true">
     <div class="cf-chat-header">
       <div class="cf-header-avatar">
-        <img id="cf-agent-logo" src="" alt="Bbw4life Support">
+        <img id="cf-agent-logo" src="" alt="Curvafit Support">
         <div class="cf-avatar-fallback">C</div>
         <span class="cf-online-dot"></span>
       </div>
@@ -441,7 +441,7 @@
     </button>
     <div id="rc-popup-body">
       <div id="rc-avatar-wrap">
-        <img id="rc-avatar-img" src="" alt="Support" style="display:none;">
+        <img id="rc-avatar-img" src="" alt="Curvafit support agent Sherline" style="display:none;">
         <video id="rc-avatar-video" autoplay muted loop playsinline style="display:none;"></video>
       </div>
       <div id="rc-content">

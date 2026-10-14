@@ -7063,6 +7063,20 @@ body:has(.product-section) .bbw-footer {
   }
 }
 
+/* Softened Curvafit divider directly above product reviews. */
+.bbw-wave-divider svg linearGradient stop:nth-of-type(1) {
+  stop-color: #c8b8df !important;
+}
+.bbw-wave-divider svg linearGradient stop:nth-of-type(2) {
+  stop-color: #e0d6ed !important;
+}
+.bbw-wave-divider svg linearGradient stop:nth-of-type(3) {
+  stop-color: #f5f1f8 !important;
+}
+.bbw-wave-divider svg > path:last-child {
+  stroke: rgba(190, 174, 213, 0.62) !important;
+}
+
 @media (max-width: 768px) {
   .rv-section {
     padding: 12px 10px 0;
@@ -7846,7 +7860,16 @@ body:has(#reviews-section) #modal-review-form textarea {
     border-color: #e3d9ef;
 }
 body:has(#reviews-section) #modal-review-form select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235d3c90' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    -webkit-appearance: menulist;
+    appearance: auto;
+    background-image: none !important;
+    background-color: #fcfaff !important;
+    color-scheme: light;
+    padding-right: 14px;
+}
+body:has(#reviews-section) #modal-review-form select option {
+    color: #38205e;
+    background: #fff;
 }
 body:has(#reviews-section) #modal-review-form input:focus,
 body:has(#reviews-section) #modal-review-form select:focus,

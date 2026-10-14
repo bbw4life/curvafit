@@ -3559,3 +3559,387 @@ a.stat-wishlist-link.stat-item {
     border-radius: 18px;
   }
 }
+
+/* Curvafit account refresh: layered circles, soft surfaces and home waves. */
+.account-main {
+  --account-ink: #302044;
+  --account-muted: #786b83;
+  --account-violet: #7045a6;
+  --account-pink: #d74691;
+  --account-line: rgba(112, 69, 166, .16);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(12px, 1.5vw, 20px) 0 32px;
+  color: var(--account-ink);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.96) 0 18%, transparent 58%),
+    radial-gradient(circle at 8% 30%, rgba(215,70,145,.07), transparent 23%),
+    linear-gradient(180deg, #fbf7fd 0%, #f7f1fa 48%, #fffafd 100%);
+}
+
+.account-main::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  width: min(78vw, 920px);
+  aspect-ratio: 1;
+  top: 18%;
+  right: -31%;
+  border-radius: 50%;
+  border: 1px solid rgba(112,69,166,.055);
+  box-shadow: 0 0 0 24px rgba(112,69,166,.025), 0 0 0 57px rgba(215,70,145,.018), 0 0 0 98px rgba(112,69,166,.014);
+}
+
+.account-main #breadcrumb-container,
+.account-main > .account-background,
+.account-main > .membership-stats-grid,
+.account-main > .main-grid,
+.account-main > .quick-actions-section,
+.account-main > .affiliation-section {
+  position: relative;
+  z-index: 1;
+}
+
+.account-main .account-background {
+  padding: 0 20px 8px;
+}
+
+.account-main .customer.account {
+  max-width: 1240px !important;
+  padding: clamp(20px, 3vw, 38px) !important;
+  border: 1px solid rgba(112,69,166,.12);
+  border-radius: 30px;
+  background: rgba(255,255,255,.72);
+  box-shadow: 0 24px 70px rgba(58,34,77,.08), 0 1px 0 #fff inset;
+  backdrop-filter: blur(14px);
+}
+
+.account-main .profile-section {
+  align-items: center;
+  margin: 0 0 26px;
+  padding: 4px 0 26px;
+  border-color: var(--account-line);
+}
+.account-main .profile-section::after {
+  width: 96px;
+  height: 3px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--account-violet), var(--account-pink));
+}
+.account-main .profile-photo-meta::before {
+  content: 'CURVAFIT WELLNESS';
+  color: var(--account-violet);
+  letter-spacing: .2em;
+}
+.account-main .customer.account .customer__title {
+  color: var(--account-ink) !important;
+  -webkit-text-fill-color: var(--account-ink) !important;
+  font-size: clamp(2rem, 4vw, 3.25rem) !important;
+}
+.account-main .profile-photo-hint,
+.account-main .profile-birthday-label { color: var(--account-muted) !important; }
+.account-main .profile-photo-wrap {
+  border-radius: 50%;
+  box-shadow: 0 0 0 5px #fff, 0 0 0 7px rgba(112,69,166,.28), 0 12px 28px rgba(58,34,77,.12);
+}
+.account-main .profile-photo-wrap::before { border-color: rgba(112,69,166,.28); }
+.account-main .profile-photo-wrap img,
+.account-main .profile-photo-initials {
+  border-color: #fff !important;
+  box-shadow: 0 0 0 2px rgba(112,69,166,.28), 0 12px 28px rgba(58,34,77,.14) !important;
+}
+.account-main .profile-photo-initials {
+  color: #fff !important;
+  background: linear-gradient(140deg, var(--account-violet), var(--account-pink)) !important;
+}
+.account-main .profile-birthday-block {
+  border-radius: 18px;
+  border-color: var(--account-line);
+  background: linear-gradient(135deg, rgba(112,69,166,.06), rgba(215,70,145,.055));
+}
+.account-main .profile-birthday-input { border-color: rgba(112,69,166,.2) !important; border-radius: 12px !important; }
+.account-main .profile-birthday-save-btn {
+  border-radius: 999px !important;
+  background: linear-gradient(110deg, var(--account-violet), var(--account-pink)) !important;
+  box-shadow: 0 8px 18px rgba(112,69,166,.2);
+}
+.account-main .customer.account .profile-section a.logout-btn {
+  color: var(--account-violet) !important;
+  border: 1px solid rgba(112,69,166,.26) !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,.72) !important;
+  letter-spacing: .1em !important;
+}
+.account-main .customer.account .profile-section a.logout-btn:hover {
+  color: #fff !important;
+  border-color: var(--account-violet) !important;
+  background: var(--account-violet) !important;
+}
+
+.account-main .membership-dashboard {
+  border: 1px solid rgba(255,255,255,.24) !important;
+  border-radius: 26px !important;
+  background:
+    radial-gradient(circle at 88% 16%, rgba(255,255,255,.15) 0 1px, transparent 2px),
+    radial-gradient(circle at 90% 14%, transparent 0 75px, rgba(255,255,255,.08) 76px 77px, transparent 78px 108px, rgba(255,255,255,.05) 109px 110px, transparent 111px),
+    radial-gradient(ellipse at 100% 0%, rgba(215,70,145,.5), transparent 48%),
+    linear-gradient(120deg, #39244d 0%, #50305f 54%, #70436e 100%) !important;
+  box-shadow: 0 22px 46px rgba(58,34,77,.2), inset 0 1px 0 rgba(255,255,255,.2) !important;
+}
+.account-main .membership-dashboard::before { opacity: .18; }
+.account-main .membership-dashboard::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent); }
+.account-main .membership-greeting::before { content: 'YOUR CURVAFIT JOURNEY'; color: #f1bddb; letter-spacing: .2em; }
+.account-main .membership-greeting h3,
+.account-main .membership-greeting h3 #user-name { color: #fff !important; -webkit-text-fill-color: #fff !important; }
+.account-main .membership-greeting h3 #user-name { color: #f5c4df !important; -webkit-text-fill-color: #f5c4df !important; }
+.account-main .membership-greeting p { color: rgba(255,255,255,.72) !important; -webkit-text-fill-color: rgba(255,255,255,.72) !important; }
+.account-main #membership-badge,
+.account-main .membership-badge {
+  border-radius: 18px !important;
+  border-color: rgba(255,255,255,.28) !important;
+  background: rgba(255,255,255,.12) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16) !important;
+  backdrop-filter: blur(8px);
+}
+.account-main .membership-badge svg { filter: hue-rotate(270deg) saturate(.7); }
+.account-main #membership-badge #membership-level,
+.account-main .membership-badge #membership-level { color: #fff !important; -webkit-text-fill-color: #fff !important; }
+.account-main .membership-badge .points,
+.account-main #membership-badge .points { color: #f5c4df !important; -webkit-text-fill-color: #f5c4df !important; border-color: rgba(255,255,255,.3) !important; }
+.account-main #membership-badge svg,
+.account-main .membership-badge svg { fill: #f4c3df !important; filter: none; }
+
+.account-main .membership-stats-grid {
+  max-width: 1240px;
+  gap: 14px;
+  margin-bottom: 8px;
+  padding: 8px 20px 0;
+  border: 0;
+}
+.account-main .membership-stats-grid .stat-item {
+  min-height: 156px;
+  padding: 22px 14px;
+  border: 1px solid rgba(112,69,166,.12);
+  border-radius: 20px;
+  background: rgba(255,255,255,.82);
+  box-shadow: 0 12px 28px rgba(58,34,77,.06), inset 0 1px 0 #fff;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.account-main .membership-stats-grid .stat-item:hover { transform: translateY(-3px); box-shadow: 0 18px 34px rgba(58,34,77,.11); }
+.account-main .membership-stats-grid .stat-item:not(:last-child)::after { background: rgba(112,69,166,.12); }
+.account-main .membership-stats-grid .stat-item:hover { background: rgba(255,255,255,.96); }
+.account-main .stat-icon { border-radius: 16px; background: linear-gradient(140deg, rgba(112,69,166,.11), rgba(215,70,145,.09)) !important; }
+.account-main .stat-icon svg { fill: var(--account-violet) !important; color: var(--account-violet) !important; }
+.account-main .stat-value { color: var(--account-ink) !important; -webkit-text-fill-color: var(--account-ink) !important; }
+.account-main .stat-label { color: var(--account-muted) !important; }
+
+.account-main .main-grid { gap: 18px; margin-bottom: 8px; }
+.account-main .details-section,
+.account-main .history-address-section {
+  border: 1px solid rgba(112,69,166,.12);
+  border-radius: 22px;
+  background: rgba(255,255,255,.88);
+  box-shadow: 0 16px 38px rgba(58,34,77,.07);
+}
+.account-main .details-section h2,
+.account-main .order-history h2,
+.account-main .quick-actions-title {
+  color: var(--account-ink) !important;
+  -webkit-text-fill-color: var(--account-ink) !important;
+}
+.account-main .details-section h2::before { content: 'PROFILE'; color: var(--account-violet); }
+.account-main .order-history h2::before { content: 'YOUR ROUTINE'; color: var(--account-pink); }
+.account-main .details-section p,
+.account-main .order-history p { color: var(--account-muted); }
+.account-main .details-section strong { color: var(--account-ink); }
+.account-main .quick-actions-section { padding-top: 10px !important; }
+.account-main .quick-actions-title::before { content: 'CURVAFIT TOOLS'; color: var(--account-violet); -webkit-text-fill-color: var(--account-violet); }
+.account-main .quick-card {
+  border: 1px solid rgba(112,69,166,.13) !important;
+  border-radius: 20px !important;
+  background: rgba(255,255,255,.88) !important;
+  box-shadow: 0 12px 28px rgba(58,34,77,.055) !important;
+}
+.account-main .quick-card::before { background: linear-gradient(90deg, var(--account-violet), var(--account-pink)); }
+.account-main .quick-card:hover { border-color: rgba(112,69,166,.28) !important; box-shadow: 0 20px 38px rgba(58,34,77,.12) !important; }
+.account-main .quick-card h4 { color: var(--account-ink) !important; }
+.account-main .quick-card p { color: var(--account-muted) !important; }
+.account-main .quick-card-icon { color: var(--account-violet) !important; background: rgba(112,69,166,.08) !important; border-radius: 15px; }
+
+.account-home-wave {
+  position: relative;
+  z-index: 1;
+  display: block;
+  height: clamp(30px, 4vw, 48px);
+  margin: 0 auto 8px;
+  overflow: hidden;
+  background: transparent;
+  pointer-events: none;
+}
+.account-home-wave--compact { height: clamp(22px, 2.8vw, 32px); margin: 2px auto 6px; }
+.account-home-wave svg { display: block; width: 100%; height: 100%; }
+
+.account-main .affiliation-section { position: relative; z-index: 1; }
+.account-main .affiliation-section > * { border-radius: 22px; }
+.account-main .aff-create-card,
+.account-main .aff-table-card,
+.account-main .aff-reward-card {
+  border: 1px solid rgba(112,69,166,.14) !important;
+  border-radius: 22px !important;
+  background: rgba(255,255,255,.9) !important;
+  box-shadow: 0 16px 36px rgba(58,34,77,.075) !important;
+}
+.account-main .aff-create-card__title,
+.account-main .aff-table-card__title { color: var(--account-ink) !important; -webkit-text-fill-color: var(--account-ink) !important; }
+.account-main .aff-create-card__hint,
+.account-main .aff-kpi__label,
+.account-main .aff-table { color: var(--account-muted) !important; }
+.account-main .aff-input,
+.account-main .aff-withdraw-input { border-color: rgba(112,69,166,.2) !important; border-radius: 12px !important; }
+.account-main .aff-create-btn,
+.account-main .aff-withdraw-btn,
+.account-main .aff-copy-promo-btn { border-radius: 999px !important; background: linear-gradient(110deg, var(--account-violet), var(--account-pink)) !important; }
+.account-main .aff-kpi { border-color: rgba(112,69,166,.12) !important; background: rgba(112,69,166,.045) !important; }
+.account-main .aff-kpi__val { color: var(--account-violet) !important; -webkit-text-fill-color: var(--account-violet) !important; }
+.account-main .aff-hero {
+  border: 1px solid rgba(112,69,166,.14);
+  background:
+    radial-gradient(circle at 86% 20%, transparent 0 62px, rgba(255,255,255,.07) 63px 64px, transparent 65px 92px, rgba(255,255,255,.05) 93px 94px, transparent 95px),
+    linear-gradient(135deg, #39244d, #67406d) !important;
+  box-shadow: 0 18px 38px rgba(58,34,77,.16);
+}
+.account-main .aff-hero::before { background: radial-gradient(circle, rgba(215,70,145,.2), transparent 70%); }
+.account-main .aff-hero__badge { border-radius: 999px; color: #f8d4e8; background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.22); }
+.account-main .aff-hero__badge i { color: #f8d4e8; }
+.account-main .aff-hero__title { color: #fff !important; -webkit-text-fill-color: #fff !important; }
+
+@media (max-width: 749px) {
+  .account-main { padding-top: 12px; }
+  .account-main .account-background { padding: 0 12px 6px; }
+  .account-main .customer.account { padding: 20px 16px !important; border-radius: 22px; }
+  .account-main .profile-section { gap: 20px; }
+  .account-main .membership-stats-grid { gap: 10px; padding: 8px 12px 0; }
+  .account-main .membership-stats-grid .stat-item { min-height: 132px; padding: 16px 10px; border-radius: 16px; }
+  .account-main .details-section,
+  .account-main .history-address-section { border-radius: 18px; }
+  .account-home-wave { height: 28px; margin-bottom: 4px; }
+  .account-home-wave--compact { height: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-main .membership-dashboard,
+  .account-main .quick-card,
+  .account-main .membership-stats-grid .stat-item { animation: none !important; transition: none !important; }
+}
+
+/* Account dialogs are portaled to body so they sit above the site chrome. */
+.popup-overlay.account-page-popup {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483000 !important;
+  display: none !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  box-sizing: border-box !important;
+  padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom)) !important;
+  background: rgba(35, 22, 47, .66) !important;
+  backdrop-filter: blur(9px) !important;
+  -webkit-backdrop-filter: blur(9px) !important;
+}
+.popup-overlay.account-page-popup.open { display: flex !important; }
+
+.account-page-popup .popup {
+  position: relative !important;
+  flex: 0 0 auto !important;
+  box-sizing: border-box !important;
+  width: min(100%, 500px) !important;
+  max-width: 500px !important;
+  max-height: calc(100vh - 48px) !important;
+  max-height: calc(100dvh - max(48px, env(safe-area-inset-top) + env(safe-area-inset-bottom) + 24px)) !important;
+  min-height: 0 !important;
+  margin: auto 0 !important;
+  padding: 36px 28px 26px !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(112,69,166,.42) transparent !important;
+  border: 1px solid rgba(112,69,166,.22) !important;
+  border-radius: 24px !important;
+  color: #302044 !important;
+  text-align: left !important;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(215,70,145,.09), transparent 38%),
+    linear-gradient(145deg, #fff 0%, #fbf7fd 100%) !important;
+  box-shadow: 0 28px 80px rgba(28,14,39,.3), inset 0 1px 0 rgba(255,255,255,.95) !important;
+  animation: popupSlideIn .24s ease-out !important;
+}
+.account-page-popup .popup::-webkit-scrollbar { width: 7px !important; display: block !important; }
+.account-page-popup .popup::-webkit-scrollbar-thumb { border-radius: 99px; background: rgba(112,69,166,.36); }
+.popup-overlay.account-page-popup#address-popup .popup {
+  box-sizing: border-box !important;
+  max-height: calc(100vh - 48px) !important;
+  max-height: calc(100dvh - max(48px, env(safe-area-inset-top) + env(safe-area-inset-bottom) + 24px)) !important;
+}
+.popup-overlay.account-page-popup#address-popup .popup::-webkit-scrollbar { display: block !important; }
+.account-page-popup .popup h3 {
+  padding: 0 36px 14px 0 !important;
+  margin: 0 0 20px !important;
+  border-bottom: 1px solid rgba(112,69,166,.14);
+  color: #302044 !important;
+  background: none !important;
+  -webkit-text-fill-color: #302044 !important;
+  font-size: clamp(1.4rem, 4vw, 1.8rem) !important;
+  text-align: left !important;
+}
+.account-page-popup .popup-close {
+  top: 16px !important;
+  right: 16px !important;
+  display: grid !important;
+  width: 34px !important;
+  height: 34px !important;
+  place-items: center !important;
+  border: 1px solid rgba(112,69,166,.15) !important;
+  border-radius: 50% !important;
+  color: #7045a6 !important;
+  background: #f4edf9 !important;
+  font-size: 23px !important;
+}
+.account-page-popup .popup-close:hover { color: #fff !important; background: #7045a6 !important; }
+.account-page-popup .popup-form { display: grid; gap: 10px; }
+.account-page-popup .popup-form input,
+.account-page-popup .popup-form select,
+.account-page-popup .popup-form textarea {
+  min-height: 48px;
+  margin: 0 !important;
+  border: 1px solid rgba(112,69,166,.18) !important;
+  border-radius: 12px !important;
+  color: #302044 !important;
+  background: rgba(255,255,255,.88) !important;
+}
+.account-page-popup .popup-form input::placeholder,
+.account-page-popup .popup-form textarea::placeholder { color: #92869d !important; }
+.account-page-popup .popup-form input:focus,
+.account-page-popup .popup-form textarea:focus {
+  border-color: rgba(112,69,166,.55) !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(112,69,166,.1) !important;
+}
+.account-page-popup .popup-form button {
+  min-height: 48px;
+  margin-top: 5px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(110deg, #7045a6, #d74691) !important;
+  box-shadow: 0 10px 22px rgba(112,69,166,.2) !important;
+}
+.account-page-popup .payment-method { border: 1px solid rgba(112,69,166,.15) !important; border-radius: 16px !important; background: #fff !important; }
+
+@media (max-width: 520px) {
+  .popup-overlay.account-page-popup { padding-right: 12px !important; padding-left: 12px !important; }
+  .account-page-popup .popup { width: 100% !important; padding: 32px 18px 20px !important; border-radius: 20px !important; }
+}

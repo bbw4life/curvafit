@@ -866,7 +866,7 @@
       "agent_name": "Sherline",
       "agent_title": "Curvafit Shopping Assistant",
       "agent_badge": "Style Support",
-      "agent_logo": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/curva_AI.png?v=1775586792",
+      "agent_logo": "/img/Sherline-agente.png",
       "hero_image": "https://cdn.shopify.com/s/files/1/0746/5346/6724/files/bbw.email.png?v=1782613828",
       "input_placeholder": "Ask Sherline about Curvafit guides, products, sizing or orders…",
       "typing_label": "Sherline is typing…",
@@ -957,7 +957,7 @@
     },
     "remember_cart_popup": {
       "show": "yes",
-      "avatar_image": "https://cdn.shopify.com/s/files/1/0978/0353/4627/files/curva_AI.png?v=1775586792",
+      "avatar_image": "/img/Sherline-agente.png",
       "avatar_video_url": "",
       "position_bottom_right": "yes",
       "position_bottom_left": "no",
@@ -1750,7 +1750,7 @@
       "disable_devtools_key": "yes"
     },
     "mini_product_slider": {
-      "title": "Queens And Kings Also Love These",
+      "title": "Curvafit Favorites",
       "product_ids": [
         "Pdg-Francenel-product1",
         "Pdg-Francenel-product2",

@@ -7816,3 +7816,16 @@ body { margin-bottom: 0 !important; }
   #bbwMissionOverlay .bbwm-block { grid-template-columns: 42px 1fr; gap: 12px; padding: 13px; }
   #bbwMissionOverlay .bbwm-icon-wrap::before { font-size: 34px; }
 }
+
+/* Keep the mobile birthday hint single: hide the browser's empty date text
+   while the wrapper displays its own localized visual placeholder. */
+@media (max-width: 768px) {
+  #bbwNlOverlay .bbwnl-input-wrap:not(.has-value) .bbwnl-input--date {
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+  #bbwNlOverlay .bbwnl-input-wrap.has-value .bbwnl-input--date {
+    color: #321b45;
+    -webkit-text-fill-color: #321b45;
+  }
+}
