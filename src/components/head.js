@@ -388,7 +388,7 @@ const SEO_MAP = {
 };
 
 SEO_MAP['/'] = SEO_MAP['/index'];
-SEO_MAP['/index.html'] = SEO_MAP['/index'];
+SEO_MAP['/index-store.html'] = SEO_MAP['/index'];
 
 
 function injectBlogSchema() {
@@ -608,7 +608,7 @@ function injectGlobalHead() {
     if (rawPath && slugMap && slugMap[rawPath]) {
         canonicalPath = slugMap[rawPath];
     }
-    const isHomePage = rawPath === '/' || rawPath === '/index' || rawPath === '/index.html';
+    const isHomePage = rawPath === '/' || rawPath === '/index' || rawPath === '/index-store.html';
     const canonicalUrl = isHomePage
         ? (seo.canonical || 'https://curvafit.com/')
         : (seo.site_name === 'Curvafit'

@@ -22,21 +22,7 @@
     --bbw-card-frost-bg: linear-gradient(135deg, #ffffff 0%, #faf6fe 100%);
 }
 
-[data-scroll-reveal] {
-    opacity: 0;
-    transform: translateY(28px);
-    transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), transform 0.4s cubic-bezier(0.4,0,0.2,1);
-}
-[data-scroll-reveal].revealed {
-    opacity: 1;
-    transform: translateY(0);
-}
 
-/* If scroll-reveal JavaScript is unavailable, never leave product sections hidden. */
-html:not(.has-scroll-reveal) [data-scroll-reveal] {
-    opacity: 1;
-    transform: none;
-}
 
 
 
@@ -688,7 +674,7 @@ html:not(.has-scroll-reveal) [data-scroll-reveal] {
    LIKE / DISLIKE WIDGET — SKELETON
    Même forme exacte que les vrais boutons (cercle 30px/24px + petite
    barre pour le compteur), affiché pendant le chargement de get-likes.
-   .skel-shimmer = animation partagée (style.css) réutilisée telle quelle.
+   .skel-shimmer = animation partagée (style-store.css) réutilisée telle quelle.
 ════════════════════════════ */
 .product-like-skel-count {
     width: 14px;
@@ -7433,23 +7419,7 @@ body:has(.product-section) .bbw-footer {
    par innerHTML). Couvre les 6 premiers blocs : titre, tagline,
    avis, prix, arguments produit, offres bundle. Retiré par JS
    (skeleton.js) dès que le titre réel est posé. ════════════════ */
-/* Les blocs ci-dessous contiennent du texte écrit EN DUR dans le HTML
-   statique (tagline, étoiles, value-props, offres bundle, bloc stock —
-   pas remplis en JS comme le titre/prix), donc le navigateur les peint
-   dès le parsing du DOM, bien avant que skeleton.js (qui n'agit qu'au
-   DOMContentLoaded, chargé en fin de <body>) n'ait la moindre chance de
-   les masquer. .pp-reassurance-row (bloc stock "Checking availability…")
-   n'a pas de data-scroll-reveal et se retrouvait donc visible dès le
-   début, chevauchant visuellement le skeleton au-dessus de lui qui
-   occupe une hauteur différente des vrais 6 blocs masqués — on l'inclut
-   ici pour qu'il apparaisse en même temps que le reste, pas avant.
-   On cache tout par défaut en CSS pur (donc dès le premier paint, sans
-   dépendre du timing JS) et on ne les révèle qu'une fois .product-content
-   marqué .pp-fbs-ready par skeleton.js (initFirstBlocksSkeleton), dans
-   tous ses chemins de sortie. Filet de sécurité : si JS est
-   indisponible/bloqué, .pp-fbs-ready n'est jamais posée — le <noscript>
-   ci-dessous republie une règle plus forte qui republie ces blocs, pour
-   ne jamais les laisser cachés pour toujours en l'absence de JS. */
+/* Keep hard-coded first product details hidden until skeleton.js marks them ready. */
 .product-content:not(.pp-fbs-ready) .bbw-soul-message,
 .product-content:not(.pp-fbs-ready) .unique-star-rating-container,
 .product-content:not(.pp-fbs-ready) .pp-value-props,

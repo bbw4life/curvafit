@@ -372,7 +372,7 @@ function buildBlogContext(blogData) {
 ══════════════════════════════════════════════════════ */
 const PAGE_MAP = {
   '/': { label: 'Home', icon: '🏠' },
-  '/index.html': { label: 'Home', icon: '🏠' },
+  '/index-store.html': { label: 'Home', icon: '🏠' },
   '/collections/curvafit-all-products.html': { label: 'Shop All Curvafit Products', icon: '🛍️' },
   '/cart.html': { label: 'Cart', icon: '🛒' },
   '/account.html': { label: 'My Account', icon: '👤' },

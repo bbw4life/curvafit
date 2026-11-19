@@ -41,6 +41,9 @@
 /product-feed.xml    /.netlify/functions/product-feed   200!
 
 # ─────────────────────────────────────────────
+/index.html  /index-store.html  301
+/  /index-store.html  200
+
 # CATCH-ALL — must stay LAST (order matters)
 # ─────────────────────────────────────────────
 /*    /404.html   404

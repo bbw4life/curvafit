@@ -126,7 +126,7 @@ export async function onRequestPost(context) {
       mode: 'payment',
       ...(discounts.length ? { discounts } : {}),
       success_url: `${siteBaseUrl}/thankyou.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url:  `${siteBaseUrl}/index.html`,
+      cancel_url:  `${siteBaseUrl}/index-store.html`,
     });
 
     // ── Le code promo affilié appliqué (et son montant, déjà calculé côté

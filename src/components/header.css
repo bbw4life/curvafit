@@ -4324,7 +4324,7 @@ a.plan-close-thanks-btn {
   visibility: hidden !important;
 }
 
-/* .cart-drawer a sa propre transition "right 0.50s" (style.css) pour
+/* .cart-drawer a sa propre transition "right 0.50s" (style-store.css) pour
    glisser hors écran à la fermeture — visibility:hidden ne peut pas être
    animée nativement, donc on retarde son application (via
    transition-delay) jusqu'à la fin du glissement. Sans ce délai,

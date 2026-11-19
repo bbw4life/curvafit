@@ -45,7 +45,6 @@
   // existe) : on ne peut pas attendre un fetch réseau ici sans retarder
   // l'affichage. Fast-path : dernière valeur connue en localStorage.
   // Confirmation asynchrone en fond pour rester à jour si le setting
-  // change côté products.data.json (même mécanisme que preloader-inline.js).
   var PRETTY_URL_CACHE_KEY = 'bbw_use_pretty_urls';
   var prettyUrlsEnabled = true;
   try {

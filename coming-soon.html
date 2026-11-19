@@ -1110,7 +1110,7 @@
           gateMsg.textContent = 'Access granted — redirecting…';
           setTimeout(function () {
             var params = new URLSearchParams(window.location.search);
-            var target = params.get('redirect') || '/index.html';
+            var target = params.get('redirect') || '/index-store.html';
             window.location.replace(target);
           }, 500);
         } else {

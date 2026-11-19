@@ -3,11 +3,7 @@
 
   /* ════════════════════════════════════════════════════════════════
      SKELETON SCREENS — placeholders qui imitent la structure réelle
-     de chaque zone injectée en JS, pour combler le court instant entre
-     la disparition du preloader global (script.js, IIFE "BBW4LIFE
-     PRELOADER") et l'injection du vrai contenu (script.js, products.js,
-     etc.). Le preloader plein écran n'est pas touché — ce module ne
-     gère que ce qui se passe APRÈS sa disparition.
+     de chaque zone injectée en JS, pour afficher un placeholder pendant son chargement.
 
      Principe : chaque skeleton réutilise les VRAIES classes CSS du
      composant final (ex: .bbw-nb-card, ) pour que ses dimensions (aspect-ratio, largeur,
@@ -499,9 +495,7 @@
     });
   }
 
-  /* ── Init global : à appeler après la disparition du preloader (ou
-     immédiatement si le preloader est déjà absent — page revisitée
-     avec cache, ou preloader désactivé dans les settings). ── */
+  /* Init global dès que les zones correspondantes sont disponibles. */
   function initSkeletons() {
     initNbGridSkeleton();
     initGalleryMosaicSkeleton();

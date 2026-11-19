@@ -961,19 +961,6 @@
 }
 
 
-[data-ot-reveal] {
-  opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 0.65s ease, transform 0.65s var(--spring);
-}
-[data-ot-reveal].is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ═══════════════════════════════════
-   RESPONSIVE — CORRECTIONS MOBILE
-═══════════════════════════════════ */
 @media (max-width: 768px) {
 
   

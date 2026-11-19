@@ -5,16 +5,6 @@
    pour le texte fonctionnel.
 ════════════════════════════════════════════════════════════ */
 
-[data-scroll-reveal] {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), transform 0.4s cubic-bezier(0.4,0,0.2,1);
-}
-[data-scroll-reveal].revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 @keyframes srOrbDrift {
   from { transform: translate(0, 0) scale(1); }
   to   { transform: translate(30px, 24px) scale(1.06); }

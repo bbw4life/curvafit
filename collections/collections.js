@@ -1196,9 +1196,9 @@
         const newImgSrc = upgradeShopifyImageUrl(getColorImage(prod, colorObj.name), 700);
         const imgEl = $('qvMainImg');
         if (imgEl && newImgSrc) {
-          const preloader = new Image();
-          preloader.onload = () => { imgEl.src = newImgSrc; };
-          preloader.src = newImgSrc;
+          const imageLoader = new Image();
+          imageLoader.onload = () => { imgEl.src = newImgSrc; };
+          imageLoader.src = newImgSrc;
         }
         qvUpdatePrice();
       });

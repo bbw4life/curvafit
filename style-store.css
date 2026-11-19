@@ -4,7 +4,7 @@
 
 /* Police Fraunces/Inter chargée via <link> dans src/components/head.html
    (injecté sur chaque page) — l'@import ici était redondant et
-   bloquait le rendu de style.css le temps du round-trip réseau vers
+   bloquait le rendu de style-store.css le temps du round-trip réseau vers
    Google Fonts. Supprimé pour accélérer le premier rendu. */
 
 
@@ -6945,7 +6945,7 @@ body {
 /* ================================================================
    SKELETON SCREENS — placeholders imitant la structure réelle des
    zones remplies dynamiquement (script.js/products.js), affichés
-   entre la disparition du preloader global et l'injection du vrai
+   pendant l'injection du vrai
    contenu (voir src/components/skeleton.js). Même motif shimmer que
    l'existant (.ac-skeleton dans collections.css, .cp-item-skeleton
    dans cart.css) pour rester cohérent visuellement avec le site.
@@ -12727,7 +12727,11 @@ body.bbw-sets-popup-open .skel-shimmer {
   height: 100%;
   object-fit: contain;
   background: #fff;
+  transition: opacity 260ms ease;
 }
+.cf-product-card__image--hover { opacity: 0; pointer-events: none; }
+.cf-product-card__visual.is-image-hover .cf-product-card__image:not(.cf-product-card__image--hover) { opacity: 0; }
+.cf-product-card__visual.is-image-hover .cf-product-card__image--hover { opacity: 1; }
 .cf-product-card__image[hidden] { display: none; }
 .cf-product-card__visual.has-image::before,
 .cf-product-card__visual.has-image::after,
@@ -12885,7 +12889,8 @@ body.bbw-sets-popup-open .skel-shimmer {
 }
 @media (prefers-reduced-motion: reduce) {
   .cf-product-card,
-  .cf-products__arrow {
+  .cf-products__arrow,
+  .cf-product-card__image {
     transition: none;
   }
 }
@@ -12993,42 +12998,6 @@ body.bbw-sets-popup-open .skel-shimmer {
     height: 30px;
   }
 }
-.has-scroll-reveal [data-scroll-reveal]:not(.scroll-revealed) {
-  opacity: 0;
-  translate: 0 16px;
-  transition:
-    opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
-    translate 620ms cubic-bezier(0.22, 1, 0.36, 1);
-  transition-delay: var(--scroll-reveal-delay, 0ms);
-  will-change: opacity, translate;
-}
-
-.has-scroll-reveal [data-scroll-reveal="fade"]:not(.scroll-revealed) {
-  translate: none;
-}
-
-.has-scroll-reveal [data-scroll-reveal="left"]:not(.scroll-revealed) {
-  translate: -22px 8px;
-}
-
-.has-scroll-reveal [data-scroll-reveal="right"]:not(.scroll-revealed) {
-  translate: 22px 8px;
-}
-
-.has-scroll-reveal [data-scroll-reveal].scroll-revealed {
-  opacity: 1;
-  translate: none;
-  will-change: auto;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .has-scroll-reveal [data-scroll-reveal] {
-    opacity: 1 !important;
-    translate: none !important;
-    transition: none !important;
-  }
-}
-
 /* Keep affiliate areas hidden until the setting enables them, preventing a flash. */
 html:not(.affiliate-program-enabled) .bbw-finale,
 html:not(.affiliate-program-enabled) #affiliation-section {

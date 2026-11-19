@@ -992,36 +992,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ── Scroll reveal ──
-(function() {
-    var newElements = document.querySelectorAll(
-        '.pp-why-card, .pp-testimonial-card, .pp-ba-col, .pp-guarantee-item, .pp-benefits-block, .pp-urgency-bar, .pp-trust-strip'
-    );
-    if (!newElements.length) return;
-    var observer = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0) scale(1)';
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.08 });
-    newElements.forEach(function(el) {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(22px) scale(0.98)';
-        el.style.transition = 'opacity 0.55s cubic-bezier(0.4,0,0.2,1), transform 0.55s cubic-bezier(0.4,0,0.2,1)';
-        observer.observe(el);
-    });
-    document.querySelectorAll('.pp-why-card').forEach(function(el, i) {
-        el.style.transitionDelay = (i * 0.10) + 's';
-    });
-    document.querySelectorAll('.pp-testimonial-card').forEach(function(el, i) {
-        el.style.transitionDelay = (i * 0.12) + 's';
-    });
-})();
-
-
 // ====================== URGENCY BAR — MISE À JOUR DYNAMIQUE ======================
 (function() {
     const urgencyBar = document.querySelector('.pp-urgency-bar span');

@@ -98,8 +98,8 @@ const server = http.createServer((req, res) => {
   try { rules = parseRedirects(path.join(ROOT, '_redirects')); } catch (_) {}
 
   // 1) try to serve a real static file first (covers /products/product1.html,
-  //    /style.css, /script.js, images, etc. -- normal site browsing)
-  let realPath = pathname === '/' ? '/index.html' : pathname;
+  //    /style-store.css, /script.js, images, etc. -- normal site browsing)
+  let realPath = pathname === '/' ? '/index-store.html' : pathname;
   let filePath = safeJoin(ROOT, realPath);
   if (filePath && fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
     serveFile(res, filePath, 200);

@@ -154,6 +154,36 @@
       if (imageUrl) image.src = imageUrl;
       imageLink.appendChild(image);
 
+      const hoverImageUrl = product.image_hover && imageUrl ? product.image_hover : '';
+      let hoverImage = null;
+      let previewWanted = false;
+      let touchPreviewActive = false;
+      let touchPreviewPending = false;
+      if (hoverImageUrl) {
+        hoverImage = make('img', 'cf-product-card__image cf-product-card__image--hover');
+        hoverImage.alt = '';
+        hoverImage.setAttribute('aria-hidden', 'true');
+        hoverImage.loading = 'lazy';
+        hoverImage.decoding = 'async';
+        hoverImage.src = hoverImageUrl;
+        hoverImage.addEventListener('load', () => {
+          if (previewWanted) visual.classList.add('is-image-hover');
+          previewWanted = false;
+        });
+        hoverImage.addEventListener('error', () => { previewWanted = false; });
+        imageLink.appendChild(hoverImage);
+      }
+
+      const showHoverImage = () => {
+        if (!hoverImage) return;
+        if (hoverImage.complete && hoverImage.naturalWidth > 0) {
+          visual.classList.add('is-image-hover');
+          return;
+        }
+        previewWanted = true;
+        hoverImage.loading = 'eager';
+      };
+
       const productBadge = product.badge && product.badge.text ? product.badge.text : '';
       if (productBadge) imageLink.appendChild(make('span', 'cf-product-card__label', productBadge));
 
@@ -203,11 +233,29 @@
       body.append(meta, title, description, bottom);
       card.replaceChildren(visual, body);
 
-      imageLink.addEventListener('pointerenter', () => {
-        if (product.image_hover && imageUrl) image.src = product.image_hover;
+      imageLink.addEventListener('pointerenter', event => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') showHoverImage();
       });
-      imageLink.addEventListener('pointerleave', () => {
-        if (imageUrl) image.src = imageUrl;
+      imageLink.addEventListener('pointerleave', event => {
+        if (event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
+        previewWanted = false;
+        visual.classList.remove('is-image-hover');
+      });
+      imageLink.addEventListener('pointerdown', event => {
+        if (event.pointerType !== 'touch' || !hoverImage) return;
+        if (!touchPreviewActive) {
+          touchPreviewActive = true;
+          touchPreviewPending = true;
+          showHoverImage();
+        } else {
+          touchPreviewPending = false;
+        }
+      });
+      imageLink.addEventListener('pointercancel', () => { touchPreviewPending = false; });
+      imageLink.addEventListener('click', event => {
+        if (!touchPreviewPending) return;
+        event.preventDefault();
+        touchPreviewPending = false;
       });
     });
 

@@ -801,36 +801,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ════════════════════════════════════════════════════════════
-     11. SCROLL REVEAL ANIMATIONS
-  ════════════════════════════════════════════════════════════ */
-  function initScrollReveal() {
-    var revealEls = document.querySelectorAll(
-      '.article-section, .article-takeaways, .article-mid-cta, ' +
-      '.article-results, .article-author-bio, .article-reactions, ' +
-      '.article-share-bottom, .article-newsletter, .related-card, ' +
-      '.a1-infographic, .a1-hormone-card, .a1-framework-pillar'
-    );
-
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.style.opacity   = '1';
-          entry.target.style.transform = 'translateY(0)';
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.07 });
-
-    revealEls.forEach(function (el) {
-      el.style.opacity    = '0';
-      el.style.transform  = 'translateY(22px)';
-      el.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
-      observer.observe(el);
-    });
-  }
-
-
-  /* ════════════════════════════════════════════════════════════
      UTILS
   ════════════════════════════════════════════════════════════ */
   function setText(id, text) {
@@ -962,7 +932,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // Delayed to allow DOM injection from blog-articles.json
   setTimeout(function () {
     buildTOC();
-    initScrollReveal();
   }, 200);
 
 });

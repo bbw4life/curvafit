@@ -332,7 +332,7 @@
     if (!copy) return;
     const year  = s.copyright_year || new Date().getFullYear();
     const brand = s.brand_name     || 'Curvafit';
-    copy.innerHTML = `© ${year}, <a href="/index.html" class="bbw-footer__brand-link">${brand}</a> All Rights Reserved`;
+    copy.innerHTML = `© ${year}, <a href="/index-store.html" class="bbw-footer__brand-link">${brand}</a> All Rights Reserved`;
   }
 
   /* ──────────────────────────────────────────────────────────────
